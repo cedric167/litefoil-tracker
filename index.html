@@ -221,8 +221,12 @@
       chControl = await svc.getCharacteristic(CH_CONTROL);
       const chStatus = await svc.getCharacteristic(CH_STATUS);
       await chStatus.startNotifications();
-      chStatus.addEventListener("characteristicvaluechanged", ev => {
-        paintStatus(parseLine(new TextDecoder().decode(ev.target.value)));
+      chStatus.addEventListener("characteristicvaluechanged", async ev => {
+        const text = new TextDecoder().decode(ev.target.value);
+        // A notification is cut at the ATT MTU; `boot=` is the last key, so its absence
+        // means a phone that kept the default 23-byte MTU. A read (long read) is complete.
+        if (text.includes("boot=")) { paintStatus(parseLine(text)); return; }
+        try { paintStatus(parseLine(new TextDecoder().decode(await chStatus.readValue()))); } catch {}
       });
 
       setState("Connecté à " + device.name, "on");
