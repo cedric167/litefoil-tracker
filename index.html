@@ -189,7 +189,8 @@
     $("tBatt").textContent = batt ? batt + " %" : "—";
     $("tBatt").className = "v " + (batt === null || batt === 0 ? "" : batt < 20 ? "bad" : batt < 40 ? "warn" : "good");
     $("statusNote").textContent = "Mis à jour par le tracker toutes les 2 s · démarrage n° " + (s.boot ?? "?") +
-      (s.prov === "1" ? "" : " · NON ENRÔLÉ sur le serveur");
+      (s.prov === "1" ? "" : " · NON ENRÔLÉ sur le serveur") +
+      (s.acct ? " · compte : " + s.acct : " · aucun compte saisi");
     $("btnStart").disabled = track;
     $("btnStop").disabled = !track;
   }
