@@ -69,6 +69,7 @@
       <div class="kv"><div class="k">Réseau</div><div class="v" id="tNet">—</div></div>
       <div class="kv"><div class="k">Satellites</div><div class="v" id="tSats">—</div></div>
       <div class="kv"><div class="k">Vitesse</div><div class="v" id="tSpd">—</div></div>
+      <div class="kv"><div class="k">Vitesse max</div><div class="v" id="tSpdMax">—</div></div>
       <div class="kv"><div class="k">Latitude</div><div class="v" id="tLat">—</div></div>
       <div class="kv"><div class="k">Longitude</div><div class="v" id="tLon">—</div></div>
       <div class="kv"><div class="k">Envois acceptés</div><div class="v" id="tSyncs">—</div></div>
@@ -179,6 +180,8 @@
     $("tSats").className = "v " + (s.fix !== "1" ? "bad" : sats >= 6 ? "good" : "warn");
     const spd = num(s.spd);
     $("tSpd").textContent = spd === null ? "—" : spd.toFixed(1) + " km/h";
+    const spdMax = num(s.spdmax);
+    $("tSpdMax").textContent = spdMax === null ? "—" : spdMax.toFixed(1) + " km/h";
     const lat = num(s.lat), lon = num(s.lon);
     $("tLat").textContent = lat === null ? "—" : lat.toFixed(5);
     $("tLon").textContent = lon === null ? "—" : lon.toFixed(5);
