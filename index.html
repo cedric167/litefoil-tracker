@@ -91,6 +91,8 @@
 
   <h2>Réglages</h2>
   <div class="card">
+    <label for="inAccount">Compte sportstracklive (e-mail, ou code fourni par le site)</label>
+    <input id="inAccount" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="vide = aucun compte">
     <label for="inApn">APN de la carte SIM</label>
     <input id="inApn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="iot.1nce.net">
     <label for="inHost">Serveur (hôte de l'API)</label>
@@ -109,8 +111,8 @@
       <button class="primary" id="btnSave" disabled>Enregistrer dans le tracker</button>
       <button id="btnReload" disabled>Relire</button>
     </div>
-    <div class="note" id="saveNote">Les champs vides ne sont pas envoyés. L'APN et le serveur s'appliquent à la
-      prochaine connexion réseau, les cadences tout de suite.</div>
+    <div class="note" id="saveNote">Le compte part tel quel (vide = aucun). Les autres champs vides ne sont pas envoyés.
+      Un nouvel APN force une reconnexion, le reste s'applique tout de suite.</div>
   </div>
 
   <h2>Journal</h2>
@@ -193,6 +195,7 @@
   }
 
   function paintSettings(s) {
+    $("inAccount").value = s.account ?? "";
     $("inApn").value = s.apn ?? "";
     $("inHost").value = s.host ?? "";
     $("inPeriod").value = s.period ?? "";
@@ -299,6 +302,8 @@
 
   $("btnSave").addEventListener("click", async () => {
     const parts = [];
+    // The account is always sent: an emptied field clears it on the tracker.
+    parts.push("account=" + $("inAccount").value.trim());
     const apn = $("inApn").value.trim();
     const host = $("inHost").value.trim().replace(/\/+$/, "");
     const period = $("inPeriod").value.trim();
@@ -308,10 +313,6 @@
     if (period) parts.push("period=" + period);
     if (interval) parts.push("interval=" + interval);
     const note = $("saveNote");
-    if (parts.length === 0) {
-      note.textContent = "Rien à enregistrer : remplis au moins un champ.";
-      return;
-    }
     $("btnSave").disabled = true;
     const ok = await writeText(chSettings, parts.join(";"), "Enregistrement");
     $("btnSave").disabled = false;
