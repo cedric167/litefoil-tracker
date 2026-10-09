@@ -11,6 +11,10 @@ que l'hébergement.
 
 ## Pour le client
 
+**Adresse de l'application : <https://cedric167.github.io/litefoil-tracker/>** (GitHub Pages,
+dépôt public `cedric167/litefoil-tracker`, branche `main` ; chaque `git push` republie en
+une minute).
+
 1. Allumer le tracker, ouvrir la page dans Chrome (Android), appuyer sur « Connecter » et
    choisir `LITEFOIL-TRACKER`.
 2. Saisir l'e-mail et le mot de passe de son compte SportsTrackLive, « Enregistrer le
