@@ -238,7 +238,8 @@
   </section>
 
   <footer>Tracker <code>LITEFOIL-TRACKER</code> · Chrome sur Android (Safari et iOS n'ont pas le Bluetooth web).
-    Menu de Chrome → « Ajouter à l'écran d'accueil » pour l'avoir comme une application.</footer>
+    Menu de Chrome → « Ajouter à l'écran d'accueil » pour l'avoir comme une application.<br>
+    <a href="confidentialite.html" style="color:inherit">Politique de confidentialité</a> · © Lite Foil</footer>
 </div>
 
 <script>
@@ -530,12 +531,23 @@
 
   // Two tabs: the tracker, and the Lite Foil site (which refuses to be embedded —
   // X-Frame-Options: DENY — so its pages open in the browser).
+  function showTab(name) {
+    const tab = document.querySelector(".tab[data-tab=\"" + name + "\"]");
+    if (!tab) return;
+    for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
+    for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
+  }
   for (const tab of document.querySelectorAll(".tab")) {
     tab.addEventListener("click", () => {
-      for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
-      for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + tab.dataset.tab;
+      showTab(tab.dataset.tab);
       try { localStorage.setItem("lf.tab", tab.dataset.tab); } catch (err) {}
     });
+  }
+  // Open on the tab asked in the URL (?tab=litefoil), else the one used last time.
+  {
+    let wanted = new URLSearchParams(location.search).get("tab");
+    if (!wanted) { try { wanted = localStorage.getItem("lf.tab"); } catch (err) {} }
+    if (wanted) showTab(wanted);
   }
 
   // Installable page: the service worker caches it, Chrome then offers "add to home screen".
