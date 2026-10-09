@@ -3,10 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f1419">
+<meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap">
 <title>Lite Foil Tracker</title>
 <!--
   Phone-side configuration page for the STL eFoil tracker (firmware-efoil/).
@@ -32,55 +35,86 @@
   lq=<points waiting>, lhttp=<last HTTP status on that channel>.
 -->
 <style>
+  /* Palette and type after litefoil.fr (Shopify theme: white, black, Instrument Sans /
+     Instrument Serif, pill buttons); the cyan is the logo's. */
   :root {
-    --bg: #0f1419; --card: #182028; --line: #2a3542; --text: #e6edf3; --muted: #8b98a5;
-    --ok: #3fb950; --warn: #d29922; --bad: #f85149; --accent: #2f81f7;
+    --bg: #ffffff; --card: #f5f6f7; --line: #e5e8ec; --text: #0b0d10; --muted: #5d6873;
+    --ok: #1a9c55; --warn: #c97d00; --bad: #d1343f; --accent: #5acdd1; --accent-ink: #148a90;
+    --radius: 16px;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font: 16px/1.5 "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
          background: var(--bg); color: var(--text); }
-  .wrap { max-width: 560px; margin: 0 auto; padding: 16px; }
-  h1 { font-size: 22px; margin: 8px 0 4px; }
-  h2 { font-size: 15px; margin: 22px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px 24px; }
+  h1, h2, .serif { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; letter-spacing: 0; }
+  h1 { font-size: 34px; margin: 0; line-height: 1.1; }
+  h2 { font-size: 24px; margin: 26px 0 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  button { font: inherit; padding: 11px 16px; border-radius: 10px; border: 1px solid var(--line);
-           background: #223040; color: var(--text); cursor: pointer; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  button.danger { background: #4a1f23; border-color: #6e2a30; }
-  button:disabled { opacity: .45; cursor: default; }
+  button, .linkbtn { font: inherit; font-weight: 600; padding: 12px 20px; border-radius: 100px; border: 1px solid var(--text);
+           background: #fff; color: var(--text); cursor: pointer; text-decoration: none; text-align: center; display: inline-block; }
+  button.primary, .linkbtn.primary { background: var(--text); border-color: var(--text); color: #fff; }
+  button.danger { background: #fff; border-color: var(--bad); color: var(--bad); }
+  button:disabled { opacity: .35; cursor: default; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .kv { background: #10161c; border-radius: 10px; padding: 10px 12px; }
-  .kv .k { color: var(--muted); font-size: 12px; }
-  .kv .v { font-size: 20px; font-variant-numeric: tabular-nums; }
+  .kv { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .kv .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .kv .v { font-size: 22px; font-variant-numeric: tabular-nums; font-family: "Instrument Serif", Georgia, serif; }
   .good { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
-  label { display: block; margin: 10px 0 4px; color: var(--muted); font-size: 13px; }
-  input { width: 100%; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line);
-          background: #10161c; color: var(--text); }
-  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; }
-  .pill.on { background: #14321e; color: var(--ok); } .pill.off { background: #2b2b2b; color: var(--muted); }
-  .lamp { width: 10px; height: 10px; border-radius: 50%; background: #555; display: inline-block; margin-right: 8px; }
+  label { display: block; margin: 12px 0 4px; color: var(--muted); font-size: 13px; }
+  input { width: 100%; font: inherit; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+          background: #fff; color: var(--text); }
+  input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+  .pill { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-family: "Instrument Sans", sans-serif; }
+  .pill.on { background: #dff5f6; color: var(--accent-ink); } .pill.off { background: #eceff2; color: var(--muted); }
+  .lamp { width: 10px; height: 10px; border-radius: 50%; background: #c5ccd3; display: inline-block; margin-right: 8px; }
   .lamp.on { background: var(--ok); } .lamp.busy { background: var(--warn); } .lamp.err { background: var(--bad); }
-  #log { font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; background: #0b0f14; border-radius: 10px;
-         padding: 10px; height: 160px; overflow: auto; color: #b7c2cc; white-space: pre-wrap; }
+  #log { font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; background: #f0f2f4; border-radius: 12px;
+         padding: 10px; height: 150px; overflow: auto; color: #3a4650; white-space: pre-wrap; }
   #log .g { color: var(--ok); } #log .e { color: var(--bad); }
   .note { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
-  .tab { background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0; color: var(--muted);
-         padding: 10px 14px; font-weight: 600; }
-  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
-  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-  .linkbtn { display: block; padding: 12px 10px; border-radius: 10px; border: 1px solid var(--line); background: #223040;
-             color: var(--text); text-decoration: none; text-align: center; font-weight: 600; }
-  .linkbtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; grid-column: 1 / -1; }
-  footer { color: var(--muted); font-size: 12px; margin: 24px 0 8px; text-align: center; }
+  code { background: #eef1f3; padding: 1px 5px; border-radius: 6px; font-size: .92em; }
+  footer { color: var(--muted); font-size: 12px; margin: 28px 0 8px; text-align: center; }
+
+  /* Hero: the site's video, the logo on it. */
+  .hero { position: relative; margin: 12px 0 10px; border-radius: var(--radius); overflow: hidden; background: #0b0d10;
+          aspect-ratio: 16 / 9; }
+  .hero video, .hero img.poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.55) 100%); }
+  .hero .brand { position: absolute; left: 16px; bottom: 12px; right: 16px; color: #fff; display: flex; align-items: flex-end;
+                 justify-content: space-between; gap: 12px; }
+  .hero .brand img { height: 56px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+  .hero .brand span { font-family: "Instrument Serif", Georgia, serif; font-size: 18px; line-height: 1.2; text-align: right;
+                      text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+  .hero .play { position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%; border: none;
+                background: rgba(255,255,255,.9); color: #000; font-size: 26px; padding: 0; display: none; }
+  .hero.paused .play { display: block; }
+
+  .tabs { display: flex; gap: 4px; margin: 6px 0 16px; background: var(--card); border: 1px solid var(--line); border-radius: 100px; padding: 4px; }
+  .tab { flex: 1; background: none; border: none; border-radius: 100px; color: var(--muted); padding: 10px 14px; font-weight: 600; }
+  .tab.active { background: var(--text); color: #fff; }
+  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .linkbtn { display: block; padding: 13px 10px; }
+  .linkbtn.primary { grid-column: 1 / -1; }
+  .tagline { font-family: "Instrument Serif", Georgia, serif; font-size: 26px; line-height: 1.15; margin: 4px 0 6px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="row" style="margin:6px 0 10px">
-    <img src="litefoil-logo.png" alt="Lite Foil" style="height:44px" onerror="this.style.display='none'">
-    <h1 style="margin:0">Lite Foil Tracker</h1>
+  <!-- The site's hero video (litefoil.fr, 480p rendition) and the logo on it. Autoplay is
+       muted and skipped on metered connections: the clip is 12 MB. -->
+  <div class="hero" id="hero">
+    <img class="poster" src="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=900" alt="">
+    <video id="heroVideo" muted loop playsinline preload="none"
+      poster="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=900"
+      src="https://litefoil.fr/cdn/shop/videos/c/vp/e098ec1ef4e84f2094f6707f89383c5a/e098ec1ef4e84f2094f6707f89383c5a.SD-480p-1.5Mbps-86567816.mp4?v=0"></video>
+    <div class="shade"></div>
+    <div class="brand">
+      <img src="litefoil-logo.png" alt="Lite Foil" onerror="this.style.display='none'">
+      <span>Tracker GPS<br>&amp; sessions live</span>
+    </div>
+    <button class="play" id="heroPlay" aria-label="Lire la vidéo">&#9654;</button>
   </div>
   <div class="tabs">
     <button class="tab active" data-tab="tracker">Mon tracker</button>
@@ -88,9 +122,9 @@
   </div>
 
   <section id="tab-litefoil" class="tabpane" hidden>
-    <div class="card" style="text-align:center">
-      <img src="litefoil-logo.png" alt="Lite Foil" style="max-height:120px;margin:6px auto 10px;display:block" onerror="this.style.display='none'">
-      <p class="note" style="font-size:14px">Lite Foil, la planche hybride e-foil / foil assist / wing foil. Le site s'ouvre dans ton navigateur.</p>
+    <p class="tagline">La planche hybride e-foil, foil assist et wing foil.</p>
+    <p class="note" style="font-size:14px;margin-bottom:12px">Une nouvelle façon de rider. Les pages du site s'ouvrent dans ton navigateur.</p>
+    <div class="card">
       <div class="links">
         <a class="linkbtn primary" href="https://litefoil.fr/" target="_blank" rel="noopener">Site litefoil.fr</a>
         <a class="linkbtn" href="https://litefoil.fr/collections/lite-foil/lite-foil" target="_blank" rel="noopener">Planches Lite Foil</a>
@@ -98,6 +132,7 @@
         <a class="linkbtn" href="https://litefoil.fr/pages/guide-utilisateur" target="_blank" rel="noopener">Guide utilisateur</a>
         <a class="linkbtn" href="https://litefoil.fr/pages/contact" target="_blank" rel="noopener">Contact</a>
         <a class="linkbtn" href="https://litefoil.fr/account" target="_blank" rel="noopener">Mon compte Lite Foil</a>
+        <a class="linkbtn" href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener">Vidéos (YouTube)</a>
       </div>
     </div>
     <h2>Mes sorties</h2>
@@ -480,6 +515,18 @@
       note.textContent = "Le tracker n'a pas pris l'écriture. Rapproche-toi et réessaie.";
     }
   });
+
+  // Hero video: play muted when the connection is not metered, otherwise show the poster
+  // with a play button (the clip is 12 MB).
+  (() => {
+    const hero = $("hero"), video = $("heroVideo");
+    const conn = navigator.connection || {};
+    const metered = conn.saveData === true || conn.type === "cellular" || /2g|3g/.test(conn.effectiveType || "");
+    const play = () => { video.preload = "auto"; video.play().then(() => hero.classList.remove("paused")).catch(() => hero.classList.add("paused")); };
+    if (metered) hero.classList.add("paused"); else play();
+    $("heroPlay").addEventListener("click", play);
+    video.addEventListener("playing", () => hero.classList.remove("paused"));
+  })();
 
   // Two tabs: the tracker, and the Lite Foil site (which refuses to be embedded —
   // X-Frame-Options: DENY — so its pages open in the browser).
