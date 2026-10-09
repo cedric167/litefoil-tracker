@@ -25,8 +25,9 @@ une minute).
 1. Allumer le tracker, ouvrir la page dans Chrome (Android), appuyer sur « Connecter » et
    choisir `LITEFOIL-TRACKER`.
 2. Saisir l'e-mail et le mot de passe de son compte SportsTrackLive, « Enregistrer le
-   compte ». C'est tout : à chaque mise sous tension le tracker se connecte seul au
-   compte et y enregistre la sortie ; « Session STL » affiche le numéro de la session en
+   compte ». C'est tout : à chaque sortie lancée depuis la télécommande (menu TRACKER),
+   le tracker se connecte seul au compte et y enregistre la session ; elle se termine
+   avec la télécommande, ou dix minutes après l'avoir perdue ; « Session STL » affiche le numéro de la session en
    cours, ou « identifiants refusés » si le mot de passe est faux.
 3. Menu de Chrome → « Ajouter à l'écran d'accueil » : la page s'installe comme une
    application (`manifest.json`, `sw.js`, icônes) et fonctionne ensuite sans réseau.
