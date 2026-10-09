@@ -1,0 +1,16 @@
+{
+  "name": "Lite Foil Tracker",
+  "short_name": "LF Tracker",
+  "description": "Configure the Lite Foil GPS tracker over Bluetooth: your sportstracklive account, start and stop, live status.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1419",
+  "theme_color": "#0f1419",
+  "lang": "fr",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

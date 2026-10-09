@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tracker eFoil</title>
+<meta name="theme-color" content="#0f1419">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Lite Foil Tracker</title>
 <!--
   Phone-side configuration page for the STL eFoil tracker (firmware-efoil/).
 
@@ -13,8 +17,19 @@
 
   Protocol — plain ASCII `key=value;key=value` lines, see firmware-efoil/src/ble.rs:
     STATUS   (notify, read)  fix=1;sats=7;lat=…;lon=…;spd=…;net=1;prov=1;syncs=3;acked=115;pend=7;batt=78;track=1;boot=47
-    SETTINGS (read, write)   track=1;period=60;interval=2;apn=iot.1nce.net;host=https://device.sportstracklive.com
+    SETTINGS (read, write)   track=1;period=60;interval=2;apn=iot.1nce.net;host=https://device.sportstracklive.com;account=…
     CONTROL  (write)         start | stop
+
+  The sportstracklive account: the page first checks the e-mail and password itself with
+  `POST https://api.sportstracklive.com/v1/auth` (the v1 API; CORS is open,
+  `Access-Control-Allow-Origin: *` measured 2026-10-09), so a typo is caught here, then
+  writes both into the tracker (`account=`, `password=`). The tracker signs in to the
+  site on its own from then on and files the outing as a live track in that account
+  (firmware-efoil/src/live.rs). The password is stored in the tracker's flash, which is
+  readable over USB: the rider chose that over waiting for a server-side binding. The
+  phone keeps the e-mail and the application key in localStorage, never the password.
+  STATUS carries the live track: live=0/1, lid=<track id>, lsent=<points accepted>,
+  lq=<points waiting>, lhttp=<last HTTP status on that channel>.
 -->
 <style>
   :root {
@@ -55,11 +70,39 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Tracker eFoil</h1>
+  <h1>Lite Foil Tracker</h1>
   <div class="row" style="margin-bottom:14px">
     <span><span class="lamp" id="lamp"></span><span id="stateText">Non connecté</span></span>
     <span style="flex:1"></span>
     <button class="primary" id="btnConnect">Connecter</button>
+  </div>
+  <div class="note" id="firstSteps">Allume le tracker, appuie sur « Connecter » et choisis <code>LITEFOIL-TRACKER</code>.
+    Puis renseigne ton compte SportsTrackLive ci-dessous : à chaque mise sous tension, le tracker s'y connecte seul
+    et y enregistre ta sortie.</div>
+
+  <h2>Compte SportsTrackLive</h2>
+  <div class="card">
+    <div class="grid" style="margin-bottom:10px">
+      <div class="kv"><div class="k">Compte dans le tracker</div><div class="v" id="tAccount" style="font-size:16px">—</div></div>
+      <div class="kv"><div class="k">Session STL</div><div class="v" id="tLive" style="font-size:16px">—</div></div>
+    </div>
+    <label for="inEmail">Identifiant (e-mail du compte SportsTrackLive)</label>
+    <input id="inEmail" type="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="prenom@exemple.fr">
+    <label for="inPass">Mot de passe</label>
+    <input id="inPass" type="password" autocomplete="current-password" placeholder="enregistré dans le tracker, pas dans ce téléphone">
+    <div class="row" style="margin-top:14px">
+      <button class="primary" id="btnLogin" disabled>Enregistrer le compte</button>
+      <button id="btnUnbind" disabled>Effacer le compte</button>
+    </div>
+    <div class="note" id="loginNote">Le tracker se connecte lui-même à SportsTrackLive avec ces identifiants et y crée la session
+      de chaque sortie, comme l'application du téléphone. Si le site les refuse, la tuile « Session STL » l'indique.
+      Le mot de passe est conservé dans la mémoire du tracker (lisible par USB).</div>
+    <details style="margin-top:10px">
+      <summary class="note" style="cursor:pointer">Avancé : vérifier les identifiants depuis le téléphone (clé d'application STL)</summary>
+      <input id="inAppKey" type="password" autocomplete="off" placeholder="clé X-STL-Secret-Key fournie par SportsTrackLive" style="margin-top:6px">
+      <div class="note">Facultatif. Avec cette clé, le téléphone vérifie l'e-mail et le mot de passe auprès du site avant de les
+        enregistrer. Elle reste dans ce navigateur.</div>
+    </details>
   </div>
 
   <h2>État en direct</h2>
@@ -90,10 +133,9 @@
       restera à l'arrêt jusqu'à « Démarrer », même après une coupure.</div>
   </div>
 
-  <h2>Réglages</h2>
+  <details>
+  <summary style="cursor:pointer"><h2 style="display:inline-block">Réglages avancés</h2></summary>
   <div class="card">
-    <label for="inAccount">Compte sportstracklive (e-mail, ou code fourni par le site)</label>
-    <input id="inAccount" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="vide = aucun compte">
     <label for="inApn">APN de la carte SIM</label>
     <input id="inApn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="iot.1nce.net">
     <label for="inHost">Serveur (hôte de l'API)</label>
@@ -112,14 +154,16 @@
       <button class="primary" id="btnSave" disabled>Enregistrer dans le tracker</button>
       <button id="btnReload" disabled>Relire</button>
     </div>
-    <div class="note" id="saveNote">Le compte part tel quel (vide = aucun). Les autres champs vides ne sont pas envoyés.
-      Un nouvel APN force une reconnexion, le reste s'applique tout de suite.</div>
+    <div class="note" id="saveNote">Les champs vides ne sont pas envoyés. Un nouvel APN force une reconnexion, le reste
+      s'applique tout de suite.</div>
   </div>
+  </details>
 
   <h2>Journal</h2>
   <div id="log">Rien pour l'instant.</div>
 
-  <footer>Tracker <code>LITEFOIL-TRACKER</code> · Bluetooth web : Chrome sur Android. Safari et iOS ne le gèrent pas.</footer>
+  <footer>Tracker <code>LITEFOIL-TRACKER</code> · Chrome sur Android (Safari et iOS n'ont pas le Bluetooth web).
+    Menu de Chrome → « Ajouter à l'écran d'accueil » pour l'avoir comme une application.</footer>
 </div>
 
 <script>
@@ -131,10 +175,13 @@
   const CH_SETTINGS = "beb5483e-36e1-4688-b7f5-ea07361b26a9";
   const CH_CONTROL = "beb5483e-36e1-4688-b7f5-ea07361b26ab";
   const DEVICE_NAME = "LITEFOIL-TRACKER";
+  // The v1 API, called from the phone's browser only. The device never talks to it.
+  const STL_AUTH_URL = "https://api.sportstracklive.com/v1/auth";
+  const LS_EMAIL = "stl.email", LS_APP_KEY = "stl.appKey";
 
   const $ = id => document.getElementById(id);
   const lamp = $("lamp"), stateText = $("stateText"), logEl = $("log");
-  const buttons = ["btnStart", "btnStop", "btnSave", "btnReload"].map($);
+  const buttons = ["btnStart", "btnStop", "btnSave", "btnReload", "btnLogin", "btnUnbind"].map($);
 
   let device = null, chSettings = null, chControl = null;
   let firstLog = true;
@@ -194,12 +241,38 @@
     $("statusNote").textContent = "Mis à jour par le tracker toutes les 2 s · démarrage n° " + (s.boot ?? "?") +
       (s.prov === "1" ? "" : " · NON ENRÔLÉ sur le serveur") +
       (s.acct ? " · compte : " + s.acct : " · aucun compte saisi");
+    paintLive(s);
     $("btnStart").disabled = track;
     $("btnStop").disabled = !track;
   }
 
+  function paintAccount(account, hasPassword) {
+    const bound = !!account;
+    $("tAccount").textContent = !bound ? "aucun" : hasPassword ? account : account + " (sans mot de passe)";
+    $("tAccount").className = "v " + (bound && hasPassword ? "good" : "warn");
+    $("btnUnbind").disabled = !bound || !chSettings;
+  }
+
+  // The v1 live track, from the status line: live/lid/lsent/lq/lhttp.
+  function paintLive(s) {
+    const el = $("tLive");
+    if (s.live === "1") {
+      el.textContent = "n° " + (s.lid ?? "?") + " · " + (s.lsent ?? "0") + " pts";
+      el.className = "v good";
+    } else if (s.lhttp === "401" || s.lhttp === "403") {
+      el.textContent = "identifiants refusés";
+      el.className = "v bad";
+    } else if (num(s.lq) > 0) {
+      el.textContent = (s.lq) + " pts en attente";
+      el.className = "v warn";
+    } else {
+      el.textContent = "aucune";
+      el.className = "v";
+    }
+  }
+
   function paintSettings(s) {
-    $("inAccount").value = s.account ?? "";
+    paintAccount((s.account ?? "").trim(), s.pw === "1");
     $("inApn").value = s.apn ?? "";
     $("inHost").value = s.host ?? "";
     $("inPeriod").value = s.period ?? "";
@@ -304,10 +377,91 @@
   });
   $("btnReload").addEventListener("click", reloadSettings);
 
+  // ---------------- sportstracklive account ----------------
+  // Sign in from the phone with the v1 API, then hand the tracker the e-mail the API
+  // confirmed. The password is consumed here and nowhere else.
+  const errText = err => (err && err.message ? err.message : String(err));
+
+  async function signIn(email, password, appKey) {
+    let resp;
+    try {
+      resp = await fetch(STL_AUTH_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-STL-Secret-Key": appKey },
+        body: JSON.stringify({ email, password, origin: "external" }),
+      });
+    } catch (err) {
+      return { ok: false, why: "SportsTrackLive injoignable (" + errText(err) + "). Vérifie la connexion internet du téléphone." };
+    }
+    if (resp.status === 401 || resp.status === 403) {
+      return { ok: false, why: "Refusé par SportsTrackLive (HTTP " + resp.status + ") : identifiant, mot de passe ou clé d'application incorrect." };
+    }
+    if (!resp.ok) return { ok: false, why: "SportsTrackLive a répondu HTTP " + resp.status + "." };
+    let j;
+    try { j = await resp.json(); } catch (err) { return { ok: false, why: "Réponse illisible de SportsTrackLive." }; }
+    if (!j || typeof j.token !== "string" || !j.token) return { ok: false, why: "Réponse sans jeton : identifiants non confirmés." };
+    const user = j.user || {};
+    return { ok: true, email: String(user.email || email).trim(), name: user.user_name || "" };
+  }
+
+  $("btnLogin").addEventListener("click", async () => {
+    const note = $("loginNote");
+    const email = $("inEmail").value.trim();
+    const password = $("inPass").value;
+    const appKey = $("inAppKey").value.trim();
+    if (!email || !password) { note.textContent = "Saisis l'e-mail et le mot de passe."; return; }
+    if (!chSettings) { note.textContent = "Connecte d'abord le tracker."; return; }
+    // The tracker's settings line is `key=value;key=value`: a `;` cannot travel in it.
+    if (password.includes(";") || /[^\x20-\x7e]/.test(password) || /[^\x20-\x7e;]/.test(email)) {
+      note.textContent = "Le tracker n'accepte que des caractères ASCII imprimables, sans point-virgule, dans l'e-mail et le mot de passe.";
+      return;
+    }
+    $("btnLogin").disabled = true;
+    let account = email;
+    // Optional pre-check from the phone, when an application key is available (the
+    // tracker checks for real at its next upload either way).
+    if (appKey) {
+      note.textContent = "Vérification auprès de SportsTrackLive…";
+      const r = await signIn(email, password, appKey);
+      if (!r.ok) { $("btnLogin").disabled = false; $("inPass").value = ""; note.textContent = r.why; log("Compte : " + r.why, "e"); return; }
+      account = r.email;
+      log("Compte confirmé par SportsTrackLive : " + r.email + (r.name ? " (" + r.name + ")" : ""), "g");
+    }
+    try { localStorage.setItem(LS_EMAIL, account); if (appKey) localStorage.setItem(LS_APP_KEY, appKey); } catch (err) {}
+    note.textContent = "Enregistrement dans le tracker…";
+    const ok = await writeText(chSettings, "account=" + account + ";password=" + password, "Enregistrement du compte");
+    $("inPass").value = "";
+    $("btnLogin").disabled = false;
+    if (ok) {
+      await reloadSettings();
+      note.textContent = "Compte enregistré. Le tracker s'y connecte au prochain envoi ; la tuile « Session STL » montre le résultat"
+        + (appKey ? "." : " (« identifiants refusés » si le mot de passe est faux).");
+    } else {
+      note.textContent = "Le tracker n'a pas pris l'écriture. Rapproche-toi et réessaie.";
+    }
+  });
+
+  // Installable page: the service worker caches it, Chrome then offers "add to home screen".
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+  }
+
+  $("btnUnbind").addEventListener("click", async () => {
+    const note = $("loginNote");
+    if (await writeText(chSettings, "account=;password=", "Dissociation")) {
+      await reloadSettings();
+      note.textContent = "Compte et mot de passe effacés du tracker : ses sorties ne vont plus dans un compte.";
+      log("Compte retiré du tracker.");
+    }
+  });
+
+  try {
+    $("inEmail").value = localStorage.getItem(LS_EMAIL) || "";
+    $("inAppKey").value = localStorage.getItem(LS_APP_KEY) || "";
+  } catch (err) {}
+
   $("btnSave").addEventListener("click", async () => {
     const parts = [];
-    // The account is always sent: an emptied field clears it on the tracker.
-    parts.push("account=" + $("inAccount").value.trim());
     const apn = $("inApn").value.trim();
     const host = $("inHost").value.trim().replace(/\/+$/, "");
     const period = $("inPeriod").value.trim();
@@ -317,6 +471,7 @@
     if (period) parts.push("period=" + period);
     if (interval) parts.push("interval=" + interval);
     const note = $("saveNote");
+    if (parts.length === 0) { note.textContent = "Rien à envoyer : tous les champs sont vides."; return; }
     $("btnSave").disabled = true;
     const ok = await writeText(chSettings, parts.join(";"), "Enregistrement");
     $("btnSave").disabled = false;
