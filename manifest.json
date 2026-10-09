@@ -1,7 +1,7 @@
 {
-  "name": "Lite Foil Tracker",
-  "short_name": "LF Tracker",
-  "description": "Configure the Lite Foil GPS tracker over Bluetooth: your sportstracklive account, start and stop, live status.",
+  "name": "Lite Foil",
+  "short_name": "Lite Foil",
+  "description": "Lite Foil: your GPS tracker over Bluetooth (sportstracklive account, start and stop, live status) and the litefoil.fr site.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

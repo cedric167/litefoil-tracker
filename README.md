@@ -11,6 +11,13 @@ que l'hébergement.
 
 ## Pour le client
 
+L'application a deux onglets : **Mon tracker** (compte SportsTrackLive, état, suivi) et
+**Lite Foil** (le logo, les pages du site litefoil.fr — planches, accessoires, guide,
+contact, compte — qui s'ouvrent dans le navigateur, le site refusant d'être intégré dans
+une autre page, et l'accès à SportsTrackLive pour revoir ses sorties). L'icône de
+l'application est le logo Lite Foil (`icon-192.png`, `icon-512.png`, générées depuis
+`litefoil-logo.png`).
+
 **Adresse de l'application : <https://cedric167.github.io/litefoil-tracker/>** (GitHub Pages,
 dépôt public `cedric167/litefoil-tracker`, branche `main` ; chaque `git push` republie en
 une minute).

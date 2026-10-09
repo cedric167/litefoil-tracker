@@ -65,12 +65,51 @@
          padding: 10px; height: 160px; overflow: auto; color: #b7c2cc; white-space: pre-wrap; }
   #log .g { color: var(--ok); } #log .e { color: var(--bad); }
   .note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .tab { background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0; color: var(--muted);
+         padding: 10px 14px; font-weight: 600; }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .linkbtn { display: block; padding: 12px 10px; border-radius: 10px; border: 1px solid var(--line); background: #223040;
+             color: var(--text); text-decoration: none; text-align: center; font-weight: 600; }
+  .linkbtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; grid-column: 1 / -1; }
   footer { color: var(--muted); font-size: 12px; margin: 24px 0 8px; text-align: center; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Lite Foil Tracker</h1>
+  <div class="row" style="margin:6px 0 10px">
+    <img src="litefoil-logo.png" alt="Lite Foil" style="height:44px" onerror="this.style.display='none'">
+    <h1 style="margin:0">Lite Foil Tracker</h1>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="tracker">Mon tracker</button>
+    <button class="tab" data-tab="litefoil">Lite Foil</button>
+  </div>
+
+  <section id="tab-litefoil" class="tabpane" hidden>
+    <div class="card" style="text-align:center">
+      <img src="litefoil-logo.png" alt="Lite Foil" style="max-height:120px;margin:6px auto 10px;display:block" onerror="this.style.display='none'">
+      <p class="note" style="font-size:14px">Lite Foil, la planche hybride e-foil / foil assist / wing foil. Le site s'ouvre dans ton navigateur.</p>
+      <div class="links">
+        <a class="linkbtn primary" href="https://litefoil.fr/" target="_blank" rel="noopener">Site litefoil.fr</a>
+        <a class="linkbtn" href="https://litefoil.fr/collections/lite-foil/lite-foil" target="_blank" rel="noopener">Planches Lite Foil</a>
+        <a class="linkbtn" href="https://litefoil.fr/collections/accessoires" target="_blank" rel="noopener">Accessoires</a>
+        <a class="linkbtn" href="https://litefoil.fr/pages/guide-utilisateur" target="_blank" rel="noopener">Guide utilisateur</a>
+        <a class="linkbtn" href="https://litefoil.fr/pages/contact" target="_blank" rel="noopener">Contact</a>
+        <a class="linkbtn" href="https://litefoil.fr/account" target="_blank" rel="noopener">Mon compte Lite Foil</a>
+      </div>
+    </div>
+    <h2>Mes sorties</h2>
+    <div class="card">
+      <p class="note" style="font-size:14px">Les sorties enregistrées par le tracker sont dans ton compte SportsTrackLive.</p>
+      <div class="links">
+        <a class="linkbtn" href="https://www.sportstracklive.com/" target="_blank" rel="noopener">Ouvrir SportsTrackLive</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-tracker" class="tabpane">
   <div class="row" style="margin-bottom:14px">
     <span><span class="lamp" id="lamp"></span><span id="stateText">Non connecté</span></span>
     <span style="flex:1"></span>
@@ -161,6 +200,7 @@
 
   <h2>Journal</h2>
   <div id="log">Rien pour l'instant.</div>
+  </section>
 
   <footer>Tracker <code>LITEFOIL-TRACKER</code> · Chrome sur Android (Safari et iOS n'ont pas le Bluetooth web).
     Menu de Chrome → « Ajouter à l'écran d'accueil » pour l'avoir comme une application.</footer>
@@ -440,6 +480,16 @@
       note.textContent = "Le tracker n'a pas pris l'écriture. Rapproche-toi et réessaie.";
     }
   });
+
+  // Two tabs: the tracker, and the Lite Foil site (which refuses to be embedded —
+  // X-Frame-Options: DENY — so its pages open in the browser).
+  for (const tab of document.querySelectorAll(".tab")) {
+    tab.addEventListener("click", () => {
+      for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
+      for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + tab.dataset.tab;
+      try { localStorage.setItem("lf.tab", tab.dataset.tab); } catch (err) {}
+    });
+  }
 
   // Installable page: the service worker caches it, Chrome then offers "add to home screen".
   if ("serviceWorker" in navigator) {
