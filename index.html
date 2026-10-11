@@ -76,6 +76,7 @@
   input { width:100%; font:inherit; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
           background:#fff; color:var(--text); }
   input:focus { outline:2px solid var(--accent); border-color:var(--accent); }
+  select { width:100%; font:inherit; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:#fff; color:var(--text); }
   .pill { display:inline-block; padding:3px 12px; border-radius:999px; font-size:13px; font-family:"Instrument Sans", sans-serif; }
   .pill.on { background:#dff5f6; color:var(--accent-ink); } .pill.off { background:#eceff2; color:var(--muted); }
   .lamp { width:10px; height:10px; border-radius:50%; background:#c5ccd3; display:inline-block; margin-right:8px; }
@@ -167,7 +168,7 @@
   .chip.warn .dot { background:var(--warn); }
 
   /* Device cards */
-  .dev-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .dev-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .devcard { display:flex; flex-direction:column; align-items:center; gap:6px; padding:15px 8px; border-radius:16px;
              border:1px solid var(--line-soft); background:#fff; box-shadow:var(--sh-sm); cursor:pointer;
              transition:transform .14s ease, box-shadow .15s ease, border-color .2s; }
@@ -224,6 +225,7 @@
     <button class="tab" data-tab="tracker">Tracker</button>
     <button class="tab" data-tab="batterie">Batterie</button>
     <button class="tab" data-tab="moteur">Moteur</button>
+    <button class="tab" data-tab="remote">Télécommande</button>
     <button class="tab" data-tab="litefoil">Lite Foil</button>
   </div>
 
@@ -265,6 +267,10 @@
       <button class="devcard" data-goto="moteur" id="dcVesc">
         <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></span>
         <span class="dev-nm">Moteur</span><span class="dev-st">—</span>
+      </button>
+      <button class="devcard" data-goto="remote" id="dcRemote">
+        <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="3"/><circle cx="12" cy="8" r="2"/><path d="M10 14h4M10 17.5h4"/></svg></span>
+        <span class="dev-nm">Télécommande</span><span class="dev-st">—</span>
       </button>
     </div>
   </section>
@@ -488,6 +494,76 @@
     </div>
   </section>
 
+  <section id="tab-remote" class="tabpane" hidden>
+  <div class="row" style="margin-bottom:14px">
+    <span><span class="lamp" id="rmLamp"></span><span id="rmState">Non connectée</span></span>
+    <span style="flex:1"></span>
+    <button class="primary" id="btnRmConnect">Connecter</button>
+  </div>
+  <div class="note">Sur la télécommande : ouvre le menu (A + B), va sur <b>Bluetooth</b> et appuie sur <b>B</b>. Elle apparaît
+    alors ici sous le nom <code>LITEFOIL-REMOTE</code>. Sans appli connectée, elle coupe son Bluetooth après 5 minutes ; en
+    roulant, elle n'accepte plus de nouvelle connexion mais garde celle en cours.</div>
+
+  <h2>État</h2>
+  <div class="card">
+    <div class="grid">
+      <div class="kv"><div class="k">Version</div><div class="v" id="rmFw">—</div></div>
+      <div class="kv"><div class="k">Batterie télécommande</div><div class="v" id="rmBat">—</div></div>
+      <div class="kv"><div class="k">Liaison planche</div><div class="v" id="rmLink">—</div></div>
+      <div class="kv"><div class="k">Moteur</div><div class="v" id="rmArmed">—</div></div>
+      <div class="kv"><div class="k">Vitesse</div><div class="v" id="rmSpd">—</div></div>
+      <div class="kv"><div class="k">Vitesse max</div><div class="v" id="rmVmax">—</div></div>
+      <div class="kv"><div class="k">Batterie planche</div><div class="v" id="rmVbat">—</div></div>
+      <div class="kv"><div class="k">Puissance</div><div class="v" id="rmWatts">—</div></div>
+      <div class="kv"><div class="k">Satellites</div><div class="v" id="rmSats">—</div></div>
+      <div class="kv"><div class="k">Suivi STL</div><div class="v" id="rmTrk">—</div></div>
+      <div class="kv"><div class="k">GoPro</div><div class="v" id="rmCam">—</div></div>
+      <div class="kv"><div class="k">Odomètre</div><div class="v" id="rmOdo">—</div></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="btnRmBuzz" disabled>Faire sonner la télécommande</button>
+    </div>
+    <div class="note" id="rmNote">Connecte la télécommande pour voir son état.</div>
+  </div>
+
+  <h2>Réglages</h2>
+  <div class="card">
+    <div class="grid">
+      <div><label for="rmCells">Batterie planche</label><select id="rmCells"><option value="8">8 cellules</option><option value="9">9 cellules</option><option value="10">10 cellules</option><option value="11">11 cellules</option><option value="12">12 cellules</option><option value="13">13 cellules</option><option value="14">14 cellules</option><option value="15">15 cellules</option><option value="16">16 cellules</option><option value="17">17 cellules</option><option value="18">18 cellules</option><option value="19">19 cellules</option><option value="20">20 cellules</option></select></div>
+      <div><label for="rmSpdOpt">Vitesse</label><select id="rmSpdOpt"><option value="0">LOW (60 %)</option><option value="1">MED (80 %)</option><option value="2">HIGH (100 %)</option></select></div>
+      <div><label for="rmSens">Sensibilité gâchette</label><select id="rmSens"><option value="0">0 (douce)</option><option value="1">1</option><option value="2">2</option><option value="3">3 (vive)</option></select></div>
+      <div><label for="rmStart">Poussée mini</label><select id="rmStart"><option value="0">0 %</option><option value="3">3 %</option><option value="6">6 %</option><option value="9">9 %</option><option value="12">12 %</option><option value="15">15 %</option><option value="18">18 %</option><option value="21">21 %</option><option value="24">24 %</option></select></div>
+      <div><label for="rmUnit">Unités</label><select id="rmUnit"><option value="0">km/h</option><option value="1">mph</option></select></div>
+      <div><label for="rmDis">Désarmement auto</label><select id="rmDis"><option value="0">OFF</option><option value="1">1 s</option><option value="2">2 s</option><option value="3">3 s</option><option value="4">4 s</option><option value="5">5 s</option><option value="6">6 s</option><option value="7">7 s</option><option value="8">8 s</option><option value="9">9 s</option><option value="10">10 s</option></select></div>
+      <div><label for="rmTheme">Écran d'accueil</label><select id="rmTheme"><option value="0">Batterie en grand</option><option value="1">Vitesse en grand</option></select></div>
+      <div><label for="rmLang">Langue</label><select id="rmLang"><option value="0">Français</option><option value="1">English</option><option value="2">Español</option><option value="3">Deutsch</option></select></div>
+      <div><label for="rmPing">Signal radio à l'écran</label><select id="rmPing"><option value="0">Masqué</option><option value="1">Affiché</option></select></div>
+      <div><label for="rmCarec">GoPro : auto-REC</label><select id="rmCarec"><option value="0">Off</option><option value="1">À l'armement</option><option value="2">Au chrono</option></select></div>
+      <div><label for="rmCstop">GoPro : arrêt après SAFE</label><select id="rmCstop"><option value="0">10 s</option><option value="1">30 s</option><option value="2">2 min</option><option value="3">Jamais</option></select></div>
+      <div><label for="rmCmode">GoPro : mode</label><select id="rmCmode"><option value="0">Vidéo</option><option value="1">Photo</option><option value="2">Timelapse</option></select></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="primary" id="btnRmSave" disabled>Enregistrer dans la télécommande</button>
+      <button id="btnRmReload" disabled>Relire</button>
+    </div>
+    <div class="note" id="rmSaveNote">Les réglages s'appliquent tout de suite et restent dans la télécommande, comme si tu les avais changés dans son menu.</div>
+  </div>
+
+  <h2>Chronos</h2>
+  <div class="card">
+    <div id="rmHist" class="note" style="margin:0">Connecte la télécommande pour voir les dix derniers chronos.</div>
+    <div class="row" style="margin-top:12px">
+      <button id="btnRmHistClear" class="danger" disabled>Effacer l'historique</button>
+    </div>
+  </div>
+
+  <h2>Mise à jour</h2>
+  <div class="card">
+    <div class="note" style="margin:0">Version installée : <b id="rmFw2">—</b>. La mise à jour du firmware par Bluetooth arrivera dans une
+      prochaine version de l'appli ; la télécommande est déjà prête (deux emplacements de firmware).</div>
+  </div>
+  </section>
+
   <footer>Tracker <code>LITEFOIL-TRACKER</code> · Chrome sur Android (Safari et iOS n'ont pas le Bluetooth web).
     Menu de Chrome → « Ajouter à l'écran d'accueil » pour l'avoir comme une application.<br>
     <a href="confidentialite.html" style="color:inherit">Politique de confidentialité</a> · © Lite Foil</footer>
@@ -547,7 +623,7 @@
   const HIST = { spd: [], pow: [] };
   function pushH(k, v){ if (v == null || isNaN(v)) return; const a = HIST[k]; a.push(v); if (a.length > 48) a.shift(); }
   const DASH = { spd:null, spdmax:null, sats:null, fix:false, net:false, track:false, batt:null,
-                 soc:null, batPow:null, vescPow:null, conn:{ tracker:false, bat:false, vesc:false } };
+                 soc:null, batPow:null, vescPow:null, conn:{ tracker:false, bat:false, vesc:false, remote:false } };
 
   function sparkSVG(a, color){
     if (!a || a.length < 2) return "";
@@ -588,7 +664,7 @@
     setChip("chGps", DASH.fix ? "on" : "bad", "GPS " + (DASH.fix ? (DASH.sats != null ? DASH.sats + " sats" : "fix") : "—"));
     setChip("chNet", DASH.net ? "on" : "bad", "Réseau " + (DASH.net ? "en ligne" : "hors ligne"));
     setChip("chTrack", DASH.track ? "on" : "", "Suivi " + (DASH.track ? "en cours" : "arrêté"));
-    setDev("dcTracker", DASH.conn.tracker); setDev("dcBat", DASH.conn.bat); setDev("dcVesc", DASH.conn.vesc);
+    setDev("dcTracker", DASH.conn.tracker); setDev("dcBat", DASH.conn.bat); setDev("dcVesc", DASH.conn.vesc); setDev("dcRemote", DASH.conn.remote);
   }
 
 
@@ -1169,6 +1245,125 @@
     function onDisc(){ setS("Contrôleur déconnecté"); $("btnVescConnect").textContent = "Connecter"; ch = null; if (poll) clearInterval(poll); DASH.conn.vesc = false; DASH.vescPow = null; renderDash(); vlog("Contrôleur déconnecté.", "e"); }
 
     $("btnVescConnect").addEventListener("click", () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } connect(); });
+  })();
+
+  // ======================================================================
+  // Télécommande — Lite Foil remote over BLE (service 4fafc202…, key=value lines
+  // like the tracker: status notify 1/s, settings read/write, history read,
+  // control write). The remote shows up as LITEFOIL-REMOTE once its Bluetooth
+  // menu line is turned on.
+  // ======================================================================
+  (function remote(){
+    const SVC = "4fafc202-1fb5-459e-8fcc-c5c9c331914b";
+    const CH_STATUS = "beb5483e-36e1-4688-b7f5-ea07361b26b1";
+    const CH_SETTINGS = "beb5483e-36e1-4688-b7f5-ea07361b26b2";
+    const CH_CONTROL = "beb5483e-36e1-4688-b7f5-ea07361b26b3";
+    const CH_HISTORY = "beb5483e-36e1-4688-b7f5-ea07361b26b4";
+    const NAME = "LITEFOIL-REMOTE";
+    const dec = v => new TextDecoder().decode(v);
+    let dev = null, chStatus = null, chSettings = null, chControl = null, chHistory = null;
+    const rlog = (m, k) => log("[Télécommande] " + m, k);
+    const setS = (txt, c) => { $("rmState").textContent = txt; $("rmLamp").className = "lamp" + (c ? " " + c : ""); };
+    const btns = ["btnRmBuzz", "btnRmSave", "btnRmReload", "btnRmHistClear"].map($);
+    const enable = on => { for (const b of btns) b.disabled = !on; $("btnRmConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.remote = on; renderDash(); };
+    const TRK = { "0": "—", "1": "arrêté", "2": "en attente", "3": "en direct", "4": "identifiants refusés", "5": "pas de compte" };
+    const SETTINGS = { rmCells: "cells", rmSpdOpt: "spd", rmSens: "sens", rmStart: "start", rmUnit: "unit", rmDis: "dis",
+                       rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
+    const fmtChr = ms => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+                           return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(sec).padStart(2, "0"); };
+    const txt = (id, v) => { $(id).textContent = v; };
+
+    function paint(s){
+      const linked = s.link === "1";
+      txt("rmFw", s.fw || "—"); txt("rmFw2", s.fw || "—");
+      txt("rmBat", s.rpct != null ? s.rpct + " % · " + s.rbat + " V" : "—");
+      txt("rmLink", s.paired === "0" ? "non appairée" : (linked ? "OK" : "pas de signal"));
+      txt("rmArmed", s.armed === "1" ? "ARMÉ" : "désarmé"); $("rmArmed").style.color = s.armed === "1" ? "var(--bad)" : "";
+      txt("rmSpd", linked ? s.spd + " km/h" : "—"); txt("rmVmax", linked ? s.vmax + " km/h" : "—");
+      txt("rmVbat", linked ? s.vbat + " V" : "—"); txt("rmWatts", linked ? s.watts + " W" : "—");
+      txt("rmSats", s.sats != null ? s.sats + (s.fix === "1" ? " (fix)" : "") : "—");
+      txt("rmTrk", TRK[s.trk] || "—");
+      txt("rmCam", s.cam === "1" ? (s.rec === "1" ? "REC" : "connectée") : "non connectée");
+      txt("rmOdo", s.odo != null ? (num(s.odo) / 1000).toFixed(1) + " km" : "—");
+      $("rmNote").textContent = s.chrono === "1" ? "Chrono en cours : " + fmtChr(num(s.chr) || 0)
+                                                 : "Mis à jour à " + new Date().toLocaleTimeString("fr-FR", { hour12: false });
+      // Without the tracker, the remote feeds the dashboard (its own GPS and the board link).
+      if (!DASH.conn.tracker){
+        DASH.spd = num(s.spd); DASH.spdmax = num(s.vmax); pushH("spd", num(s.spd));
+        DASH.sats = num(s.sats); DASH.fix = s.fix === "1"; DASH.track = s.trk === "3"; renderDash();
+      }
+    }
+    function paintSettings(s){
+      for (const id in SETTINGS){ const v = s[SETTINGS[id]]; if (v !== undefined && $(id).querySelector('option[value="' + v + '"]')) $(id).value = v; }
+    }
+    function paintHistory(s){
+      const n = num(s.n) || 0, rows = [];
+      for (let i = 1; i <= n; i++){
+        const h = (s["h" + i] || "").split("/"); if (h.length < 3) continue;
+        rows.push((i) + ". " + fmtChr(num(h[0]) || 0) + " · max " + ((num(h[1]) || 0) / 10).toFixed(1) + " km/h · " + ((num(h[2]) || 0) / 1000).toFixed(2) + " km");
+      }
+      $("rmHist").innerHTML = rows.length ? rows.map(r => "<div>" + r.replace(/</g, "&lt;") + "</div>").join("") : "Aucun chrono enregistré (B ×3 en roulant = départ / arrêt).";
+    }
+
+    async function readInto(ch, what, fn){
+      if (!ch) return;
+      try { fn(parseLine(dec(await ch.readValue()))); }
+      catch (e) { rlog(what + " : lecture impossible (" + errText(e) + ")", "e"); }
+    }
+    async function write(ch, text, what){
+      if (!ch){ rlog("Pas connectée.", "e"); return false; }
+      try { const d = new TextEncoder().encode(text); if (ch.writeValueWithResponse) await ch.writeValueWithResponse(d); else await ch.writeValue(d); return true; }
+      catch (e) { rlog(what + " : échec (" + errText(e) + ")", "e"); return false; }
+    }
+
+    async function connect(){
+      if (!navigator.bluetooth){ setS("Bluetooth web indisponible", "err"); rlog("Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android.", "e"); return; }
+      try {
+        setS("Recherche de la télécommande…", "busy");
+        dev = await navigator.bluetooth.requestDevice({ filters: [{ name: NAME }], optionalServices: [SVC] });
+        dev.addEventListener("gattserverdisconnected", onDisc);
+        setS("Connexion…", "busy");
+        const server = await dev.gatt.connect();
+        const svc = await server.getPrimaryService(SVC);
+        chStatus = await svc.getCharacteristic(CH_STATUS);
+        chSettings = await svc.getCharacteristic(CH_SETTINGS);
+        chControl = await svc.getCharacteristic(CH_CONTROL);
+        chHistory = await svc.getCharacteristic(CH_HISTORY);
+        await chStatus.startNotifications();
+        chStatus.addEventListener("characteristicvaluechanged", async ev => {
+          const text = dec(ev.target.value);
+          if (text.includes("up=")){ paint(parseLine(text)); return; }   // complete (last key present)
+          try { paint(parseLine(dec(await chStatus.readValue()))); } catch (e) {}
+        });
+        setS("Connectée à la télécommande", "on"); enable(true); rlog("Télécommande connectée.", "g");
+        await readInto(chSettings, "Réglages", paintSettings);
+        await readInto(chHistory, "Chronos", paintHistory);
+        await readInto(chStatus, "État", paint);
+      } catch (e) {
+        if (e && e.name === "NotFoundError"){ setS("Non connectée"); rlog("Aucune télécommande sélectionnée."); }
+        else { setS("Échec de la connexion", "err"); rlog("Connexion impossible : " + errText(e), "e"); }
+      }
+    }
+    function onDisc(){
+      setS("Télécommande déconnectée"); enable(false); chStatus = chSettings = chControl = chHistory = null;
+      rlog("Télécommande déconnectée.", "e");
+    }
+
+    $("btnRmConnect").addEventListener("click", async () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } await connect(); });
+    $("btnRmBuzz").addEventListener("click", async () => { if (await write(chControl, "buzz", "Sonnerie")) rlog("La télécommande sonne."); });
+    $("btnRmReload").addEventListener("click", async () => { await readInto(chSettings, "Réglages", paintSettings); rlog("Réglages relus."); });
+    $("btnRmSave").addEventListener("click", async () => {
+      const parts = []; for (const id in SETTINGS) parts.push(SETTINGS[id] + "=" + $(id).value);
+      $("btnRmSave").disabled = true;
+      const ok = await write(chSettings, parts.join(";"), "Enregistrement");
+      $("btnRmSave").disabled = false;
+      if (ok){ await sleep(300); await readInto(chSettings, "Réglages", paintSettings); $("rmSaveNote").textContent = "Enregistré dans la télécommande. Les valeurs affichées sont celles relues."; rlog("Réglages envoyés.", "g"); }
+      else $("rmSaveNote").textContent = "La télécommande n'a pas accepté l'écriture. Rapproche-toi et réessaie.";
+    });
+    $("btnRmHistClear").addEventListener("click", async () => {
+      if (!confirm("Effacer les chronos enregistrés dans la télécommande ?")) return;
+      if (await write(chControl, "chr_clear", "Effacement")){ await sleep(300); await readInto(chHistory, "Chronos", paintHistory); rlog("Historique des chronos effacé."); }
+    });
   })();
 
 })();

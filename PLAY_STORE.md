@@ -5,6 +5,27 @@ Play Store elle est livrée dans un emballage Android (Trusted Web Activity) qui
 `https://cedric167.github.io/litefoil-tracker/` en plein écran dans Chrome, Bluetooth
 compris. Tout ce qui suit se fait depuis un navigateur, sans outil de développement.
 
+## État au 2026-10-11 — paquet Android FABRIQUÉ, reste à publier
+
+| Fait | Où |
+|---|---|
+| Paquet Android généré (API PWABuilder, package `fr.litefoil.tracker`, version 1.0.0 / code 1) | `android/Lite Foil Tracker.aab` (pour Play) et `android/Lite Foil Tracker.apk` (test direct sur un téléphone) — dossier ignoré par git |
+| Clé de signature + mots de passe | `cert/signing.keystore`, `cert/signing-key-info.txt` — ignorés par git, **À SAUVEGARDER ailleurs** (sans eux, aucune mise à jour possible) |
+| Empreinte SHA-256 de la clé | `C6:18:FD:95:1D:FB:01:40:F7:DD:E2:67:D6:62:7F:25:B2:42:EE:2B:3F:17:40:2C:02:3E:C1:59:E4:88:4C:DD` |
+| Dépôt racine `cedric167.github.io` (assetlinks.json, .nojekyll, index) | `C:UsersASUSDownloadscedric167.github.io`, commité en local, **PAS ENCORE créé sur GitHub** |
+| Captures 1080 × 1920 | `store/capture-dash.png`, `capture-tracker.png`, `capture-batterie.png`, `capture-moteur.png`, `capture-litefoil.png` |
+
+**Prochaine action (toi, 1 commande)** — créer le dépôt public et le pousser :
+
+```
+cd C:UsersASUSDownloadscedric167.github.io
+gh repo create cedric167/cedric167.github.io --public --source . --remote origin --push
+```
+
+Une à deux minutes plus tard, vérifier que `https://cedric167.github.io/.well-known/assetlinks.json`
+répond (le `.nojekyll` est indispensable, sinon Jekyll ignore le dossier `.well-known`).
+Ensuite : §1 (compte développeur) puis §6 (dépôt de l'`.aab`).
+
 ## 0. Ce qui est déjà prêt
 
 | Élément | Où |
@@ -25,16 +46,13 @@ compris. Tout ce qui suit se fait depuis un navigateur, sans outil de développe
 2. Dans la console : **Créer une application** → nom « Lite Foil Tracker », langue
    français, type Application, gratuite.
 
-## 2. Fabriquer le paquet Android (PWABuilder, 10 minutes)
+## 2. Fabriquer le paquet Android — FAIT le 2026-10-11
 
-1. <https://www.pwabuilder.com> → coller `https://cedric167.github.io/litefoil-tracker/` → **Start**.
-2. Le rapport doit être vert (manifest, service worker, icônes). **Package for stores → Android**.
-3. Options : Package ID `fr.litefoil.tracker`, App name « Lite Foil Tracker », Launcher
-   name « Lite Foil », Display mode **standalone**, cocher **Signing key : create new**
-   (PWABuilder génère la clé ; **télécharger et garder le fichier `.keystore` et ses mots de
-   passe** : sans eux, impossible de publier une mise à jour).
-4. **Generate** → télécharger le zip. Il contient `app-release-bundle.aab` (à déposer sur
-   Play), `signing.keystore`, et `assetlinks.json`.
+Généré par l'API de PWABuilder (même moteur que le site) avec une clé neuve, résultat dans
+`android/` et la clé dans `cert/`. Pour **refaire** un paquet (icône, nom ou adresse changés) :
+<https://www.pwabuilder.com> → coller l'URL → Package for stores → Android → Package ID
+`fr.litefoil.tracker`, **Signing key : use mine** (`cert/signing.keystore`, alias et mots de passe dans
+`cert/signing-key-info.txt`), **version code incrémenté** (2, 3, …) → Generate.
 
 ## 3. Lier l'appli au site (sinon la barre d'adresse de Chrome reste visible)
 
