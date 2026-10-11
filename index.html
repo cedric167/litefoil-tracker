@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <title>Lite Foil Tracker</title>
 <!--
   Phone-side configuration page for the STL eFoil tracker (firmware-efoil/).
@@ -187,6 +189,11 @@
   .cells .c .cbar i{ display:block; height:100%; border-radius:3px; transition:width .5s ease; }
   .cells .c span{ font-size:10px; color:var(--muted); }
   .cells .c.hi{ outline:2px solid var(--ok); } .cells .c.lo{ outline:2px solid var(--warn); }
+
+  /* Carte live */
+  #map{ height:270px; border-radius:14px; overflow:hidden; border:1px solid var(--line-soft); background:#e9eef0; }
+  .leaflet-container{ font:inherit; }
+  .leaflet-control-attribution{ font-size:10px; }
 </style>
 </head>
 <body>
@@ -335,6 +342,17 @@
       <div class="kv"><div class="k">Batterie</div><div class="v" id="tBatt">—</div></div>
     </div>
     <div class="note" id="statusNote">Connecte le tracker pour voir son état.</div>
+  </div>
+
+  <h2>Carte</h2>
+  <div class="card">
+    <div id="map"></div>
+    <div class="row" style="margin-top:10px">
+      <span class="note" id="mapNote" style="margin:0">Connecte le tracker : la carte suit ta position dès qu'il y a un fix GPS.</span>
+      <span style="flex:1"></span>
+      <button id="mapRecenter" hidden>Recentrer</button>
+    </div>
+    <a class="linkbtn" id="btnStlMap" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">Voir la session sur SportsTrackLive</a>
   </div>
 
   <h2>Suivi</h2>
@@ -594,6 +612,7 @@
     DASH.fix = s.fix === "1"; DASH.net = net; DASH.track = track; DASH.batt = batt;
     if (spd != null) pushH("spd", spd);
     renderDash();
+    if (s.fix === "1" && lat != null && lon != null && !(lat === 0 && lon === 0)) mapUpdate(lat, lon, spd);
     paintLive(s);
     $("btnStart").disabled = track;
     $("btnStop").disabled = !track;
@@ -631,6 +650,33 @@
     $("inPeriod").value = s.period ?? "";
     $("inInterval").value = s.interval ?? "";
   }
+
+  // ---------------- carte live (Leaflet + OpenStreetMap, chargé en différé) ----------------
+  let lfMap = null, lfTrail = null, lfMe = null, lfReady = false, lfFollow = true;
+  function mapInit(){
+    if (lfReady || !window.L || !$("map")) return;
+    lfMap = L.map($("map"), { zoomControl: true, attributionControl: true }).setView([46.6, 2.4], 5);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, attribution: "© Esri, Maxar, Earthstar Geographics" }).addTo(lfMap);
+    lfTrail = L.polyline([], { color: "#19e3ff", weight: 4, opacity: 0.95 }).addTo(lfMap);
+    lfMap.on("dragstart", function(){ lfFollow = false; var r = $("mapRecenter"); if (r) r.hidden = false; });
+    lfReady = true;
+  }
+  function mapOnShow(){ mapInit(); if (lfMap) setTimeout(function(){ lfMap.invalidateSize(); }, 60); }
+  function mapUpdate(lat, lon, spd){
+    mapInit();
+    if (!lfMap) return;
+    var ll = [lat, lon];
+    if (!lfMe){
+      lfMe = L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 }).addTo(lfMap);
+      lfMap.setView(ll, 16); lfFollow = true;
+    } else {
+      lfMe.setLatLng(ll);
+      if (lfFollow) lfMap.panTo(ll, { animate: true, duration: 0.5 });
+    }
+    var pts = lfTrail.getLatLngs(); pts.push(ll); if (pts.length > 3000) pts.shift(); lfTrail.setLatLngs(pts);
+    $("mapNote").textContent = "Position en direct" + (spd != null ? " · " + spd.toFixed(1) + " km/h" : "");
+  }
+  window.addEventListener("load", mapInit);
 
   // ---------------- Bluetooth ----------------
   async function connect() {
@@ -729,6 +775,7 @@
     if (await writeText(chControl, "stop", "Arrêt")) log("Suivi arrêté.");
   });
   $("btnReload").addEventListener("click", reloadSettings);
+  $("mapRecenter").addEventListener("click", function(){ lfFollow = true; $("mapRecenter").hidden = true; var p = lfTrail && lfTrail.getLatLngs(); if (lfMap && p && p.length) lfMap.panTo(p[p.length - 1]); });
 
   // ---------------- sportstracklive account ----------------
   // Sign in from the phone with the v1 API, then hand the tracker the e-mail the API
@@ -813,6 +860,7 @@
     if (!tab) return;
     for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
     for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
+    if (name === "tracker") mapOnShow();
   }
   for (const tab of document.querySelectorAll(".tab")) {
     tab.addEventListener("click", () => {
