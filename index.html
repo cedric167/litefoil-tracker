@@ -166,6 +166,14 @@
   .chip.on { color:var(--text); } .chip.on .dot { background:var(--ok); box-shadow:0 0 0 3px rgba(26,156,85,.14); }
   .chip.bad .dot { background:var(--bad); box-shadow:0 0 0 3px rgba(209,52,63,.14); }
   .chip.warn .dot { background:var(--warn); }
+  .gauge { position:relative; height:26px; border-radius:100px; background:var(--tile); border:1px solid var(--line-soft); overflow:hidden; z-index:1; }
+  .gauge .fill { position:absolute; inset:0 auto 0 0; width:0%; border-radius:100px; background:linear-gradient(90deg,#5acdd1,#148a90); transition:width .18s ease-out; }
+  .gauge.thin { height:10px; margin-top:8px; }
+  .gauge.thin .fill { background:linear-gradient(90deg,#f5c76a,#c97d00); }
+  .gauge.armed .fill { background:linear-gradient(90deg,#f08a92,#d1343f); }
+  .gauge-lab { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:6px; position:relative; z-index:1; }
+  .chip.mode { background:#fff; border-color:var(--line); font-weight:700; }
+  .chip.mode.sel { background:var(--text); color:#fff; border-color:var(--text); }
 
   /* Device cards */
   .dev-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -503,6 +511,19 @@
   <div class="note">Sur la télécommande : ouvre le menu (A + B), va sur <b>Bluetooth</b> et appuie sur <b>B</b>. Elle apparaît
     alors ici sous le nom <code>LITEFOIL-REMOTE</code>. Sans appli connectée, elle coupe son Bluetooth après 5 minutes ; en
     roulant, elle n'accepte plus de nouvelle connexion mais garde celle en cours.</div>
+
+  <div class="card hero-metric sm">
+    <div class="hm-top"><span class="hm-label">Gâchette</span><span class="hm-max" id="rmThrSub">gaz envoyé —</span></div>
+    <div class="hm-value"><span id="rmTrig">—</span><span class="hm-unit">%</span></div>
+    <div class="gauge" id="rmTrigGauge" style="margin-top:10px"><div class="fill" id="rmTrigFill"></div></div>
+    <div class="gauge thin" id="rmThrGauge"><div class="fill" id="rmThrFill"></div></div>
+    <div class="gauge-lab"><span>position de la gâchette</span><span>gaz envoyé à la planche</span></div>
+    <div class="chips" style="margin-top:14px">
+      <span class="chip mode" id="rmChScen">—</span>
+      <span class="chip mode" id="rmChLow">LOW</span><span class="chip mode" id="rmChMed">MED</span><span class="chip mode" id="rmChHigh">HIGH</span>
+      <span class="chip" id="rmChArm"><span class="dot"></span>désarmé</span>
+    </div>
+  </div>
 
   <h2>État</h2>
   <div class="card">
@@ -1285,6 +1306,15 @@
       txt("rmTrk", TRK[s.trk] || "—");
       txt("rmCam", s.cam === "1" ? (s.rec === "1" ? "REC" : "connectée") : "non connectée");
       txt("rmOdo", s.odo != null ? (num(s.odo) / 1000).toFixed(1) + " km" : "—");
+      // Gâchette et modes (notifiés 4 fois par seconde quand l'appli est connectée)
+      const trig = Math.max(0, Math.min(100, num(s.trig) || 0)), thr = Math.max(0, Math.min(100, num(s.thr) || 0)), armed = s.armed === "1";
+      txt("rmTrig", s.trig != null ? String(trig) : "—");
+      $("rmTrigFill").style.width = trig + "%"; $("rmThrFill").style.width = thr + "%";
+      $("rmTrigGauge").classList.toggle("armed", armed); $("rmThrGauge").classList.toggle("armed", armed);
+      txt("rmThrSub", "gaz envoyé " + (s.thr != null ? thr + " %" : "—"));
+      const scen = s.scen === "1" ? "CRUISE" : "ESURF"; txt("rmChScen", scen); $("rmChScen").classList.toggle("sel", s.scen != null);
+      ["rmChLow", "rmChMed", "rmChHigh"].forEach((id, i) => $(id).classList.toggle("sel", s.mode === String(i)));
+      setChip("rmChArm", armed ? "bad" : (linked ? "on" : ""), armed ? "MOTEUR ARMÉ" : "désarmé");
       $("rmNote").textContent = s.chrono === "1" ? "Chrono en cours : " + fmtChr(num(s.chr) || 0)
                                                  : "Mis à jour à " + new Date().toLocaleTimeString("fr-FR", { hour12: false });
       // Without the tracker, the remote feeds the dashboard (its own GPS and the board link).
