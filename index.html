@@ -98,6 +98,15 @@
   .linkbtn { display: block; padding: 13px 10px; }
   .linkbtn.primary { grid-column: 1 / -1; }
   .tagline { font-family: "Instrument Serif", Georgia, serif; font-size: 26px; line-height: 1.15; margin: 4px 0 6px; }
+  .stlHead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .stlHead #stlLogo{height:42px;width:auto;flex:none;border-radius:8px}
+  .stlName{font-weight:700;font-size:18px;letter-spacing:.3px}
+  .tab{padding:10px 8px;font-size:14px}
+  .cells{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .cells .c{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 3px;text-align:center}
+  .cells .c b{display:block;font-family:"Instrument Serif",Georgia,serif;font-size:15px;font-weight:400;font-variant-numeric:tabular-nums}
+  .cells .c span{font-size:10px;color:var(--muted)}
+  .cells .c.hi{outline:2px solid var(--ok)} .cells .c.lo{outline:2px solid var(--warn)}
 </style>
 </head>
 <body>
@@ -117,7 +126,9 @@
     <button class="play" id="heroPlay" aria-label="Lire la vidéo">&#9654;</button>
   </div>
   <div class="tabs">
-    <button class="tab active" data-tab="tracker">Mon tracker</button>
+    <button class="tab active" data-tab="tracker">Tracker</button>
+    <button class="tab" data-tab="batterie">Batterie</button>
+    <button class="tab" data-tab="moteur">Moteur</button>
     <button class="tab" data-tab="litefoil">Lite Foil</button>
   </div>
 
@@ -156,21 +167,27 @@
 
   <h2>Compte SportsTrackLive</h2>
   <div class="card">
-    <div class="grid" style="margin-bottom:10px">
+    <div class="stlHead">
+      <img id="stlLogo" src="stl-logo.png" alt="SportsTrackLive" onerror="this.style.display='none'">
+      <div>
+        <div class="stlName">SportsTrackLive</div>
+        <div class="note" style="margin:2px 0 0">Relie ton tracker à ton compte pour publier tes sorties <b>en direct</b> sur la carte SportsTrackLive.</div>
+      </div>
+    </div>
+    <div class="grid" style="margin-bottom:12px">
       <div class="kv"><div class="k">Compte dans le tracker</div><div class="v" id="tAccount" style="font-size:16px">—</div></div>
       <div class="kv"><div class="k">Session STL</div><div class="v" id="tLive" style="font-size:16px">—</div></div>
     </div>
-    <label for="inEmail">Identifiant (e-mail du compte SportsTrackLive)</label>
+    <div class="note" style="margin-bottom:12px"><b>Comment ça marche :</b> tu saisis ton e-mail et ton mot de passe SportsTrackLive ci-dessous, l'appli les écrit <b>dans le tracker</b> (pas dans le téléphone). Ensuite, à chaque sortie, c'est le <b>tracker lui-même</b> qui se connecte à SportsTrackLive et publie ta trace — même sans téléphone à côté.</div>
+    <label for="inEmail">① E-mail de ton compte SportsTrackLive</label>
     <input id="inEmail" type="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="prenom@exemple.fr">
-    <label for="inPass">Mot de passe</label>
-    <input id="inPass" type="password" autocomplete="current-password" placeholder="enregistré dans le tracker, pas dans ce téléphone">
+    <label for="inPass">② Mot de passe SportsTrackLive</label>
+    <input id="inPass" type="password" autocomplete="current-password" placeholder="il est enregistré dans le tracker, pas sur ce téléphone">
     <div class="row" style="margin-top:14px">
-      <button class="primary" id="btnLogin" disabled>Enregistrer le compte</button>
+      <button class="primary" id="btnLogin" disabled>③ Enregistrer dans le tracker</button>
       <button id="btnUnbind" disabled>Effacer le compte</button>
     </div>
-    <div class="note" id="loginNote">Le tracker se connecte lui-même à SportsTrackLive avec ces identifiants et y crée la session
-      de chaque sortie, comme l'application du téléphone. Si le site les refuse, la tuile « Session STL » l'indique.
-      Le mot de passe est conservé dans la mémoire du tracker (lisible par USB).</div>
+    <div class="note" id="loginNote">Une fois enregistré, la tuile « Compte dans le tracker » passe au <b>vert</b>. Si SportsTrackLive refuse l'e-mail ou le mot de passe, la tuile « Session STL » affiche « identifiants refusés ». Le mot de passe reste dans la mémoire du tracker (lisible par USB), jamais sur ce téléphone.</div>
     <details style="margin-top:10px">
       <summary class="note" style="cursor:pointer">Avancé : vérifier les identifiants depuis le téléphone (clé d'application STL)</summary>
       <input id="inAppKey" type="password" autocomplete="off" placeholder="clé X-STL-Secret-Key fournie par SportsTrackLive" style="margin-top:6px">
@@ -236,6 +253,76 @@
 
   <h2>Journal</h2>
   <div id="log">Rien pour l'instant.</div>
+  </section>
+
+  <section id="tab-batterie" class="tabpane" hidden>
+    <div class="row" style="margin-bottom:14px">
+      <span><span class="lamp" id="batLamp"></span><span id="batState">Non connecté</span></span>
+      <span style="flex:1"></span>
+      <button class="primary" id="btnBatConnect">Connecter</button>
+    </div>
+    <div class="note" id="batFirst">Allume la batterie (module Bluetooth Daly) puis appuie sur « Connecter » et choisis ton BMS
+      (son nom commence souvent par <code>DL-</code>). L'appli reconnaît seule les Daly récents (Modbus) et anciens (protocole A5).</div>
+
+    <h2>Batterie</h2>
+    <div class="card">
+      <div class="grid">
+        <div class="kv"><div class="k">Charge</div><div class="v" id="bSoc">—</div></div>
+        <div class="kv"><div class="k">Tension pack</div><div class="v" id="bV">—</div></div>
+        <div class="kv"><div class="k">Courant</div><div class="v" id="bA">—</div></div>
+        <div class="kv"><div class="k">Puissance</div><div class="v" id="bW">—</div></div>
+        <div class="kv"><div class="k">Capacité restante</div><div class="v" id="bCap">—</div></div>
+        <div class="kv"><div class="k">Cycles</div><div class="v" id="bCyc">—</div></div>
+      </div>
+      <div class="note" id="batNote">Connecte la batterie pour voir son état.</div>
+    </div>
+
+    <h2>Cellules</h2>
+    <div class="card">
+      <div class="grid" style="margin-bottom:10px">
+        <div class="kv"><div class="k">Cellule mini</div><div class="v" id="bMin">—</div></div>
+        <div class="kv"><div class="k">Cellule maxi</div><div class="v" id="bMax">—</div></div>
+        <div class="kv"><div class="k">Écart</div><div class="v" id="bDelta">—</div></div>
+        <div class="kv"><div class="k">Température</div><div class="v" id="bTemp">—</div></div>
+      </div>
+      <div class="cells" id="bCells"></div>
+    </div>
+
+    <h2>Protections</h2>
+    <div class="card">
+      <div class="row">
+        <span class="pill off" id="bMosC">Charge —</span>
+        <span class="pill off" id="bMosD">Décharge —</span>
+        <span class="pill off" id="bBal">Équilibrage —</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-moteur" class="tabpane" hidden>
+    <div class="row" style="margin-bottom:14px">
+      <span><span class="lamp" id="vLamp"></span><span id="vState">Non connecté</span></span>
+      <span style="flex:1"></span>
+      <button class="primary" id="btnVescConnect">Connecter</button>
+    </div>
+    <div class="note" id="vFirst">Allume le contrôleur (module Bluetooth VESC / Maytech) puis appuie sur « Connecter ».
+      Télémétrie en lecture seule : tension, courant, régime, températures, défaut.</div>
+
+    <h2>Moteur (VESC)</h2>
+    <div class="card">
+      <div class="grid">
+        <div class="kv"><div class="k">Tension batterie</div><div class="v" id="vVin">—</div></div>
+        <div class="kv"><div class="k">Courant batterie</div><div class="v" id="vIin">—</div></div>
+        <div class="kv"><div class="k">Puissance</div><div class="v" id="vW">—</div></div>
+        <div class="kv"><div class="k">Courant moteur</div><div class="v" id="vIm">—</div></div>
+        <div class="kv"><div class="k">Gaz (duty)</div><div class="v" id="vDuty">—</div></div>
+        <div class="kv"><div class="k">Régime (ERPM)</div><div class="v" id="vRpm">—</div></div>
+        <div class="kv"><div class="k">Conso</div><div class="v" id="vWh">—</div></div>
+        <div class="kv"><div class="k">Temp. contrôleur</div><div class="v" id="vTf">—</div></div>
+        <div class="kv"><div class="k">Temp. moteur</div><div class="v" id="vTm">—</div></div>
+        <div class="kv"><div class="k">Défaut</div><div class="v" id="vFault">—</div></div>
+      </div>
+      <div class="note" id="vNote">Connecte le contrôleur pour voir la télémétrie.</div>
+    </div>
   </section>
 
   <footer>Tracker <code>LITEFOIL-TRACKER</code> · Chrome sur Android (Safari et iOS n'ont pas le Bluetooth web).
@@ -593,6 +680,228 @@
       note.textContent = "Le tracker n'a pas accepté l'écriture. Rapproche-toi et réessaie.";
     }
   });
+
+  // ======================================================================
+  // Batterie — Daly SmartBMS over BLE (service fff0 / notify fff1 / write fff2)
+  // Deux générations sur le même GATT : Modbus (trames 0xD2) et classique (0xA5).
+  // On sonde le Modbus d'abord, repli automatique sur l'A5.
+  // ======================================================================
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  (function daly(){
+    const SVC = "0000fff0-0000-1000-8000-00805f9b34fb";
+    const CH_N = "0000fff1-0000-1000-8000-00805f9b34fb";
+    const CH_W = "0000fff2-0000-1000-8000-00805f9b34fb";
+    let dev = null, chW = null, proto = null, poll = null, probe = null, rx = [];
+    const st = {};
+    const dlog = (m, k) => log("[BMS] " + m, k);
+    const setS = (t, c) => { $("batState").textContent = t; $("batLamp").className = "lamp" + (c ? " " + c : ""); };
+
+    function modbusCrc(b){ let c = 0xFFFF; for (const x of b){ c ^= x; for (let i=0;i<8;i++) c = (c & 1) ? (c>>1)^0xA001 : c>>1; } return c & 0xFFFF; }
+    function d2Req(reg, count){ const f=[0xD2,0x03,(reg>>8)&255,reg&255,(count>>8)&255,count&255]; const c=modbusCrc(f); f.push(c&255,(c>>8)&255); return new Uint8Array(f); }
+    function a5Req(cmd){ const f=[0xA5,0x80,cmd,0x08,0,0,0,0,0,0,0,0]; let sum=0; for(const x of f) sum=(sum+x)&255; f.push(sum); return new Uint8Array(f); }
+
+    async function writeReq(bytes){
+      if (!chW) return;
+      try { if (chW.writeValueWithoutResponse) await chW.writeValueWithoutResponse(bytes); else await chW.writeValue(bytes); }
+      catch (e) { dlog("écriture échouée : " + errText(e), "e"); }
+    }
+
+    function onNotify(ev){
+      const v = new Uint8Array(ev.target.value.buffer);
+      for (const b of v) rx.push(b);
+      while (rx.length && rx[0] !== 0xD2 && rx[0] !== 0xA5) rx.shift();
+      let guard = 0;
+      while (rx.length >= 4 && guard++ < 12){
+        if (rx[0] === 0xA5){ if (rx.length < 13) break; handleA5(rx.slice(0,13)); rx = rx.slice(13); }
+        else if (rx[0] === 0xD2){ const total = 3 + rx[2] + 2; if (rx.length < total) break; handleD2(rx.slice(0,total)); rx = rx.slice(total); }
+        else rx.shift();
+      }
+    }
+
+    function handleD2(f){
+      const n = (f[2] >> 1); const r = [];
+      for (let i=0;i<n;i++) r.push((f[3+2*i] << 8) | f[4+2*i]);
+      if (!proto){ proto = "d2"; clearTimeout(probe); dlog("Daly Modbus détecté", "g"); startPoll(); }
+      if (r.length < 0x37) return;
+      st.v = r[0x28] / 10; st.a = (r[0x29] - 30000) / 10; st.soc = r[0x2a] / 10;
+      st.cap = r[0x30] / 10; st.cyc = r[0x33];
+      const nc = Math.min(32, r[0x31] || 0);
+      st.cells = nc ? r.slice(0, nc) : [];
+      st.temps = r.slice(0x20, 0x28).map(x => x - 40).filter(t => t > -40 && t < 120);
+      st.bal = r[0x34] !== 0; st.mosC = r[0x35] !== 0; st.mosD = r[0x36] !== 0;
+      render();
+    }
+
+    function handleA5(f){
+      if (!proto){ proto = "a5"; clearTimeout(probe); dlog("Daly A5 détecté", "g"); startPoll(); }
+      const c = f[2], d = f.slice(4, 12), u16 = i => (d[i] << 8) | d[i+1];
+      if (c === 0x90){ st.v = u16(0)/10; st.a = (u16(4)-30000)/10; st.soc = u16(6)/10; }
+      else if (c === 0x92){ st.temps = [d[2]-40, d[0]-40]; }
+      else if (c === 0x93){ st.mosC = d[1] !== 0; st.mosD = d[2] !== 0; st.cap = ((d[4]<<24)|(d[5]<<16)|(d[6]<<8)|d[7]) / 1000; }
+      else if (c === 0x94){ st.cellCount = d[0]; }
+      else if (c === 0x95){ const fr = d[0]; if (fr >= 1){ const base=(fr-1)*3; st.cellsA = st.cellsA || []; st.cellsA[base]=u16(1); st.cellsA[base+1]=u16(3); st.cellsA[base+2]=u16(5); if (st.cellCount) st.cells = st.cellsA.slice(0, st.cellCount); } }
+      render();
+    }
+
+    function startPoll(){
+      if (poll) clearInterval(poll);
+      const tick = async () => {
+        if (!chW) return;
+        if (proto === "d2") writeReq(d2Req(0x00, 0x3e));
+        else if (proto === "a5"){ for (const c of [0x90,0x92,0x93,0x94,0x95]){ await writeReq(a5Req(c)); await sleep(70); } }
+      };
+      tick(); poll = setInterval(tick, 1200);
+    }
+
+    function render(){
+      const set = (id, t, cls) => { const e = $(id); if (t !== undefined) e.textContent = t; if (cls !== undefined) e.className = "v " + cls; };
+      if (st.soc != null) set("bSoc", Math.round(st.soc) + " %", st.soc < 15 ? "bad" : st.soc < 30 ? "warn" : "good");
+      if (st.v != null) set("bV", st.v.toFixed(2) + " V");
+      if (st.a != null) set("bA", st.a.toFixed(1) + " A", st.a < -0.5 ? "warn" : "");
+      if (st.v != null && st.a != null) set("bW", Math.round(st.v * st.a) + " W");
+      if (st.cap != null) set("bCap", st.cap.toFixed(1) + " Ah");
+      if (st.cyc != null) set("bCyc", String(st.cyc));
+      const cells = (st.cells || []).filter(x => x > 0);
+      if (cells.length){
+        const mn = Math.min(...cells), mx = Math.max(...cells);
+        set("bMin", (mn/1000).toFixed(3) + " V"); set("bMax", (mx/1000).toFixed(3) + " V");
+        set("bDelta", (mx-mn) + " mV", (mx-mn) > 80 ? "bad" : (mx-mn) > 40 ? "warn" : "good");
+        $("bCells").innerHTML = cells.map((mv,i) => '<div class="c ' + (mv===mx?"hi":mv===mn?"lo":"") + '"><b>' + (mv/1000).toFixed(3) + '</b><span>C' + (i+1) + '</span></div>').join("");
+      }
+      if (st.temps && st.temps.length) set("bTemp", Math.max(...st.temps) + " °C");
+      $("bMosC").textContent = "Charge " + (st.mosC ? "ON" : "OFF"); $("bMosC").className = "pill " + (st.mosC ? "on" : "off");
+      $("bMosD").textContent = "Décharge " + (st.mosD ? "ON" : "OFF"); $("bMosD").className = "pill " + (st.mosD ? "on" : "off");
+      $("bBal").textContent = "Équilibrage " + (st.bal ? "ON" : "OFF"); $("bBal").className = "pill " + (st.bal ? "on" : "off");
+      $("batNote").textContent = "En direct" + (proto ? " · protocole " + proto.toUpperCase() : "");
+    }
+
+    async function connect(){
+      if (!navigator.bluetooth){ setS("Bluetooth web indisponible", "err"); dlog("Utilise Chrome sur Android.", "e"); return; }
+      try {
+        setS("Recherche de la batterie…", "busy");
+        dev = await navigator.bluetooth.requestDevice({
+          filters: [{ services: [0xfff0] }, { namePrefix: "DL" }, { namePrefix: "Daly" }, { namePrefix: "BMS" }],
+          optionalServices: [SVC],
+        });
+        dev.addEventListener("gattserverdisconnected", onDisc);
+        setS("Connexion…", "busy");
+        const server = await dev.gatt.connect();
+        const svc = await server.getPrimaryService(SVC);
+        const chN = await svc.getCharacteristic(CH_N);
+        chW = await svc.getCharacteristic(CH_W);
+        await chN.startNotifications();
+        chN.addEventListener("characteristicvaluechanged", onNotify);
+        proto = null; rx = []; for (const k in st) delete st[k];
+        setS("Connecté à " + (dev.name || "BMS"), "on");
+        $("btnBatConnect").textContent = "Déconnecter";
+        dlog("Connecté. Détection du protocole…", "g");
+        await writeReq(d2Req(0x00, 0x3e));
+        probe = setTimeout(async () => { if (!proto){ dlog("Pas de réponse Modbus, essai A5…"); proto = "a5"; startPoll(); } }, 1800);
+      } catch (e) {
+        if (e && e.name === "NotFoundError"){ setS("Non connecté"); dlog("Aucune batterie sélectionnée. Vérifie qu'elle est allumée et pas déjà connectée à l'appli Daly."); }
+        else { setS("Échec de la connexion", "err"); dlog("Connexion impossible : " + errText(e), "e"); }
+      }
+    }
+    function onDisc(){ setS("Batterie déconnectée"); $("btnBatConnect").textContent = "Connecter"; chW = null; proto = null; if (poll) clearInterval(poll); clearTimeout(probe); dlog("Batterie déconnectée.", "e"); }
+
+    $("btnBatConnect").addEventListener("click", () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } connect(); });
+  })();
+
+  // ======================================================================
+  // Moteur — VESC over BLE (module HM-10 : service ffe0 / caractéristique ffe1)
+  // Binaire VESC : paquet 0x02 len payload CRC16(XMODEM) 0x03 ; COMM_GET_VALUES=4.
+  // ======================================================================
+  (function vesc(){
+    const SVC = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    const CH  = "0000ffe1-0000-1000-8000-00805f9b34fb";
+    const FAULTS = ["Aucun","Surtension","Sous-tension","DRV","Surintensité","Surchauffe contrôleur","Surchauffe moteur",
+                    "Surtension driver","Sous-tension driver","Sous-tension MCU","Watchdog","Capteur SPI","Capteur ampl. basse","Capteur ampl. haute","Flash corrompue"];
+    let dev = null, ch = null, poll = null, rx = [];
+    const vlog = (m, k) => log("[VESC] " + m, k);
+    const setS = (t, c) => { $("vState").textContent = t; $("vLamp").className = "lamp" + (c ? " " + c : ""); };
+
+    function crc16(d){ let c = 0; for (const b of d){ c ^= (b << 8) & 0xffff; for (let i=0;i<8;i++) c = (c & 0x8000) ? ((c<<1)^0x1021)&0xffff : (c<<1)&0xffff; } return c & 0xffff; }
+    function frame(payload){ const f = payload.length <= 255 ? [0x02, payload.length, ...payload] : [0x03,(payload.length>>8)&255,payload.length&255,...payload]; const c = crc16(payload); f.push((c>>8)&255, c&255, 0x03); return new Uint8Array(f); }
+
+    async function send(bytes){ if (!ch) return; try { if (ch.writeValueWithoutResponse) await ch.writeValueWithoutResponse(bytes); else await ch.writeValue(bytes); } catch (e) { vlog("écriture échouée : " + errText(e), "e"); } }
+
+    function onNotify(ev){
+      const v = new Uint8Array(ev.target.value.buffer);
+      for (const b of v) rx.push(b);
+      let guard = 0;
+      while (rx.length >= 2 && guard++ < 12){
+        let hs, len;
+        if (rx[0] === 0x02){ hs = 2; len = rx[1]; }
+        else if (rx[0] === 0x03){ if (rx.length < 3) break; hs = 3; len = (rx[1]<<8)|rx[2]; }
+        else { rx.shift(); continue; }
+        const total = hs + len + 3;
+        if (rx.length < total) break;
+        const payload = rx.slice(hs, hs + len), stop = rx[total-1];
+        const got = (rx[hs+len]<<8)|rx[hs+len+1];
+        rx = rx.slice(total);
+        if (stop === 0x03 && got === crc16(payload)) handle(payload);
+      }
+    }
+
+    function handle(payload){
+      if (payload[0] !== 4) return; // COMM_GET_VALUES seulement
+      const u = new Uint8Array(payload), dv = new DataView(u.buffer);
+      let o = 1;
+      const i16 = () => { const x = dv.getInt16(o, false); o += 2; return x; };
+      const i32 = () => { const x = dv.getInt32(o, false); o += 4; return x; };
+      try {
+        const tf = i16()/10, tm = i16()/10, im = i32()/100, iin = i32()/100;
+        o += 8; // avg_id + avg_iq
+        const duty = i16()/1000, rpm = i32(), vin = i16()/10;
+        const ah = i32()/10000; o += 4; const wh = i32()/10000; o += 4; o += 8; // ah_chg, wh_chg, tach, tach_abs
+        const fault = u[o] !== undefined ? u[o] : 0;
+        const set = (id, t, cls) => { const e = $(id); e.textContent = t; if (cls !== undefined) e.className = "v " + cls; };
+        set("vVin", vin.toFixed(1) + " V", vin < 40 ? "bad" : vin < 44 ? "warn" : "good");
+        set("vIin", iin.toFixed(1) + " A");
+        set("vW", Math.round(vin*iin) + " W");
+        set("vIm", im.toFixed(1) + " A");
+        set("vDuty", Math.round(duty*100) + " %");
+        set("vRpm", rpm.toLocaleString("fr-FR"));
+        set("vWh", wh.toFixed(1) + " Wh · " + ah.toFixed(2) + " Ah");
+        set("vTf", tf.toFixed(1) + " °C", tf > 80 ? "bad" : tf > 65 ? "warn" : "good");
+        set("vTm", tm.toFixed(1) + " °C", tm > 90 ? "bad" : tm > 75 ? "warn" : "good");
+        set("vFault", FAULTS[fault] || ("code " + fault), fault ? "bad" : "good");
+        $("vNote").textContent = "En direct · " + new Date().toLocaleTimeString("fr-FR", { hour12: false });
+      } catch (e) { vlog("trame illisible (" + payload.length + " o.)", "e"); }
+    }
+
+    async function connect(){
+      if (!navigator.bluetooth){ setS("Bluetooth web indisponible", "err"); vlog("Utilise Chrome sur Android.", "e"); return; }
+      try {
+        setS("Recherche du contrôleur…", "busy");
+        dev = await navigator.bluetooth.requestDevice({
+          filters: [{ services: [0xffe0] }, { namePrefix: "VESC" }, { namePrefix: "Maytech" }, { namePrefix: "MT" }, { namePrefix: "HMSoft" }],
+          optionalServices: [SVC],
+        });
+        dev.addEventListener("gattserverdisconnected", onDisc);
+        setS("Connexion…", "busy");
+        const server = await dev.gatt.connect();
+        const svc = await server.getPrimaryService(SVC);
+        ch = await svc.getCharacteristic(CH);
+        await ch.startNotifications();
+        ch.addEventListener("characteristicvaluechanged", onNotify);
+        rx = [];
+        setS("Connecté à " + (dev.name || "VESC"), "on");
+        $("btnVescConnect").textContent = "Déconnecter";
+        vlog("Connecté. Lecture de la télémétrie.", "g");
+        if (poll) clearInterval(poll);
+        const tick = () => send(frame([4]));
+        tick(); poll = setInterval(tick, 500);
+      } catch (e) {
+        if (e && e.name === "NotFoundError"){ setS("Non connecté"); vlog("Aucun contrôleur sélectionné. Vérifie que le module VESC est allumé et libre."); }
+        else { setS("Échec de la connexion", "err"); vlog("Connexion impossible : " + errText(e), "e"); }
+      }
+    }
+    function onDisc(){ setS("Contrôleur déconnecté"); $("btnVescConnect").textContent = "Connecter"; ch = null; if (poll) clearInterval(poll); vlog("Contrôleur déconnecté.", "e"); }
+
+    $("btnVescConnect").addEventListener("click", () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } connect(); });
+  })();
+
 })();
 </script>
 </body>
