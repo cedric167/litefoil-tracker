@@ -121,6 +121,7 @@
 
   /* Pane transition */
   @keyframes fadeUp { from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+  [hidden] { display:none !important; }
   .tabpane:not([hidden]){ animation:fadeUp .32s ease both; }
   @keyframes lampPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(26,156,85,.35);} 50%{ box-shadow:0 0 0 5px rgba(26,156,85,0);} }
   @keyframes busyPulse { 0%,100%{ opacity:.35;} 50%{ opacity:1;} }
