@@ -191,7 +191,15 @@
   .cells .c.hi{ outline:2px solid var(--ok); } .cells .c.lo{ outline:2px solid var(--warn); }
 
   /* Carte live */
-  #map{ height:270px; border-radius:14px; overflow:hidden; border:1px solid var(--line-soft); background:#e9eef0; }
+  .map-wrap{ position:relative; }
+  #map{ height:270px; border-radius:14px; overflow:hidden; border:1px solid var(--line-soft); background:#dfe6ea; }
+  .map-fs{ position:absolute; top:10px; right:10px; z-index:500; width:38px; height:38px; padding:0; border:1px solid var(--line);
+    background:rgba(255,255,255,.95); color:var(--text); border-radius:10px; box-shadow:var(--sh-sm);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .map-fs svg{ width:19px; height:19px; }
+  .map-wrap:fullscreen{ background:#000; width:100vw; height:100vh; }
+  .map-wrap:fullscreen #map{ height:100vh; border-radius:0; border:none; }
+  .map-wrap:fullscreen .map-fs{ top:14px; right:14px; }
   .leaflet-container{ font:inherit; }
   .leaflet-control-attribution{ font-size:10px; }
 </style>
@@ -295,6 +303,20 @@
     Puis renseigne ton compte SportsTrackLive ci-dessous : à chaque sortie lancée depuis la télécommande, le tracker
     s'y connecte seul et y enregistre ta session.</div>
 
+  <h2>Carte</h2>
+  <div class="card">
+    <div class="map-wrap" id="mapWrap">
+      <div id="map"></div>
+      <button class="map-fs" id="mapFs" title="Plein écran" aria-label="Plein écran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <span class="note" id="mapNote" style="margin:0">Connecte le tracker : la carte suit ta position dès qu'il y a un fix GPS.</span>
+      <span style="flex:1"></span>
+      <button id="mapRecenter" hidden>Recentrer</button>
+    </div>
+    <a class="linkbtn" id="btnStlMap" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">Voir la session sur SportsTrackLive</a>
+  </div>
+
   <h2>Compte SportsTrackLive</h2>
   <div class="card">
     <div class="stlHead">
@@ -342,17 +364,6 @@
       <div class="kv"><div class="k">Batterie</div><div class="v" id="tBatt">—</div></div>
     </div>
     <div class="note" id="statusNote">Connecte le tracker pour voir son état.</div>
-  </div>
-
-  <h2>Carte</h2>
-  <div class="card">
-    <div id="map"></div>
-    <div class="row" style="margin-top:10px">
-      <span class="note" id="mapNote" style="margin:0">Connecte le tracker : la carte suit ta position dès qu'il y a un fix GPS.</span>
-      <span style="flex:1"></span>
-      <button id="mapRecenter" hidden>Recentrer</button>
-    </div>
-    <a class="linkbtn" id="btnStlMap" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">Voir la session sur SportsTrackLive</a>
   </div>
 
   <h2>Suivi</h2>
@@ -676,6 +687,13 @@
     var pts = lfTrail.getLatLngs(); pts.push(ll); if (pts.length > 3000) pts.shift(); lfTrail.setLatLngs(pts);
     $("mapNote").textContent = "Position en direct" + (spd != null ? " · " + spd.toFixed(1) + " km/h" : "");
   }
+  function mapFsToggle(){
+    mapInit();
+    var w = $("mapWrap"); if (!w) return;
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    else if (w.requestFullscreen) { w.requestFullscreen().catch(function(){}); }
+  }
+  document.addEventListener("fullscreenchange", function(){ if (lfMap) setTimeout(function(){ lfMap.invalidateSize(); }, 90); });
   window.addEventListener("load", mapInit);
 
   // ---------------- Bluetooth ----------------
@@ -776,6 +794,7 @@
   });
   $("btnReload").addEventListener("click", reloadSettings);
   $("mapRecenter").addEventListener("click", function(){ lfFollow = true; $("mapRecenter").hidden = true; var p = lfTrail && lfTrail.getLatLngs(); if (lfMap && p && p.length) lfMap.panTo(p[p.length - 1]); });
+  $("mapFs").addEventListener("click", mapFsToggle);
 
   // ---------------- sportstracklive account ----------------
   // Sign in from the phone with the v1 API, then hand the tracker the e-mail the API
