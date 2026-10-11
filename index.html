@@ -1490,7 +1490,7 @@
         const begin = otaWait(m => m.startsWith("ok:begin") || m.startsWith("err"), 15000, "début");
         await otaWrite(enc("ota_begin:" + buf.length + ":" + md5), true);
         const bm = await begin; if (!bm.startsWith("ok:begin")) throw new Error(bm);
-        const chunk = Math.max(16, Math.min(512, parseInt(bm.split(":")[2], 10) || 16));
+        const chunk = Math.max(16, Math.min(508, parseInt(bm.split(":")[2], 10) || 16));   // 508 + 4 d'en-tête = 512, maximum du Bluetooth web
         const total = Math.ceil(buf.length / chunk);
         rlog("Envoi de " + buf.length + " octets par morceaux de " + chunk + ".");
         let seq = 0; const t0 = Date.now(); let lastPct = -1;
