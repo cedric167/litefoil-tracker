@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.2.1",
-  "file": "telecommande-1.2.1.bin",
-  "size": 1515792,
-  "md5": "04b4a91506d09d81a46b77bebf773c15",
+  "version": "1.2.3",
+  "file": "telecommande-1.2.3.bin",
+  "size": 1516144,
+  "md5": "2c81d6fac33e028326c79a480918e539",
   "date": "2026-10-12",
-  "notes": "Mise à jour par Bluetooth depuis l'appli, jauge de gâchette et modes en direct."
+  "notes": "Bluetooth automatique sur le chargeur, mise à jour possible pendant la charge."
 }
