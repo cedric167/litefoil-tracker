@@ -210,7 +210,7 @@
        muted and skipped on metered connections: the clip is 12 MB. -->
   <div class="hero" id="hero">
     <img class="poster" src="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=900" alt="">
-    <video id="heroVideo" muted loop playsinline preload="none"
+    <video id="heroVideo" muted loop autoplay playsinline preload="auto"
       poster="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=900"
       src="https://litefoil.fr/cdn/shop/videos/c/vp/e098ec1ef4e84f2094f6707f89383c5a/e098ec1ef4e84f2094f6707f89383c5a.SD-480p-1.5Mbps-86567816.mp4?v=0"></video>
     <div class="shade"></div>
@@ -218,7 +218,6 @@
       <img src="litefoil-logo.png" alt="Lite Foil" onerror="this.style.display='none'">
       <span>Tracker GPS<br>&amp; sessions live</span>
     </div>
-    <button class="play" id="heroPlay" aria-label="Lire la vidéo">&#9654;</button>
   </div>
   <div class="tabs">
     <button class="tab active" data-tab="dash">Accueil</button>
@@ -860,16 +859,16 @@
     }
   });
 
-  // Hero video: play muted when the connection is not metered, otherwise show the poster
-  // with a play button (the clip is 12 MB).
+  // Hero video: boucle muette en continu, impossible à mettre en pause (on la relance si le
+  // navigateur l'interrompt, par exemple quand l'onglet revient au premier plan).
   (() => {
     const hero = $("hero"), video = $("heroVideo");
-    const conn = navigator.connection || {};
-    const metered = conn.saveData === true || conn.type === "cellular" || /2g|3g/.test(conn.effectiveType || "");
-    const play = () => { video.preload = "auto"; video.play().then(() => hero.classList.remove("paused")).catch(() => hero.classList.add("paused")); };
-    if (metered) hero.classList.add("paused"); else play();
-    $("heroPlay").addEventListener("click", play);
-    video.addEventListener("playing", () => hero.classList.remove("paused"));
+    hero.classList.remove("paused");
+    video.muted = true; video.preload = "auto";
+    const keepPlaying = () => { const pr = video.play(); if (pr && pr.catch) pr.catch(() => {}); };
+    keepPlaying();
+    video.addEventListener("pause", keepPlaying);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) keepPlaying(); });
   })();
 
   // Two tabs: the tracker, and the Lite Foil site (which refuses to be embedded —
