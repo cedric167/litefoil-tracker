@@ -539,7 +539,7 @@
       <div class="kv"><div class="k">Puissance</div><div class="v" id="rmWatts">—</div></div>
       <div class="kv"><div class="k">Satellites</div><div class="v" id="rmSats">—</div></div>
       <div class="kv"><div class="k">Suivi STL</div><div class="v" id="rmTrk">—</div></div>
-      <div class="kv"><div class="k">GoPro</div><div class="v" id="rmCam">—</div></div>
+      <div class="kv"><div class="k">Caméra</div><div class="v" id="rmCam">—</div></div>
       <div class="kv"><div class="k">Odomètre</div><div class="v" id="rmOdo">—</div></div>
     </div>
     <div class="row" style="margin-top:12px">
@@ -560,15 +560,17 @@
       <div><label for="rmTheme">Écran d'accueil</label><select id="rmTheme"><option value="0">Batterie en grand</option><option value="1">Vitesse en grand</option></select></div>
       <div><label for="rmLang">Langue</label><select id="rmLang"><option value="0">Français</option><option value="1">English</option><option value="2">Español</option><option value="3">Deutsch</option></select></div>
       <div><label for="rmPing">Signal radio à l'écran</label><select id="rmPing"><option value="0">Masqué</option><option value="1">Affiché</option></select></div>
-      <div><label for="rmCarec">GoPro : auto-REC</label><select id="rmCarec"><option value="0">Off</option><option value="1">À l'armement</option><option value="2">Au chrono</option></select></div>
-      <div><label for="rmCstop">GoPro : arrêt après SAFE</label><select id="rmCstop"><option value="0">10 s</option><option value="1">30 s</option><option value="2">2 min</option><option value="3">Jamais</option></select></div>
-      <div><label for="rmCmode">GoPro : mode</label><select id="rmCmode"><option value="0">Vidéo</option><option value="1">Photo</option><option value="2">Timelapse</option></select></div>
+      <div><label for="rmCbrand">Caméra</label><select id="rmCbrand"><option value="0">GoPro (HERO9 et +, Open GoPro)</option><option value="1">Insta360 X3 / X4 / X5 / ONE RS / Ace</option><option value="2">Insta360 GO 3 / GO 3S</option></select></div>
+      <div><label for="rmCarec">Caméra : auto-REC</label><select id="rmCarec"><option value="0">Off</option><option value="1">À l'armement</option><option value="2">Au chrono</option></select></div>
+      <div><label for="rmCstop">Caméra : arrêt après SAFE</label><select id="rmCstop"><option value="0">10 s</option><option value="1">30 s</option><option value="2">2 min</option><option value="3">Jamais</option></select></div>
+      <div><label for="rmCmode">Caméra : mode</label><select id="rmCmode"><option value="0">Vidéo</option><option value="1">Photo</option><option value="2">Timelapse</option></select></div>
     </div>
     <div class="row" style="margin-top:14px">
       <button class="primary" id="btnRmSave" disabled>Enregistrer dans la télécommande</button>
       <button id="btnRmReload" disabled>Relire</button>
     </div>
-    <div class="note" id="rmSaveNote">Les réglages s'appliquent tout de suite et restent dans la télécommande, comme si tu les avais changés dans son menu.</div>
+    <div class="note" id="rmSaveNote">Les réglages s'appliquent tout de suite et restent dans la télécommande, comme si tu les avais changés dans son menu.
+      La GoPro est pilotée par son protocole officiel ; les Insta360 par un protocole reconstitué par la communauté, qui peut cesser de fonctionner après une mise à jour de la caméra.</div>
   </div>
 
   <h2>Chronos</h2>
@@ -1303,7 +1305,7 @@
     const enable = on => { for (const b of btns) b.disabled = !on; $("btnRmConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.remote = on; renderDash(); if (!on) fwInstalled = null; refreshUpdate(); };
     const TRK = { "0": "—", "1": "arrêté", "2": "en attente", "3": "en direct", "4": "identifiants refusés", "5": "pas de compte" };
     const SETTINGS = { rmCells: "cells", rmSpdOpt: "spd", rmSens: "sens", rmStart: "start", rmUnit: "unit", rmDis: "dis",
-                       rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
+                       rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmCbrand: "cbrand", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
     const fmtChr = ms => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
                            return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(sec).padStart(2, "0"); };
     const txt = (id, v) => { $(id).textContent = v; };
@@ -1319,7 +1321,7 @@
       txt("rmVbat", linked ? s.vbat + " V" : "—"); txt("rmWatts", linked ? s.watts + " W" : "—");
       txt("rmSats", s.sats != null ? s.sats + (s.fix === "1" ? " (fix)" : "") : "—");
       txt("rmTrk", TRK[s.trk] || "—");
-      txt("rmCam", s.cam === "1" ? (s.rec === "1" ? "REC" : "connectée") : "non connectée");
+      { const BR = ["GoPro", "Insta360 X", "Insta360 GO"]; const b = BR[num(s.cbrand) || 0] || "Caméra"; txt("rmCam", b + " · " + (s.cam === "1" ? (s.rec === "1" ? "REC" : "connectée") : "non connectée")); }
       txt("rmOdo", s.odo != null ? (num(s.odo) / 1000).toFixed(1) + " km" : "—");
       // Gâchette et modes (notifiés 4 fois par seconde quand l'appli est connectée)
       const trig = Math.max(0, Math.min(100, num(s.trig) || 0)), thr = Math.max(0, Math.min(100, num(s.thr) || 0)), armed = s.armed === "1";
