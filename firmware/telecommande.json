@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.6.0",
-  "file": "telecommande-1.6.0.bin",
-  "size": 1521712,
-  "md5": "6d3bf75b8140b93ac4dfce084eda735c",
+  "version": "1.6.1",
+  "file": "telecommande-1.6.1.bin",
+  "size": 1521728,
+  "md5": "0d483b596e3174a509eaa5dec8729764",
   "date": "2026-10-13",
-  "notes": "Écran tactile réactivé (menu, choix de caméra, réglages caméra). Menu Caméra → choix GoPro / Insta360 X / Insta360 GO par cartes aux couleurs des marques, puis page de réglages habillée GoPro (noir et bleu) ou Insta360 (jaune et noir). Toucher une carte ou une tuile = la choisir."
+  "notes": "Sécurité tactile : l'écran tactile n'est jamais lu sur l'écran d'accueil (navigation), ni en charge, ni tant que la télécommande est armée, quel que soit l'écran. Sinon identique à la 1.6.0 (tactile, choix de caméra, pages GoPro / Insta360)."
 }
