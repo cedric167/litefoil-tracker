@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.3.0",
-  "file": "telecommande-1.3.0.bin",
-  "size": 1518400,
-  "md5": "c8a3183607e29a1320c0a6e19d3e0dc9",
-  "date": "2026-10-12",
-  "notes": "Caméras Insta360 (X3/X4/X5/ONE RS et GO 3/3S) en plus de la GoPro : choix de la marque par B long sur la page caméra ou depuis l'appli."
+  "version": "1.4.0",
+  "file": "telecommande-1.4.0.bin",
+  "size": 1519472,
+  "md5": "7649fb320bf4263cc7c5c293a026589a",
+  "date": "2026-10-13",
+  "notes": "Menu de la télécommande : icônes en tuiles colorées façon iPhone (une couleur par fonction), tuile URGENCE clignotante quand le SOS est actif. Comprend le pilotage des caméras Insta360 (1.3.0)."
 }
