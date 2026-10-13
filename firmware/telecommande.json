@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.6.1",
-  "file": "telecommande-1.6.1.bin",
-  "size": 1521728,
-  "md5": "0d483b596e3174a509eaa5dec8729764",
+  "version": "1.7.0",
+  "file": "telecommande-1.7.0.bin",
+  "size": 1524464,
+  "md5": "a10767500e2fff3271427132a96bd86e",
   "date": "2026-10-13",
-  "notes": "Sécurité tactile : l'écran tactile n'est jamais lu sur l'écran d'accueil (navigation), ni en charge, ni tant que la télécommande est armée, quel que soit l'écran. Sinon identique à la 1.6.0 (tactile, choix de caméra, pages GoPro / Insta360)."
+  "notes": "Sous-menus SportsTrackLive et Bluetooth façon iPhone : interrupteur à glissière animé (vert = actif), état en clair sous l'interrupteur, liste d'infos à coins arrondis, chevron de retour. Tactile : seul l'interrupteur (bascule) et le chevron (retour) répondent, jamais en navigation ni armé."
 }
