@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.5.0",
-  "file": "telecommande-1.5.0.bin",
-  "size": 1519664,
-  "md5": "b9a9ad73f78a6a87449419f883a11700",
+  "version": "1.6.0",
+  "file": "telecommande-1.6.0.bin",
+  "size": 1521712,
+  "md5": "6d3bf75b8140b93ac4dfce084eda735c",
   "date": "2026-10-13",
-  "notes": "Menu « Caméra » avec une tuile Marque (GoPro / Insta360 X / Insta360 GO) sur la page caméra, bouton Retour sur toute la largeur. Nouveau logo Lite Foil au démarrage. Icônes colorées du menu (1.4.0) et pilote Insta360 (1.3.0) inclus."
+  "notes": "Écran tactile réactivé (menu, choix de caméra, réglages caméra). Menu Caméra → choix GoPro / Insta360 X / Insta360 GO par cartes aux couleurs des marques, puis page de réglages habillée GoPro (noir et bleu) ou Insta360 (jaune et noir). Toucher une carte ou une tuile = la choisir."
 }
