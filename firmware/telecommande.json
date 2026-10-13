@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.7.0",
-  "file": "telecommande-1.7.0.bin",
-  "size": 1524464,
-  "md5": "a10767500e2fff3271427132a96bd86e",
+  "version": "1.7.1",
+  "file": "telecommande-1.7.1.bin",
+  "size": 1524704,
+  "md5": "a7ba28af6b02446a140b96e34ee9fc73",
   "date": "2026-10-13",
-  "notes": "Sous-menus SportsTrackLive et Bluetooth façon iPhone : interrupteur à glissière animé (vert = actif), état en clair sous l'interrupteur, liste d'infos à coins arrondis, chevron de retour. Tactile : seul l'interrupteur (bascule) et le chevron (retour) répondent, jamais en navigation ni armé."
+  "notes": "Balayage au doigt : dans le menu, glisser vers la gauche passe au suivant, vers la droite au précédent. Dans un sous-menu (caméra, SportsTrackLive, Bluetooth), glisser vers la droite revient au menu. Le toucher simple est désormais pris au relâché du doigt. Toujours aucun tactile en navigation, en charge ni armé."
 }
