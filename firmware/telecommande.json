@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.8.0",
-  "file": "telecommande-1.8.0.bin",
-  "size": 1525520,
-  "md5": "5f2d32a7204f14f60175fc078df7bd7f",
+  "version": "1.8.1",
+  "file": "telecommande-1.8.1.bin",
+  "size": 1526048,
+  "md5": "734c144520cb7f3ee53d70ce490e40bd",
   "date": "2026-10-13",
-  "notes": "Menu roulette : les tuiles glissent sous le doigt comme sur un iPhone, les voisines dépassent sur les bords, et la tuile se cale toute seule au relâché (ou revient en place si le geste est trop court). Le bouton B fait aussi glisser la tuile. Aucune RAM en plus : la bande réutilise la mémoire de l'écran d'accueil. Toujours aucun tactile en navigation, en charge ni armé."
+  "notes": "Appairage : écran façon iOS (bandeau, consigne, état, compte à rebours), A ou le chevron annule. Quand ça réussit, grosse pastille verte « PAIRING OK » 1,5 s puis retour automatique au menu (avant, l'écran restait figé sur PAIRED). En échec, pastille rouge « NO RX » puis retour au menu aussi."
 }
