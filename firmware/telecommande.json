@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.8.1",
-  "file": "telecommande-1.8.1.bin",
+  "version": "1.8.2",
+  "file": "telecommande-1.8.2.bin",
   "size": 1526048,
-  "md5": "734c144520cb7f3ee53d70ce490e40bd",
+  "md5": "fb391c172092fe4db15ed964fa49d9a0",
   "date": "2026-10-13",
-  "notes": "Appairage : écran façon iOS (bandeau, consigne, état, compte à rebours), A ou le chevron annule. Quand ça réussit, grosse pastille verte « PAIRING OK » 1,5 s puis retour automatique au menu (avant, l'écran restait figé sur PAIRED). En échec, pastille rouge « NO RX » puis retour au menu aussi."
+  "notes": "Logo de démarrage : suppression des deux traits blancs au-dessus et en dessous des lettres (bords du recadrage de l'image)."
 }
