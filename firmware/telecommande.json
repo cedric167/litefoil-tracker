@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.4.0",
-  "file": "telecommande-1.4.0.bin",
-  "size": 1519472,
-  "md5": "7649fb320bf4263cc7c5c293a026589a",
+  "version": "1.5.0",
+  "file": "telecommande-1.5.0.bin",
+  "size": 1519664,
+  "md5": "b9a9ad73f78a6a87449419f883a11700",
   "date": "2026-10-13",
-  "notes": "Menu de la télécommande : icônes en tuiles colorées façon iPhone (une couleur par fonction), tuile URGENCE clignotante quand le SOS est actif. Comprend le pilotage des caméras Insta360 (1.3.0)."
+  "notes": "Menu « Caméra » avec une tuile Marque (GoPro / Insta360 X / Insta360 GO) sur la page caméra, bouton Retour sur toute la largeur. Nouveau logo Lite Foil au démarrage. Icônes colorées du menu (1.4.0) et pilote Insta360 (1.3.0) inclus."
 }
