@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.8.3",
-  "file": "telecommande-1.8.3.bin",
-  "size": 1526112,
-  "md5": "114eccfbc3cdc1c8f697290c78da117e",
+  "version": "1.8.4",
+  "file": "telecommande-1.8.4.bin",
+  "size": 1526128,
+  "md5": "fb3b355249b3e539f93ce4226d2a6bd7",
   "date": "2026-10-14",
-  "notes": "Page SportsTrackLive : l'interrupteur suit le suivi réel du tracker ; en « compte refusé » ou « pas de compte », un toucher relance le suivi au lieu de l'arrêter."
+  "notes": "Veille automatique après 20 minutes sans rien toucher (8 minutes avant). Inclut la 1.8.3 : interrupteur SportsTrackLive fidèle au suivi réel."
 }
