@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.8.4",
-  "file": "telecommande-1.8.4.bin",
-  "size": 1526128,
-  "md5": "fb3b355249b3e539f93ce4226d2a6bd7",
+  "version": "1.8.5",
+  "file": "telecommande-1.8.5.bin",
+  "size": 1526480,
+  "md5": "8a3a7ff70a35799c1f67e66cb6f26b30",
   "date": "2026-10-14",
-  "notes": "Veille automatique après 20 minutes sans rien toucher (8 minutes avant). Inclut la 1.8.3 : interrupteur SportsTrackLive fidèle au suivi réel."
+  "notes": "Planche sans tracker : les pages SportsTrackLive et SOS affichent « TRACKER ABSENT, option à installer » quand la planche est reliée, et « PAS DE LIAISON » quand elle est éteinte ou hors de portée."
 }
