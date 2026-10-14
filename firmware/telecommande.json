@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.8.2",
-  "file": "telecommande-1.8.2.bin",
-  "size": 1526048,
-  "md5": "fb391c172092fe4db15ed964fa49d9a0",
-  "date": "2026-10-13",
-  "notes": "Logo de démarrage : suppression des deux traits blancs au-dessus et en dessous des lettres (bords du recadrage de l'image)."
+  "version": "1.8.3",
+  "file": "telecommande-1.8.3.bin",
+  "size": 1526112,
+  "md5": "114eccfbc3cdc1c8f697290c78da117e",
+  "date": "2026-10-14",
+  "notes": "Page SportsTrackLive : l'interrupteur suit le suivi réel du tracker ; en « compte refusé » ou « pas de compte », un toucher relance le suivi au lieu de l'arrêter."
 }
