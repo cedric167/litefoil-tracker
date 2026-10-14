@@ -5,6 +5,15 @@ Play Store elle est livrée dans un emballage Android (Trusted Web Activity) qui
 `https://cedric167.github.io/litefoil-tracker/` en plein écran dans Chrome, Bluetooth
 compris. Tout ce qui suit se fait depuis un navigateur, sans outil de développement.
 
+## État au 2026-10-14 — TEST INTERNE PUBLIÉ
+
+- Fiche, contenu de l'application, sécurité des données, classification : remplis dans la console le 14/10.
+- Protection automatique Play : **désactivée** (Protégé avec Play → Protection automatique → Gérer → interrupteur « Vérification du programme d'installation » coupé → Enregistrer). Sinon un paquet dont le minSdk est < 24 est refusé.
+- Le paquet du 11/10 (`Lite Foil Tracker.aab`, minSdk 21) est refusé par Google avec une erreur générique à l'import, même après plusieurs essais. **Nouveau paquet régénéré le 14/10 par l'API PWABuilder avec la même clé** : `android/Lite Foil Tracker v1.0.1.aab` (version 1.0.1, code 2, minSdk 24, cible 36), accepté par Google en 30 s.
+- **Release de test interne « 2 (1.0.1) » publiée.** Liste de testeurs « Testeurs Lite Foil » (efs66180@gmail.com). Lien d'inscription des testeurs : <https://play.google.com/apps/internaltest/4701477775617225160>
+- Empreinte SHA-256 de la clé de signature Google Play (App Signing) : `63:F7:C9:FC:2B:28:83:94:00:4A:0B:DC:4E:6F:18:F7:54:24:42:AC:F9:B3:DF:F6:AE:61:88:42:A2:FE:A7:DE`, ajoutée dans `cedric167.github.io/.well-known/assetlinks.json` à côté de la clé d'importation.
+- Reste : installer depuis le lien sur le téléphone, vérifier le Bluetooth et l'absence de barre d'adresse, puis Production → Créer une version (même paquet) → Examiner → Lancer. Prochain paquet : version code 3.
+
 ## État au 2026-10-11 — paquet Android FABRIQUÉ, reste à publier
 
 | Fait | Où |
