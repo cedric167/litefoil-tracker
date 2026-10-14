@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.9.0",
-  "file": "telecommande-1.9.0.bin",
-  "size": 1534560,
-  "md5": "4ccf0b7da5eeff7804b0741794e41237",
+  "version": "1.9.1",
+  "file": "telecommande-1.9.1.bin",
+  "size": 1533584,
+  "md5": "e289e9fa55e609403d080f238d9cd207",
   "date": "2026-10-14",
-  "notes": "Nouvelle tuile « Retour » : boussole en relief (cap GPS de la planche, aiguille vers le nord), point de départ mémorisé au premier armement, direction et distance du départ, badge sur l'écran de roulage. Nécessite le récepteur mis à jour (câble USB)."
+  "notes": "Page Retour : boussole façon iPhone (anneau de graduations qui tourne, N rouge, cap en grands chiffres au centre, index blanc, pastille verte du point de départ) à la place de la boussole en relief."
 }
