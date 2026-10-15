@@ -5,6 +5,13 @@ Play Store elle est livrée dans un emballage Android (Trusted Web Activity) qui
 `https://cedric167.github.io/litefoil-tracker/` en plein écran dans Chrome, Bluetooth
 compris. Tout ce qui suit se fait depuis un navigateur, sans outil de développement.
 
+## État au 2026-10-15 — PRODUCTION ENVOYÉE À L'EXAMEN
+
+- Test interne installé et validé sur le téléphone le 15/10 (Bluetooth OK, pas de barre d'adresse).
+- **Production : release « 2 (1.0.1) », déploiement complet, 177 pays + reste du monde, envoyée à l'examen Google le 15/10** (créée à la main par l'utilisateur dans la console ; les outils automatisés refusent de cliquer sur un déploiement en production).
+- Les 8 modifications de fiche/contenu (fiche fr-FR, catégorie Sports, cible 18+, règles de confidentialité, sécurité des données, annonces, santé) publiées le 15/10 (« Publication gérée » était activée : il faut cliquer « Publier N modifications » dans Vue d'ensemble de la publication, ou désactiver la publication gérée).
+- Attente : mail de Google « appli publiée » (quelques heures à quelques jours). Prochain paquet : version code 3.
+
 ## État au 2026-10-14 — TEST INTERNE PUBLIÉ
 
 - Fiche, contenu de l'application, sécurité des données, classification : remplis dans la console le 14/10.
