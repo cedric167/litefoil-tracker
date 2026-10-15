@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.11.1",
-  "file": "telecommande-1.11.1.bin",
-  "size": 1601440,
-  "md5": "14cc0389f0b8df62218c82198d01b8dc",
+  "version": "1.12.0",
+  "file": "telecommande-1.12.0.bin",
+  "size": 1613696,
+  "md5": "bf76294a4413ab13c0a1919153757ade",
   "date": "2026-10-15",
-  "notes": "Page Chronos façon iOS : un chrono par écran, en grand (date et heure, temps, vitesse max, distance, chutes, plus long vol, temps moyen entre deux chutes). Balaye à gauche / droite, B ou l'inclinaison pour passer de l'un à l'autre, A ou le chevron pour revenir."
+  "notes": "Police ronde (Nunito) sur toutes les pages façon iOS : Chronos, Tracker, Bluetooth, Retour, appairage, calibration, gyro. Page Chronos en tuiles : temps en grand, vitesse max, distance, chutes, plus long vol, temps entre deux chutes."
 }
