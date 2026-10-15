@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.11.0",
-  "file": "telecommande-1.11.0.bin",
-  "size": 1600880,
-  "md5": "40c3f62bbe93b30f3d9a4f66a638d996",
+  "version": "1.11.1",
+  "file": "telecommande-1.11.1.bin",
+  "size": 1601440,
+  "md5": "14cc0389f0b8df62218c82198d01b8dc",
   "date": "2026-10-15",
-  "notes": "Horloge : heure dès l'allumage (RTC de la carte, réglée par l'appli à la connexion, recalée par le GPS). Chronos datés avec le nombre de chutes et le plus long vol. Page Retour : cap lissé au gyroscope entre deux positions GPS et à l'arrêt. Journal de bord : chaque sortie enregistrée (position, vitesse, gaz, batterie, 1/s) et relue dans l'appli (trace, courbes, export GPX). L'ancien historique des chronos est remis à zéro une fois."
+  "notes": "Page Chronos façon iOS : un chrono par écran, en grand (date et heure, temps, vitesse max, distance, chutes, plus long vol, temps moyen entre deux chutes). Balaye à gauche / droite, B ou l'inclinaison pour passer de l'un à l'autre, A ou le chevron pour revenir."
 }
