@@ -560,6 +560,7 @@
       <div><label for="rmTheme">Écran d'accueil</label><select id="rmTheme"><option value="0">Batterie en grand</option><option value="1">Vitesse en grand</option></select></div>
       <div><label for="rmLang">Langue</label><select id="rmLang"><option value="0">Français</option><option value="1">English</option><option value="2">Español</option><option value="3">Deutsch</option></select></div>
       <div><label for="rmPing">Signal radio à l'écran</label><select id="rmPing"><option value="0">Masqué</option><option value="1">Affiché</option></select></div>
+      <div><label for="rmGyro">Menus par inclinaison</label><select id="rmGyro"><option value="0">Off</option><option value="1">On (apprentissage fait sur la télécommande)</option></select></div>
       <div><label for="rmCbrand">Caméra</label><select id="rmCbrand"><option value="0">GoPro (HERO9 et +, Open GoPro)</option><option value="1">Insta360 X3 / X4 / X5 / ONE RS / Ace</option><option value="2">Insta360 GO 3 / GO 3S</option></select></div>
       <div><label for="rmCarec">Caméra : auto-REC</label><select id="rmCarec"><option value="0">Off</option><option value="1">À l'armement</option><option value="2">Au chrono</option></select></div>
       <div><label for="rmCstop">Caméra : arrêt après SAFE</label><select id="rmCstop"><option value="0">10 s</option><option value="1">30 s</option><option value="2">2 min</option><option value="3">Jamais</option></select></div>
@@ -576,8 +577,39 @@
   <h2>Chronos</h2>
   <div class="card">
     <div id="rmHist" class="note" style="margin:0">Connecte la télécommande pour voir les dix derniers chronos.</div>
+    <div id="rmSession" class="note" style="margin-top:8px"></div>
     <div class="row" style="margin-top:12px">
       <button id="btnRmHistClear" class="danger" disabled>Effacer l'historique</button>
+    </div>
+  </div>
+
+  <h2>Journal de bord</h2>
+  <div class="card">
+    <div class="note" style="margin:0">La télécommande enregistre chaque sortie (position, vitesse, gaz, batterie, une fois par seconde) dans sa mémoire.
+      Liste les sorties, ouvre-en une pour voir la trace et les courbes, ou exporte-la en GPX.</div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="btnLogList">Lister les sorties</button>
+      <button id="btnLogClear" class="danger">Tout effacer</button>
+    </div>
+    <div id="logList" class="note" style="margin-top:10px"></div>
+    <div class="gauge" id="logGauge" hidden style="margin-top:12px"><div class="fill" id="logFill"></div></div>
+    <div id="logView" hidden style="margin-top:12px">
+      <div class="grid">
+        <div class="kv"><div class="k">Durée</div><div class="v" id="lvDur">—</div></div>
+        <div class="kv"><div class="k">Distance</div><div class="v" id="lvDist">—</div></div>
+        <div class="kv"><div class="k">V. max</div><div class="v" id="lvVmax">—</div></div>
+        <div class="kv"><div class="k">V. moyenne (en vol)</div><div class="v" id="lvVavg">—</div></div>
+        <div class="kv"><div class="k">Temps moteur armé</div><div class="v" id="lvArmed">—</div></div>
+        <div class="kv"><div class="k">Batterie planche</div><div class="v" id="lvBat">—</div></div>
+      </div>
+      <div id="logMap" style="height:260px;border-radius:14px;margin-top:12px;overflow:hidden"></div>
+      <canvas id="lvSpd" height="110" style="width:100%;margin-top:10px"></canvas>
+      <canvas id="lvThr" height="80" style="width:100%;margin-top:6px"></canvas>
+      <canvas id="lvBatC" height="80" style="width:100%;margin-top:6px"></canvas>
+      <div class="row" style="margin-top:12px">
+        <button id="btnLogGpx">Exporter en GPX</button>
+        <button id="btnLogDel" class="danger">Supprimer cette sortie</button>
+      </div>
     </div>
   </div>
 
@@ -1294,10 +1326,11 @@
     const CH_CONTROL = "beb5483e-36e1-4688-b7f5-ea07361b26b3";
     const CH_HISTORY = "beb5483e-36e1-4688-b7f5-ea07361b26b4";
     const CH_OTA = "beb5483e-36e1-4688-b7f5-ea07361b26b5";
+    const CH_LOG = "beb5483e-36e1-4688-b7f5-ea07361b26b6";
     const FW_META = "firmware/telecommande.json";
     const NAME = "LITEFOIL-REMOTE";
     const dec = v => new TextDecoder().decode(v);
-    let dev = null, chStatus = null, chSettings = null, chControl = null, chHistory = null, chOta = null;
+    let dev = null, chStatus = null, chSettings = null, chControl = null, chHistory = null, chOta = null, chLog = null;
     let fwInstalled = null, fwAvail = null, otaRunning = false, otaCancel = false, otaWaiters = [];
     const rlog = (m, k) => log("[Télécommande] " + m, k);
     const setS = (txt, c) => { $("rmState").textContent = txt; $("rmLamp").className = "lamp" + (c ? " " + c : ""); };
@@ -1305,7 +1338,7 @@
     const enable = on => { for (const b of btns) b.disabled = !on; $("btnRmConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.remote = on; renderDash(); if (!on) fwInstalled = null; refreshUpdate(); };
     const TRK = { "0": "—", "1": "arrêté", "2": "en attente", "3": "en direct", "4": "identifiants refusés", "5": "pas de compte" };
     const SETTINGS = { rmCells: "cells", rmSpdOpt: "spd", rmSens: "sens", rmStart: "start", rmUnit: "unit", rmDis: "dis",
-                       rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmCbrand: "cbrand", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
+                       rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmGyro: "gyro", rmCbrand: "cbrand", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
     const fmtChr = ms => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
                            return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(sec).padStart(2, "0"); };
     const txt = (id, v) => { $(id).textContent = v; };
@@ -1317,6 +1350,8 @@
       txt("rmBat", s.rpct != null ? s.rpct + " % · " + s.rbat + " V" : "—");
       txt("rmLink", s.paired === "0" ? "non appairée" : (linked ? "OK" : "pas de signal"));
       txt("rmArmed", s.armed === "1" ? "ARMÉ" : "désarmé"); $("rmArmed").style.color = s.armed === "1" ? "var(--bad)" : "";
+      if (s.falls !== undefined) txt("rmSession", "Session en cours : " + s.falls + (s.falls === "1" ? " chute" : " chutes") + " · plus long vol " + fmtChr((num(s.flight) || 0) * 1000)
+        + (s.clock === "1" ? "" : " · heure non réglée") + (s.log !== undefined ? " · journal " + Math.round((num(s.log) || 0) / 1024) + " ko" : ""));
       txt("rmSpd", linked ? s.spd + " km/h" : "—"); txt("rmVmax", linked ? s.vmax + " km/h" : "—");
       txt("rmVbat", linked ? s.vbat + " V" : "—"); txt("rmWatts", linked ? s.watts + " W" : "—");
       txt("rmSats", s.sats != null ? s.sats + (s.fix === "1" ? " (fix)" : "") : "—");
@@ -1347,7 +1382,14 @@
       const n = num(s.n) || 0, rows = [];
       for (let i = 1; i <= n; i++){
         const h = (s["h" + i] || "").split("/"); if (h.length < 3) continue;
-        rows.push((i) + ". " + fmtChr(num(h[0]) || 0) + " · max " + ((num(h[1]) || 0) / 10).toFixed(1) + " km/h · " + ((num(h[2]) || 0) / 1000).toFixed(2) + " km");
+        let r = (i) + ". " + fmtChr(num(h[0]) || 0) + " · max " + ((num(h[1]) || 0) / 10).toFixed(1) + " km/h · " + ((num(h[2]) || 0) / 1000).toFixed(2) + " km";
+        if (h.length >= 6){
+          const ep = num(h[3]) || 0, fl = num(h[4]) || 0, fa = num(h[5]) || 0;
+          const d = ep ? new Date((ep + new Date().getTimezoneOffset() * 60) * 1000) : null;
+          r = (d ? d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }) + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) + " — " : "") + r
+            + " · " + fa + (fa === 1 ? " chute" : " chutes") + " · vol " + fmtChr(fl * 1000);
+        }
+        rows.push(r);
       }
       $("rmHist").innerHTML = rows.length ? rows.map(r => "<div>" + r.replace(/</g, "&lt;") + "</div>").join("") : "Aucun chrono enregistré (B ×3 en roulant = départ / arrêt).";
     }
@@ -1378,6 +1420,8 @@
         chHistory = await svc.getCharacteristic(CH_HISTORY);
         try { chOta = await svc.getCharacteristic(CH_OTA); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => otaMessage(dec(ev.target.value))); }
         catch (e) { chOta = null; rlog("Cette télécommande ne sait pas encore se mettre à jour par Bluetooth (firmware trop ancien)."); }
+        try { chLog = await svc.getCharacteristic(CH_LOG); await chLog.startNotifications(); chLog.addEventListener("characteristicvaluechanged", ev => logMessage(ev.target.value)); }
+        catch (e) { chLog = null; }
         await chStatus.startNotifications();
         chStatus.addEventListener("characteristicvaluechanged", async ev => {
           const text = dec(ev.target.value);
@@ -1386,6 +1430,8 @@
         });
         setS("Connectée à la télécommande", "on"); enable(true); rlog("Télécommande connectée.", "g");
         await readInto(chSettings, "Réglages", paintSettings);
+        // heure locale du téléphone -> horloge de la télécommande (chronos et journal datés)
+        await write(chControl, "time=" + Math.floor(Date.now() / 1000 - new Date().getTimezoneOffset() * 60), "Heure");
         await readInto(chHistory, "Chronos", paintHistory);
         await readInto(chStatus, "État", paint);
       } catch (e) {
@@ -1394,7 +1440,7 @@
       }
     }
     function onDisc(){
-      setS("Télécommande déconnectée"); enable(false); chStatus = chSettings = chControl = chHistory = chOta = null; otaFlush(new Error("télécommande déconnectée"));
+      setS("Télécommande déconnectée"); enable(false); chStatus = chSettings = chControl = chHistory = chOta = chLog = null; otaFlush(new Error("télécommande déconnectée")); logFlush(new Error("télécommande déconnectée"));
       rlog("Télécommande déconnectée.", "e");
     }
 
@@ -1531,6 +1577,126 @@
     $("btnRmUpdate").addEventListener("click", runUpdate);
     $("btnRmUpdCancel").addEventListener("click", () => { otaCancel = true; });
     loadFwMeta();
+
+
+    /* ===== Journal de bord : "list" -> lignes texte jusqu'à end=1 ; "get:nom:offset" -> offset (4 octets LE) + données ===== */
+    let logWaiter = null, logLines = [], logMap = null, logTrail = null, logCur = null, logRecs = null;
+    const logFlush = err => { if (logWaiter){ const w = logWaiter; logWaiter = null; w.reject(err); } };
+    function logMessage(v){
+      if (!logWaiter) return;
+      const w = logWaiter;
+      if (w.kind === "text"){
+        const t = dec(v); logLines.push(t);
+        if (t.includes("end=1") || t.startsWith("ok:") || t.startsWith("err:")){ logWaiter = null; w.resolve(logLines.join(";")); }
+      } else { logWaiter = null; w.resolve(v); }
+    }
+    function logAsk(cmd, kind){
+      return new Promise(async (resolve, reject) => {
+        if (!chLog){ reject(new Error("cette télécommande n'a pas de journal (firmware trop ancien)")); return; }
+        logLines = []; logWaiter = { kind, resolve, reject };
+        const t = setTimeout(() => { if (logWaiter){ logWaiter = null; reject(new Error("pas de réponse")); } }, 8000);
+        const ok = await write(chLog, cmd, "Journal"); if (!ok){ clearTimeout(t); logWaiter = null; reject(new Error("écriture impossible")); }
+      });
+    }
+    const lvTxt = (id, v) => { $(id).textContent = v; };
+    const dateLoc = ep => ep ? new Date((ep + new Date().getTimezoneOffset() * 60) * 1000) : null;
+    const fmtD = d => d ? d.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit" }) + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "date inconnue";
+    async function logListSessions(){
+      $("logList").textContent = "Lecture…"; $("logView").hidden = true;
+      try {
+        const s = parseLine(await logAsk("list", "text"));
+        const n = num(s.n) || 0, items = [];
+        for (let i = 1; i <= n; i++){ const p = (s["f" + i] || "").split("/"); if (p.length < 3) continue; items.push({ name: p[0], size: num(p[1]) || 0, epoch: num(p[2]) || 0 }); }
+        items.sort((a, b) => (parseInt(b.name) || 0) - (parseInt(a.name) || 0));
+        if (!items.length){ $("logList").textContent = "Aucune sortie enregistrée."; return; }
+        $("logList").innerHTML = items.map(it => {
+          const secs = Math.max(0, Math.floor((it.size - 16) / 20));
+          return '<div class="row" style="justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line-soft)"><span>' + fmtD(dateLoc(it.epoch)) + ' · ' + fmtChr(secs * 1000) + ' · ' + Math.round(it.size / 1024) + ' ko</span><button data-log="' + it.name + '" data-size="' + it.size + '">Ouvrir</button></div>';
+        }).join("");
+        for (const b of $("logList").querySelectorAll("button[data-log]")) b.addEventListener("click", () => logOpen(b.dataset.log, num(b.dataset.size) || 0));
+      } catch (e) { $("logList").textContent = "Journal : " + errText(e); }
+    }
+    async function logOpen(name, size){
+      $("logGauge").hidden = false; $("logFill").style.width = "0%"; $("logView").hidden = true;
+      try {
+        const parts = []; let off = 0;
+        while (off < size){
+          const v = await logAsk("get:" + name + ":" + off, "bin");
+          if (v.byteLength <= 4) break;
+          parts.push(new Uint8Array(v.buffer, v.byteOffset + 4, v.byteLength - 4)); off += v.byteLength - 4;
+          $("logFill").style.width = Math.min(100, Math.round(off * 100 / size)) + "%";
+        }
+        const all = new Uint8Array(off); let p = 0; for (const q of parts){ all.set(q, p); p += q.length; }
+        logCur = { name, size }; logRecs = logParse(all); logShow(logRecs);
+      } catch (e) { rlog("Journal : " + errText(e), "e"); }
+      $("logGauge").hidden = true;
+    }
+    function logParse(u8){
+      const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength); const recs = [];
+      if (u8.length < 16 || String.fromCharCode(u8[0], u8[1], u8[2], u8[3]) !== "LFJ1") return { start: 0, recs };
+      const recSize = u8[5] || 20, start = dv.getUint32(8, true);
+      for (let o = 16; o + recSize <= u8.length; o += recSize){
+        recs.push({ t: dv.getUint32(o, true), lat: dv.getInt32(o + 4, true) / 1e7, lon: dv.getInt32(o + 8, true) / 1e7,
+                    spd: dv.getUint16(o + 12, true) / 10, vbat: dv.getUint16(o + 14, true) / 10, thr: u8[o + 16], rbat: u8[o + 17], flags: u8[o + 18], mode: u8[o + 19] });
+      }
+      return { start, recs };
+    }
+    function hav(a, b){ const R = 6371000, r = Math.PI / 180, dl = (b.lat - a.lat) * r, dn = (b.lon - a.lon) * r;
+      const h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
+    function logShow(d){
+      const r = d.recs; if (!r.length){ rlog("Journal vide.", "e"); return; }
+      let dist = 0, vmax = 0, vsum = 0, vn = 0, armedS = 0, prev = null, bat0 = null, bat1 = null;
+      for (const x of r){
+        const fix = (x.flags & 2) !== 0;
+        if (fix && prev){ const dd = hav(prev, x); if (dd < 60) dist += dd; }
+        if (fix) prev = x;
+        if (x.spd > vmax) vmax = x.spd; if (x.spd >= 8){ vsum += x.spd; vn++; }
+        if (x.flags & 1) armedS++;
+        if (x.vbat > 5){ if (bat0 == null) bat0 = x.vbat; bat1 = x.vbat; }
+      }
+      lvTxt("lvDur", fmtChr(r.length * 1000)); lvTxt("lvDist", (dist / 1000).toFixed(2) + " km"); lvTxt("lvVmax", vmax.toFixed(1) + " km/h");
+      lvTxt("lvVavg", vn ? (vsum / vn).toFixed(1) + " km/h" : "—"); lvTxt("lvArmed", fmtChr(armedS * 1000));
+      lvTxt("lvBat", bat0 != null ? bat0.toFixed(1) + " → " + bat1.toFixed(1) + " V" : "—");
+      $("logView").hidden = false;
+      // carte
+      const pts = r.filter(x => (x.flags & 2) && Math.abs(x.lat) > 0.01).map(x => [x.lat, x.lon]);
+      if (window.L){
+        if (!logMap){ logMap = L.map($("logMap"), { zoomControl: true }); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" }).addTo(logMap); logTrail = L.polyline([], { color: "#19e3ff", weight: 4, opacity: 0.95 }).addTo(logMap); }
+        logTrail.setLatLngs(pts);
+        setTimeout(() => { logMap.invalidateSize(); if (pts.length) logMap.fitBounds(logTrail.getBounds().pad(0.15)); else logMap.setView([46.6, 2.4], 5); }, 50);
+      }
+      drawCurve("lvSpd", r.map(x => x.spd), "Vitesse (km/h)", "#19b8c8", 0, Math.max(10, vmax));
+      drawCurve("lvThr", r.map(x => x.thr), "Gaz (%)", "#f0a020", 0, 100);
+      const vb = r.map(x => x.vbat).filter(v => v > 5);
+      drawCurve("lvBatC", r.map(x => x.vbat > 5 ? x.vbat : null), "Batterie planche (V)", "#3fc06a", vb.length ? Math.min(...vb) - 1 : 0, vb.length ? Math.max(...vb) + 1 : 1);
+    }
+    function drawCurve(id, vals, label, col, lo, hi){
+      const c = $(id); const W = c.clientWidth || 320; c.width = W * devicePixelRatio; c.height = c.getAttribute("height") * devicePixelRatio;
+      const g = c.getContext("2d"); g.scale(devicePixelRatio, devicePixelRatio); const H = +c.getAttribute("height");
+      g.fillStyle = getComputedStyle(document.body).getPropertyValue("--tile") || "#f4f7f8"; g.fillRect(0, 0, W, H);
+      g.fillStyle = "#6b7a85"; g.font = "11px system-ui"; g.fillText(label + "  (" + hi.toFixed(0) + " max)", 8, 14);
+      g.strokeStyle = col; g.lineWidth = 1.6; g.beginPath(); let pen = false;
+      for (let i = 0; i < vals.length; i++){ const v = vals[i]; if (v == null){ pen = false; continue; }
+        const x = 8 + (W - 16) * i / Math.max(1, vals.length - 1), y = H - 8 - (H - 28) * (v - lo) / Math.max(1e-6, hi - lo);
+        if (!pen){ g.moveTo(x, y); pen = true; } else g.lineTo(x, y); }
+      g.stroke();
+    }
+    function logGpx(){
+      if (!logRecs || !logRecs.recs.length) return;
+      const pts = logRecs.recs.filter(x => (x.flags & 2) && Math.abs(x.lat) > 0.01);
+      const tz = new Date().getTimezoneOffset() * 60;
+      const iso = x => (x.flags & 8) ? new Date((x.t + tz) * 1000).toISOString() : "";
+      let g = '<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Lite Foil" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>Lite Foil ' + fmtD(dateLoc(logRecs.start)) + '</name><trkseg>\n';
+      for (const x of pts) g += '<trkpt lat="' + x.lat.toFixed(7) + '" lon="' + x.lon.toFixed(7) + '">' + (iso(x) ? '<time>' + iso(x) + '</time>' : '') + '<extensions><speed>' + (x.spd / 3.6).toFixed(2) + '</speed></extensions></trkpt>\n';
+      g += '</trkseg></trk></gpx>\n';
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([g], { type: "application/gpx+xml" })); a.download = "litefoil-" + (logCur ? logCur.name.replace(".bin", "") : "sortie") + ".gpx"; a.click();
+    }
+    $("btnLogList").addEventListener("click", logListSessions);
+    $("btnLogGpx").addEventListener("click", logGpx);
+    $("btnLogDel").addEventListener("click", async () => { if (!logCur || !confirm("Supprimer cette sortie de la télécommande ?")) return;
+      try { await logAsk("del:" + logCur.name, "text"); $("logView").hidden = true; logCur = null; logListSessions(); } catch (e) { rlog("Journal : " + errText(e), "e"); } });
+    $("btnLogClear").addEventListener("click", async () => { if (!confirm("Effacer toutes les sorties enregistrées dans la télécommande ?")) return;
+      try { await logAsk("clear", "text"); $("logView").hidden = true; logListSessions(); } catch (e) { rlog("Journal : " + errText(e), "e"); } });
 
     $("btnRmHistClear").addEventListener("click", async () => {
       if (!confirm("Effacer les chronos enregistrés dans la télécommande ?")) return;

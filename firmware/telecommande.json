@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.10.1",
-  "file": "telecommande-1.10.1.bin",
-  "size": 1538592,
-  "md5": "441d0016d238b21dccfeb5fbb0c04f67",
+  "version": "1.11.0",
+  "file": "telecommande-1.11.0.bin",
+  "size": 1600880,
+  "md5": "40c3f62bbe93b30f3d9a4f66a638d996",
   "date": "2026-10-15",
-  "notes": "Gyro : geste complet. L'action part au retour au neutre après une inclinaison franche (environ 30°) tenue au moins 0,2 s : pencher à droite et revenir = suivant, à gauche = précédent, vers soi et revenir = ouvrir / valider, loin de soi = retour. Pause de 0,5 s entre deux gestes."
+  "notes": "Horloge : heure dès l'allumage (RTC de la carte, réglée par l'appli à la connexion, recalée par le GPS). Chronos datés avec le nombre de chutes et le plus long vol. Page Retour : cap lissé au gyroscope entre deux positions GPS et à l'arrêt. Journal de bord : chaque sortie enregistrée (position, vitesse, gaz, batterie, 1/s) et relue dans l'appli (trace, courbes, export GPX). L'ancien historique des chronos est remis à zéro une fois."
 }
