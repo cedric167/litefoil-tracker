@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.9.2",
-  "file": "telecommande-1.9.2.bin",
-  "size": 1534320,
-  "md5": "541a232257fabbdde04243a64760c395",
+  "version": "1.10.0",
+  "file": "telecommande-1.10.0.bin",
+  "size": 1538368,
+  "md5": "e7af41da17affb8359e31bbc64d06fc8",
   "date": "2026-10-15",
-  "notes": "Calibration gâchette : page façon iOS (bandeau, étape 1/2 et 2/2, valeur en direct, annulation par B ou chevron, pastille OK / croix) et retour au menu général à la fin (le menu restait figé sur l'écran de calibration)."
+  "notes": "Navigation des menus par inclinaison (accéléromètre QMI8658 de la carte) : nouvelle tuile Gyro ON/OFF. À l'activation, apprentissage guidé en 3 étapes (tenir normalement, pencher à droite, pencher vers soi). Dans les menus : pencher à droite / gauche = tuile ou valeur suivante / précédente, vers soi = ouvrir ou valider, loin de soi = retour. Jamais actif en roulage ni moteur armé. Contient aussi la calibration façon iOS de la 1.9.2."
 }
