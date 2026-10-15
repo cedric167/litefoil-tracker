@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.9.1",
-  "file": "telecommande-1.9.1.bin",
-  "size": 1533584,
-  "md5": "e289e9fa55e609403d080f238d9cd207",
-  "date": "2026-10-14",
-  "notes": "Page Retour : boussole façon iPhone (anneau de graduations qui tourne, N rouge, cap en grands chiffres au centre, index blanc, pastille verte du point de départ) à la place de la boussole en relief."
+  "version": "1.9.2",
+  "file": "telecommande-1.9.2.bin",
+  "size": 1534320,
+  "md5": "541a232257fabbdde04243a64760c395",
+  "date": "2026-10-15",
+  "notes": "Calibration gâchette : page façon iOS (bandeau, étape 1/2 et 2/2, valeur en direct, annulation par B ou chevron, pastille OK / croix) et retour au menu général à la fin (le menu restait figé sur l'écran de calibration)."
 }
