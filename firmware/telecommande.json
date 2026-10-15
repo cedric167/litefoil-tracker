@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.12.0",
-  "file": "telecommande-1.12.0.bin",
-  "size": 1613696,
-  "md5": "bf76294a4413ab13c0a1919153757ade",
+  "version": "1.13.0",
+  "file": "telecommande-1.13.0.bin",
+  "size": 1653184,
+  "md5": "cbbbab450204fb1d8a0708cab552a083",
   "date": "2026-10-15",
-  "notes": "Police ronde (Nunito) sur toutes les pages façon iOS : Chronos, Tracker, Bluetooth, Retour, appairage, calibration, gyro. Page Chronos en tuiles : temps en grand, vitesse max, distance, chutes, plus long vol, temps entre deux chutes."
+  "notes": "Police ronde (Nunito) sur toutes les écritures : écran de roulage, barre haute, menu, pages de réglage, caméra, charge, logo de démarrage. Huit tailles embarquées (38 ko)."
 }
