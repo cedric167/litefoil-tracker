@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.10.0",
-  "file": "telecommande-1.10.0.bin",
-  "size": 1538368,
-  "md5": "e7af41da17affb8359e31bbc64d06fc8",
+  "version": "1.10.1",
+  "file": "telecommande-1.10.1.bin",
+  "size": 1538592,
+  "md5": "441d0016d238b21dccfeb5fbb0c04f67",
   "date": "2026-10-15",
-  "notes": "Navigation des menus par inclinaison (accéléromètre QMI8658 de la carte) : nouvelle tuile Gyro ON/OFF. À l'activation, apprentissage guidé en 3 étapes (tenir normalement, pencher à droite, pencher vers soi). Dans les menus : pencher à droite / gauche = tuile ou valeur suivante / précédente, vers soi = ouvrir ou valider, loin de soi = retour. Jamais actif en roulage ni moteur armé. Contient aussi la calibration façon iOS de la 1.9.2."
+  "notes": "Gyro : geste complet. L'action part au retour au neutre après une inclinaison franche (environ 30°) tenue au moins 0,2 s : pencher à droite et revenir = suivant, à gauche = précédent, vers soi et revenir = ouvrir / valider, loin de soi = retour. Pause de 0,5 s entre deux gestes."
 }
