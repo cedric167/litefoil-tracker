@@ -298,6 +298,17 @@
         <a class="linkbtn" href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener">Vidéos (YouTube)</a>
       </div>
     </div>
+    <h2>Communauté</h2>
+    <div class="card">
+      <p class="note" style="font-size:14px">Les riders Lite Foil se retrouvent sur WhatsApp : spots, sessions, conseils, entraide. Les idées
+        d'amélioration de la télécommande et de la planche sont les bienvenues, et les développeurs ont leur espace.</p>
+      <div class="links">
+        <a class="linkbtn primary" id="lnkWhatsapp" href="#" target="_blank" rel="noopener">Rejoindre les riders (WhatsApp)</a>
+        <a class="linkbtn" href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener">Proposer une amélioration</a>
+        <a class="linkbtn" href="https://github.com/cedric167/litefoil-tracker/discussions" target="_blank" rel="noopener">Espace développeurs (GitHub)</a>
+        <a class="linkbtn" href="manuel/telecommande.pdf" target="_blank" rel="noopener">Manuel de la télécommande</a>
+      </div>
+    </div>
     <h2>Mes sorties</h2>
     <div class="card">
       <p class="note" style="font-size:14px">Les sorties enregistrées par le tracker sont dans ton compte SportsTrackLive.</p>
@@ -649,6 +660,11 @@
 <script>
 (() => {
   "use strict";
+  // Groupe WhatsApp des riders : lien d'invitation du groupe (WhatsApp > groupe > Inviter via un lien).
+  // Vide tant que le groupe n'est pas créé : le bouton le dit et ne fait rien.
+  const WHATSAPP_GROUP = "";
+  { const a = document.getElementById("lnkWhatsapp");
+    if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.style.opacity = ".55"; a.addEventListener("click", (e) => e.preventDefault()); } } }
 
   const SERVICE = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
   const CH_STATUS = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
