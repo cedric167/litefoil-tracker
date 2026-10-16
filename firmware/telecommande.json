@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.13.2",
-  "file": "telecommande-1.13.2.bin",
-  "size": 1660304,
-  "md5": "249c4c79c5d03091628b8455c9cf0d3f",
+  "version": "1.13.3",
+  "file": "telecommande-1.13.3.bin",
+  "size": 1660400,
+  "md5": "bf54de4b361e2a31be653fbaa21a3c03",
   "date": "2026-10-16",
-  "notes": "À très vite en grand sur trois lignes, un mot par ligne"
+  "notes": "À très vite sur trois lignes bien centrées : mesure des accents corrigée"
 }
