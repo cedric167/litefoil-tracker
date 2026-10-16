@@ -258,7 +258,7 @@
     <button class="tab active" data-tab="dash">Accueil</button>
     <button class="tab" data-tab="tracker">Tracker</button>
     <button class="tab" data-tab="batterie">Batterie</button>
-    <button class="tab" data-tab="moteur">Moteur</button>
+    <button class="tab" data-tab="moteur">VESC</button>
     <button class="tab" data-tab="remote">Télécommande</button>
     <button class="tab" data-tab="litefoil">Lite Foil</button>
   </div>
@@ -315,7 +315,7 @@
       </button>
       <button class="devcard" data-goto="moteur" id="dcVesc">
         <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></span>
-        <span class="dev-nm">Moteur</span><span class="dev-st">—</span>
+        <span class="dev-nm">VESC</span><span class="dev-st">—</span>
       </button>
       <button class="devcard" data-goto="remote" id="dcRemote">
         <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="3"/><circle cx="12" cy="8" r="2"/><path d="M10 14h4M10 17.5h4"/></svg></span>
@@ -526,7 +526,7 @@
     <div class="note" id="vFirst">Allume le contrôleur puis appuie sur « Connecter » et choisis son module Bluetooth.
       Télémétrie en lecture seule : tension, courant, régime, températures, défaut.</div>
 
-    <h2>Moteur (VESC)</h2>
+    <h2>VESC</h2>
     <div class="card">
       <div class="hero-metric sm">
         <div class="hm-top"><span class="hm-label">Puissance moteur</span><span class="hm-max" id="vDutyTop">— %</span></div>
@@ -790,7 +790,7 @@
                                       soc == null ? "" : (DASH.soc != null ? "batterie" : "tracker"), sc);
     const pow = DASH.vescPow != null ? DASH.vescPow : DASH.batPow;
     $("dPow").textContent = pow == null ? "—" : Math.round(pow);
-    $("dPowSub").textContent = DASH.vescPow != null ? "moteur (live)" : (DASH.batPow != null ? "batterie" : "—");
+    $("dPowSub").textContent = DASH.vescPow != null ? "VESC (live)" : (DASH.batPow != null ? "batterie" : "—");
     $("dPowSpark").innerHTML = sparkSVG(HIST.pow, "#148a90");
     setChip("chGps", DASH.fix ? "on" : "bad", "GPS " + (DASH.fix ? (DASH.sats != null ? DASH.sats + " sats" : "fix") : "—"));
     setChip("chNet", DASH.net ? "on" : "bad", "Réseau " + (DASH.net ? "en ligne" : "hors ligne"));
@@ -1096,11 +1096,10 @@
   for (const b of document.querySelectorAll("[data-goto]")) b.addEventListener("click", () => { showTab(b.dataset.goto); try { localStorage.setItem("lf.tab", b.dataset.goto); } catch (err) {} });
   renderDash();
 
-  // Open on the tab asked in the URL (?tab=litefoil), else the one used last time.
+  // Open on the tab asked in the URL (?tab=litefoil), else always on the home tab.
   {
-    let wanted = new URLSearchParams(location.search).get("tab");
-    if (!wanted) { try { wanted = localStorage.getItem("lf.tab"); } catch (err) {} }
-    if (wanted) showTab(wanted);
+    const wanted = new URLSearchParams(location.search).get("tab");
+    showTab(wanted || "dash");
   }
 
   // Installable page: the service worker caches it, Chrome then offers "add to home screen".
@@ -1278,12 +1277,17 @@
   })();
 
   // ======================================================================
-  // Moteur — VESC over BLE (module HM-10 : service ffe0 / caractéristique ffe1)
+  // VESC over BLE : module nRF51/52 "VESC Tool" (Nordic UART 6e400001, écriture 6e400002, notif 6e400003),
+  // c'est le cas des Maytech, ou module HM-10 (service ffe0 / caractéristique ffe1)
   // Binaire VESC : paquet 0x02 len payload CRC16(XMODEM) 0x03 ; COMM_GET_VALUES=4.
   // ======================================================================
   (function vesc(){
     const SVC = "0000ffe0-0000-1000-8000-00805f9b34fb";
     const CH  = "0000ffe1-0000-1000-8000-00805f9b34fb";
+    const NUS = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const NUS_RX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";   // le téléphone écrit ici
+    const NUS_TX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";   // le VESC notifie ici
+    let chW = null;                                            // caractéristique d'écriture (= ch pour le HM-10)
     const FAULTS = ["Aucun","Surtension","Sous-tension","DRV","Surintensité","Surchauffe contrôleur","Surchauffe moteur",
                     "Surtension driver","Sous-tension driver","Sous-tension MCU","Watchdog","Capteur SPI","Capteur ampl. basse","Capteur ampl. haute","Flash corrompue"];
     let dev = null, ch = null, poll = null, rx = [];
@@ -1293,7 +1297,7 @@
     function crc16(d){ let c = 0; for (const b of d){ c ^= (b << 8) & 0xffff; for (let i=0;i<8;i++) c = (c & 0x8000) ? ((c<<1)^0x1021)&0xffff : (c<<1)&0xffff; } return c & 0xffff; }
     function frame(payload){ const f = payload.length <= 255 ? [0x02, payload.length, ...payload] : [0x03,(payload.length>>8)&255,payload.length&255,...payload]; const c = crc16(payload); f.push((c>>8)&255, c&255, 0x03); return new Uint8Array(f); }
 
-    async function send(bytes){ if (!ch) return; try { if (ch.writeValueWithoutResponse) await ch.writeValueWithoutResponse(bytes); else await ch.writeValue(bytes); } catch (e) { vlog("écriture échouée : " + errText(e), "e"); } }
+    async function send(bytes){ const w = chW || ch; if (!w) return; try { if (w.writeValueWithoutResponse) await w.writeValueWithoutResponse(bytes); else await w.writeValue(bytes); } catch (e) { vlog("écriture échouée : " + errText(e), "e"); } }
 
     function onNotify(ev){
       const v = new Uint8Array(ev.target.value.buffer);
@@ -1351,17 +1355,35 @@
       try {
         setS("Recherche du contrôleur…", "busy");
         dev = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [0xffe0] }, { namePrefix: "VESC" }, { namePrefix: "Maytech" }, { namePrefix: "MT" }, { namePrefix: "HMSoft" }],
-          optionalServices: [SVC],
+          filters: [{ services: [NUS] }, { services: [0xffe0] }, { namePrefix: "VESC" }, { namePrefix: "Maytech" }, { namePrefix: "MT" }, { namePrefix: "HMSoft" }],
+          optionalServices: [SVC, NUS],
         });
         dev.addEventListener("gattserverdisconnected", onDisc);
         setS("Connexion…", "busy");
+        vlog("Appareil : " + (dev.name || "(sans nom)"));
         const server = await dev.gatt.connect();
-        const svc = await server.getPrimaryService(SVC);
-        ch = await svc.getCharacteristic(CH);
+        let profil = "";
+        try {
+          const svc = await server.getPrimaryService(NUS);
+          ch = await svc.getCharacteristic(NUS_TX);
+          chW = await svc.getCharacteristic(NUS_RX);
+          profil = "Nordic UART";
+        } catch (e1) {
+          try {
+            const svc = await server.getPrimaryService(SVC);
+            ch = await svc.getCharacteristic(CH);
+            chW = ch;
+            profil = "HM-10";
+          } catch (e2) {
+            let liste = "";
+            try { liste = (await server.getPrimaryServices()).map(s => s.uuid).join(", "); } catch (e3) {}
+            throw new Error("aucun service UART connu sur ce module" + (liste ? " (services : " + liste + ")" : ""));
+          }
+        }
         await ch.startNotifications();
         ch.addEventListener("characteristicvaluechanged", onNotify);
         rx = [];
+        vlog("Profil " + profil + ".");
         setS("Connecté au contrôleur", "on"); DASH.conn.vesc = true; renderDash();
         $("btnVescConnect").textContent = "Déconnecter";
         vlog("Connecté. Lecture de la télémétrie.", "g");
@@ -1371,9 +1393,11 @@
       } catch (e) {
         if (e && e.name === "NotFoundError"){ setS("Non connecté"); vlog("Aucun contrôleur sélectionné. Vérifie que le module VESC est allumé et libre."); }
         else { setS("Échec de la connexion", "err"); vlog("Connexion impossible : " + errText(e), "e"); }
+        try { if (dev && dev.gatt && dev.gatt.connected) dev.gatt.disconnect(); } catch (e4) {}
+        ch = null; chW = null;
       }
     }
-    function onDisc(){ setS("Contrôleur déconnecté"); $("btnVescConnect").textContent = "Connecter"; ch = null; if (poll) clearInterval(poll); DASH.conn.vesc = false; DASH.vescPow = null; renderDash(); vlog("Contrôleur déconnecté.", "e"); }
+    function onDisc(){ setS("Contrôleur déconnecté"); $("btnVescConnect").textContent = "Connecter"; ch = null; chW = null; if (poll) clearInterval(poll); DASH.conn.vesc = false; DASH.vescPow = null; renderDash(); vlog("Contrôleur déconnecté.", "e"); }
 
     $("btnVescConnect").addEventListener("click", () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } connect(); });
   })();
