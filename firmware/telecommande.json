@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.13.1",
-  "file": "telecommande-1.13.1.bin",
-  "size": 1659808,
-  "md5": "a105e1ecc1293500a29194ca7afa844d",
+  "version": "1.13.2",
+  "file": "telecommande-1.13.2.bin",
+  "size": 1660304,
+  "md5": "249c4c79c5d03091628b8455c9cf0d3f",
   "date": "2026-10-16",
-  "notes": "Bonjour et À très vite en grand (police ronde 50/40 px), accents majuscules corrigés à l'extinction"
+  "notes": "À très vite en grand sur trois lignes, un mot par ligne"
 }
