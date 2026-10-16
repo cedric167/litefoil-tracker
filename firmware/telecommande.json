@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.13.0",
-  "file": "telecommande-1.13.0.bin",
-  "size": 1653184,
-  "md5": "cbbbab450204fb1d8a0708cab552a083",
-  "date": "2026-10-15",
-  "notes": "Police ronde (Nunito) sur toutes les écritures : écran de roulage, barre haute, menu, pages de réglage, caméra, charge, logo de démarrage. Huit tailles embarquées (38 ko)."
+  "version": "1.13.1",
+  "file": "telecommande-1.13.1.bin",
+  "size": 1659808,
+  "md5": "a105e1ecc1293500a29194ca7afa844d",
+  "date": "2026-10-16",
+  "notes": "Bonjour et À très vite en grand (police ronde 50/40 px), accents majuscules corrigés à l'extinction"
 }
