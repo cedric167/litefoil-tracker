@@ -683,7 +683,7 @@
   "use strict";
   // Groupe WhatsApp des riders : lien d'invitation du groupe (WhatsApp > groupe > Inviter via un lien).
   // Vide tant que le groupe n'est pas créé : le bouton le dit et ne fait rien.
-  const WHATSAPP_GROUP = "";
+  const WHATSAPP_GROUP = "https://chat.whatsapp.com/HqeJGzKuC0b4rZV3OksGec";
   { const a = document.getElementById("lnkWhatsapp");
     if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.classList.add("soon"); const sub = document.getElementById("waSub"); if (sub) sub.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.addEventListener("click", (e) => e.preventDefault()); } } }
 
