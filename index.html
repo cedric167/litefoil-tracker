@@ -67,6 +67,26 @@
   button.danger { background:#fff; border-color:var(--bad); color:var(--bad); }
   button:disabled { opacity:.35; cursor:default; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  /* Communaute (Accueil) : bouton WhatsApp et liste facon iOS */
+  .wa { display:flex; align-items:center; gap:14px; padding:15px 16px 15px 16px; border-radius:22px; color:#fff; text-decoration:none;
+        background:linear-gradient(135deg,#34d86f 0%,#25d366 45%,#128c7e 100%);
+        box-shadow:0 10px 26px rgba(18,140,126,.28), inset 0 1px 0 rgba(255,255,255,.28); transition:transform .12s ease, box-shadow .15s ease; }
+  .wa:active { transform:scale(.985); box-shadow:0 6px 16px rgba(18,140,126,.25); }
+  .wa .wa-ic { width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; flex:none; }
+  .wa .wa-ic svg { width:29px; height:29px; fill:#fff; }
+  .wa .wa-t { flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25; }
+  .wa .wa-t b { font-size:17.5px; font-weight:700; letter-spacing:-.01em; }
+  .wa .wa-t span { font-size:13.5px; opacity:.92; }
+  .wa .ch { opacity:.85; flex:none; }
+  .wa.soon { background:linear-gradient(135deg,#c3ccd2,#97a3ab); box-shadow:var(--sh-sm); }
+  .ioslist { margin-top:10px; background:#fff; border:1px solid var(--line-soft); border-radius:18px; overflow:hidden; box-shadow:var(--sh-sm); }
+  .ioslist a { display:flex; align-items:center; gap:12px; padding:12px 14px; color:var(--text); text-decoration:none; border-top:1px solid var(--line-soft); }
+  .ioslist a:first-child { border-top:0; }
+  .ioslist a:active { background:var(--tile); }
+  .ioslist .ic { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex:none; }
+  .ioslist .ic svg { width:17px; height:17px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .ioslist .lb { flex:1; font-weight:600; font-size:15px; }
+  .ioslist .ch { color:var(--muted-2); flex:none; }
   .kv { background:var(--tile); border:1px solid var(--line-soft); border-radius:14px; padding:11px 13px; }
   .kv .k { color:var(--muted); font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:600; }
   .kv .v { font-size:22px; font-variant-numeric:tabular-nums; font-family:"Instrument Serif", Georgia, serif;
@@ -282,6 +302,18 @@
         <span class="dev-nm">Télécommande</span><span class="dev-st">—</span>
       </button>
     </div>
+
+    <div class="m-label" style="margin:18px 6px 8px">Communauté</div>
+    <a class="wa" id="lnkWhatsapp" href="#" target="_blank" rel="noopener">
+      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
+      <span class="wa-t"><b>Riders Lite Foil</b><span id="waSub">Rejoindre le groupe WhatsApp</span></span>
+      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <div class="ioslist">
+      <a href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener"><span class="ic" style="background:#0a84ff"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></span><span class="lb">Proposer une amélioration</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+      <a href="https://github.com/cedric167/litefoil-tracker/discussions" target="_blank" rel="noopener"><span class="ic" style="background:#5e5ce6"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5"/><path d="M16 7l5 5-5 5"/><path d="M14 4l-4 16"/></svg></span><span class="lb">Espace développeurs</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+      <a href="manuel/telecommande.pdf" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+    </div>
   </section>
 
   <section id="tab-litefoil" class="tabpane" hidden>
@@ -296,17 +328,6 @@
         <a class="linkbtn" href="https://litefoil.fr/pages/contact" target="_blank" rel="noopener">Contact</a>
         <a class="linkbtn" href="https://litefoil.fr/account" target="_blank" rel="noopener">Mon compte Lite Foil</a>
         <a class="linkbtn" href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener">Vidéos (YouTube)</a>
-      </div>
-    </div>
-    <h2>Communauté</h2>
-    <div class="card">
-      <p class="note" style="font-size:14px">Les riders Lite Foil se retrouvent sur WhatsApp : spots, sessions, conseils, entraide. Les idées
-        d'amélioration de la télécommande et de la planche sont les bienvenues, et les développeurs ont leur espace.</p>
-      <div class="links">
-        <a class="linkbtn primary" id="lnkWhatsapp" href="#" target="_blank" rel="noopener">Rejoindre les riders (WhatsApp)</a>
-        <a class="linkbtn" href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener">Proposer une amélioration</a>
-        <a class="linkbtn" href="https://github.com/cedric167/litefoil-tracker/discussions" target="_blank" rel="noopener">Espace développeurs (GitHub)</a>
-        <a class="linkbtn" href="manuel/telecommande.pdf" target="_blank" rel="noopener">Manuel de la télécommande</a>
       </div>
     </div>
     <h2>Mes sorties</h2>
@@ -664,7 +685,7 @@
   // Vide tant que le groupe n'est pas créé : le bouton le dit et ne fait rien.
   const WHATSAPP_GROUP = "";
   { const a = document.getElementById("lnkWhatsapp");
-    if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.style.opacity = ".55"; a.addEventListener("click", (e) => e.preventDefault()); } } }
+    if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.classList.add("soon"); const sub = document.getElementById("waSub"); if (sub) sub.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.addEventListener("click", (e) => e.preventDefault()); } } }
 
   const SERVICE = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
   const CH_STATUS = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
