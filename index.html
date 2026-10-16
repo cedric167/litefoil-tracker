@@ -699,7 +699,7 @@
   // Vide tant que le groupe n'est pas créé : le bouton le dit et ne fait rien.
   const WHATSAPP_GROUP = "https://chat.whatsapp.com/HqeJGzKuC0b4rZV3OksGec";
   // Page Instagram Lite Foil : vide tant que le lien n'est pas donne (le bouton reste cache).
-  const INSTAGRAM_PAGE = "";
+  const INSTAGRAM_PAGE = "https://www.instagram.com/lite_foil_official";
   { const ig = document.getElementById("lnkInstagram"); if (ig && INSTAGRAM_PAGE) { ig.href = INSTAGRAM_PAGE; ig.hidden = false; } }
   { const a = document.getElementById("lnkWhatsapp");
     if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.classList.add("soon"); const sub = document.getElementById("waSub"); if (sub) sub.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.addEventListener("click", (e) => e.preventDefault()); } } }
