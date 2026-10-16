@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.13.3",
-  "file": "telecommande-1.13.3.bin",
-  "size": 1660400,
-  "md5": "bf54de4b361e2a31be653fbaa21a3c03",
+  "version": "1.14.0",
+  "file": "telecommande-1.14.0.bin",
+  "size": 1660752,
+  "md5": "3081eade4d8b02a171341c334da0bff2",
   "date": "2026-10-16",
-  "notes": "À très vite sur trois lignes bien centrées : mesure des accents corrigée"
+  "notes": "Gestes gyroscope plus précis : seuil calé sur l'amplitude apprise, accélération lissée, réaction plus rapide. Refaire l'apprentissage Gyro après la mise à jour."
 }
