@@ -79,6 +79,11 @@
   .wa .wa-t span { font-size:13.5px; opacity:.92; }
   .wa .ch { opacity:.85; flex:none; }
   .wa.soon { background:linear-gradient(135deg,#c3ccd2,#97a3ab); box-shadow:var(--sh-sm); }
+  .wa.fb { background:linear-gradient(135deg,#4a9bff 0%,#1877f2 45%,#0b5ed7 100%); box-shadow:0 10px 26px rgba(24,119,242,.28), inset 0 1px 0 rgba(255,255,255,.28); }
+  .wa.fb:active { box-shadow:0 6px 16px rgba(24,119,242,.25); }
+  .wa.ig { background:linear-gradient(135deg,#f9a03f 0%,#e1306c 50%,#8134af 100%); box-shadow:0 10px 26px rgba(225,48,108,.26), inset 0 1px 0 rgba(255,255,255,.28); }
+  .wa.ig:active { box-shadow:0 6px 16px rgba(225,48,108,.22); }
+  .wa.ig .wa-ic svg { fill:none; }
   .ioslist { margin-top:10px; background:#fff; border:1px solid var(--line-soft); border-radius:18px; overflow:hidden; box-shadow:var(--sh-sm); }
   .ioslist a { display:flex; align-items:center; gap:12px; padding:12px 14px; color:var(--text); text-decoration:none; border-top:1px solid var(--line-soft); }
   .ioslist a:first-child { border-top:0; }
@@ -262,6 +267,16 @@
     <a class="wa" style="margin-bottom:12px" id="lnkWhatsapp" href="#" target="_blank" rel="noopener">
       <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
       <span class="wa-t"><b>Riders Lite Foil</b><span id="waSub">Rejoindre le groupe WhatsApp</span></span>
+      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <a class="wa fb" id="lnkFacebook" style="margin-bottom:12px" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener">
+      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+      <span class="wa-t"><b>Lite Foil sur Facebook</b><span>Actus, photos et vidéos de la communauté</span></span>
+      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <a class="wa ig" id="lnkInstagram" style="margin-bottom:12px" href="#" target="_blank" rel="noopener" hidden>
+      <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="#fff" stroke="none"/></svg></span>
+      <span class="wa-t"><b>Lite Foil sur Instagram</b><span>Les plus belles sessions en images</span></span>
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </a>
     <div class="card hero-metric">
@@ -683,6 +698,9 @@
   // Groupe WhatsApp des riders : lien d'invitation du groupe (WhatsApp > groupe > Inviter via un lien).
   // Vide tant que le groupe n'est pas créé : le bouton le dit et ne fait rien.
   const WHATSAPP_GROUP = "https://chat.whatsapp.com/HqeJGzKuC0b4rZV3OksGec";
+  // Page Instagram Lite Foil : vide tant que le lien n'est pas donne (le bouton reste cache).
+  const INSTAGRAM_PAGE = "";
+  { const ig = document.getElementById("lnkInstagram"); if (ig && INSTAGRAM_PAGE) { ig.href = INSTAGRAM_PAGE; ig.hidden = false; } }
   { const a = document.getElementById("lnkWhatsapp");
     if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.classList.add("soon"); const sub = document.getElementById("waSub"); if (sub) sub.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.addEventListener("click", (e) => e.preventDefault()); } } }
 
