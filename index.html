@@ -609,6 +609,7 @@
       <div class="kv"><div class="k">Version</div><div class="v" id="rmFw">—</div></div>
       <div class="kv"><div class="k">Batterie télécommande</div><div class="v" id="rmBat">—</div></div>
       <div class="kv"><div class="k">Liaison planche</div><div class="v" id="rmLink">—</div></div>
+      <div class="kv"><div class="k">Autonomie estimée</div><div class="v" id="rmRem">—</div></div>
       <div class="kv"><div class="k">Moteur</div><div class="v" id="rmArmed">—</div></div>
       <div class="kv"><div class="k">Vitesse</div><div class="v" id="rmSpd">—</div></div>
       <div class="kv"><div class="k">Vitesse max</div><div class="v" id="rmVmax">—</div></div>
@@ -630,6 +631,8 @@
     <div class="grid">
       <div><label for="rmCells">Batterie planche</label><select id="rmCells"><option value="8">8 cellules</option><option value="9">9 cellules</option><option value="10">10 cellules</option><option value="11">11 cellules</option><option value="12">12 cellules</option><option value="13">13 cellules</option><option value="14">14 cellules</option><option value="15">15 cellules</option><option value="16">16 cellules</option><option value="17">17 cellules</option><option value="18">18 cellules</option><option value="19">19 cellules</option><option value="20">20 cellules</option></select></div>
       <div><label for="rmSpdOpt">Vitesse</label><select id="rmSpdOpt"><option value="0">LOW (60 %)</option><option value="1">MED (80 %)</option><option value="2">HIGH (100 %)</option></select></div>
+      <div><label for="rmLimit">Limite de vitesse GPS</label><select id="rmLimit"><option value="0">OFF</option><option value="8">8 km/h</option><option value="9">9 km/h</option><option value="10">10 km/h</option><option value="11">11 km/h</option><option value="12">12 km/h</option><option value="13">13 km/h</option><option value="14">14 km/h</option><option value="15">15 km/h</option><option value="16">16 km/h</option><option value="17">17 km/h</option><option value="18">18 km/h</option><option value="19">19 km/h</option><option value="20">20 km/h</option><option value="21">21 km/h</option><option value="22">22 km/h</option><option value="23">23 km/h</option><option value="24">24 km/h</option><option value="25">25 km/h</option><option value="26">26 km/h</option><option value="27">27 km/h</option><option value="28">28 km/h</option><option value="29">29 km/h</option><option value="30">30 km/h</option><option value="31">31 km/h</option><option value="32">32 km/h</option><option value="33">33 km/h</option><option value="34">34 km/h</option><option value="35">35 km/h</option><option value="36">36 km/h</option><option value="37">37 km/h</option><option value="38">38 km/h</option><option value="39">39 km/h</option><option value="40">40 km/h</option></select></div>
+      <div><label for="rmBah">Capacité batterie planche</label><select id="rmBah"><option value="0">Inconnue (pas d'autonomie)</option><option value="10">10 Ah</option><option value="15">15 Ah</option><option value="20">20 Ah</option><option value="25">25 Ah</option><option value="30">30 Ah</option><option value="35">35 Ah</option><option value="40">40 Ah</option><option value="45">45 Ah</option><option value="50">50 Ah</option><option value="55">55 Ah</option><option value="60">60 Ah</option><option value="70">70 Ah</option><option value="80">80 Ah</option><option value="100">100 Ah</option><option value="120">120 Ah</option><option value="150">150 Ah</option><option value="200">200 Ah</option></select></div>
       <div><label for="rmSens">Sensibilité gâchette</label><select id="rmSens"><option value="0">0 (douce)</option><option value="1">1</option><option value="2">2</option><option value="3">3 (vive)</option></select></div>
       <div><label for="rmStart">Poussée mini</label><select id="rmStart"><option value="0">0 %</option><option value="3">3 %</option><option value="6">6 %</option><option value="9">9 %</option><option value="12">12 %</option><option value="15">15 %</option><option value="18">18 %</option><option value="21">21 %</option><option value="24">24 %</option></select></div>
       <div><label for="rmUnit">Unités</label><select id="rmUnit"><option value="0">km/h</option><option value="1">mph</option></select></div>
@@ -1607,7 +1610,7 @@
     const btns = ["btnRmBuzz", "btnRmSave", "btnRmReload", "btnRmHistClear"].map($);
     const enable = on => { for (const b of btns) b.disabled = !on; $("btnRmConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.remote = on; renderDash(); if (!on) upd.setInstalled(null); upd.refresh(); };
     const TRK = { "0": "—", "1": "arrêté", "2": "en attente", "3": "en direct", "4": "identifiants refusés", "5": "pas de compte" };
-    const SETTINGS = { rmCells: "cells", rmSpdOpt: "spd", rmSens: "sens", rmStart: "start", rmUnit: "unit", rmDis: "dis",
+    const SETTINGS = { rmCells: "cells", rmSpdOpt: "spd", rmLimit: "lim", rmBah: "bah", rmSens: "sens", rmStart: "start", rmUnit: "unit", rmDis: "dis",
                        rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmGyro: "gyro", rmCbrand: "cbrand", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
     const fmtChr = ms => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
                            return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(sec).padStart(2, "0"); };
@@ -1621,6 +1624,12 @@
       txt("rmFw", s.fw || "—"); txt("rmFw2", s.fw || "—");
       if (s.fw) upd.setInstalled(s.fw);
       txt("rmBat", s.rpct != null ? s.rpct + " % · " + s.rbat + " V" : "—");
+      { const mn = parseInt(s.rem, 10), km = parseFloat(s.remkm), lim = parseInt(s.lim, 10);
+        let r = "—";
+        if (s.rem != null && mn >= 0) r = "≈ " + mn + " min" + (km > 0 ? " · " + km.toFixed(1) + " km" : "");
+        else if (s.cons != null && s.rem != null) r = "à l'arrêt · " + s.cons + " Wh consommés";
+        if (lim > 0) r += (r === "—" ? "" : " · ") + "limite " + lim + " km/h" + (s.limon === "1" ? " (active)" : "");
+        txt("rmRem", r); }
       txt("rmLink", s.paired === "0" ? "non appairée" : (linked ? "OK" : "pas de signal"));
       txt("rmArmed", s.armed === "1" ? "ARMÉ" : "désarmé"); $("rmArmed").style.color = s.armed === "1" ? "var(--bad)" : "";
       if (s.falls !== undefined) txt("rmSession", "Session en cours : " + s.falls + (s.falls === "1" ? " chute" : " chutes") + " · plus long vol " + fmtChr((num(s.flight) || 0) * 1000)
