@@ -326,7 +326,7 @@
     <div class="m-label" style="margin:18px 6px 8px">Aide et suggestions</div>
     <div class="ioslist">
       <a href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener"><span class="ic" style="background:#0a84ff"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></span><span class="lb">Proposer une amélioration</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
-      <a href="manuel/telecommande.pdf?v=20261017d" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+      <a href="manuel/telecommande.pdf?v=20261017e" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
     </div>
   </section>
 
@@ -556,7 +556,6 @@
         <div class="kv"><div class="k">Courant batterie</div><div class="v" id="vIin">—</div></div>
         <div class="kv"><div class="k">Puissance</div><div class="v" id="vW">—</div></div>
         <div class="kv"><div class="k">Courant moteur</div><div class="v" id="vIm">—</div></div>
-      <div class="kv"><div class="k">Firmware VESC</div><div class="v" id="vFw">—</div></div>
         <div class="kv"><div class="k">Gaz (duty)</div><div class="v" id="vDuty">—</div></div>
         <div class="kv"><div class="k">Régime (ERPM)</div><div class="v" id="vRpm">—</div></div>
         <div class="kv"><div class="k">Conso</div><div class="v" id="vWh">—</div></div>
@@ -567,13 +566,6 @@
       <div class="note" id="vNote">Connecte le contrôleur pour voir la télémétrie.</div>
     </div>
 
-    <h2>Mise à jour</h2>
-    <div class="card">
-      <p class="note" style="font-size:14px">Le firmware du contrôleur est celui du projet VESC, fourni par Maytech pour cette carte. Il ne se met
-        pas à jour depuis cette appli : un firmware qui ne correspond pas exactement au matériel rend le contrôleur inutilisable.
-        Utilise <b>VESC Tool</b> (Android, iOS ou PC par USB) : il reconnaît la carte, propose la bonne version et l'installe.
-        La version en place s'affiche ci-dessus dès que l'appli est connectée.</p>
-    </div>
   </section>
 
   <section id="tab-remote" class="tabpane" hidden>
@@ -714,8 +706,8 @@
       appairage, suivi en direct, retour au point de départ, urgence, caméra, application, gyroscope, référence de toutes les
       commandes, dépannage. PDF de 18 pages (3 Mo), mis à jour à chaque nouvelle version du firmware.</div>
     <div class="row" style="margin-top:12px">
-      <a href="manuel/telecommande.pdf?v=20261017d" target="_blank" rel="noopener"><button class="primary" type="button">Ouvrir le manuel</button></a>
-      <a href="manuel/telecommande.pdf?v=20261017d" download="Manuel telecommande Lite Foil.pdf"><button type="button">Télécharger (PDF)</button></a>
+      <a href="manuel/telecommande.pdf?v=20261017e" target="_blank" rel="noopener"><button class="primary" type="button">Ouvrir le manuel</button></a>
+      <a href="manuel/telecommande.pdf?v=20261017e" download="Manuel telecommande Lite Foil.pdf"><button type="button">Télécharger (PDF)</button></a>
     </div>
   </div>
   </section>
@@ -1322,12 +1314,12 @@
   });
 
   // ======================================================================
-  // Batterie — Daly SmartBMS over BLE (service fff0 / notify fff1 / write fff2)
+  // Batterie — BMS over BLE (service fff0 / notify fff1 / write fff2)
   // Deux générations sur le même GATT : Modbus (trames 0xD2) et classique (0xA5).
   // On sonde le Modbus d'abord, repli automatique sur l'A5.
   // ======================================================================
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  (function daly(){
+  (function bms(){
     const SVC = "0000fff0-0000-1000-8000-00805f9b34fb";
     const CH_N = "0000fff1-0000-1000-8000-00805f9b34fb";
     const CH_W = "0000fff2-0000-1000-8000-00805f9b34fb";
@@ -1425,7 +1417,7 @@
       try {
         setS("Recherche de la batterie…", "busy");
         dev = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [0xfff0] }, { namePrefix: "DL" }, { namePrefix: "Daly" }, { namePrefix: "BMS" }],
+          filters: [{ services: [0xfff0] }, { namePrefix: "DL" }, { namePrefix: "BMS" }],
           optionalServices: [SVC],
         });
         dev.addEventListener("gattserverdisconnected", onDisc);
@@ -1453,8 +1445,7 @@
   })();
 
   // ======================================================================
-  // VESC over BLE : module nRF51/52 "VESC Tool" (Nordic UART 6e400001, écriture 6e400002, notif 6e400003),
-  // c'est le cas des Maytech, ou module HM-10 (service ffe0 / caractéristique ffe1)
+  // VESC over BLE : module Nordic UART (6e400001, écriture 6e400002, notif 6e400003) ou module HM-10 (service ffe0 / caractéristique ffe1)
   // Binaire VESC : paquet 0x02 len payload CRC16(XMODEM) 0x03 ; COMM_GET_VALUES=4.
   // ======================================================================
   (function vesc(){
@@ -1494,13 +1485,6 @@
     }
 
     function handle(payload){
-      if (payload[0] === 0){        // COMM_FW_VERSION : majeure, mineure, nom du matériel
-        let i = 3, hw = ""; while (i < payload.length && payload[i] !== 0 && hw.length < 24) hw += String.fromCharCode(payload[i++]);
-        const v = payload[1] + "." + payload[2];
-        $("vFw").textContent = v + (hw ? " · " + hw : "");
-        vlog("Firmware VESC " + v + (hw ? " sur " + hw : "") + ".");
-        return;
-      }
       if (payload[0] !== 4) return; // COMM_GET_VALUES seulement
       const u = new Uint8Array(payload), dv = new DataView(u.buffer);
       let o = 1;
@@ -1538,7 +1522,7 @@
       try {
         setS("Recherche du contrôleur…", "busy");
         dev = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [NUS] }, { services: [0xffe0] }, { namePrefix: "VESC" }, { namePrefix: "Maytech" }, { namePrefix: "MT" }, { namePrefix: "HMSoft" }],
+          filters: [{ services: [NUS] }, { services: [0xffe0] }, { namePrefix: "VESC" }, { namePrefix: "HMSoft" }],
           optionalServices: [SVC, NUS],
         });
         dev.addEventListener("gattserverdisconnected", onDisc);
@@ -1571,7 +1555,6 @@
         $("btnVescConnect").textContent = "Déconnecter";
         vlog("Connecté. Lecture de la télémétrie.", "g");
         if (poll) clearInterval(poll);
-        await send(frame([0]));                                  // version du firmware, une fois
         const tick = () => send(frame([4]));
         tick(); poll = setInterval(tick, 500);
       } catch (e) {
