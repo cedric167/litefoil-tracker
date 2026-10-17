@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.15.0",
-  "file": "telecommande-1.15.0.bin",
-  "size": 1663024,
-  "md5": "25dee79496935df628b7503373d08e09",
+  "version": "1.15.1",
+  "file": "telecommande-1.15.1.bin",
+  "size": 1663040,
+  "md5": "3adccf1893286c85e61ab69cc46a1603",
   "date": "2026-10-17",
-  "notes": "Limite de vitesse GPS (tuile Limite, nécessite le récepteur mis à jour) et autonomie estimée (tuile Capacité : régler les Ah de la batterie)"
+  "notes": "Limite de vitesse GPS (tuile Limite, agit après la mise à jour du récepteur) et autonomie estimée (tuile Capacité : régler les Ah de la batterie)"
 }
