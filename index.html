@@ -463,6 +463,22 @@
   </div>
   </details>
 
+  <h2>Mise à jour</h2>
+  <div class="card">
+    <div class="grid">
+      <div class="kv"><div class="k">Installée</div><div class="v" id="tkFw">—</div></div>
+      <div class="kv"><div class="k">Disponible</div><div class="v" id="tkFwAvail">—</div></div>
+    </div>
+    <div class="gauge" id="tkUpdGauge" hidden style="margin-top:12px"><div class="fill" id="tkUpdFill"></div></div>
+    <div class="note" id="tkUpdNote">Connecte le tracker pour comparer sa version avec la dernière publiée.</div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="btnTkUpdate" disabled>Mettre à jour</button>
+      <button id="btnTkUpdCancel" hidden>Annuler</button>
+    </div>
+    <div class="note">La mise à jour passe par Bluetooth (trois à six minutes). Garde le téléphone à côté du tracker, planche allumée :
+      il vérifie l'empreinte du fichier avant d'installer et garde son firmware actuel en cas de souci.</div>
+  </div>
+
   <h2>Journal</h2>
   <div id="log">Rien pour l'instant.</div>
   </section>
@@ -515,6 +531,12 @@
         <span class="pill off" id="bBal">Équilibrage —</span>
       </div>
     </div>
+
+    <h2>Mise à jour</h2>
+    <div class="card">
+      <p class="note" style="font-size:14px">Le BMS Daly a un firmware propriétaire, sans mise à jour possible depuis une appli tierce. Les rares mises à jour
+        se font avec les outils Daly (appli Daly SmartBMS ou logiciel PC par câble UART). Cette appli ne lit la batterie qu'en lecture seule.</p>
+    </div>
   </section>
 
   <section id="tab-moteur" class="tabpane" hidden>
@@ -538,6 +560,7 @@
         <div class="kv"><div class="k">Courant batterie</div><div class="v" id="vIin">—</div></div>
         <div class="kv"><div class="k">Puissance</div><div class="v" id="vW">—</div></div>
         <div class="kv"><div class="k">Courant moteur</div><div class="v" id="vIm">—</div></div>
+      <div class="kv"><div class="k">Firmware VESC</div><div class="v" id="vFw">—</div></div>
         <div class="kv"><div class="k">Gaz (duty)</div><div class="v" id="vDuty">—</div></div>
         <div class="kv"><div class="k">Régime (ERPM)</div><div class="v" id="vRpm">—</div></div>
         <div class="kv"><div class="k">Conso</div><div class="v" id="vWh">—</div></div>
@@ -546,6 +569,14 @@
         <div class="kv"><div class="k">Défaut</div><div class="v" id="vFault">—</div></div>
       </div>
       <div class="note" id="vNote">Connecte le contrôleur pour voir la télémétrie.</div>
+    </div>
+
+    <h2>Mise à jour</h2>
+    <div class="card">
+      <p class="note" style="font-size:14px">Le firmware du contrôleur est celui du projet VESC, fourni par Maytech pour cette carte. Il ne se met
+        pas à jour depuis cette appli : un firmware qui ne correspond pas exactement au matériel rend le contrôleur inutilisable.
+        Utilise <b>VESC Tool</b> (Android, iOS ou PC par USB) : il reconnaît la carte, propose la bonne version et l'installe.
+        La version en place s'affiche ci-dessus dès que l'appli est connectée.</p>
     </div>
   </section>
 
@@ -704,10 +735,144 @@
   { const a = document.getElementById("lnkWhatsapp");
     if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.classList.add("soon"); const sub = document.getElementById("waSub"); if (sub) sub.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.addEventListener("click", (e) => e.preventDefault()); } } }
 
+  // ---------------- mise à jour de firmware par Bluetooth (télécommande et tracker) ----------------
+  // Le firmware publié est décrit par firmware/<produit>.json (version, taille, md5).
+  // Protocole côté appareil : "ota_begin:<taille>:<md5>" -> "ok:begin:<taille max d'un morceau>",
+  // morceaux binaires 0x01 + n° (3 octets) + données, "ack:<n° suivant>" tous les 8 morceaux,
+  // "err:seq:<n°>" s'il en manque un (on reprend là), "ota_end" -> "ok:end" puis redémarrage.
+  function md5hex(bytes){
+    const K = [], S = [7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];
+    for (let i = 0; i < 64; i++) K[i] = Math.floor(Math.abs(Math.sin(i + 1)) * 4294967296) >>> 0;
+    const n = bytes.length, padded = new Uint8Array(((n + 8) >> 6 << 6) + 64); padded.set(bytes); padded[n] = 0x80;
+    const bits = n * 8; const dv = new DataView(padded.buffer); dv.setUint32(padded.length - 8, bits >>> 0, true); dv.setUint32(padded.length - 4, Math.floor(bits / 4294967296), true);
+    let a0 = 0x67452301, b0 = 0xefcdab89, c0 = 0x98badcfe, d0 = 0x10325476;
+    const rotl = (x, c) => (x << c) | (x >>> (32 - c));
+    for (let off = 0; off < padded.length; off += 64){
+      const M = []; for (let i = 0; i < 16; i++) M[i] = dv.getUint32(off + i * 4, true);
+      let A = a0, B = b0, C = c0, D = d0;
+      for (let i = 0; i < 64; i++){
+        let F, g;
+        if (i < 16){ F = (B & C) | (~B & D); g = i; }
+        else if (i < 32){ F = (D & B) | (~D & C); g = (5 * i + 1) % 16; }
+        else if (i < 48){ F = B ^ C ^ D; g = (3 * i + 5) % 16; }
+        else { F = C ^ (B | ~D); g = (7 * i) % 16; }
+        F = (F + A + K[i] + M[g]) >>> 0; A = D; D = C; C = B; B = (B + rotl(F, S[i])) >>> 0;
+      }
+      a0 = (a0 + A) >>> 0; b0 = (b0 + B) >>> 0; c0 = (c0 + C) >>> 0; d0 = (d0 + D) >>> 0;
+    }
+    const out = new Uint8Array(16), ov = new DataView(out.buffer); ov.setUint32(0, a0, true); ov.setUint32(4, b0, true); ov.setUint32(8, c0, true); ov.setUint32(12, d0, true);
+    return Array.from(out, b => b.toString(16).padStart(2, "0")).join("");
+  }
+  const verCmp = (a, b) => { const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number); for (let i = 0; i < 3; i++){ if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); } return 0; };
+  function otaUpdater(cfg){
+    const ids = cfg.ids;
+    let ch = null, installed = null, avail = null, running = false, cancel = false, waiters = [];
+    const note = m => { $(ids.note).textContent = m; };
+    const fill = p => { $(ids.gauge).hidden = false; $(ids.fill).style.width = p + "%"; };
+    const enc = s => new TextEncoder().encode(s);
+    function refresh(){
+      const b = $(ids.btn);
+      if (running) return;
+      if (!ch || !installed){ b.disabled = true; b.textContent = "Mettre à jour"; if (!avail) note("Aucun firmware publié pour l'instant."); else note("Connecte " + cfg.who + " pour comparer sa version avec la dernière publiée (" + avail.version + ")."); return; }
+      if (!avail){ b.disabled = true; note("Aucun firmware publié pour l'instant."); return; }
+      const c = verCmp(avail.version, installed);
+      b.disabled = false;
+      if (c > 0){ b.textContent = "Mettre à jour vers " + avail.version; note("Nouvelle version disponible" + (avail.notes ? " : " + avail.notes : ".")); }
+      else { b.textContent = "Réinstaller " + avail.version; note(c === 0 ? cfg.Who + " est à jour." : cfg.Who + " a une version plus récente que celle publiée."); }
+    }
+    async function load(){
+      try { const r = await fetch(cfg.meta + "?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) throw new Error(r.status); avail = await r.json(); }
+      catch (e) { avail = null; }
+      $(ids.avail).textContent = avail ? avail.version : "—";
+      refresh();
+    }
+    function message(m){
+      const keep = [];
+      for (const w of waiters){ if (w.pred(m)) { clearTimeout(w.timer); w.resolve(m); } else keep.push(w); }
+      waiters = keep;
+    }
+    function wait(pred, ms, what){
+      return new Promise((resolve, reject) => {
+        const w = { pred, resolve, reject };
+        w.timer = setTimeout(() => { waiters = waiters.filter(x => x !== w); reject(new Error("pas de réponse de " + cfg.who + " (" + what + ")")); }, ms);
+        waiters.push(w);
+      });
+    }
+    function flush(err){ for (const w of waiters){ clearTimeout(w.timer); w.reject(err || new Error("abandon")); } waiters = []; }
+    async function write(bytes, withResponse){
+      if (!ch) throw new Error("pas de liaison");
+      if (withResponse){ if (ch.writeValueWithResponse) await ch.writeValueWithResponse(bytes); else await ch.writeValue(bytes); }
+      else { if (ch.writeValueWithoutResponse) await ch.writeValueWithoutResponse(bytes); else await ch.writeValue(bytes); }
+    }
+    async function run(){
+      if (!ch || !avail || running) return;
+      running = true; cancel = false;
+      const b = $(ids.btn); b.disabled = true; $(ids.cancel).hidden = false; fill(0);
+      try {
+        note("Téléchargement du firmware " + avail.version + "…");
+        const resp = await fetch("firmware/" + avail.file + "?v=" + avail.version, { cache: "no-store" });
+        if (!resp.ok) throw new Error("téléchargement impossible (" + resp.status + ")");
+        const buf = new Uint8Array(await resp.arrayBuffer());
+        if (buf.length !== avail.size) throw new Error("taille inattendue (" + buf.length + " au lieu de " + avail.size + ")");
+        const md5 = md5hex(buf);
+        if (md5 !== avail.md5) throw new Error("empreinte du fichier différente : téléchargement corrompu");
+        note("Préparation de " + cfg.who + "…");
+        const begin = wait(m => m.startsWith("ok:begin") || m.startsWith("err"), 15000, "début");
+        await write(enc("ota_begin:" + buf.length + ":" + md5), true);
+        const bm = await begin; if (!bm.startsWith("ok:begin")) throw new Error(bm);
+        const chunk = Math.max(16, Math.min(508, parseInt(bm.split(":")[2], 10) || 16));   // 508 + 4 d'en-tête = 512, maximum du Bluetooth web
+        const total = Math.ceil(buf.length / chunk);
+        cfg.log("Envoi de " + buf.length + " octets par morceaux de " + chunk + ".");
+        let seq = 0; const t0 = Date.now(); let lastPct = -1;
+        while (seq < total){
+          if (cancel) throw new Error("annulé");
+          const winEnd = Math.min(total, (Math.floor(seq / 8) + 1) * 8);
+          const ackP = wait(m => m === "ack:" + winEnd || m.startsWith("err"), 10000, "acquittement " + winEnd);
+          for (let s = seq; s < winEnd; s++){
+            const off = s * chunk, part = buf.subarray(off, Math.min(buf.length, off + chunk));
+            const pkt = new Uint8Array(4 + part.length); pkt[0] = 1; pkt[1] = s & 255; pkt[2] = (s >> 8) & 255; pkt[3] = (s >> 16) & 255; pkt.set(part, 4);
+            await write(pkt, false);
+          }
+          const r = await ackP;
+          if (r.startsWith("err:seq:")){ seq = parseInt(r.slice(8), 10) || 0; await sleep(400); flush(); cfg.log("Reprise au morceau " + seq + "."); continue; }
+          if (r.startsWith("err")) throw new Error(r);
+          seq = winEnd;
+          const pct = Math.floor(100 * seq / total);
+          if (pct !== lastPct){ lastPct = pct; fill(pct); const kb = Math.round(seq * chunk / 1024), rate = Math.round(kb / Math.max(1, (Date.now() - t0) / 1000)); note("Envoi " + pct + " % · " + kb + " ko · " + rate + " ko/s"); }
+        }
+        note("Vérification de l'empreinte et redémarrage…");
+        const endP = wait(m => m.startsWith("ok:end") || m.startsWith("err"), 60000, "fin");
+        await write(enc("ota_end"), true);
+        const em = await endP; if (!em.startsWith("ok:end")) throw new Error(em);
+        fill(100);
+        note("Firmware " + avail.version + " installé. " + cfg.afterInstall);
+        cfg.log("Firmware " + avail.version + " installé dans " + cfg.who + ".", "g");
+      } catch (e) {
+        const msg = errText(e);
+        note("Échec : " + msg + ". Le firmware actuel de " + cfg.who + " est conservé.");
+        cfg.log("Mise à jour échouée : " + msg, "e");
+        try { await write(enc("ota_abort"), true); } catch (x) {}
+      } finally {
+        running = false; $(ids.cancel).hidden = true; flush(); refresh();
+      }
+    }
+    $(ids.btn).addEventListener("click", run);
+    $(ids.cancel).addEventListener("click", () => { cancel = true; });
+    load();
+    return {
+      setChannel(c){ ch = c; refresh(); },
+      setInstalled(v){ v = v || null; if (v !== installed){ installed = v; refresh(); } },
+      message,
+      lost(why){ flush(new Error(why)); },
+      get running(){ return running; },
+    };
+  }
+
   const SERVICE = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
   const CH_STATUS = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
   const CH_SETTINGS = "beb5483e-36e1-4688-b7f5-ea07361b26a9";
   const CH_CONTROL = "beb5483e-36e1-4688-b7f5-ea07361b26ab";
+  const CH_OTA_T = "beb5483e-36e1-4688-b7f5-ea07361b26ac";   // mise à jour du firmware (tracker 0.4.0 et plus)
   const DEVICE_NAME = "LITEFOIL-TRACKER";
   // The v1 API, called from the phone's browser only. The device never talks to it.
   const STL_AUTH_URL = "https://api.sportstracklive.com/v1/auth";
@@ -717,7 +882,7 @@
   const lamp = $("lamp"), stateText = $("stateText"), logEl = $("log");
   const buttons = ["btnStart", "btnStop", "btnSave", "btnReload", "btnLogin", "btnUnbind"].map($);
 
-  let device = null, chSettings = null, chControl = null;
+  let device = null, chSettings = null, chControl = null, chOta = null;
   let firstLog = true;
 
   // ---------------- log ----------------
@@ -738,6 +903,9 @@
     $("btnConnect").textContent = on ? "Déconnecter" : "Connecter";
     DASH.conn.tracker = on; renderDash();
   }
+  const trkUpd = otaUpdater({ meta: "firmware/tracker.json", who: "le tracker", Who: "Le tracker", log,
+    ids: { avail: "tkFwAvail", gauge: "tkUpdGauge", fill: "tkUpdFill", note: "tkUpdNote", btn: "btnTkUpdate", cancel: "btnTkUpdCancel" },
+    afterInstall: "Le tracker redémarre (une trentaine de secondes), puis reconnecte-toi pour vérifier la version." });
 
   // ---------------- key=value lines ----------------
   function parseLine(text) {
@@ -801,6 +969,8 @@
 
   // ---------------- status ----------------
   function paintStatus(s) {
+    $("tkFw").textContent = s.fw || "—";
+    trkUpd.setInstalled(s.fw);
     const track = s.track === "1";
     $("tTrack").innerHTML = track ? '<span class="pill on">● en cours</span>' : '<span class="pill off">arrêté</span>';
     const net = s.net === "1";
@@ -922,6 +1092,9 @@
       const svc = await server.getPrimaryService(SERVICE);
       chSettings = await svc.getCharacteristic(CH_SETTINGS);
       chControl = await svc.getCharacteristic(CH_CONTROL);
+      try { chOta = await svc.getCharacteristic(CH_OTA_T); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => trkUpd.message(new TextDecoder().decode(ev.target.value))); }
+      catch (err) { chOta = null; log("Ce tracker ne sait pas encore se mettre à jour par Bluetooth (firmware trop ancien : une mise à jour par le câble est nécessaire une fois)."); }
+      trkUpd.setChannel(chOta);
       const chStatus = await svc.getCharacteristic(CH_STATUS);
       await chStatus.startNotifications();
       chStatus.addEventListener("characteristicvaluechanged", async ev => {
@@ -959,7 +1132,8 @@
   function onDisconnected() {
     setState("Tracker déconnecté");
     setConnected(false);
-    chSettings = chControl = null;
+    chSettings = chControl = chOta = null;
+    trkUpd.setChannel(null); trkUpd.setInstalled(null); trkUpd.lost("tracker déconnecté");
     log("Le tracker s'est déconnecté.", "e");
   }
 
@@ -1318,6 +1492,13 @@
     }
 
     function handle(payload){
+      if (payload[0] === 0){        // COMM_FW_VERSION : majeure, mineure, nom du matériel
+        let i = 3, hw = ""; while (i < payload.length && payload[i] !== 0 && hw.length < 24) hw += String.fromCharCode(payload[i++]);
+        const v = payload[1] + "." + payload[2];
+        $("vFw").textContent = v + (hw ? " · " + hw : "");
+        vlog("Firmware VESC " + v + (hw ? " sur " + hw : "") + ".");
+        return;
+      }
       if (payload[0] !== 4) return; // COMM_GET_VALUES seulement
       const u = new Uint8Array(payload), dv = new DataView(u.buffer);
       let o = 1;
@@ -1388,6 +1569,7 @@
         $("btnVescConnect").textContent = "Déconnecter";
         vlog("Connecté. Lecture de la télémétrie.", "g");
         if (poll) clearInterval(poll);
+        await send(frame([0]));                                  // version du firmware, une fois
         const tick = () => send(frame([4]));
         tick(); poll = setInterval(tick, 500);
       } catch (e) {
@@ -1420,22 +1602,24 @@
     const NAME = "LITEFOIL-REMOTE";
     const dec = v => new TextDecoder().decode(v);
     let dev = null, chStatus = null, chSettings = null, chControl = null, chHistory = null, chOta = null, chLog = null;
-    let fwInstalled = null, fwAvail = null, otaRunning = false, otaCancel = false, otaWaiters = [];
     const rlog = (m, k) => log("[Télécommande] " + m, k);
     const setS = (txt, c) => { $("rmState").textContent = txt; $("rmLamp").className = "lamp" + (c ? " " + c : ""); };
     const btns = ["btnRmBuzz", "btnRmSave", "btnRmReload", "btnRmHistClear"].map($);
-    const enable = on => { for (const b of btns) b.disabled = !on; $("btnRmConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.remote = on; renderDash(); if (!on) fwInstalled = null; refreshUpdate(); };
+    const enable = on => { for (const b of btns) b.disabled = !on; $("btnRmConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.remote = on; renderDash(); if (!on) upd.setInstalled(null); upd.refresh(); };
     const TRK = { "0": "—", "1": "arrêté", "2": "en attente", "3": "en direct", "4": "identifiants refusés", "5": "pas de compte" };
     const SETTINGS = { rmCells: "cells", rmSpdOpt: "spd", rmSens: "sens", rmStart: "start", rmUnit: "unit", rmDis: "dis",
                        rmTheme: "theme", rmLang: "lang", rmPing: "ping", rmGyro: "gyro", rmCbrand: "cbrand", rmCarec: "carec", rmCstop: "cstop", rmCmode: "cmode" };
     const fmtChr = ms => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
                            return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(sec).padStart(2, "0"); };
     const txt = (id, v) => { $(id).textContent = v; };
+    const upd = otaUpdater({ meta: FW_META, who: "la télécommande", Who: "La télécommande", log: rlog,
+      ids: { avail: "rmFwAvail", gauge: "rmUpdGauge", fill: "rmUpdFill", note: "rmUpdNote", btn: "btnRmUpdate", cancel: "btnRmUpdCancel" },
+      afterInstall: "La télécommande redémarre : rallume son Bluetooth (menu) et reconnecte-toi pour vérifier la version." });
 
     function paint(s){
       const linked = s.link === "1";
       txt("rmFw", s.fw || "—"); txt("rmFw2", s.fw || "—");
-      if (s.fw && s.fw !== fwInstalled){ fwInstalled = s.fw; refreshUpdate(); }
+      if (s.fw) upd.setInstalled(s.fw);
       txt("rmBat", s.rpct != null ? s.rpct + " % · " + s.rbat + " V" : "—");
       txt("rmLink", s.paired === "0" ? "non appairée" : (linked ? "OK" : "pas de signal"));
       txt("rmArmed", s.armed === "1" ? "ARMÉ" : "désarmé"); $("rmArmed").style.color = s.armed === "1" ? "var(--bad)" : "";
@@ -1507,8 +1691,9 @@
         chSettings = await svc.getCharacteristic(CH_SETTINGS);
         chControl = await svc.getCharacteristic(CH_CONTROL);
         chHistory = await svc.getCharacteristic(CH_HISTORY);
-        try { chOta = await svc.getCharacteristic(CH_OTA); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => otaMessage(dec(ev.target.value))); }
+        try { chOta = await svc.getCharacteristic(CH_OTA); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => upd.message(dec(ev.target.value))); }
         catch (e) { chOta = null; rlog("Cette télécommande ne sait pas encore se mettre à jour par Bluetooth (firmware trop ancien)."); }
+        upd.setChannel(chOta);
         try { chLog = await svc.getCharacteristic(CH_LOG); await chLog.startNotifications(); chLog.addEventListener("characteristicvaluechanged", ev => logMessage(ev.target.value)); }
         catch (e) { chLog = null; }
         await chStatus.startNotifications();
@@ -1529,7 +1714,7 @@
       }
     }
     function onDisc(){
-      setS("Télécommande déconnectée"); enable(false); chStatus = chSettings = chControl = chHistory = chOta = chLog = null; otaFlush(new Error("télécommande déconnectée")); logFlush(new Error("télécommande déconnectée"));
+      setS("Télécommande déconnectée"); enable(false); chStatus = chSettings = chControl = chHistory = chOta = chLog = null; upd.setChannel(null); upd.lost("télécommande déconnectée"); logFlush(new Error("télécommande déconnectée"));
       rlog("Télécommande déconnectée.", "e");
     }
 
@@ -1544,128 +1729,7 @@
       if (ok){ await sleep(300); await readInto(chSettings, "Réglages", paintSettings); $("rmSaveNote").textContent = "Enregistré dans la télécommande. Les valeurs affichées sont celles relues."; rlog("Réglages envoyés.", "g"); }
       else $("rmSaveNote").textContent = "La télécommande n'a pas accepté l'écriture. Rapproche-toi et réessaie.";
     });
-    // ---------------- mise à jour du firmware par Bluetooth ----------------
-    // Le firmware publié est décrit par firmware/telecommande.json (version, taille, md5).
-    // Protocole côté télécommande : "ota_begin:<taille>:<md5>" -> "ok:begin:<taille max d'un morceau>",
-    // morceaux binaires 0x01 + n° (3 octets) + données, "ack:<n° suivant>" tous les 8 morceaux,
-    // "err:seq:<n°>" s'il en manque un (on reprend là), "ota_end" -> "ok:end" puis redémarrage.
-    function md5hex(bytes){
-      const K = [], S = [7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];
-      for (let i = 0; i < 64; i++) K[i] = Math.floor(Math.abs(Math.sin(i + 1)) * 4294967296) >>> 0;
-      const n = bytes.length, padded = new Uint8Array(((n + 8) >> 6 << 6) + 64); padded.set(bytes); padded[n] = 0x80;
-      const bits = n * 8; const dv = new DataView(padded.buffer); dv.setUint32(padded.length - 8, bits >>> 0, true); dv.setUint32(padded.length - 4, Math.floor(bits / 4294967296), true);
-      let a0 = 0x67452301, b0 = 0xefcdab89, c0 = 0x98badcfe, d0 = 0x10325476;
-      const rotl = (x, c) => (x << c) | (x >>> (32 - c));
-      for (let off = 0; off < padded.length; off += 64){
-        const M = []; for (let i = 0; i < 16; i++) M[i] = dv.getUint32(off + i * 4, true);
-        let A = a0, B = b0, C = c0, D = d0;
-        for (let i = 0; i < 64; i++){
-          let F, g;
-          if (i < 16){ F = (B & C) | (~B & D); g = i; }
-          else if (i < 32){ F = (D & B) | (~D & C); g = (5 * i + 1) % 16; }
-          else if (i < 48){ F = B ^ C ^ D; g = (3 * i + 5) % 16; }
-          else { F = C ^ (B | ~D); g = (7 * i) % 16; }
-          F = (F + A + K[i] + M[g]) >>> 0; A = D; D = C; C = B; B = (B + rotl(F, S[i])) >>> 0;
-        }
-        a0 = (a0 + A) >>> 0; b0 = (b0 + B) >>> 0; c0 = (c0 + C) >>> 0; d0 = (d0 + D) >>> 0;
-      }
-      const out = new Uint8Array(16), ov = new DataView(out.buffer); ov.setUint32(0, a0, true); ov.setUint32(4, b0, true); ov.setUint32(8, c0, true); ov.setUint32(12, d0, true);
-      return Array.from(out, b => b.toString(16).padStart(2, "0")).join("");
-    }
-    const verCmp = (a, b) => { const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number); for (let i = 0; i < 3; i++){ if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); } return 0; };
-    const updNote = m => { $("rmUpdNote").textContent = m; };
-    const updFill = p => { $("rmUpdGauge").hidden = false; $("rmUpdFill").style.width = p + "%"; };
-
-    async function loadFwMeta(){
-      try { const r = await fetch(FW_META + "?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) throw new Error(r.status); fwAvail = await r.json(); }
-      catch (e) { fwAvail = null; }
-      txt("rmFwAvail", fwAvail ? fwAvail.version : "—");
-      refreshUpdate();
-    }
-    function refreshUpdate(){
-      const b = $("btnRmUpdate");
-      if (otaRunning) return;
-      if (!chOta || !fwInstalled){ b.disabled = true; b.textContent = "Mettre à jour"; if (!fwAvail) updNote("Aucun firmware publié pour l'instant."); else if (!dev || !dev.gatt.connected) updNote("Connecte la télécommande pour comparer sa version avec la dernière publiée (" + fwAvail.version + ")."); return; }
-      if (!fwAvail){ b.disabled = true; updNote("Aucun firmware publié pour l'instant."); return; }
-      const c = verCmp(fwAvail.version, fwInstalled);
-      b.disabled = false;
-      if (c > 0){ b.textContent = "Mettre à jour vers " + fwAvail.version; updNote("Nouvelle version disponible" + (fwAvail.notes ? " : " + fwAvail.notes : ".")); }
-      else { b.textContent = "Réinstaller " + fwAvail.version; updNote(c === 0 ? "La télécommande est à jour." : "La télécommande a une version plus récente que celle publiée."); }
-    }
-    function otaMessage(m){
-      const keep = [];
-      for (const w of otaWaiters){ if (w.pred(m)) { clearTimeout(w.timer); w.resolve(m); } else keep.push(w); }
-      otaWaiters = keep;
-    }
-    function otaWait(pred, ms, what){
-      return new Promise((resolve, reject) => {
-        const w = { pred, resolve, reject };
-        w.timer = setTimeout(() => { otaWaiters = otaWaiters.filter(x => x !== w); reject(new Error("pas de réponse de la télécommande (" + what + ")")); }, ms);
-        otaWaiters.push(w);
-      });
-    }
-    function otaFlush(err){ for (const w of otaWaiters){ clearTimeout(w.timer); w.reject(err || new Error("abandon")); } otaWaiters = []; }
-    async function otaWrite(bytes, withResponse){
-      if (!chOta) throw new Error("pas de liaison");
-      if (withResponse){ if (chOta.writeValueWithResponse) await chOta.writeValueWithResponse(bytes); else await chOta.writeValue(bytes); }
-      else { if (chOta.writeValueWithoutResponse) await chOta.writeValueWithoutResponse(bytes); else await chOta.writeValue(bytes); }
-    }
-    async function runUpdate(){
-      if (!chOta || !fwAvail || otaRunning) return;
-      otaRunning = true; otaCancel = false;
-      const b = $("btnRmUpdate"); b.disabled = true; $("btnRmUpdCancel").hidden = false; updFill(0);
-      const enc = s => new TextEncoder().encode(s);
-      try {
-        updNote("Téléchargement du firmware " + fwAvail.version + "…");
-        const resp = await fetch("firmware/" + fwAvail.file + "?v=" + fwAvail.version, { cache: "no-store" });
-        if (!resp.ok) throw new Error("téléchargement impossible (" + resp.status + ")");
-        const buf = new Uint8Array(await resp.arrayBuffer());
-        if (buf.length !== fwAvail.size) throw new Error("taille inattendue (" + buf.length + " au lieu de " + fwAvail.size + ")");
-        const md5 = md5hex(buf);
-        if (md5 !== fwAvail.md5) throw new Error("empreinte du fichier différente : téléchargement corrompu");
-        updNote("Préparation de la télécommande…");
-        const begin = otaWait(m => m.startsWith("ok:begin") || m.startsWith("err"), 15000, "début");
-        await otaWrite(enc("ota_begin:" + buf.length + ":" + md5), true);
-        const bm = await begin; if (!bm.startsWith("ok:begin")) throw new Error(bm);
-        const chunk = Math.max(16, Math.min(508, parseInt(bm.split(":")[2], 10) || 16));   // 508 + 4 d'en-tête = 512, maximum du Bluetooth web
-        const total = Math.ceil(buf.length / chunk);
-        rlog("Envoi de " + buf.length + " octets par morceaux de " + chunk + ".");
-        let seq = 0; const t0 = Date.now(); let lastPct = -1;
-        while (seq < total){
-          if (otaCancel) throw new Error("annulé");
-          const winEnd = Math.min(total, (Math.floor(seq / 8) + 1) * 8);
-          const ackP = otaWait(m => m === "ack:" + winEnd || m.startsWith("err"), 10000, "acquittement " + winEnd);
-          for (let s = seq; s < winEnd; s++){
-            const off = s * chunk, part = buf.subarray(off, Math.min(buf.length, off + chunk));
-            const pkt = new Uint8Array(4 + part.length); pkt[0] = 1; pkt[1] = s & 255; pkt[2] = (s >> 8) & 255; pkt[3] = (s >> 16) & 255; pkt.set(part, 4);
-            await otaWrite(pkt, false);
-          }
-          const r = await ackP;
-          if (r.startsWith("err:seq:")){ seq = parseInt(r.slice(8), 10) || 0; await sleep(400); otaFlush(); rlog("Reprise au morceau " + seq + "."); continue; }
-          if (r.startsWith("err")) throw new Error(r);
-          seq = winEnd;
-          const pct = Math.floor(100 * seq / total);
-          if (pct !== lastPct){ lastPct = pct; updFill(pct); const kb = Math.round(seq * chunk / 1024), rate = Math.round(kb / Math.max(1, (Date.now() - t0) / 1000)); updNote("Envoi " + pct + " % · " + kb + " ko · " + rate + " ko/s"); }
-        }
-        updNote("Vérification de l'empreinte et redémarrage…");
-        const endP = otaWait(m => m.startsWith("ok:end") || m.startsWith("err"), 40000, "fin");
-        await otaWrite(enc("ota_end"), true);
-        const em = await endP; if (!em.startsWith("ok:end")) throw new Error(em);
-        updFill(100);
-        updNote("Firmware " + fwAvail.version + " installé. La télécommande redémarre : rallume son Bluetooth (menu) et reconnecte-toi pour vérifier la version.");
-        rlog("Firmware " + fwAvail.version + " installé dans la télécommande.", "g");
-      } catch (e) {
-        const msg = errText(e);
-        updNote("Échec : " + msg + ". Le firmware actuel de la télécommande est conservé.");
-        rlog("Mise à jour échouée : " + msg, "e");
-        try { await otaWrite(new TextEncoder().encode("ota_abort"), true); } catch (x) {}
-      } finally {
-        otaRunning = false; $("btnRmUpdCancel").hidden = true; otaFlush(); refreshUpdate();
-      }
-    }
-    $("btnRmUpdate").addEventListener("click", runUpdate);
-    $("btnRmUpdCancel").addEventListener("click", () => { otaCancel = true; });
-    loadFwMeta();
+    // ---------------- mise à jour du firmware par Bluetooth : otaUpdater (partagé avec le tracker) ----------------
 
 
     /* ===== Journal de bord : "list" -> lignes texte jusqu'à end=1 ; "get:nom:offset" -> offset (4 octets LE) + données ===== */
