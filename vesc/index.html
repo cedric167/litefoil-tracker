@@ -91,12 +91,18 @@
           <div class="card metric"><div class="m-label">Moteur</div><div class="m-value"><span id="hTm">—</span><span class="m-unit">°C</span></div><div class="temp-bar"><i id="hTmBar"></i></div></div>
         </div>
         <div id="hFault" class="banner bad" hidden></div>
+        <button class="card motor-card" id="motorCard" type="button">
+          <img id="motorImg" src="img/propeller.webp" alt="">
+          <div><div class="m-label">Ton moteur</div><div class="dev-name" id="motorName">Choisir un profil</div>
+            <div class="m-sub" id="motorSub">Réglages essentiels et détection</div></div>
+          <svg class="ch" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
       </div>
 
       <div class="section-label" id="devLabel" hidden>Contrôleur</div>
       <div class="card" id="infoCard" hidden>
         <div class="dev-head">
-          <div class="dev-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></div>
+          <img class="dev-photo" src="img/controller.webp" alt="">
           <div>
             <div class="dev-name" id="devName">—</div>
             <div class="dev-sub" id="devSub">—</div>

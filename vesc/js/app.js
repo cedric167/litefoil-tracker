@@ -9,6 +9,7 @@ import { showDiagnostic } from './diag.js';
 import { initEssentials } from './essentials.js';
 import { initRemote } from './remote.js';
 import { initSession } from './session.js';
+import { PROFILES, savedProfile } from './profiles.js';
 import { $, $$, toast, fmt, fmtInt, clamp, download, pickFile, el, setKv, haptic } from './ui.js';
 
 const state = {
@@ -259,6 +260,7 @@ async function loadTarget() {
     ['UUID', fw.uuid || '?', { full: true, mono: true }],
   ]);
   $('#fwHwName').textContent = fw.hw || '?';
+  showMotorCard();
   $('#infoCard').hidden = false;
   $('#devLabel').hidden = false;
   renderCanChips();
@@ -272,6 +274,15 @@ async function loadTarget() {
   await readConfig('appconf', false, true);
   warnVersion(fw, ver);
 }
+
+// Carte « Ton moteur » de l'accueil : photo et nom du profil choisi dans la page Essentiel.
+function showMotorCard() {
+  const p = PROFILES[savedProfile()];
+  $('#motorImg').src = p ? p.img : 'img/propeller.webp';
+  $('#motorName').textContent = p ? p.name : 'Choisir un profil';
+  $('#motorSub').textContent = p ? p.specs.slice(0, 2).map((s) => s[1]).join(' · ') : 'Réglages essentiels et détection';
+}
+$('#motorCard').onclick = () => showPage('essentials');
 
 // Versions qui ne figurent pas dans VESC Tool : source fréquente de détections ratées sur les forums.
 async function warnVersion(fw, ver) {
@@ -1432,6 +1443,7 @@ const ctx = {
   makeParamRow,
   dirtyCount,
   keepAwake,
+  onProfile: () => showMotorCard(),
   canDevs: () => canDevs,
   kickTelemetry: () => telemetry.kick(),
   disableOutput: (ms) => state.vesc?.send(new Writer().uint8(COMM.APP_DISABLE_OUTPUT).int8(1).int32(ms).toBytes()),
