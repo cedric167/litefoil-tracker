@@ -639,7 +639,7 @@ function renderConfigPage(kind) {
   search.innerHTML = SEARCH_ICON;
   const input = el('input');
   input.type = 'search';
-  input.placeholder = 'Rechercher un réglage (courant, batterie, ppm…)';
+  input.placeholder = 'Rechercher un réglage (current, battery, ppm…)';
   input.value = vs.search;
   search.append(input);
   const groups = el('div', 'chips scroll cfg-groups');
@@ -836,9 +836,9 @@ function makeParamRow(cfg, name, opts = {}) {
   help.title = 'Aide';
   help.onclick = () => {
     $('#helpTitle').textContent = opts.label || P(p.n) || name;
-    $('#helpName').textContent = name + (p.n && P(p.n) !== p.n ? ' · ' + p.n : '');
+    $('#helpName').textContent = name;
     $('#helpBody').textContent = (opts.help ? opts.help + '\n\nDescription VESC Tool :\n' : '')
-      + (P(p.d) || 'Pas de description pour ce réglage.');
+      + (D(p.d) || 'Pas de description pour ce réglage.');
     $('#helpDialog').showModal();
   };
 
@@ -847,10 +847,14 @@ function makeParamRow(cfg, name, opts = {}) {
   return { el: row, update };
 }
 
-// Noms et explications des réglages VESC Tool (anglais d'origine) traduits selon la langue choisie :
+// Explications des réglages VESC Tool (anglais d'origine) traduites selon la langue choisie :
 // vesc/config/tr/fr.json et es.json, { "texte anglais": "traduction" }. En anglais : textes d'origine.
 let paramTr = new Map();
+// Noms, groupes et choix restent en anglais comme dans VESC Tool ; seules les explications sont traduites.
 function P(s) {
+  return s;
+}
+function D(s) {
   return (s && paramTr.get(s)) || s;
 }
 async function loadParamTr() {

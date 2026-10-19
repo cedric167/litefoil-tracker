@@ -23,9 +23,9 @@ Accès : l'atelier s'ouvre avec un code (empreinte SHA-256 dans `js/lock.js`, de
 session du navigateur). C'est une protection contre les changements par erreur, pas une sécurité
 forte : le code de la page reste lisible par qui le cherche.
 
-Langues : les noms, explications, choix et groupes des réglages VESC Tool sont traduits en français
-et en espagnol (`config/tr/strings.json`, anglais → français, espagnol ; `fr.json` et `es.json` en
-sont tirés). En anglais, l'atelier affiche les textes d'origine de VESC Tool.
+Langues : les noms, groupes et choix des réglages restent en anglais, comme dans VESC Tool ; leurs
+explications (bouton « ? ») sont traduites en français et en espagnol (`config/tr/strings.json`,
+anglais → français, espagnol ; `fr.json` et `es.json` en sont tirés).
 
 Liaison : en cas de coupure, l'atelier se reconnecte tout seul au même module (sans perdre les
 modifications non écrites) ; le diagnostic reprend les causes réelles de « could not read firmware
