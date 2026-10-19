@@ -14,6 +14,8 @@ Adresse : <https://cedric167.github.io/litefoil-tracker/bms/>
 | Commandes | MOS de charge et de décharge, calibrage de la charge (SOC), courant à zéro, redémarrage |
 | Infos | Versions logicielle et matérielle, code machine, date de fabrication ; sauvegarde et import des protections |
 
+Accès : même code que l'Atelier VESC (`../vesc/js/lock.js`), demandé une fois par session pour les deux ateliers.
+
 Protocoles : **Modbus** (trames `0xD2`, BMS récents) pour tout, **A5** (anciens modules)
 pour la lecture, les MOS et la charge. Service Bluetooth `fff0`, notification `fff1`, écriture `fff2`.
 Registres d'après le tableau Modbus et le protocole UART/485 V1.2 publiés par le fabricant. Reconnexion automatique après une coupure, mode démo.
