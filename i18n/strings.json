@@ -2203,10 +2203,6 @@
   "en": "Close",
   "es": "Cerrar"
  },
- "Fiche technique et manuel complet de la télécommande : prise en main, écran de roulage, sécurité, menu, appairage, suivi en direct, retour au point de départ, urgence, caméra, application, gyroscope, référence de toutes les commandes, dépannage. PDF de 18 pages (3 Mo), mis à jour à chaque nouvelle version du firmware.": {
-  "en": "Remote datasheet and full manual: getting started, riding screen, safety, menu, pairing, live tracking, return to start point, emergency, camera, app, gyroscope, reference of all controls, troubleshooting. 18-page PDF (3 MB), updated with each new firmware version.",
-  "es": "Ficha técnica y manual completo del mando: primeros pasos, pantalla de navegación, seguridad, menú, emparejamiento, seguimiento en directo, vuelta al punto de partida, emergencia, cámara, aplicación, giroscopio, referencia de todos los controles, solución de problemas. PDF de 18 páginas (3 MB), actualizado con cada nueva versión del firmware."
- },
  "Fichier .bin prévu pour ton matériel.": {
   "en": ".bin file intended for your hardware.",
   "es": "Archivo .bin previsto para tu hardware."
@@ -5470,5 +5466,9 @@
  "● en cours": {
   "en": "● in progress",
   "es": "● en curso"
+ },
+ "Fiche technique et manuel complet de la télécommande : prise en main, écran de roulage, sécurité, menu, appairage, suivi en direct, retour au point de départ, urgence, caméra, application, gyroscope, référence de toutes les commandes, dépannage, récepteur en version classique et en version tracker. PDF de 21 pages (3 Mo), mis à jour à chaque nouvelle version du firmware.": {
+  "en": "Remote datasheet and full manual: getting started, riding screen, safety, menu, pairing, live tracking, return to start point, emergency, camera, app, gyroscope, reference of all controls, troubleshooting, receiver in standard and tracker versions. 21-page PDF (3 MB), updated with each new firmware version.",
+  "es": "Ficha técnica y manual completo del mando: primeros pasos, pantalla de navegación, seguridad, menú, emparejamiento, seguimiento en directo, vuelta al punto de partida, emergencia, cámara, aplicación, giroscopio, referencia de todos los controles, solución de problemas, receptor en versión clásica y versión con tracker. PDF de 21 páginas (3 MB), actualizado con cada nueva versión del firmware."
  }
 }
