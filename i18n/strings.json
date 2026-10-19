@@ -1,0 +1,5314 @@
+{
+ "\" class=\"ring-bg\"/>": {
+  "en": "\" class=\"ring-bg\"/>",
+  "es": "\" class=\"ring-bg\"/>"
+ },
+ "\" class=\"ring-fg\" stroke=\"": {
+  "en": "\" class=\"ring-fg\" stroke=\"",
+  "es": "\" class=\"ring-fg\" stroke=\""
+ },
+ "\" cy=\"": {
+  "en": "\" cy=\"",
+  "es": "\" cy=\""
+ },
+ "\" data-size=\"": {
+  "en": "\" data-size=\"",
+  "es": "\" data-size=\""
+ },
+ "\" fill-opacity=\"0.1\"/>": {
+  "en": "\" fill-opacity=\"0.1\"/>",
+  "es": "\" fill-opacity=\"0.1\"/>"
+ },
+ "\" fill=\"": {
+  "en": "\" fill=\"",
+  "es": "\" fill=\""
+ },
+ "\" fill=\"none\" stroke=\"": {
+  "en": "\" fill=\"none\" stroke=\"",
+  "es": "\" fill=\"none\" stroke=\""
+ },
+ "\" lon=\"": {
+  "en": "\" lon=\"",
+  "es": "\" lon=\""
+ },
+ "\" preserveAspectRatio=\"none\" class=\"spark-svg\">": {
+  "en": "\" preserveAspectRatio=\"none\" class=\"spark-svg\">",
+  "es": "\" preserveAspectRatio=\"none\" class=\"spark-svg\">"
+ },
+ "\" preserveAspectRatio=\"none\">": {
+  "en": "\" preserveAspectRatio=\"none\">",
+  "es": "\" preserveAspectRatio=\"none\">"
+ },
+ "\" r=\"2.4\" fill=\"": {
+  "en": "\" r=\"2.4\" fill=\"",
+  "es": "\" r=\"2.4\" fill=\""
+ },
+ "\" stop-opacity=\".28\"/><stop offset=\"1\" stop-color=\"": {
+  "en": "\" stop-opacity=\".28\"/><stop offset=\"1\" stop-color=\"",
+  "es": "\" stop-opacity=\".28\"/><stop offset=\"1\" stop-color=\""
+ },
+ "\" stop-opacity=\"0\"/>": {
+  "en": "\" stop-opacity=\"0\"/>",
+  "es": "\" stop-opacity=\"0\"/>"
+ },
+ "\" stroke-dasharray=\"": {
+  "en": "\" stroke-dasharray=\"",
+  "es": "\" stroke-dasharray=\""
+ },
+ "\" stroke-dashoffset=\"": {
+  "en": "\" stroke-dashoffset=\"",
+  "es": "\" stroke-dashoffset=\""
+ },
+ "\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>": {
+  "en": "\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>",
+  "es": "\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>"
+ },
+ "\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\" stroke-linejoin=\"round\"/>": {
+  "en": "\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\" stroke-linejoin=\"round\"/>",
+  "es": "\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\" stroke-linejoin=\"round\"/>"
+ },
+ "\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"": {
+  "en": "\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"",
+  "es": "\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\""
+ },
+ "\">Ouvrir": {
+  "en": "\">Open",
+  "es": "\">Abrir"
+ },
+ "% : la vitesse de pointe est limitée. 95 % est la valeur normale.": {
+  "en": "%: top speed is limited. 95 % is the normal value.",
+  "es": "%: la velocidad máxima está limitada. 95 % es el valor normal."
+ },
+ "% restants": {
+  "en": "% left",
+  "es": "% restante"
+ },
+ "& sessions live": {
+  "en": "& live sessions",
+  "es": "y sesiones en directo"
+ },
+ "(même signature). Vérifie la page Essentiel.": {
+  "en": "(same signature). Check the Essentials page.",
+  "es": "(misma firma). Revisa la página Esencial."
+ },
+ "(pas dans le téléphone). Ensuite, à chaque sortie, c'est le": {
+  "en": "(not in the phone). Then, on every ride, it's the",
+  "es": "(no en el teléfono). Después, en cada salida, es el"
+ },
+ "(sans mot de passe)": {
+  "en": "(no password)",
+  "es": "(sin contraseña)"
+ },
+ "(sans nom)": {
+  "en": "(unnamed)",
+  "es": "(sin nombre)"
+ },
+ "(services :": {
+  "en": "(services:",
+  "es": "(servicios:"
+ },
+ "(« identifiants refusés » si le mot de passe est faux).": {
+  "en": "(\"credentials rejected\" if the password is wrong).",
+  "es": "(«credenciales rechazadas» si la contraseña es incorrecta)."
+ },
+ ") : identifiant, mot de passe ou clé d'application incorrect.": {
+  "en": "): wrong username, password or app key.",
+  "es": "): usuario, contraseña o clave de aplicación incorrectos."
+ },
+ ") peut rendre le contrôleur inutilisable. Ne coupe pas l'alimentation et garde le téléphone près de la planche : par Bluetooth l'envoi dure plusieurs minutes.": {
+  "en": ") can brick the controller. Don't cut the power and keep the phone close to the board: over Bluetooth the upload takes several minutes.",
+  "es": ") puede dejar el controlador inservible. No cortes la alimentación y mantén el teléfono cerca de la tabla: por Bluetooth el envío tarda varios minutos."
+ },
+ ")\"/><path d=\"": {
+  "en": ")\"/><path d=\"",
+  "es": ")\"/><path d=\""
+ },
+ "). Vérifie la connexion internet du téléphone.": {
+  "en": "). Check the phone's internet connection.",
+  "es": "). Comprueba la conexión a internet del teléfono."
+ },
+ ", reconnues par leur signature : la lecture est fiable, mais les nouveautés de cette version peuvent manquer.": {
+  "en": ", recognized by their signature: reading is reliable, but this version's new features may be missing.",
+  "es": ", reconocidas por su firma: la lectura es fiable, pero pueden faltar las novedades de esta versión."
+ },
+ ", voir leur propre politique de confidentialité), et au service technique de SportsTrackLive qui identifie le tracker par son numéro de série. Ces envois dépendent de votre compte SportsTrackLive, pas de Lite Foil.": {
+  "en": ", see their own privacy policy), and to SportsTrackLive's technical service, which identifies the tracker by its serial number. These uploads depend on your SportsTrackLive account, not on Lite Foil.",
+  "es": ", consulta su propia política de privacidad), y al servicio técnico de SportsTrackLive, que identifica el tracker por su número de serie. Estos envíos dependen de tu cuenta de SportsTrackLive, no de Lite Foil."
+ },
+ ". Elle apparaît alors ici sous le nom": {
+  "en": ". It then shows up here as",
+  "es": ". Entonces aparece aquí con el nombre"
+ },
+ ". Le firmware actuel de": {
+  "en": ". The current firmware of",
+  "es": ". El firmware actual de"
+ },
+ ". Les fichiers compressés (heatshrink) ne sont pas encore pris en charge : utiliser VESC Tool pour ceux-là.": {
+  "en": ". Compressed files (heatshrink) are not supported yet: use VESC Tool for those.",
+  "es": ". Los archivos comprimidos (heatshrink) aún no son compatibles: usa VESC Tool para ellos."
+ },
+ ". Refais la détection (hélice démontée, batterie chargée).": {
+  "en": ". Run the detection again (propeller removed, battery charged).",
+  "es": ". Vuelve a hacer la detección (hélice desmontada, batería cargada)."
+ },
+ ". Sans appli connectée, elle coupe son Bluetooth après 5 minutes ; en roulant, elle n'accepte plus de nouvelle connexion mais garde celle en cours.": {
+  "en": ". With no app connected, it turns its Bluetooth off after 5 minutes; while riding, it accepts no new connection but keeps the current one.",
+  "es": ". Sin app conectada, apaga su Bluetooth tras 5 minutos; en marcha, ya no acepta conexiones nuevas pero mantiene la actual."
+ },
+ ". Si SportsTrackLive refuse l'e-mail ou le mot de passe, la tuile « Session STL » affiche « identifiants refusés ». Le mot de passe reste dans la mémoire du tracker (lisible par USB), jamais sur ce téléphone.": {
+  "en": ". If SportsTrackLive rejects the e-mail or password, the \"STL session\" tile shows \"credentials rejected\". The password stays in the tracker's memory (readable over USB), never on this phone.",
+  "es": ". Si SportsTrackLive rechaza el correo o la contraseña, la casilla «Sesión STL» muestra «credenciales rechazadas». La contraseña se queda en la memoria del tracker (legible por USB), nunca en este teléfono."
+ },
+ "0 (douce)": {
+  "en": "0 (soft)",
+  "es": "0 (suave)"
+ },
+ "0 = valeurs par défaut du contrôleur.": {
+  "en": "0 = controller defaults.",
+  "es": "0 = valores por defecto del controlador."
+ },
+ "10 Ah": {
+  "en": "10 Ah",
+  "es": "10 Ah"
+ },
+ "10 Hz": {
+  "en": "10 Hz",
+  "es": "10 Hz"
+ },
+ "10 cellules": {
+  "en": "10 cells",
+  "es": "10 celdas"
+ },
+ "10 km/h": {
+  "en": "10 km/h",
+  "es": "10 km/h"
+ },
+ "100 Ah": {
+  "en": "100 Ah",
+  "es": "100 Ah"
+ },
+ "11 cellules": {
+  "en": "11 cells",
+  "es": "11 celdas"
+ },
+ "11 km/h": {
+  "en": "11 km/h",
+  "es": "11 km/h"
+ },
+ "110 tr/min/V": {
+  "en": "110 rpm/V",
+  "es": "110 rpm/V"
+ },
+ "11px \"Instrument Sans\", system-ui, sans-serif": {
+  "en": "11px \"Instrument Sans\", system-ui, sans-serif",
+  "es": "11px \"Instrument Sans\", system-ui, sans-serif"
+ },
+ "11px system-ui": {
+  "en": "11px system-ui",
+  "es": "11px system-ui"
+ },
+ "12 cellules": {
+  "en": "12 cells",
+  "es": "12 celdas"
+ },
+ "12 km/h": {
+  "en": "12 km/h",
+  "es": "12 km/h"
+ },
+ "120 Ah": {
+  "en": "120 Ah",
+  "es": "120 Ah"
+ },
+ "13 cellules": {
+  "en": "13 cells",
+  "es": "13 celdas"
+ },
+ "13 km/h": {
+  "en": "13 km/h",
+  "es": "13 km/h"
+ },
+ "14 cellules": {
+  "en": "14 cells",
+  "es": "14 celdas"
+ },
+ "14 km/h": {
+  "en": "14 km/h",
+  "es": "14 km/h"
+ },
+ "15 Ah": {
+  "en": "15 Ah",
+  "es": "15 Ah"
+ },
+ "15 cellules": {
+  "en": "15 cells",
+  "es": "15 celdas"
+ },
+ "15 km/h": {
+  "en": "15 km/h",
+  "es": "15 km/h"
+ },
+ "150 Ah": {
+  "en": "150 Ah",
+  "es": "150 Ah"
+ },
+ "16 cellules": {
+  "en": "16 cells",
+  "es": "16 celdas"
+ },
+ "16 km/h": {
+  "en": "16 km/h",
+  "es": "16 km/h"
+ },
+ "17 cellules": {
+  "en": "17 cells",
+  "es": "17 celdas"
+ },
+ "17 km/h": {
+  "en": "17 km/h",
+  "es": "17 km/h"
+ },
+ "18 cellules": {
+  "en": "18 cells",
+  "es": "18 celdas"
+ },
+ "18 km/h": {
+  "en": "18 km/h",
+  "es": "18 km/h"
+ },
+ "19 cellules": {
+  "en": "19 cells",
+  "es": "19 celdas"
+ },
+ "19 km/h": {
+  "en": "19 km/h",
+  "es": "19 km/h"
+ },
+ "2 Hz": {
+  "en": "2 Hz",
+  "es": "2 Hz"
+ },
+ "2 min": {
+  "en": "2 min",
+  "es": "2 min"
+ },
+ "20 Ah": {
+  "en": "20 Ah",
+  "es": "20 Ah"
+ },
+ "20 cellules": {
+  "en": "20 cells",
+  "es": "20 celdas"
+ },
+ "20 km/h": {
+  "en": "20 km/h",
+  "es": "20 km/h"
+ },
+ "200 Ah": {
+  "en": "200 Ah",
+  "es": "200 Ah"
+ },
+ "21 km/h": {
+  "en": "21 km/h",
+  "es": "21 km/h"
+ },
+ "22 km/h": {
+  "en": "22 km/h",
+  "es": "22 km/h"
+ },
+ "23 km/h": {
+  "en": "23 km/h",
+  "es": "23 km/h"
+ },
+ "24 km/h": {
+  "en": "24 km/h",
+  "es": "24 km/h"
+ },
+ "24–48 V (hélice MICP27F)": {
+  "en": "24–48 V (MICP27F propeller)",
+  "es": "24–48 V (hélice MICP27F)"
+ },
+ "25 Ah": {
+  "en": "25 Ah",
+  "es": "25 Ah"
+ },
+ "25 km/h": {
+  "en": "25 km/h",
+  "es": "25 km/h"
+ },
+ "26 km/h": {
+  "en": "26 km/h",
+  "es": "26 km/h"
+ },
+ "27 km/h": {
+  "en": "27 km/h",
+  "es": "27 km/h"
+ },
+ "28 km/h": {
+  "en": "28 km/h",
+  "es": "28 km/h"
+ },
+ "29 km/h": {
+  "en": "29 km/h",
+  "es": "29 km/h"
+ },
+ "3 (vive)": {
+  "en": "3 (sharp)",
+  "es": "3 (viva)"
+ },
+ "30 Ah": {
+  "en": "30 Ah",
+  "es": "30 Ah"
+ },
+ "30 km/h": {
+  "en": "30 km/h",
+  "es": "30 km/h"
+ },
+ "31 km/h": {
+  "en": "31 km/h",
+  "es": "31 km/h"
+ },
+ "32 km/h": {
+  "en": "32 km/h",
+  "es": "32 km/h"
+ },
+ "33 km/h": {
+  "en": "33 km/h",
+  "es": "33 km/h"
+ },
+ "34 km/h": {
+  "en": "34 km/h",
+  "es": "34 km/h"
+ },
+ "35 Ah": {
+  "en": "35 Ah",
+  "es": "35 Ah"
+ },
+ "35 km/h": {
+  "en": "35 km/h",
+  "es": "35 km/h"
+ },
+ "36 km/h": {
+  "en": "36 km/h",
+  "es": "36 km/h"
+ },
+ "37 km/h": {
+  "en": "37 km/h",
+  "es": "37 km/h"
+ },
+ "38 km/h": {
+  "en": "38 km/h",
+  "es": "38 km/h"
+ },
+ "39 km/h": {
+  "en": "39 km/h",
+  "es": "39 km/h"
+ },
+ "40 Ah": {
+  "en": "40 Ah",
+  "es": "40 Ah"
+ },
+ "40 km/h": {
+  "en": "40 km/h",
+  "es": "40 km/h"
+ },
+ "45 Ah": {
+  "en": "45 Ah",
+  "es": "45 Ah"
+ },
+ "48.0 V mesurés, impossible avec 3 cellules (max 12.6 V). Ta batterie a entre 12 et 16 cellules : vérifie le « S » écrit dessus.": {
+  "en": "48.0 V measured, impossible with 3 cells (max 12.6 V). Your battery has between 12 and 16 cells: check the \"S\" written on it.",
+  "es": "48.0 V medidos, imposible con 3 celdas (máx. 12.6 V). Tu batería tiene entre 12 y 16 celdas: comprueba la «S» escrita en ella."
+ },
+ "5 Hz": {
+  "en": "5 Hz",
+  "es": "5 Hz"
+ },
+ "50 Ah": {
+  "en": "50 Ah",
+  "es": "50 Ah"
+ },
+ "55 Ah": {
+  "en": "55 Ah",
+  "es": "55 Ah"
+ },
+ "60 Ah": {
+  "en": "60 Ah",
+  "es": "60 Ah"
+ },
+ "70 Ah": {
+  "en": "70 Ah",
+  "es": "70 Ah"
+ },
+ "70–90 kg": {
+  "en": "70–90 kg",
+  "es": "70–90 kg"
+ },
+ "8 cellules": {
+  "en": "8 cells",
+  "es": "8 celdas"
+ },
+ "8 km/h": {
+  "en": "8 km/h",
+  "es": "8 km/h"
+ },
+ "80 Ah": {
+  "en": "80 Ah",
+  "es": "80 Ah"
+ },
+ "9 cellules": {
+  "en": "9 cells",
+  "es": "9 celdas"
+ },
+ "9 km/h": {
+  "en": "9 km/h",
+  "es": "9 km/h"
+ },
+ "95 % par défaut. Une valeur plus basse bride la vitesse de pointe : c'est un piège fréquent.": {
+  "en": "95 % by default. A lower value caps top speed: a common trap.",
+  "es": "95 % por defecto. Un valor más bajo limita la velocidad máxima: es una trampa frecuente."
+ },
+ ": active l'autonomie estimée (minutes et km restants) sur la télécommande et ici ; c'est une estimation, garde une marge.": {
+  "en": ": enables estimated range (minutes and km left) on the remote and here; it's an estimate, keep a margin.",
+  "es": ": activa la autonomía estimada (minutos y km restantes) en el mando y aquí; es una estimación, deja margen."
+ },
+ ": le récepteur abaisse en douceur le plafond de gaz dès que la vitesse dépasse la limite et le relève en dessous ; la gâchette reste proportionnelle, jamais de coupure, précision 1 à 2 km/h. Pensée pour un enfant, un débutant ou une location. Nécessite le récepteur mis à jour (octobre 2026).": {
+  "en": ": the receiver smoothly lowers the throttle ceiling as soon as speed exceeds the limit and raises it again below; the trigger stays proportional, never cuts out, accuracy 1 to 2 km/h. Designed for a child, a beginner or a rental. Requires the updated receiver (October 2026).",
+  "es": ": el receptor baja suavemente el tope de gas en cuanto la velocidad supera el límite y lo vuelve a subir por debajo; el gatillo sigue siendo proporcional, nunca corta, precisión de 1 a 2 km/h. Pensado para un niño, un principiante o un alquiler. Requiere el receptor actualizado (octubre de 2026)."
+ },
+ ": lecture impossible (": {
+  "en": ": unable to read (",
+  "es": ": lectura imposible ("
+ },
+ ": échec (": {
+  "en": ": failed (",
+  "es": ": error ("
+ },
+ "< 70 kg": {
+  "en": "< 70 kg",
+  "es": "< 70 kg"
+ },
+ "<button data-log=\"": {
+  "en": "<button data-log=\"",
+  "es": "<button data-log=\""
+ },
+ "<circle class=\"ring-fg\" cx=\"60\" cy=\"60\" r=\"48\" stroke-dasharray=\"": {
+  "en": "<circle class=\"ring-fg\" cx=\"60\" cy=\"60\" r=\"48\" stroke-dasharray=\"",
+  "es": "<circle class=\"ring-fg\" cx=\"60\" cy=\"60\" r=\"48\" stroke-dasharray=\""
+ },
+ "<circle cx=\"": {
+  "en": "<circle cx=\"",
+  "es": "<circle cx=\""
+ },
+ "<circle cx=\"60\" cy=\"60\" r=\"": {
+  "en": "<circle cx=\"60\" cy=\"60\" r=\"",
+  "es": "<circle cx=\"60\" cy=\"60\" r=\""
+ },
+ "<div class=\"c": {
+  "en": "<div class=\"c",
+  "es": "<div class=\"c"
+ },
+ "<i style=\"width:": {
+  "en": "<i style=\"width:",
+  "es": "<i style=\"width:"
+ },
+ "<linearGradient id=\"": {
+  "en": "<linearGradient id=\"",
+  "es": "<linearGradient id=\""
+ },
+ "<path d=\"": {
+  "en": "<path d=\"",
+  "es": "<path d=\""
+ },
+ "<path d=\"M": {
+  "en": "<path d=\"M",
+  "es": "<path d=\"M"
+ },
+ "<polygon points=\"2,": {
+  "en": "<polygon points=\"2,",
+  "es": "<polygon points=\"2,"
+ },
+ "<polyline points=\"": {
+  "en": "<polyline points=\"",
+  "es": "<polyline points=\""
+ },
+ "<svg viewBox=\"0 0": {
+  "en": "<svg viewBox=\"0 0",
+  "es": "<svg viewBox=\"0 0"
+ },
+ "<trkpt lat=\"": {
+  "en": "<trkpt lat=\"",
+  "es": "<trkpt lat=\""
+ },
+ "> 90 kg": {
+  "en": "> 90 kg",
+  "es": "> 90 kg"
+ },
+ "> introuvable dans le fichier": {
+  "en": "> not found in the file",
+  "es": "> no encontrada en el archivo"
+ },
+ "?\nNe coupe pas l'alimentation pendant l'envoi.": {
+  "en": "?\nDon't cut the power during the upload.",
+  "es": "?\nNo cortes la alimentación durante el envío."
+ },
+ "A : le BMS risque de couper en pleine accélération. Elle doit dépasser le courant batterie max du VESC.": {
+  "en": "A: the BMS may cut out mid-acceleration. It must exceed the VESC's max battery current.",
+  "es": "A: el BMS puede cortar en plena aceleración. Debe superar la corriente máx. de batería del VESC."
+ },
+ "A de courant moteur, des coupures (ABS_OVER_CURRENT) peuvent arriver en accélération. Vise": {
+  "en": "A of motor current, cutouts (ABS_OVER_CURRENT) may occur under acceleration. Aim for",
+  "es": "A de corriente de motor, pueden producirse cortes (ABS_OVER_CURRENT) al acelerar. Apunta a"
+ },
+ "A pour": {
+  "en": "A for",
+  "es": "A para"
+ },
+ "A5 (ancien)": {
+  "en": "A5 (legacy)",
+  "es": "A5 (antiguo)"
+ },
+ "ADC": {
+  "en": "ADC",
+  "es": "ADC"
+ },
+ "ADC 1": {
+  "en": "ADC 1",
+  "es": "ADC 1"
+ },
+ "ADC 2": {
+  "en": "ADC 2",
+  "es": "ADC 2"
+ },
+ "APN de la carte SIM": {
+  "en": "SIM card APN",
+  "es": "APN de la tarjeta SIM"
+ },
+ "APP": {
+  "en": "APP",
+  "es": "APP"
+ },
+ "ARMÉ": {
+  "en": "ARMED",
+  "es": "ARMADO"
+ },
+ "Accessoires": {
+  "en": "Accessories",
+  "es": "Accesorios"
+ },
+ "Accueil": {
+  "en": "Home",
+  "es": "Inicio"
+ },
+ "Accél.": {
+  "en": "Accel.",
+  "es": "Acel."
+ },
+ "Actus, photos et vidéos de la communauté": {
+  "en": "Community news, photos and videos",
+  "es": "Noticias, fotos y vídeos de la comunidad"
+ },
+ "Affiché": {
+  "en": "Displayed",
+  "es": "Mostrado"
+ },
+ "Ah": {
+  "en": "Ah",
+  "es": "Ah"
+ },
+ "Ah restants": {
+  "en": "Ah left",
+  "es": "Ah restantes"
+ },
+ "Aide": {
+  "en": "Help",
+  "es": "Ayuda"
+ },
+ "Aide et suggestions": {
+  "en": "Help and suggestions",
+  "es": "Ayuda y sugerencias"
+ },
+ "Alarmes": {
+  "en": "Alarms",
+  "es": "Alarmas"
+ },
+ "Alerte quand une cellule dépasse cette tension.": {
+  "en": "Alert when a cell exceeds this voltage.",
+  "es": "Alerta cuando una celda supera esta tensión."
+ },
+ "Alerte sous cette tension.": {
+  "en": "Alert below this voltage.",
+  "es": "Alerta por debajo de esta tensión."
+ },
+ "Alertes cellule basse inversées": {
+  "en": "Low cell alerts swapped",
+  "es": "Alertas de celda baja invertidas"
+ },
+ "Alertes cellule haute inversées": {
+  "en": "High cell alerts swapped",
+  "es": "Alertas de celda alta invertidas"
+ },
+ "Alimentation du module": {
+  "en": "Module power",
+  "es": "Alimentación del módulo"
+ },
+ "Allume la batterie et ferme l'appli Daly SMART BMS : le BMS n'accepte qu'un téléphone à la fois.": {
+  "en": "Turn on the battery and close the Daly SMART BMS app: the BMS only accepts one phone at a time.",
+  "es": "Enciende la batería y cierra la app Daly SMART BMS: el BMS solo acepta un teléfono a la vez."
+ },
+ "Allume la batterie puis appuie sur « Connecter » et choisis le module Bluetooth de ta batterie (le BMS). L'appli reconnaît automatiquement les protocoles courants.": {
+  "en": "Turn on the battery, then tap \"Connect\" and pick your battery's Bluetooth module (the BMS). The app automatically recognizes common protocols.",
+  "es": "Enciende la batería, pulsa «Conectar» y elige el módulo Bluetooth de tu batería (el BMS). La app reconoce automáticamente los protocolos habituales."
+ },
+ "Allume la planche, puis connecte le module Bluetooth du VESC. Toutes les fonctions de VESC Tool, depuis le téléphone.": {
+  "en": "Turn on the board, then connect the VESC's Bluetooth module. All VESC Tool features, from your phone.",
+  "es": "Enciende la tabla y conecta el módulo Bluetooth del VESC. Todas las funciones de VESC Tool, desde el teléfono."
+ },
+ "Allume le contrôleur puis appuie sur « Connecter » et choisis son module Bluetooth. Télémétrie en lecture seule : tension, courant, régime, températures, défaut.": {
+  "en": "Turn on the controller, then tap \"Connect\" and pick its Bluetooth module. Read-only telemetry: voltage, current, RPM, temperatures, fault.",
+  "es": "Enciende el controlador, pulsa «Conectar» y elige su módulo Bluetooth. Telemetría de solo lectura: tensión, corriente, régimen, temperaturas, fallo."
+ },
+ "Allume le tracker, appuie sur « Connecter » et choisis": {
+  "en": "Turn on the tracker, tap \"Connect\" and pick",
+  "es": "Enciende el tracker, pulsa «Conectar» y elige"
+ },
+ "Ancien protocole (A5) · lecture, MOS et charge seulement": {
+  "en": "Legacy protocol (A5) · read, MOS and charge only",
+  "es": "Protocolo antiguo (A5) · solo lectura, MOS y carga"
+ },
+ "Annuler": {
+  "en": "Cancel",
+  "es": "Cancelar"
+ },
+ "App": {
+  "en": "App",
+  "es": "App"
+ },
+ "Appairé": {
+  "en": "Paired",
+  "es": "Emparejado"
+ },
+ "Appareil :": {
+  "en": "Device:",
+  "es": "Dispositivo:"
+ },
+ "Appareils": {
+  "en": "Devices",
+  "es": "Dispositivos"
+ },
+ "Application « Lite Foil Tracker » · dernière mise à jour : 9 octobre 2026": {
+  "en": "\"Lite Foil Tracker\" app · last updated: October 9, 2026",
+  "es": "Aplicación «Lite Foil Tracker» · última actualización: 9 de octubre de 2026"
+ },
+ "Appliquer": {
+  "en": "Apply",
+  "es": "Aplicar"
+ },
+ "Appliquer ce profil": {
+  "en": "Apply this profile",
+  "es": "Aplicar este perfil"
+ },
+ "Appliquer à tous les contrôleurs": {
+  "en": "Apply to all controllers",
+  "es": "Aplicar a todos los controladores"
+ },
+ "Après une charge complète, mets 100 % pour recaler le pourcentage. La valeur actuelle est proposée.": {
+  "en": "After a full charge, set 100 % to reset the percentage. The current value is suggested.",
+  "es": "Tras una carga completa, pon 100 % para recalibrar el porcentaje. Se propone el valor actual."
+ },
+ "Arrêt": {
+  "en": "Stop",
+  "es": "Parada"
+ },
+ "Arrêt après": {
+  "en": "Stop after",
+  "es": "Parar tras"
+ },
+ "Arrêter": {
+  "en": "Stop",
+  "es": "Detener"
+ },
+ "Arrêter la session": {
+  "en": "Stop session",
+  "es": "Detener sesión"
+ },
+ "Arrêter le suivi": {
+  "en": "Stop tracking",
+  "es": "Detener seguimiento"
+ },
+ "Atelier VESC": {
+  "en": "VESC workshop",
+  "es": "Taller VESC"
+ },
+ "Atelier batterie": {
+  "en": "Battery workshop",
+  "es": "Taller batería"
+ },
+ "Au chrono": {
+  "en": "Timed",
+  "es": "Cronometrado"
+ },
+ "Au repos": {
+  "en": "At rest",
+  "es": "En reposo"
+ },
+ "Au-delà, l'hélice tourne plus vite que prévu et le moteur chauffe ; reste en 12S sauf hélice plus petite.": {
+  "en": "Beyond that, the propeller spins faster than intended and the motor heats up; stay at 12S unless you use a smaller propeller.",
+  "es": "Por encima, la hélice gira más rápido de lo previsto y el motor se calienta; quédate en 12S salvo con una hélice más pequeña."
+ },
+ "Au-delà, le BMS coupe la charge.": {
+  "en": "Above this, the BMS cuts charging.",
+  "es": "Por encima, el BMS corta la carga."
+ },
+ "Au-delà, le BMS coupe la décharge. Doit dépasser le courant batterie max du VESC.": {
+  "en": "Above this, the BMS cuts discharge. Must exceed the VESC's max battery current.",
+  "es": "Por encima, el BMS corta la descarga. Debe superar la corriente máx. de batería del VESC."
+ },
+ "Aucun": {
+  "en": "None",
+  "es": "Ninguno"
+ },
+ "Aucun autre contrôleur sur le CAN": {
+  "en": "No other controller on CAN",
+  "es": "Ningún otro controlador en el CAN"
+ },
+ "Aucun chrono enregistré (B ×3 en roulant = départ / arrêt).": {
+  "en": "No timed run recorded (B ×3 while riding = start / stop).",
+  "es": "Ningún crono registrado (B ×3 en marcha = inicio / parada)."
+ },
+ "Aucun contrôleur sélectionné. Vérifie que le module VESC est allumé et libre.": {
+  "en": "No controller selected. Check that the VESC module is on and not in use.",
+  "es": "Ningún controlador seleccionado. Comprueba que el módulo VESC está encendido y libre."
+ },
+ "Aucun firmware publié pour l'instant.": {
+  "en": "No firmware published yet.",
+  "es": "Todavía no hay firmware publicado."
+ },
+ "Aucun paramètre modifié depuis la dernière lecture.": {
+  "en": "No settings changed since the last read.",
+  "es": "Ningún parámetro modificado desde la última lectura."
+ },
+ "Aucun réglage trouvé.": {
+  "en": "No setting found.",
+  "es": "No se encontró ningún ajuste."
+ },
+ "Aucun tracker sélectionné.": {
+  "en": "No tracker selected.",
+  "es": "Ningún tracker seleccionado."
+ },
+ "Aucune alarme": {
+  "en": "No alarms",
+  "es": "Sin alarmas"
+ },
+ "Aucune batterie sélectionnée. Vérifie qu'elle est allumée et pas déjà connectée à une autre appli.": {
+  "en": "No battery selected. Check that it's on and not already connected to another app.",
+  "es": "Ninguna batería seleccionada. Comprueba que está encendida y no conectada ya a otra app."
+ },
+ "Aucune incohérence détectée.": {
+  "en": "No inconsistency detected.",
+  "es": "No se detectó ninguna incoherencia."
+ },
+ "Aucune session enregistrée pour le moment.": {
+  "en": "No sessions recorded yet.",
+  "es": "Aún no hay sesiones registradas."
+ },
+ "Aucune sortie enregistrée.": {
+  "en": "No rides recorded.",
+  "es": "No hay salidas registradas."
+ },
+ "Aucune télécommande sélectionnée.": {
+  "en": "No remote selected.",
+  "es": "Ningún mando seleccionado."
+ },
+ "Autonomie estimée": {
+  "en": "Estimated range",
+  "es": "Autonomía estimada"
+ },
+ "Autorisations": {
+  "en": "Permissions",
+  "es": "Permisos"
+ },
+ "Avancé : vérifier les identifiants depuis le téléphone (clé d'application STL)": {
+  "en": "Advanced: check credentials from the phone (STL app key)",
+  "es": "Avanzado: verificar las credenciales desde el teléfono (clave de aplicación STL)"
+ },
+ "Avant détection": {
+  "en": "Before detection",
+  "es": "Antes de la detección"
+ },
+ "Avant écriture": {
+  "en": "Before writing",
+  "es": "Antes de escribir"
+ },
+ "Avertissement.": {
+  "en": "Warning.",
+  "es": "Advertencia."
+ },
+ "BMS": {
+  "en": "BMS",
+  "es": "BMS"
+ },
+ "BMS Daly": {
+  "en": "Daly BMS",
+  "es": "BMS Daly"
+ },
+ "BMS injoignable": {
+  "en": "BMS unreachable",
+  "es": "BMS inaccesible"
+ },
+ "BMS simulé": {
+  "en": "Simulated BMS",
+  "es": "BMS simulado"
+ },
+ "BMS write": {
+  "en": "BMS write",
+  "es": "BMS write"
+ },
+ "Balise <": {
+  "en": "Tag <",
+  "es": "Etiqueta <"
+ },
+ "Barre verte : cellule la plus haute ; orange : la plus basse ; ⚡ : en équilibrage. Échelle 3,0 → 4,2 V.": {
+  "en": "Green bar: highest cell; orange: lowest; ⚡: balancing. Scale 3.0 → 4.2 V.",
+  "es": "Barra verde: celda más alta; naranja: la más baja; ⚡: equilibrando. Escala 3,0 → 4,2 V."
+ },
+ "Basé sur VESC Tool de Benjamin Vedder · GPL-3.0": {
+  "en": "Based on VESC Tool by Benjamin Vedder · GPL-3.0",
+  "es": "Basado en VESC Tool de Benjamin Vedder · GPL-3.0"
+ },
+ "Batterie": {
+  "en": "Battery",
+  "es": "Batería"
+ },
+ "Batterie au repos, rien de branché ? Le courant mesuré sera pris comme zéro.": {
+  "en": "Battery at rest, nothing plugged in? The measured current will be taken as zero.",
+  "es": "¿Batería en reposo, nada conectado? La corriente medida se tomará como cero."
+ },
+ "Batterie chargée à": {
+  "en": "Battery charged to",
+  "es": "Batería cargada al"
+ },
+ "Batterie déconnectée": {
+  "en": "Battery disconnected",
+  "es": "Batería desconectada"
+ },
+ "Batterie déconnectée.": {
+  "en": "Battery disconnected.",
+  "es": "Batería desconectada."
+ },
+ "Batterie en grand": {
+  "en": "Large battery view",
+  "es": "Batería en grande"
+ },
+ "Batterie planche": {
+  "en": "Board battery",
+  "es": "Batería tabla"
+ },
+ "Batterie planche (V)": {
+  "en": "Board battery (V)",
+  "es": "Batería tabla (V)"
+ },
+ "Batterie total": {
+  "en": "Battery total",
+  "es": "Batería total"
+ },
+ "Batterie télécommande": {
+  "en": "Remote battery",
+  "es": "Batería mando"
+ },
+ "Bluetooth": {
+  "en": "Bluetooth",
+  "es": "Bluetooth"
+ },
+ "Bluetooth web indisponible": {
+  "en": "Web Bluetooth unavailable",
+  "es": "Bluetooth web no disponible"
+ },
+ "Bluetooth, pour parler au tracker « LITEFOIL-TRACKER » que vous choisissez vous-même dans la liste. Aucune autre autorisation.": {
+  "en": "Bluetooth, to talk to the \"LITEFOIL-TRACKER\" tracker that you pick yourself from the list. No other permission.",
+  "es": "Bluetooth, para comunicarse con el tracker «LITEFOIL-TRACKER» que eliges tú mismo en la lista. Ningún otro permiso."
+ },
+ "Bon type de module": {
+  "en": "Correct module type",
+  "es": "Tipo de módulo correcto"
+ },
+ "Bouge la gâchette…": {
+  "en": "Move the trigger…",
+  "es": "Mueve el gatillo…"
+ },
+ "CAN": {
+  "en": "CAN",
+  "es": "CAN"
+ },
+ "CRUISE": {
+  "en": "CRUISE",
+  "es": "CRUISE"
+ },
+ "CSV": {
+  "en": "CSV",
+  "es": "CSV"
+ },
+ "Calibration du récepteur": {
+  "en": "Receiver calibration",
+  "es": "Calibración del receptor"
+ },
+ "Calibrer la charge (SOC)": {
+  "en": "Calibrate charge (SOC)",
+  "es": "Calibrar la carga (SOC)"
+ },
+ "Calibrer la gâchette": {
+  "en": "Calibrate trigger",
+  "es": "Calibrar el gatillo"
+ },
+ "Calibré :": {
+  "en": "Calibrated:",
+  "es": "Calibrado:"
+ },
+ "Caméra": {
+  "en": "Camera",
+  "es": "Cámara"
+ },
+ "Caméra : arrêt après SAFE": {
+  "en": "Camera: stop after SAFE",
+  "es": "Cámara: parar tras SAFE"
+ },
+ "Caméra : auto-REC": {
+  "en": "Camera: auto-REC",
+  "es": "Cámara: auto-REC"
+ },
+ "Caméra : mode": {
+  "en": "Camera: mode",
+  "es": "Cámara: modo"
+ },
+ "Cap": {
+  "en": "Heading",
+  "es": "Rumbo"
+ },
+ "Capacité": {
+  "en": "Capacity",
+  "es": "Capacidad"
+ },
+ "Capacité batterie planche": {
+  "en": "Board battery capacity",
+  "es": "Capacidad batería tabla"
+ },
+ "Capacité nominale": {
+  "en": "Rated capacity",
+  "es": "Capacidad nominal"
+ },
+ "Capacité restante": {
+  "en": "Remaining capacity",
+  "es": "Capacidad restante"
+ },
+ "Capacité réelle du pack : sert au calcul du pourcentage. À régler en premier.": {
+  "en": "Actual pack capacity: used to compute the percentage. Set this first.",
+  "es": "Capacidad real del pack: sirve para calcular el porcentaje. Ajústala primero."
+ },
+ "Capteur SPI": {
+  "en": "SPI sensor",
+  "es": "Sensor SPI"
+ },
+ "Capteur ampl. basse": {
+  "en": "Sensor ampl. low",
+  "es": "Sensor ampl. baja"
+ },
+ "Capteur ampl. haute": {
+  "en": "Sensor ampl. high",
+  "es": "Sensor ampl. alta"
+ },
+ "Capteurs": {
+  "en": "Sensors",
+  "es": "Sensores"
+ },
+ "Carte": {
+  "en": "Map",
+  "es": "Mapa"
+ },
+ "Carte indisponible hors ligne : la session est quand même enregistrée.": {
+  "en": "Map unavailable offline: the session is still recorded.",
+  "es": "Mapa no disponible sin conexión: la sesión se registra igualmente."
+ },
+ "Ce BMS utilise l'ancien protocole Daly (A5), qui ne permet pas de changer les protections par Bluetooth de façon documentée. Les commandes (MOS, charge) restent disponibles.": {
+  "en": "This BMS uses the legacy Daly protocol (A5), which has no documented way to change protections over Bluetooth. Commands (MOS, charge) remain available.",
+  "es": "Este BMS usa el protocolo Daly antiguo (A5), que no permite cambiar las protecciones por Bluetooth de forma documentada. Los comandos (MOS, carga) siguen disponibles."
+ },
+ "Ce n'est pas dangereux, mais la limite batterie ne servira jamais : elle est au-dessus du courant moteur.": {
+  "en": "It's not dangerous, but the battery limit will never kick in: it's above the motor current.",
+  "es": "No es peligroso, pero el límite de batería nunca actuará: está por encima de la corriente del motor."
+ },
+ "Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android ou un ordinateur.": {
+  "en": "This browser doesn't support Web Bluetooth. Use Chrome on Android or a computer.",
+  "es": "Este navegador no admite Bluetooth web. Usa Chrome en Android o un ordenador."
+ },
+ "Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android, ou l'appli Bluefy sur iPhone.": {
+  "en": "This browser doesn't support Web Bluetooth. Use Chrome on Android, or the Bluefy app on iPhone.",
+  "es": "Este navegador no admite Bluetooth web. Usa Chrome en Android, o la app Bluefy en iPhone."
+ },
+ "Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android.": {
+  "en": "This browser doesn't support Web Bluetooth. Use Chrome on Android.",
+  "es": "Este navegador no admite Bluetooth web. Usa Chrome en Android."
+ },
+ "Ce que fait le tracker": {
+  "en": "What the tracker does",
+  "es": "Qué hace el tracker"
+ },
+ "Ce que l'application ne fait pas": {
+  "en": "What the app doesn't do",
+  "es": "Qué no hace la aplicación"
+ },
+ "Ce tracker ne sait pas encore se mettre à jour par Bluetooth (firmware trop ancien : une mise à jour par le câble est nécessaire une fois).": {
+  "en": "This tracker can't update over Bluetooth yet (firmware too old: one update by cable is required).",
+  "es": "Este tracker aún no puede actualizarse por Bluetooth (firmware demasiado antiguo: se necesita una actualización por cable una vez)."
+ },
+ "Cellule basse": {
+  "en": "Low cell",
+  "es": "Celda baja"
+ },
+ "Cellule basse : alerte": {
+  "en": "Low cell: alert",
+  "es": "Celda baja: alerta"
+ },
+ "Cellule basse : coupure décharge": {
+  "en": "Low cell: discharge cutoff",
+  "es": "Celda baja: corte de descarga"
+ },
+ "Cellule haute": {
+  "en": "High cell",
+  "es": "Celda alta"
+ },
+ "Cellule haute : alerte": {
+  "en": "High cell: alert",
+  "es": "Celda alta: alerta"
+ },
+ "Cellule haute : coupure charge": {
+  "en": "High cell: charge cutoff",
+  "es": "Celda alta: corte de carga"
+ },
+ "Cellule maxi": {
+  "en": "Max cell",
+  "es": "Celda máx."
+ },
+ "Cellule mini": {
+  "en": "Min cell",
+  "es": "Celda mín."
+ },
+ "Cellule trop basse (niveau 1)": {
+  "en": "Cell too low (level 1)",
+  "es": "Celda demasiado baja (nivel 1)"
+ },
+ "Cellule trop basse (niveau 2)": {
+  "en": "Cell too low (level 2)",
+  "es": "Celda demasiado baja (nivel 2)"
+ },
+ "Cellule trop haute (niveau 1)": {
+  "en": "Cell too high (level 1)",
+  "es": "Celda demasiado alta (nivel 1)"
+ },
+ "Cellule trop haute (niveau 2)": {
+  "en": "Cell too high (level 2)",
+  "es": "Celda demasiado alta (nivel 2)"
+ },
+ "Cellules": {
+  "en": "Cells",
+  "es": "Celdas"
+ },
+ "Cellules, alarmes, protections, commandes du BMS": {
+  "en": "Cells, alarms, protections, BMS commands",
+  "es": "Celdas, alarmas, protecciones, comandos del BMS"
+ },
+ "Centrale inertielle": {
+  "en": "IMU",
+  "es": "IMU"
+ },
+ "Certains BMS s'endorment au repos : branche le chargeur ou tire un peu de courant pour les réveiller.": {
+  "en": "Some BMS go to sleep at rest: plug in the charger or draw a little current to wake them up.",
+  "es": "Algunos BMS se duermen en reposo: conecta el cargador o consume algo de corriente para despertarlos."
+ },
+ "Cette sauvegarde vient d'un autre contrôleur. La charger quand même ?": {
+  "en": "This backup comes from another controller. Load it anyway?",
+  "es": "Esta copia de seguridad es de otro controlador. ¿Cargarla igualmente?"
+ },
+ "Cette télécommande ne sait pas encore se mettre à jour par Bluetooth (firmware trop ancien).": {
+  "en": "This remote can't update over Bluetooth yet (firmware too old).",
+  "es": "Este mando aún no puede actualizarse por Bluetooth (firmware demasiado antiguo)."
+ },
+ "Chaque contrôleur se règle séparément : les courants batterie et la puissance s'additionnent.": {
+  "en": "Each controller is set separately: battery currents and power add up.",
+  "es": "Cada controlador se ajusta por separado: las corrientes de batería y la potencia se suman."
+ },
+ "Charge": {
+  "en": "Charge",
+  "es": "Carga"
+ },
+ "Charge : trop chaud (alerte)": {
+  "en": "Charge: too hot (alert)",
+  "es": "Carga: demasiado caliente (alerta)"
+ },
+ "Charge : trop chaud (coupure)": {
+  "en": "Charge: too hot (cutoff)",
+  "es": "Carga: demasiado caliente (corte)"
+ },
+ "Charge : trop froid (alerte)": {
+  "en": "Charge: too cold (alert)",
+  "es": "Carga: demasiado frío (alerta)"
+ },
+ "Charge : trop froid (coupure)": {
+  "en": "Charge: too cold (cutoff)",
+  "es": "Carga: demasiado frío (corte)"
+ },
+ "Charge autorisée": {
+  "en": "Charging allowed",
+  "es": "Carga permitida"
+ },
+ "Charge interdite (tension trop basse)": {
+  "en": "Charging blocked (voltage too low)",
+  "es": "Carga bloqueada (tensión demasiado baja)"
+ },
+ "Charge recalée à": {
+  "en": "Charge reset to",
+  "es": "Carga recalibrada al"
+ },
+ "Charge trop basse (1)": {
+  "en": "Charge too low (1)",
+  "es": "Carga demasiado baja (1)"
+ },
+ "Charge trop basse (2)": {
+  "en": "Charge too low (2)",
+  "es": "Carga demasiado baja (2)"
+ },
+ "Charge trop haute (1)": {
+  "en": "Charge too high (1)",
+  "es": "Carga demasiado alta (1)"
+ },
+ "Charge trop haute (2)": {
+  "en": "Charge too high (2)",
+  "es": "Carga demasiado alta (2)"
+ },
+ "Charge —": {
+  "en": "Charge —",
+  "es": "Carga —"
+ },
+ "Charger": {
+  "en": "Load",
+  "es": "Cargar"
+ },
+ "Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Écrire ».": {
+  "en": "Load the firmware defaults? Nothing will be written until you click \"Write\".",
+  "es": "¿Cargar los valores por defecto del firmware? No se escribirá nada hasta que pulses «Escribir»."
+ },
+ "Charger un Li-ion sous 0 °C l’abîme.": {
+  "en": "Charging Li-ion below 0 °C damages it.",
+  "es": "Cargar un Li-ion por debajo de 0 °C lo daña."
+ },
+ "Chimie": {
+  "en": "Chemistry",
+  "es": "Química"
+ },
+ "Choisir le firmware": {
+  "en": "Choose firmware",
+  "es": "Elegir firmware"
+ },
+ "Choisir un fichier .bin": {
+  "en": "Choose a .bin file",
+  "es": "Elegir un archivo .bin"
+ },
+ "Choisir un profil": {
+  "en": "Choose a profile",
+  "es": "Elegir un perfil"
+ },
+ "Chrono en cours :": {
+  "en": "Timer running:",
+  "es": "Crono en curso:"
+ },
+ "Chronos": {
+  "en": "Timed runs",
+  "es": "Cronos"
+ },
+ "Cible : CAN": {
+  "en": "Target: CAN",
+  "es": "Destino: CAN"
+ },
+ "Cible : contrôleur local": {
+  "en": "Target: local controller",
+  "es": "Destino: controlador local"
+ },
+ "Code machine": {
+  "en": "Machine code",
+  "es": "Código de máquina"
+ },
+ "Commande": {
+  "en": "Command",
+  "es": "Comando"
+ },
+ "Commande refusée :": {
+  "en": "Command rejected:",
+  "es": "Comando rechazado:"
+ },
+ "Commandes": {
+  "en": "Commands",
+  "es": "Comandos"
+ },
+ "Commandes simulées : help, faults, hw_status, uptime": {
+  "en": "Simulated commands: help, faults, hw_status, uptime",
+  "es": "Comandos simulados: help, faults, hw_status, uptime"
+ },
+ "Commande…": {
+  "en": "Command…",
+  "es": "Comando…"
+ },
+ "Comme dans l'appli Daly : le mot de passe des paramètres (123456 par défaut) protège contre les changements par erreur.": {
+  "en": "Same as in the Daly app: the settings password (123456 by default) protects against accidental changes.",
+  "es": "Como en la app Daly: la contraseña de parámetros (123456 por defecto) protege contra cambios por error."
+ },
+ "Comme le mode « Propeller » de l'assistant VESC Tool : arrêt de 500 ms sur défaut, pas de démarrage HFI, limites du BMS actives.": {
+  "en": "Like the \"Propeller\" mode of the VESC Tool wizard: 500 ms stop on fault, no HFI start, BMS limits active.",
+  "es": "Como el modo «Propeller» del asistente de VESC Tool: parada de 500 ms ante fallo, sin arranque HFI, límites del BMS activos."
+ },
+ "Comment ça marche :": {
+  "en": "How it works:",
+  "es": "Cómo funciona:"
+ },
+ "Communication interne en panne": {
+  "en": "Internal communication failure",
+  "es": "Fallo de comunicación interna"
+ },
+ "Communication véhicule en panne": {
+  "en": "Vehicle communication failure",
+  "es": "Fallo de comunicación del vehículo"
+ },
+ "Compensation temp.": {
+  "en": "Temp. compensation",
+  "es": "Compensación temp."
+ },
+ "Compte :": {
+  "en": "Account:",
+  "es": "Cuenta:"
+ },
+ "Compte SportsTrackLive": {
+  "en": "SportsTrackLive account",
+  "es": "Cuenta SportsTrackLive"
+ },
+ "Compte confirmé par SportsTrackLive :": {
+  "en": "Account confirmed by SportsTrackLive:",
+  "es": "Cuenta confirmada por SportsTrackLive:"
+ },
+ "Compte dans le tracker": {
+  "en": "Account in the tracker",
+  "es": "Cuenta en el tracker"
+ },
+ "Compte enregistré. Le tracker s'y connecte au prochain envoi ; la tuile « Session STL » montre le résultat": {
+  "en": "Account saved. The tracker will log in on the next upload; the \"STL session\" tile shows the result",
+  "es": "Cuenta guardada. El tracker se conectará en el próximo envío; el recuadro «Sesión STL» muestra el resultado"
+ },
+ "Compte et mot de passe effacés du tracker : ses sorties ne vont plus dans un compte.": {
+  "en": "Account and password erased from the tracker: its rides no longer go to an account.",
+  "es": "Cuenta y contraseña borradas del tracker: sus salidas ya no van a ninguna cuenta."
+ },
+ "Compte retiré du tracker.": {
+  "en": "Account removed from the tracker.",
+  "es": "Cuenta eliminada del tracker."
+ },
+ "Configuration de l'app": {
+  "en": "App configuration",
+  "es": "Configuración de la app"
+ },
+ "Configuration moteur": {
+  "en": "Motor configuration",
+  "es": "Configuración del motor"
+ },
+ "Configuration relue": {
+  "en": "Configuration re-read",
+  "es": "Configuración releída"
+ },
+ "Configuration écrite ✓": {
+  "en": "Settings written ✓",
+  "es": "Configuración escrita ✓"
+ },
+ "Connecte": {
+  "en": "Connect",
+  "es": "Conecta"
+ },
+ "Connecte d'abord la batterie": {
+  "en": "Connect the battery first",
+  "es": "Conecta primero la batería"
+ },
+ "Connecte d'abord le contrôleur": {
+  "en": "Connect the controller first",
+  "es": "Conecta primero el controlador"
+ },
+ "Connecte d'abord le tracker.": {
+  "en": "Connect the tracker first.",
+  "es": "Conecta primero el tracker."
+ },
+ "Connecte d’abord un BMS Modbus": {
+  "en": "Connect a Modbus BMS first",
+  "es": "Conecta primero un BMS Modbus"
+ },
+ "Connecte la batterie (ou la démo) pour afficher et régler les protections.": {
+  "en": "Connect the battery (or the demo) to view and adjust the protections.",
+  "es": "Conecta la batería (o la demo) para ver y ajustar las protecciones."
+ },
+ "Connecte la batterie pour voir la charge.": {
+  "en": "Connect the battery to see the charge.",
+  "es": "Conecta la batería para ver la carga."
+ },
+ "Connecte la batterie pour voir son état.": {
+  "en": "Connect the battery to see its status.",
+  "es": "Conecta la batería para ver su estado."
+ },
+ "Connecte la télécommande pour comparer sa version avec la dernière publiée (1.15.1).": {
+  "en": "Connect the remote to compare its version with the latest release (1.15.1).",
+  "es": "Conecta el mando para comparar su versión con la última publicada (1.15.1)."
+ },
+ "Connecte la télécommande pour comparer sa version avec la dernière publiée.": {
+  "en": "Connect the remote to compare its version with the latest release.",
+  "es": "Conecta el mando para comparar su versión con la última publicada."
+ },
+ "Connecte la télécommande pour voir les dix derniers chronos.": {
+  "en": "Connect the remote to see the last ten lap times.",
+  "es": "Conecta el mando para ver los diez últimos cronos."
+ },
+ "Connecte la télécommande pour voir son état.": {
+  "en": "Connect the remote to see its status.",
+  "es": "Conecta el mando para ver su estado."
+ },
+ "Connecte le contrôleur (ou la démo) : cette page regroupe les réglages qui comptent sur un eFoil, expliqués simplement.": {
+  "en": "Connect the controller (or the demo): this page gathers the settings that matter on an eFoil, explained simply.",
+  "es": "Conecta el controlador (o la demo): esta página reúne los ajustes que importan en un eFoil, explicados de forma sencilla."
+ },
+ "Connecte le contrôleur (ou la démo) pour afficher ses réglages.": {
+  "en": "Connect the controller (or the demo) to view its settings.",
+  "es": "Conecta el controlador (o la demo) para ver sus ajustes."
+ },
+ "Connecte le contrôleur (ou la démo) pour régler la courbe de gaz et la télécommande.": {
+  "en": "Connect the controller (or the demo) to set the throttle curve and the remote.",
+  "es": "Conecta el controlador (o la demo) para ajustar la curva de gas y el mando."
+ },
+ "Connecte le contrôleur pour voir la télémétrie.": {
+  "en": "Connect the controller to see telemetry.",
+  "es": "Conecta el controlador para ver la telemetría."
+ },
+ "Connecte le tracker : la carte suit ta position dès qu'il y a un fix GPS.": {
+  "en": "Connect the tracker: the map follows your position as soon as there is a GPS fix.",
+  "es": "Conecta el tracker: el mapa sigue tu posición en cuanto hay fix GPS."
+ },
+ "Connecte le tracker pour comparer sa version avec la dernière publiée (0.4.0).": {
+  "en": "Connect the tracker to compare its version with the latest release (0.4.0).",
+  "es": "Conecta el tracker para comparar su versión con la última publicada (0.4.0)."
+ },
+ "Connecte le tracker pour comparer sa version avec la dernière publiée.": {
+  "en": "Connect the tracker to compare its version with the latest release.",
+  "es": "Conecta el tracker para comparar su versión con la última publicada."
+ },
+ "Connecte le tracker pour voir son état.": {
+  "en": "Connect the tracker to see its status.",
+  "es": "Conecta el tracker para ver su estado."
+ },
+ "Connecter": {
+  "en": "Connect",
+  "es": "Conectar"
+ },
+ "Connecter en Bluetooth": {
+  "en": "Connect via Bluetooth",
+  "es": "Conectar por Bluetooth"
+ },
+ "Connecter le BMS": {
+  "en": "Connect the BMS",
+  "es": "Conectar el BMS"
+ },
+ "Connecteurs du contrôleur : TX et RX sur le connecteur COMM": {
+  "en": "Controller connectors: TX and RX on the COMM connector",
+  "es": "Conectores del controlador: TX y RX en el conector COMM"
+ },
+ "Connecté": {
+  "en": "Connected",
+  "es": "Conectado"
+ },
+ "Connecté au contrôleur": {
+  "en": "Connected to the controller",
+  "es": "Conectado al controlador"
+ },
+ "Connecté au module, mais le contrôleur ne répond pas": {
+  "en": "Connected to the module, but the controller is not responding",
+  "es": "Conectado al módulo, pero el controlador no responde"
+ },
+ "Connecté au tracker.": {
+  "en": "Connected to the tracker.",
+  "es": "Conectado al tracker."
+ },
+ "Connecté à": {
+  "en": "Connected to",
+  "es": "Conectado a"
+ },
+ "Connecté à la batterie": {
+  "en": "Connected to the battery",
+  "es": "Conectado a la batería"
+ },
+ "Connecté. Détection du protocole…": {
+  "en": "Connected. Detecting protocol…",
+  "es": "Conectado. Detectando protocolo…"
+ },
+ "Connecté. Lecture de la télémétrie.": {
+  "en": "Connected. Reading telemetry.",
+  "es": "Conectado. Leyendo telemetría."
+ },
+ "Connectée à la télécommande": {
+  "en": "Connected to the remote",
+  "es": "Conectado al mando"
+ },
+ "Connexion": {
+  "en": "Connection",
+  "es": "Conexión"
+ },
+ "Connexion impossible": {
+  "en": "Unable to connect",
+  "es": "No se puede conectar"
+ },
+ "Connexion impossible :": {
+  "en": "Unable to connect:",
+  "es": "No se puede conectar:"
+ },
+ "Connexion…": {
+  "en": "Connecting…",
+  "es": "Conectando…"
+ },
+ "Conso": {
+  "en": "Usage",
+  "es": "Consumo"
+ },
+ "Consommé": {
+  "en": "Consumed",
+  "es": "Consumido"
+ },
+ "Contact": {
+  "en": "Contact",
+  "es": "Contacto"
+ },
+ "Content-Type": {
+  "en": "Content-Type",
+  "es": "Content-Type"
+ },
+ "Contrôleur": {
+  "en": "Controller",
+  "es": "Controlador"
+ },
+ "Contrôleur : réduction dès": {
+  "en": "Controller: reduction from",
+  "es": "Controlador: reducción desde"
+ },
+ "Contrôleur déconnecté": {
+  "en": "Controller disconnected",
+  "es": "Controlador desconectado"
+ },
+ "Contrôleur déconnecté.": {
+  "en": "Controller disconnected.",
+  "es": "Controlador desconectado."
+ },
+ "Contrôleur max": {
+  "en": "Controller max",
+  "es": "Controlador máx."
+ },
+ "Contrôleur moteur": {
+  "en": "Motor controller",
+  "es": "Controlador del motor"
+ },
+ "Couper la décharge arrête immédiatement la planche. Continuer ?": {
+  "en": "Cutting discharge stops the board immediately. Continue?",
+  "es": "Cortar la descarga detiene la tabla inmediatamente. ¿Continuar?"
+ },
+ "Couple maximal du moteur.": {
+  "en": "Maximum motor torque.",
+  "es": "Par máximo del motor."
+ },
+ "Coupure complète": {
+  "en": "Full cutoff",
+  "es": "Corte total"
+ },
+ "Coupure de charge trop haute": {
+  "en": "High charge cutoff",
+  "es": "Corte de carga alta"
+ },
+ "Coupure de décharge basse": {
+  "en": "Low discharge cutoff",
+  "es": "Corte de descarga baja"
+ },
+ "Coupure de décharge très basse": {
+  "en": "Very low discharge cutoff",
+  "es": "Corte de descarga muy baja"
+ },
+ "Coupure douce": {
+  "en": "Soft cutoff",
+  "es": "Corte suave"
+ },
+ "Coupure pack": {
+  "en": "Pack cutoff",
+  "es": "Corte del pack"
+ },
+ "Coupure trop basse": {
+  "en": "Cutoff too low",
+  "es": "Corte demasiado bajo"
+ },
+ "Coupure très haute": {
+  "en": "Very high cutoff",
+  "es": "Corte muy alto"
+ },
+ "Coupures batterie": {
+  "en": "Battery cutoffs",
+  "es": "Cortes de batería"
+ },
+ "Coupures inversées": {
+  "en": "Cutoffs reversed",
+  "es": "Cortes invertidos"
+ },
+ "Courant": {
+  "en": "Current",
+  "es": "Corriente"
+ },
+ "Courant = sensation naturelle (recommandé sur eFoil). « No Reverse » interdit la marche arrière.": {
+  "en": "Current = natural feel (recommended on eFoil). \"No Reverse\" disables reverse.",
+  "es": "Corriente = sensación natural (recomendado en eFoil). «No Reverse» impide la marcha atrás."
+ },
+ "Courant absolu max": {
+  "en": "Absolute max current",
+  "es": "Corriente absoluta máx."
+ },
+ "Courant absolu trop proche": {
+  "en": "Absolute current too close",
+  "es": "Corriente absoluta demasiado cercana"
+ },
+ "Courant batterie": {
+  "en": "Battery current",
+  "es": "Corriente de batería"
+ },
+ "Courant batterie > courant moteur": {
+  "en": "Battery current > motor current",
+  "es": "Corriente de batería > corriente del motor"
+ },
+ "Courant batterie max": {
+  "en": "Max battery current",
+  "es": "Corriente máx. de batería"
+ },
+ "Courant de charge : alerte": {
+  "en": "Charge current: warning",
+  "es": "Corriente de carga: alerta"
+ },
+ "Courant de charge : coupure": {
+  "en": "Charge current: cutoff",
+  "es": "Corriente de carga: corte"
+ },
+ "Courant de charge trop fort (1)": {
+  "en": "Charge current too high (1)",
+  "es": "Corriente de carga demasiado alta (1)"
+ },
+ "Courant de charge trop fort (2)": {
+  "en": "Charge current too high (2)",
+  "es": "Corriente de carga demasiado alta (2)"
+ },
+ "Courant de décharge : alerte": {
+  "en": "Discharge current: warning",
+  "es": "Corriente de descarga: alerta"
+ },
+ "Courant de décharge : coupure": {
+  "en": "Discharge current: cutoff",
+  "es": "Corriente de descarga: corte"
+ },
+ "Courant de décharge trop fort (1)": {
+  "en": "Discharge current too high (1)",
+  "es": "Corriente de descarga demasiado alta (1)"
+ },
+ "Courant de décharge trop fort (2)": {
+  "en": "Discharge current too high (2)",
+  "es": "Corriente de descarga demasiado alta (2)"
+ },
+ "Courant de frein max": {
+  "en": "Max brake current",
+  "es": "Corriente máx. de freno"
+ },
+ "Courant de recharge max": {
+  "en": "Max charge current",
+  "es": "Corriente máx. de recarga"
+ },
+ "Courant de régén.": {
+  "en": "Regen current",
+  "es": "Corriente de regen."
+ },
+ "Courant moteur": {
+  "en": "Motor current",
+  "es": "Corriente del motor"
+ },
+ "Courant moteur max": {
+  "en": "Max motor current",
+  "es": "Corriente máx. del motor"
+ },
+ "Courant nominal": {
+  "en": "Rated current",
+  "es": "Corriente nominal"
+ },
+ "Courant remis à zéro ✓": {
+  "en": "Current reset to zero ✓",
+  "es": "Corriente puesta a cero ✓"
+ },
+ "Courants": {
+  "en": "Currents",
+  "es": "Corrientes"
+ },
+ "Courbe de gaz": {
+  "en": "Throttle curve",
+  "es": "Curva de gas"
+ },
+ "Courbe des gaz": {
+  "en": "Throttle curve",
+  "es": "Curva de gas"
+ },
+ "Courbe du frein": {
+  "en": "Brake curve",
+  "es": "Curva de freno"
+ },
+ "Course de gâchette ignorée autour du neutre, pour éviter que l'hélice tourne au repos.": {
+  "en": "Trigger travel ignored around neutral, so the propeller doesn't spin at rest.",
+  "es": "Recorrido del gatillo ignorado alrededor del neutro, para que la hélice no gire en reposo."
+ },
+ "Course trop courte : va bien à fond dans les deux sens": {
+  "en": "Travel too short: go all the way in both directions",
+  "es": "Recorrido demasiado corto: ve a fondo en ambos sentidos"
+ },
+ "Cycles": {
+  "en": "Cycles",
+  "es": "Ciclos"
+ },
+ "Câblage": {
+  "en": "Wiring",
+  "es": "Cableado"
+ },
+ "Câblage TX / RX": {
+  "en": "TX / RX wiring",
+  "es": "Cableado TX / RX"
+ },
+ "DALY": {
+  "en": "DALY",
+  "es": "DALY"
+ },
+ "DEMO000123456789": {
+  "en": "DEMO000123456789",
+  "es": "DEMO000123456789"
+ },
+ "DL": {
+  "en": "DL",
+  "es": "DL"
+ },
+ "DL-H12S-150A": {
+  "en": "DL-H12S-150A",
+  "es": "DL-H12S-150A"
+ },
+ "DRV": {
+  "en": "DRV",
+  "es": "DRV"
+ },
+ "Des modifications non écrites seront perdues. Continuer ?": {
+  "en": "Unwritten changes will be lost. Continue?",
+  "es": "Los cambios no escritos se perderán. ¿Continuar?"
+ },
+ "Description d'origine (VESC Tool) :": {
+  "en": "Original description (VESC Tool):",
+  "es": "Descripción original (VESC Tool):"
+ },
+ "Deutsch": {
+  "en": "Deutsch",
+  "es": "Deutsch"
+ },
+ "Diagnostic de connexion": {
+  "en": "Connection diagnostics",
+  "es": "Diagnóstico de conexión"
+ },
+ "Différence entre la cellule la plus haute et la plus basse.": {
+  "en": "Difference between the highest and lowest cell.",
+  "es": "Diferencia entre la celda más alta y la más baja."
+ },
+ "Direct": {
+  "en": "Live",
+  "es": "Directo"
+ },
+ "Disabled": {
+  "en": "Disabled",
+  "es": "Disabled"
+ },
+ "Disponible": {
+  "en": "Available",
+  "es": "Disponible"
+ },
+ "Dissociation": {
+  "en": "Unpairing",
+  "es": "Desvinculación"
+ },
+ "Distance": {
+  "en": "Distance",
+  "es": "Distancia"
+ },
+ "Doit rester nettement au-dessus du courant moteur max (environ 1,5 fois) pour éviter des coupures en pleine accélération.": {
+  "en": "Must stay well above max motor current (about 1.5×) to avoid cutoffs during full acceleration.",
+  "es": "Debe quedar claramente por encima de la corriente máx. del motor (unas 1,5 veces) para evitar cortes en plena aceleración."
+ },
+ "Donné par la détection FOC. Les riders eFoil restent en général sous 70 A sur un moteur 65161 ; plus fait chauffer le moteur sans gain réel.": {
+  "en": "Given by FOC detection. eFoil riders usually stay under 70 A on a 65161 motor; more heats the motor with no real gain.",
+  "es": "Dado por la detección FOC. Los riders de eFoil suelen quedarse por debajo de 70 A con un motor 65161; más calienta el motor sin ganancia real."
+ },
+ "Données saisies dans l'application": {
+  "en": "Data entered in the app",
+  "es": "Datos introducidos en la aplicación"
+ },
+ "Données venant du tracker": {
+  "en": "Data from the tracker",
+  "es": "Datos procedentes del tracker"
+ },
+ "Durée": {
+  "en": "Duration",
+  "es": "Duración"
+ },
+ "Débit 115200": {
+  "en": "Baud rate 115200",
+  "es": "Velocidad 115200"
+ },
+ "Début de la coupure douce": {
+  "en": "Soft cutoff start",
+  "es": "Inicio del corte suave"
+ },
+ "Décharge": {
+  "en": "Discharge",
+  "es": "Descarga"
+ },
+ "Décharge : trop chaud (alerte)": {
+  "en": "Discharge: too hot (warning)",
+  "es": "Descarga: demasiado caliente (alerta)"
+ },
+ "Décharge : trop chaud (coupure)": {
+  "en": "Discharge: too hot (cutoff)",
+  "es": "Descarga: demasiado caliente (corte)"
+ },
+ "Décharge : trop froid (alerte)": {
+  "en": "Discharge: too cold (warning)",
+  "es": "Descarga: demasiado frío (alerta)"
+ },
+ "Décharge : trop froid (coupure)": {
+  "en": "Discharge: too cold (cutoff)",
+  "es": "Descarga: demasiado frío (corte)"
+ },
+ "Décharge autorisée": {
+  "en": "Discharge allowed",
+  "es": "Descarga permitida"
+ },
+ "Décharge —": {
+  "en": "Discharge —",
+  "es": "Descarga —"
+ },
+ "Déconnecter": {
+  "en": "Disconnect",
+  "es": "Desconectar"
+ },
+ "Déconnecté": {
+  "en": "Disconnected",
+  "es": "Desconectado"
+ },
+ "Défaut": {
+  "en": "Fault",
+  "es": "Fallo"
+ },
+ "Défaut persistant : regarde la page Direct.": {
+  "en": "Persistent fault: check the Live page.",
+  "es": "Fallo persistente: mira la página Directo."
+ },
+ "Définition introuvable :": {
+  "en": "Definition not found:",
+  "es": "Definición no encontrada:"
+ },
+ "Délai dépassé (commande": {
+  "en": "Timed out (command",
+  "es": "Tiempo agotado (comando"
+ },
+ "Délai dépassé pendant l'envoi du firmware": {
+  "en": "Timed out while sending the firmware",
+  "es": "Tiempo agotado durante el envío del firmware"
+ },
+ "Délai dépassé pour la détection CAN.": {
+  "en": "CAN detection timed out.",
+  "es": "Tiempo agotado en la detección CAN."
+ },
+ "Démarrage": {
+  "en": "Startup",
+  "es": "Arranque"
+ },
+ "Démarrage sécurisé": {
+  "en": "Safe start",
+  "es": "Arranque seguro"
+ },
+ "Démarrer": {
+  "en": "Start",
+  "es": "Iniciar"
+ },
+ "Démarrer l'équilibrage sous 3,5 V use l'énergie de la batterie au repos ; 3,9 à 4,0 V est courant en Li-ion.": {
+  "en": "Starting balancing below 3.5 V drains the battery at rest; 3.9 to 4.0 V is common for Li-ion.",
+  "es": "Iniciar el equilibrado por debajo de 3,5 V gasta la energía de la batería en reposo; de 3,9 a 4,0 V es habitual en Li-ion."
+ },
+ "Démarrer le suivi": {
+  "en": "Start tracking",
+  "es": "Iniciar seguimiento"
+ },
+ "Démarrer une session": {
+  "en": "Start a session",
+  "es": "Iniciar una sesión"
+ },
+ "Démo": {
+  "en": "Demo",
+  "es": "Demo"
+ },
+ "Désarmement auto": {
+  "en": "Auto disarm",
+  "es": "Desarmado auto"
+ },
+ "Détecter aussi les VESC du bus CAN": {
+  "en": "Also detect VESCs on the CAN bus",
+  "es": "Detectar también los VESC del bus CAN"
+ },
+ "Détection": {
+  "en": "Detection",
+  "es": "Detección"
+ },
+ "Détection FOC": {
+  "en": "FOC detection",
+  "es": "Detección FOC"
+ },
+ "Détection en cours…": {
+  "en": "Detecting…",
+  "es": "Detectando…"
+ },
+ "Détection impossible": {
+  "en": "Detection failed",
+  "es": "Detección imposible"
+ },
+ "Détection interrompue": {
+  "en": "Detection interrupted",
+  "es": "Detección interrumpida"
+ },
+ "Détection réussie": {
+  "en": "Detection successful",
+  "es": "Detección correcta"
+ },
+ "Déverrouiller": {
+  "en": "Unlock",
+  "es": "Desbloquear"
+ },
+ "ERPM": {
+  "en": "ERPM",
+  "es": "ERPM"
+ },
+ "ESURF": {
+  "en": "ESURF",
+  "es": "ESURF"
+ },
+ "Effacement": {
+  "en": "Erasing",
+  "es": "Borrado"
+ },
+ "Effacement de la mémoire tampon…": {
+  "en": "Erasing the buffer…",
+  "es": "Borrando el búfer…"
+ },
+ "Effacer": {
+  "en": "Erase",
+  "es": "Borrar"
+ },
+ "Effacer l'historique": {
+  "en": "Clear history",
+  "es": "Borrar historial"
+ },
+ "Effacer le compte": {
+  "en": "Erase account",
+  "es": "Borrar la cuenta"
+ },
+ "Effacer les chronos enregistrés dans la télécommande ?": {
+  "en": "Erase the lap times saved in the remote?",
+  "es": "¿Borrar los cronos guardados en el mando?"
+ },
+ "Effacer toutes les sorties enregistrées dans la télécommande ?": {
+  "en": "Erase all sessions saved in the remote?",
+  "es": "¿Borrar todas las salidas guardadas en el mando?"
+ },
+ "En ampères-heures (Ah).": {
+  "en": "In amp-hours (Ah).",
+  "es": "En amperios-hora (Ah)."
+ },
+ "En attente": {
+  "en": "Waiting",
+  "es": "En espera"
+ },
+ "En charge": {
+  "en": "Charging",
+  "es": "Cargando"
+ },
+ "En direct": {
+  "en": "Live",
+  "es": "En directo"
+ },
+ "En direct ·": {
+  "en": "Live ·",
+  "es": "En directo ·"
+ },
+ "En décharge": {
+  "en": "Discharging",
+  "es": "Descargando"
+ },
+ "En ligne": {
+  "en": "Online",
+  "es": "En línea"
+ },
+ "English": {
+  "en": "English",
+  "es": "English"
+ },
+ "Enregistre ta sortie : trace GPS du téléphone et télémétrie du contrôleur, colorée selon la puissance. Garde l'écran allumé et le téléphone dans une pochette étanche sur toi ou dans la planche.": {
+  "en": "Record your session: phone GPS track and controller telemetry, colored by power. Keep the screen on and the phone in a waterproof pouch on you or in the board.",
+  "es": "Graba tu salida: traza GPS del teléfono y telemetría del controlador, coloreada según la potencia. Mantén la pantalla encendida y el teléfono en una funda estanca contigo o en la tabla."
+ },
+ "Enregistrement": {
+  "en": "Recording",
+  "es": "Grabación"
+ },
+ "Enregistrement dans le tracker…": {
+  "en": "Saving to the tracker…",
+  "es": "Guardando en el tracker…"
+ },
+ "Enregistrement du compte": {
+  "en": "Saving account",
+  "es": "Guardando la cuenta"
+ },
+ "Enregistrement du journal…": {
+  "en": "Saving log…",
+  "es": "Guardando el registro…"
+ },
+ "Enregistrer dans la télécommande": {
+  "en": "Save to the remote",
+  "es": "Guardar en el mando"
+ },
+ "Enregistrer dans le tracker": {
+  "en": "Save to the tracker",
+  "es": "Guardar en el tracker"
+ },
+ "Enregistrer un journal CSV": {
+  "en": "Record a CSV log",
+  "es": "Grabar un registro CSV"
+ },
+ "Enregistré dans la télécommande. Les valeurs affichées sont celles relues.": {
+  "en": "Saved to the remote. The values shown are the ones read back.",
+  "es": "Guardado en el mando. Los valores mostrados son los releídos."
+ },
+ "Enregistré. Compare avec les valeurs relues ci-dessus : une valeur refusée garde l'ancienne.": {
+  "en": "Saved. Compare with the values read back above: a rejected value keeps the old one.",
+  "es": "Guardado. Compara con los valores releídos arriba: un valor rechazado conserva el anterior."
+ },
+ "Enter": {
+  "en": "Enter",
+  "es": "Enter"
+ },
+ "Entre une valeur entre 0 et 100 %": {
+  "en": "Enter a value between 0 and 100 %",
+  "es": "Introduce un valor entre 0 y 100 %"
+ },
+ "Entrée utilisée": {
+  "en": "Input used",
+  "es": "Entrada usada"
+ },
+ "Entrées": {
+  "en": "Inputs",
+  "es": "Entradas"
+ },
+ "Entrées analogiques (ADC)": {
+  "en": "Analog inputs (ADC)",
+  "es": "Entradas analógicas (ADC)"
+ },
+ "Envoi": {
+  "en": "Sending",
+  "es": "Envío"
+ },
+ "Envoi annulé": {
+  "en": "Upload cancelled",
+  "es": "Envío cancelado"
+ },
+ "Envoi de": {
+  "en": "Sending",
+  "es": "Enviando"
+ },
+ "Envoi du firmware…": {
+  "en": "Sending firmware…",
+  "es": "Enviando firmware…"
+ },
+ "Envoi toutes les (s)": {
+  "en": "Send every (s)",
+  "es": "Enviar cada (s)"
+ },
+ "Envoie la commande aux autres contrôleurs du bus CAN.": {
+  "en": "Sends the command to the other controllers on the CAN bus.",
+  "es": "Envía el comando a los demás controladores del bus CAN."
+ },
+ "Envois acceptés": {
+  "en": "Accepted sends",
+  "es": "Envíos aceptados"
+ },
+ "Envoyer": {
+  "en": "Send",
+  "es": "Enviar"
+ },
+ "Envoyer ce firmware au contrôleur": {
+  "en": "Send this firmware to the controller",
+  "es": "Enviar este firmware al controlador"
+ },
+ "Envoyer le firmware": {
+  "en": "Send firmware",
+  "es": "Enviar el firmware"
+ },
+ "Envoyer à tous les VESC du bus CAN": {
+  "en": "Send to all VESCs on the CAN bus",
+  "es": "Enviar a todos los VESC del bus CAN"
+ },
+ "Erreur": {
+  "en": "Error",
+  "es": "Error"
+ },
+ "Erreur :": {
+  "en": "Error:",
+  "es": "Error:"
+ },
+ "Español": {
+  "en": "Español",
+  "es": "Español"
+ },
+ "Essentiel": {
+  "en": "Essentials",
+  "es": "Esencial"
+ },
+ "Exponentielle, naturelle ou polynomiale : voir le graphique.": {
+  "en": "Exponential, natural or polynomial: see the graph.",
+  "es": "Exponencial, natural o polinómica: mira el gráfico."
+ },
+ "Exporter": {
+  "en": "Export",
+  "es": "Exportar"
+ },
+ "Exporter en GPX": {
+  "en": "Export as GPX",
+  "es": "Exportar en GPX"
+ },
+ "Fabrication": {
+  "en": "Manufacturing",
+  "es": "Fabricación"
+ },
+ "Facultatif. Avec cette clé, le téléphone vérifie l'e-mail et le mot de passe auprès du site avant de les enregistrer. Elle reste dans ce navigateur.": {
+  "en": "Optional. With this key, the phone checks the e-mail and password with the website before saving them. It stays in this browser.",
+  "es": "Opcional. Con esta clave, el teléfono verifica el e-mail y la contraseña con el sitio antes de guardarlos. Se queda en este navegador."
+ },
+ "Faire sonner la télécommande": {
+  "en": "Ring the remote",
+  "es": "Hacer sonar el mando"
+ },
+ "Ferme VESC Tool, l'onglet VESC de Lite Foil et toute autre appli connectée : un module Bluetooth n'accepte qu'un téléphone.": {
+  "en": "Close VESC Tool, the Lite Foil VESC tab and any other connected app: a Bluetooth module accepts only one phone.",
+  "es": "Cierra VESC Tool, la pestaña VESC de Lite Foil y cualquier otra app conectada: un módulo Bluetooth solo acepta un teléfono."
+ },
+ "Fermer": {
+  "en": "Close",
+  "es": "Cerrar"
+ },
+ "Fiche technique et manuel complet de la télécommande : prise en main, écran de roulage, sécurité, menu, appairage, suivi en direct, retour au point de départ, urgence, caméra, application, gyroscope, référence de toutes les commandes, dépannage. PDF de 18 pages (3 Mo), mis à jour à chaque nouvelle version du firmware.": {
+  "en": "Remote datasheet and full manual: getting started, riding screen, safety, menu, pairing, live tracking, return to start point, emergency, camera, app, gyroscope, reference of all controls, troubleshooting. 18-page PDF (3 MB), updated with each new firmware version.",
+  "es": "Ficha técnica y manual completo del mando: primeros pasos, pantalla de navegación, seguridad, menú, emparejamiento, seguimiento en directo, vuelta al punto de partida, emergencia, cámara, aplicación, giroscopio, referencia de todos los controles, solución de problemas. PDF de 18 páginas (3 MB), actualizado con cada nueva versión del firmware."
+ },
+ "Fichier .bin prévu pour ton matériel.": {
+  "en": ".bin file intended for your hardware.",
+  "es": "Archivo .bin previsto para tu hardware."
+ },
+ "Fichier compressé (heatshrink) : non pris en charge ici, utilise VESC Tool.": {
+  "en": "Compressed file (heatshrink): not supported here, use VESC Tool.",
+  "es": "Archivo comprimido (heatshrink): no compatible aquí, usa VESC Tool."
+ },
+ "Firmware": {
+  "en": "Firmware",
+  "es": "Firmware"
+ },
+ "Firmware ancien (": {
+  "en": "Old firmware (",
+  "es": "Firmware antiguo ("
+ },
+ "Firmware envoyé ✓ Le contrôleur redémarre (environ 10 s), reconnecte-le ensuite.": {
+  "en": "Firmware sent ✓ The controller is restarting (about 10 s), then reconnect it.",
+  "es": "Firmware enviado ✓ El controlador se reinicia (unos 10 s), luego vuelve a conectarlo."
+ },
+ "Firmware simulé installé": {
+  "en": "Simulated firmware installed",
+  "es": "Firmware simulado instalado"
+ },
+ "Firmware trop gros pour un envoi non compressé (": {
+  "en": "Firmware too large to send uncompressed (",
+  "es": "Firmware demasiado grande para un envío sin comprimir ("
+ },
+ "Firmwares officiels :": {
+  "en": "Official firmwares:",
+  "es": "Firmwares oficiales:"
+ },
+ "Flash corrompue": {
+  "en": "Flash corrupted",
+  "es": "Flash corrupta"
+ },
+ "Flux": {
+  "en": "Flux",
+  "es": "Flujo"
+ },
+ "Flux moteur cohérent": {
+  "en": "Motor flux consistent",
+  "es": "Flujo del motor coherente"
+ },
+ "Flux moteur inhabituel": {
+  "en": "Unusual motor flux",
+  "es": "Flujo del motor inusual"
+ },
+ "Forme de la courbe": {
+  "en": "Curve shape",
+  "es": "Forma de la curva"
+ },
+ "Français": {
+  "en": "Français",
+  "es": "Français"
+ },
+ "Frein": {
+  "en": "Brake",
+  "es": "Freno"
+ },
+ "Freinage moteur (négatif).": {
+  "en": "Motor braking (negative).",
+  "es": "Frenado del motor (negativo)."
+ },
+ "Freinage régénératif vers la batterie (négatif).": {
+  "en": "Regenerative braking into the battery (negative).",
+  "es": "Frenado regenerativo hacia la batería (negativo)."
+ },
+ "GPS": {
+  "en": "GPS",
+  "es": "GPS"
+ },
+ "GPS :": {
+  "en": "GPS:",
+  "es": "GPS:"
+ },
+ "GPS en attente…": {
+  "en": "GPS waiting…",
+  "es": "GPS en espera…"
+ },
+ "GPS ±": {
+  "en": "GPS ±",
+  "es": "GPS ±"
+ },
+ "GPS —": {
+  "en": "GPS —",
+  "es": "GPS —"
+ },
+ "GPX": {
+  "en": "GPX",
+  "es": "GPX"
+ },
+ "Garde le Bluetooth même si « Entrée utilisée » est sans UART.": {
+  "en": "Keeps Bluetooth working even if \"Input used\" has no UART.",
+  "es": "Mantiene el Bluetooth aunque «Entrada usada» sea sin UART."
+ },
+ "Garde une copie des réglages du BMS sur ton téléphone, ou recharge-la sur un autre BMS.": {
+  "en": "Keep a copy of the BMS settings on your phone, or load it onto another BMS.",
+  "es": "Guarda una copia de los ajustes del BMS en tu teléfono, o cárgala en otro BMS."
+ },
+ "Garde une option « … and UART » pour que le Bluetooth fonctionne.": {
+  "en": "Keep an \"… and UART\" option so Bluetooth works.",
+  "es": "Mantén una opción «… and UART» para que funcione el Bluetooth."
+ },
+ "Gaz": {
+  "en": "Throttle",
+  "es": "Gas"
+ },
+ "Gaz (%)": {
+  "en": "Throttle (%)",
+  "es": "Gas (%)"
+ },
+ "Gaz (duty)": {
+  "en": "Throttle (duty)",
+  "es": "Gas (duty)"
+ },
+ "Gaz maximum": {
+  "en": "Max throttle",
+  "es": "Gas máximo"
+ },
+ "GoPro": {
+  "en": "GoPro",
+  "es": "GoPro"
+ },
+ "GoPro (HERO9 et +, Open GoPro)": {
+  "en": "GoPro (HERO9 and up, Open GoPro)",
+  "es": "GoPro (HERO9 y +, Open GoPro)"
+ },
+ "Gros inrunner": {
+  "en": "Large inrunner",
+  "es": "Inrunner grande"
+ },
+ "Gros outrunner": {
+  "en": "Large outrunner",
+  "es": "Outrunner grande"
+ },
+ "Groupe WhatsApp : ouverture très bientôt": {
+  "en": "WhatsApp group: opening very soon",
+  "es": "Grupo de WhatsApp: abre muy pronto"
+ },
+ "Guide utilisateur": {
+  "en": "User guide",
+  "es": "Guía de usuario"
+ },
+ "Gâchette": {
+  "en": "Trigger",
+  "es": "Gatillo"
+ },
+ "Gâchette analogique (ADC) : une tension entre 0 et 3,3 V.": {
+  "en": "Analog trigger (ADC): a voltage between 0 and 3.3 V.",
+  "es": "Gatillo analógico (ADC): una tensión entre 0 y 3,3 V."
+ },
+ "Gâchette au repos.": {
+  "en": "Trigger at rest.",
+  "es": "Gatillo en reposo."
+ },
+ "Gâchette relâchée à fond (frein).": {
+  "en": "Trigger fully released (brake).",
+  "es": "Gatillo soltado a fondo (freno)."
+ },
+ "HIGH": {
+  "en": "HIGH",
+  "es": "HIGH"
+ },
+ "HIGH (100 %)": {
+  "en": "HIGH (100 %)",
+  "es": "HIGH (100 %)"
+ },
+ "HM-10": {
+  "en": "HM-10",
+  "es": "HM-10"
+ },
+ "HMSoft": {
+  "en": "HMSoft",
+  "es": "HMSoft"
+ },
+ "Heure": {
+  "en": "Time",
+  "es": "Hora"
+ },
+ "Historique des chronos effacé.": {
+  "en": "Lap time history cleared.",
+  "es": "Historial de cronos borrado."
+ },
+ "Horizontal : position de la gâchette. Vertical : commande envoyée au moteur. Le point montre ta gâchette en direct.": {
+  "en": "Horizontal: trigger position. Vertical: command sent to the motor. The dot shows your trigger live.",
+  "es": "Horizontal: posición del gatillo. Vertical: comando enviado al motor. El punto muestra tu gatillo en directo."
+ },
+ "Horloge en panne": {
+  "en": "Clock failure",
+  "es": "Reloj averiado"
+ },
+ "Hors ligne": {
+  "en": "Offline",
+  "es": "Sin conexión"
+ },
+ "ID CAN": {
+  "en": "CAN ID",
+  "es": "ID CAN"
+ },
+ "Id": {
+  "en": "Id",
+  "es": "Id"
+ },
+ "Id / Iq": {
+  "en": "Id / Iq",
+  "es": "Id / Iq"
+ },
+ "Identique aux réglages actuels": {
+  "en": "Same as current settings",
+  "es": "Idéntico a los ajustes actuales"
+ },
+ "Ils sont transmis par Bluetooth au tracker, qui les conserve dans sa mémoire et les utilise pour se connecter à sportstracklive.com et y publier vos sorties. Ils ne sont envoyés à aucun serveur de Lite Foil. Le bouton « Effacer le compte » les supprime du tracker.": {
+  "en": "They are sent via Bluetooth to the tracker, which keeps them in its memory and uses them to connect to sportstracklive.com and publish your sessions there. They are not sent to any Lite Foil server. The \"Erase account\" button removes them from the tracker.",
+  "es": "Se transmiten por Bluetooth al tracker, que los conserva en su memoria y los usa para conectarse a sportstracklive.com y publicar allí tus salidas. No se envían a ningún servidor de Lite Foil. El botón «Borrar la cuenta» los elimina del tracker."
+ },
+ "Import impossible :": {
+  "en": "Import failed:",
+  "es": "Importación imposible:"
+ },
+ "Importer": {
+  "en": "Import",
+  "es": "Importar"
+ },
+ "Importer un fichier": {
+  "en": "Import a file",
+  "es": "Importar un archivo"
+ },
+ "Impossible d'enregistrer la session :": {
+  "en": "Unable to save the session:",
+  "es": "No se puede guardar la sesión:"
+ },
+ "Impulsion": {
+  "en": "Pulse",
+  "es": "Pulso"
+ },
+ "Impulsion maximum": {
+  "en": "Maximum pulse",
+  "es": "Pulso máximo"
+ },
+ "Impulsion minimum": {
+  "en": "Minimum pulse",
+  "es": "Pulso mínimo"
+ },
+ "Impulsion neutre": {
+  "en": "Neutral pulse",
+  "es": "Pulso neutro"
+ },
+ "Inconnue (pas d'autonomie)": {
+  "en": "Unknown (no range)",
+  "es": "Desconocida (sin autonomía)"
+ },
+ "Inductance": {
+  "en": "Inductance",
+  "es": "Inductancia"
+ },
+ "Infos": {
+  "en": "Info",
+  "es": "Info"
+ },
+ "Inrunner moyen": {
+  "en": "Medium inrunner",
+  "es": "Inrunner mediano"
+ },
+ "Insta360 GO": {
+  "en": "Insta360 GO",
+  "es": "Insta360 GO"
+ },
+ "Insta360 GO 3 / GO 3S": {
+  "en": "Insta360 GO 3 / GO 3S",
+  "es": "Insta360 GO 3 / GO 3S"
+ },
+ "Insta360 X": {
+  "en": "Insta360 X",
+  "es": "Insta360 X"
+ },
+ "Insta360 X3 / X4 / X5 / ONE RS / Ace": {
+  "en": "Insta360 X3 / X4 / X5 / ONE RS / Ace",
+  "es": "Insta360 X3 / X4 / X5 / ONE RS / Ace"
+ },
+ "Installée": {
+  "en": "Installed",
+  "es": "Instalada"
+ },
+ "Interrupteurs du BMS": {
+  "en": "BMS switches",
+  "es": "Interruptores del BMS"
+ },
+ "Iq": {
+  "en": "Iq",
+  "es": "Iq"
+ },
+ "Jamais": {
+  "en": "Never",
+  "es": "Nunca"
+ },
+ "Journal": {
+  "en": "Log",
+  "es": "Registro"
+ },
+ "Journal :": {
+  "en": "Log:",
+  "es": "Registro:"
+ },
+ "Journal de bord": {
+  "en": "Logbook",
+  "es": "Cuaderno de bitácora"
+ },
+ "Journal vide.": {
+  "en": "Log empty.",
+  "es": "Registro vacío."
+ },
+ "KV": {
+  "en": "KV",
+  "es": "KV"
+ },
+ "Ko": {
+  "en": "KB",
+  "es": "KB"
+ },
+ "L'UART est activé dans le VESC": {
+  "en": "UART is enabled in the VESC",
+  "es": "El UART está activado en el VESC"
+ },
+ "L'alerte (niveau 1) devrait être au-dessus de la coupure (niveau 2).": {
+  "en": "The warning (level 1) should be above the cutoff (level 2).",
+  "es": "La alerta (nivel 1) debería estar por encima del corte (nivel 2)."
+ },
+ "L'alerte (niveau 1) devrait être sous la coupure (niveau 2).": {
+  "en": "The warning (level 1) should be below the cutoff (level 2).",
+  "es": "La alerta (nivel 1) debería estar por debajo del corte (nivel 2)."
+ },
+ "L'application Lite Foil Tracker sert à configurer, par Bluetooth, le tracker GPS Lite Foil : y enregistrer le compte SportsTrackLive dans lequel les sorties seront publiées, démarrer ou arrêter le suivi, et voir l'état du tracker. Elle donne aussi accès au site litefoil.fr.": {
+  "en": "The Lite Foil Tracker app is used to configure the Lite Foil GPS tracker via Bluetooth: save the SportsTrackLive account where sessions will be published, start or stop tracking, and see the tracker's status. It also gives access to the litefoil.fr website.",
+  "es": "La aplicación Lite Foil Tracker sirve para configurar por Bluetooth el tracker GPS Lite Foil: guardar en él la cuenta de SportsTrackLive en la que se publicarán las salidas, iniciar o detener el seguimiento y ver el estado del tracker. También da acceso al sitio litefoil.fr."
+ },
+ "L'atelier ouvre sa propre connexion : la batterie se déconnecte de cet onglet en y entrant.": {
+  "en": "The workshop opens its own connection: the battery disconnects from this tab when you enter it.",
+  "es": "El taller abre su propia conexión: la batería se desconecta de esta pestaña al entrar."
+ },
+ "L'atelier ouvre sa propre connexion : le contrôleur se déconnecte de cet onglet en y entrant.": {
+  "en": "The workshop opens its own connection: the controller disconnects from this tab when you enter it.",
+  "es": "El taller abre su propia conexión: el controlador se desconecta de esta pestaña al entrar."
+ },
+ "L'e-mail et le mot de passe de votre compte SportsTrackLive.": {
+  "en": "The e-mail and password of your SportsTrackLive account.",
+  "es": "El e-mail y la contraseña de tu cuenta de SportsTrackLive."
+ },
+ "L'effacement a échoué": {
+  "en": "Erasing failed",
+  "es": "El borrado ha fallado"
+ },
+ "LFJ1": {
+  "en": "LFJ1",
+  "es": "LFJ1"
+ },
+ "LITEFOIL-REMOTE": {
+  "en": "LITEFOIL-REMOTE",
+  "es": "LITEFOIL-REMOTE"
+ },
+ "LITEFOIL-TRACKER": {
+  "en": "LITEFOIL-TRACKER",
+  "es": "LITEFOIL-TRACKER"
+ },
+ "LOW": {
+  "en": "LOW",
+  "es": "LOW"
+ },
+ "LOW (60 %)": {
+  "en": "LOW (60 %)",
+  "es": "LOW (60 %)"
+ },
+ "La charge est coupée au-delà (Li-ion : 4,20 à 4,25 V).": {
+  "en": "Charging is cut above this (Li-ion: 4.20 to 4.25 V).",
+  "es": "La carga se corta por encima (Li-ion: 4,20 a 4,25 V)."
+ },
+ "La décharge est coupée en dessous (Li-ion : 2,8 à 3,0 V).": {
+  "en": "Discharging is cut below this (Li-ion: 2.8 to 3.0 V).",
+  "es": "La descarga se corta por debajo (Li-ion: 2,8 a 3,0 V)."
+ },
+ "La détection CAN a échoué.": {
+  "en": "CAN detection failed.",
+  "es": "La detección CAN ha fallado."
+ },
+ "La détection du flux magnétique a échoué.": {
+  "en": "Magnetic flux detection failed.",
+  "es": "La detección del flujo magnético ha fallado."
+ },
+ "La mise à jour passe par Bluetooth (deux à quatre minutes). Garde le téléphone à côté de la télécommande et ne l'éteins pas : elle vérifie l'empreinte du fichier avant d'installer, et garde son firmware actuel en cas de souci.": {
+  "en": "The update goes over Bluetooth (two to four minutes). Keep the phone next to the remote and don't turn it off: it checks the file's fingerprint before installing, and keeps its current firmware if anything goes wrong.",
+  "es": "La actualización se hace por Bluetooth (de dos a cuatro minutos). Mantén el teléfono junto al mando y no lo apagues: verifica la huella del archivo antes de instalar y conserva su firmware actual si hay algún problema."
+ },
+ "La mise à jour passe par Bluetooth (trois à six minutes). Garde le téléphone à côté du tracker, planche allumée : il vérifie l'empreinte du fichier avant d'installer et garde son firmware actuel en cas de souci. La toute première fois (tracker livré avant octobre 2026), la mise à jour se fait par câble USB sur le récepteur ; ensuite tout passe par ici.": {
+  "en": "The update goes over Bluetooth (three to six minutes). Keep the phone next to the tracker, board switched on: it checks the file's fingerprint before installing and keeps its current firmware if anything goes wrong. The very first time (tracker delivered before October 2026), the update is done by USB cable on the receiver; after that everything goes through here.",
+  "es": "La actualización se hace por Bluetooth (de tres a seis minutos). Mantén el teléfono junto al tracker, con la tabla encendida: verifica la huella del archivo antes de instalar y conserva su firmware actual si hay algún problema. La primera vez (tracker entregado antes de octubre de 2026), la actualización se hace por cable USB en el receptor; después todo pasa por aquí."
+ },
+ "La page elle-même est hébergée par GitHub Pages, qui voit les adresses IP des visiteurs.": {
+  "en": "The page itself is hosted by GitHub Pages, which sees visitors' IP addresses.",
+  "es": "La propia página está alojada en GitHub Pages, que ve las direcciones IP de los visitantes."
+ },
+ "La planche hybride e-foil, foil assist et wing foil.": {
+  "en": "The hybrid e-foil, foil assist and wing foil board.",
+  "es": "La tabla híbrida e-foil, foil assist y wing foil."
+ },
+ "La protection en température du moteur est inactive.": {
+  "en": "Motor temperature protection is inactive.",
+  "es": "La protección de temperatura del motor está inactiva."
+ },
+ "La puissance baisse au-dessus de cette température.": {
+  "en": "Power drops above this temperature.",
+  "es": "La potencia baja por encima de esta temperatura."
+ },
+ "La puissance baissera dès": {
+  "en": "Power will drop from",
+  "es": "La potencia bajará desde"
+ },
+ "La télécommande": {
+  "en": "The remote",
+  "es": "El mando"
+ },
+ "La télécommande enregistre chaque sortie (position, vitesse, gaz, batterie, une fois par seconde) dans sa mémoire. Liste les sorties, ouvre-en une pour voir la trace et les courbes, ou exporte-la en GPX.": {
+  "en": "The remote records every session (position, speed, throttle, battery, once per second) in its memory. List the sessions, open one to see the track and graphs, or export it as GPX.",
+  "es": "El mando graba cada salida (posición, velocidad, gas, batería, una vez por segundo) en su memoria. Lista las salidas, abre una para ver la traza y las curvas, o expórtala en GPX."
+ },
+ "La télécommande n'a pas accepté l'écriture. Rapproche-toi et réessaie.": {
+  "en": "The remote did not accept the write. Move closer and try again.",
+  "es": "El mando no ha aceptado la escritura. Acércate y vuelve a intentarlo."
+ },
+ "La télécommande redémarre : rallume son Bluetooth (menu) et reconnecte-toi pour vérifier la version.": {
+  "en": "The remote is restarting: turn its Bluetooth back on (menu) and reconnect to check the version.",
+  "es": "El mando se reinicia: vuelve a activar su Bluetooth (menú) y reconéctate para comprobar la versión."
+ },
+ "La télécommande sonne.": {
+  "en": "The remote is ringing.",
+  "es": "El mando está sonando."
+ },
+ "La vidéo et le logo d'accueil sont chargés depuis le site litefoil.fr (hébergé par Shopify).": {
+  "en": "The home video and logo are loaded from the litefoil.fr website (hosted by Shopify).",
+  "es": "El vídeo y el logo de inicio se cargan desde el sitio litefoil.fr (alojado en Shopify)."
+ },
+ "Laisse la gâchette au repos, appuie sur OK, puis pendant 8 secondes va à fond dans les deux sens. L'hélice ne tournera pas pendant la mesure.": {
+  "en": "Leave the trigger at rest, press OK, then for 8 seconds go all the way in both directions. The propeller won't spin during the measurement.",
+  "es": "Deja el gatillo en reposo, pulsa OK y luego, durante 8 segundos, ve a fondo en ambos sentidos. La hélice no girará durante la medición."
+ },
+ "Laisse très haut si tu ne veux pas brider la puissance.": {
+  "en": "Leave very high if you don't want to limit power.",
+  "es": "Déjalo muy alto si no quieres limitar la potencia."
+ },
+ "Lancer la détection": {
+  "en": "Run detection",
+  "es": "Lanzar la detección"
+ },
+ "Langue": {
+  "en": "Language",
+  "es": "Idioma"
+ },
+ "Latitude": {
+  "en": "Latitude",
+  "es": "Latitud"
+ },
+ "Ld − Lq": {
+  "en": "Ld − Lq",
+  "es": "Ld − Lq"
+ },
+ "Le BMS ne signale aucun défaut.": {
+  "en": "The BMS reports no faults.",
+  "es": "El BMS no indica ningún fallo."
+ },
+ "Le TX du module va sur le RX du VESC, et le RX sur le TX. Inversés, le module se connecte au téléphone mais le contrôleur ne répond jamais.": {
+  "en": "The module's TX goes to the VESC's RX, and RX to TX. If swapped, the module connects to the phone but the controller never responds.",
+  "es": "El TX del módulo va al RX del VESC, y el RX al TX. Si están invertidos, el módulo se conecta al teléfono pero el controlador nunca responde."
+ },
+ "Le bouton ci-dessous recopie les réglages de cette page sur les autres contrôleurs.": {
+  "en": "The button below copies this page's settings to the other controllers.",
+  "es": "El botón de abajo copia los ajustes de esta página en los demás controladores."
+ },
+ "Le contrôleur commence à réduire la puissance.": {
+  "en": "The controller starts reducing power.",
+  "es": "El controlador empieza a reducir la potencia."
+ },
+ "Le début de coupure (": {
+  "en": "The cutoff start (",
+  "es": "El inicio del corte ("
+ },
+ "Le gaz maximum est à": {
+  "en": "Max throttle is at",
+  "es": "El gas máximo está en"
+ },
+ "Le module Bluetooth se branche sur le connecteur COMM (TX, RX, 5 V ou 3,3 V, GND).": {
+  "en": "The Bluetooth module plugs into the COMM connector (TX, RX, 5 V or 3.3 V, GND).",
+  "es": "El módulo Bluetooth se conecta al conector COMM (TX, RX, 5 V o 3,3 V, GND)."
+ },
+ "Le module et le VESC doivent utiliser le même débit UART (115200 par défaut, « Baudrate » dans App > UART).": {
+  "en": "The module and the VESC must use the same UART baud rate (115200 by default, \"Baudrate\" in App > UART).",
+  "es": "El módulo y el VESC deben usar la misma velocidad UART (115200 por defecto, «Baudrate» en App > UART)."
+ },
+ "Le moteur ne démarre pas si la gâchette est déjà enfoncée à la mise sous tension.": {
+  "en": "The motor won't start if the trigger is already pressed at power-on.",
+  "es": "El motor no arranca si el gatillo ya está pulsado al encender."
+ },
+ "Le moteur ne tourne que tant que ton doigt reste sur le bouton. Hélice démontée.": {
+  "en": "The motor only turns while your finger stays on the button. Propeller removed.",
+  "es": "El motor solo gira mientras tu dedo se mantenga en el botón. Hélice desmontada."
+ },
+ "Le moteur va tourner. Hélice démontée ou planche bien calée, mains loin de l'hélice.": {
+  "en": "The motor will turn. Propeller removed or board firmly secured, hands away from the propeller.",
+  "es": "El motor va a girar. Hélice desmontada o tabla bien sujeta, manos lejos de la hélice."
+ },
+ "Le moteur va tourner. Hélice démontée ou planche calée ?": {
+  "en": "The motor will turn. Propeller removed or board secured?",
+  "es": "El motor va a girar. ¿Hélice desmontada o tabla sujeta?"
+ },
+ "Le suivi ne démarre pas tout seul : on le lance depuis la télécommande (menu TRACKER) ou ici. Il s'arrête de la même façon, quand la télécommande s'éteint, ou après dix minutes sans télécommande. Un tracker rallumé est toujours à l'arrêt.": {
+  "en": "Tracking doesn't start by itself: you start it from the remote (TRACKER menu) or here. It stops the same way, when the remote turns off, or after ten minutes without the remote. A tracker that is switched back on is always stopped.",
+  "es": "El seguimiento no se inicia solo: se lanza desde el mando (menú TRACKER) o aquí. Se detiene de la misma forma, cuando el mando se apaga, o tras diez minutos sin mando. Un tracker que se vuelve a encender siempre está detenido."
+ },
+ "Le tracker": {
+  "en": "The tracker",
+  "es": "El tracker"
+ },
+ "Le tracker envoie ses positions à SportsTrackLive, dans le compte que vous lui avez indiqué (": {
+  "en": "The tracker sends its positions to SportsTrackLive, in the account you gave it (",
+  "es": "El tracker envía sus posiciones a SportsTrackLive, a la cuenta que le has indicado ("
+ },
+ "Le tracker n'a pas accepté l'écriture. Rapproche-toi et réessaie.": {
+  "en": "The tracker did not accept the write. Move closer and try again.",
+  "es": "El tracker no ha aceptado la escritura. Acércate y vuelve a intentarlo."
+ },
+ "Le tracker n'a pas pris l'écriture. Rapproche-toi et réessaie.": {
+  "en": "The tracker did not take the write. Move closer and try again.",
+  "es": "El tracker no ha recibido la escritura. Acércate y vuelve a intentarlo."
+ },
+ "Le tracker n'accepte que des caractères ASCII imprimables, sans point-virgule, dans l'e-mail et le mot de passe.": {
+  "en": "The tracker only accepts printable ASCII characters, without semicolons, in the email and password.",
+  "es": "El tracker solo acepta caracteres ASCII imprimibles, sin punto y coma, en el correo y la contraseña."
+ },
+ "Le tracker redémarre (une trentaine de secondes), puis reconnecte-toi pour vérifier la version.": {
+  "en": "The tracker restarts (about thirty seconds), then reconnect to check the version.",
+  "es": "El tracker se reinicia (unos treinta segundos); luego vuelve a conectarte para comprobar la versión."
+ },
+ "Le tracker s'est déconnecté.": {
+  "en": "The tracker disconnected.",
+  "es": "El tracker se ha desconectado."
+ },
+ "Le « S » de ta batterie (12S = 12).": {
+  "en": "The \"S\" of your battery (12S = 12).",
+  "es": "La «S» de tu batería (12S = 12)."
+ },
+ "Lecture de l'état impossible (": {
+  "en": "Unable to read status (",
+  "es": "No se puede leer el estado ("
+ },
+ "Lecture des réglages impossible (": {
+  "en": "Unable to read settings (",
+  "es": "No se pueden leer los ajustes ("
+ },
+ "Lecture impossible :": {
+  "en": "Unable to read:",
+  "es": "No se puede leer:"
+ },
+ "Lecture…": {
+  "en": "Reading…",
+  "es": "Leyendo…"
+ },
+ "Les alarmes de niveau 1 sont des avertissements ; au niveau 2, le BMS coupe la charge ou la décharge.": {
+  "en": "Level 1 alarms are warnings; at level 2, the BMS cuts charging or discharging.",
+  "es": "Las alarmas de nivel 1 son avisos; en el nivel 2, el BMS corta la carga o la descarga."
+ },
+ "Les champs vides ne sont pas envoyés. Un nouvel APN force une reconnexion, le reste s'applique tout de suite.": {
+  "en": "Empty fields are not sent. A new APN forces a reconnection; the rest applies immediately.",
+  "es": "Los campos vacíos no se envían. Un APN nuevo fuerza una reconexión; el resto se aplica al instante."
+ },
+ "Les firmwares 5 et 6 corrigent beaucoup de problèmes de détection et de Bluetooth. Mets à jour si possible.": {
+  "en": "Firmware 5 and 6 fix many detection and Bluetooth issues. Update if possible.",
+  "es": "Los firmwares 5 y 6 corrigen muchos problemas de detección y de Bluetooth. Actualiza si puedes."
+ },
+ "Les modules VESC (NRF51/NRF52, VESC Express, Flipsky BT) fonctionnent. Les BT05 et HC-05 ne fonctionnent pas ; les vieux HM-10 sont peu fiables.": {
+  "en": "VESC modules (NRF51/NRF52, VESC Express, Flipsky BT) work. BT05 and HC-05 don't work; old HM-10s are unreliable.",
+  "es": "Los módulos VESC (NRF51/NRF52, VESC Express, Flipsky BT) funcionan. Los BT05 y HC-05 no funcionan; los HM-10 antiguos son poco fiables."
+ },
+ "Les plus belles sessions en images": {
+  "en": "The best sessions in pictures",
+  "es": "Las mejores sesiones en imágenes"
+ },
+ "Les réglages essentiels sont cohérents.": {
+  "en": "Essential settings are consistent.",
+  "es": "Los ajustes esenciales son coherentes."
+ },
+ "Les réglages s'appliquent tout de suite et restent dans la télécommande, comme si tu les avais changés dans son menu. La GoPro est pilotée par son protocole officiel ; les Insta360 par un protocole reconstitué par la communauté, qui peut cesser de fonctionner après une mise à jour de la caméra.": {
+  "en": "Settings apply immediately and stay in the remote, as if you had changed them in its menu. The GoPro is controlled through its official protocol; Insta360 cameras through a community reverse-engineered protocol, which may stop working after a camera update.",
+  "es": "Los ajustes se aplican al instante y se quedan en el mando, como si los hubieras cambiado en su menú. La GoPro se controla con su protocolo oficial; las Insta360, con un protocolo reconstruido por la comunidad, que puede dejar de funcionar tras una actualización de la cámara."
+ },
+ "Les réglages sont lus avec les définitions": {
+  "en": "Settings are read with the definitions",
+  "es": "Los ajustes se leen con las definiciones"
+ },
+ "Les sorties enregistrées par le tracker sont dans ton compte SportsTrackLive.": {
+  "en": "Rides recorded by the tracker are in your SportsTrackLive account.",
+  "es": "Las salidas grabadas por el tracker están en tu cuenta de SportsTrackLive."
+ },
+ "Li-ion (ternaire)": {
+  "en": "Li-ion (ternary)",
+  "es": "Li-ion (ternaria)"
+ },
+ "Li-ion (ternaire) pour la plupart des batteries eFoil.": {
+  "en": "Li-ion (ternary) for most eFoil batteries.",
+  "es": "Li-ion (ternaria) para la mayoría de las baterías de eFoil."
+ },
+ "LiFePO4": {
+  "en": "LiFePO4",
+  "es": "LiFePO4"
+ },
+ "Liaison": {
+  "en": "Link",
+  "es": "Enlace"
+ },
+ "Liaison perdue, reconnexion…": {
+  "en": "Link lost, reconnecting…",
+  "es": "Enlace perdido, reconectando…"
+ },
+ "Liaison planche": {
+  "en": "Board link",
+  "es": "Enlace con la tabla"
+ },
+ "Limite de vitesse GPS": {
+  "en": "GPS speed limit",
+  "es": "Límite de velocidad GPS"
+ },
+ "Limite en watts, par contrôleur.": {
+  "en": "Limit in watts, per controller.",
+  "es": "Límite en vatios, por controlador."
+ },
+ "Limite tirée sur la batterie, par contrôleur.": {
+  "en": "Limit drawn from the battery, per controller.",
+  "es": "Límite de consumo de la batería, por controlador."
+ },
+ "Limité à": {
+  "en": "Limited to",
+  "es": "Limitado a"
+ },
+ "Lister les sorties": {
+  "en": "List rides",
+  "es": "Listar salidas"
+ },
+ "Lite Foil": {
+  "en": "Lite Foil",
+  "es": "Lite Foil"
+ },
+ "Lite Foil Tracker": {
+  "en": "Lite Foil Tracker",
+  "es": "Lite Foil Tracker"
+ },
+ "Lite Foil Tracker : confidentialité": {
+  "en": "Lite Foil Tracker: privacy",
+  "es": "Lite Foil Tracker: privacidad"
+ },
+ "Lite Foil sur Facebook": {
+  "en": "Lite Foil on Facebook",
+  "es": "Lite Foil en Facebook"
+ },
+ "Lite Foil sur Instagram": {
+  "en": "Lite Foil on Instagram",
+  "es": "Lite Foil en Instagram"
+ },
+ "Lite Foil · Batterie": {
+  "en": "Lite Foil · Battery",
+  "es": "Lite Foil · Batería"
+ },
+ "Lite Foil · VESC": {
+  "en": "Lite Foil · VESC",
+  "es": "Lite Foil · VESC"
+ },
+ "Lite Foil, via le formulaire du site :": {
+  "en": "Lite Foil, via the website form:",
+  "es": "Lite Foil, mediante el formulario de la web:"
+ },
+ "Local": {
+  "en": "Local",
+  "es": "Local"
+ },
+ "Logiciel": {
+  "en": "Software",
+  "es": "Software"
+ },
+ "Longitude": {
+  "en": "Longitude",
+  "es": "Longitud"
+ },
+ "Lq − Ld": {
+  "en": "Lq − Ld",
+  "es": "Lq − Ld"
+ },
+ "L’équilibrage démarre au-dessus de cette tension de cellule.": {
+  "en": "Balancing starts above this cell voltage.",
+  "es": "El balanceo empieza por encima de esta tensión de celda."
+ },
+ "MED": {
+  "en": "MED",
+  "es": "MED"
+ },
+ "MED (80 %)": {
+  "en": "MED (80 %)",
+  "es": "MED (80 %)"
+ },
+ "MOS : protection température": {
+  "en": "MOS: temperature protection",
+  "es": "MOS: protección de temperatura"
+ },
+ "MOS de charge": {
+  "en": "Charge MOS",
+  "es": "MOS de carga"
+ },
+ "MOS de charge : circuit ouvert": {
+  "en": "Charge MOS: open circuit",
+  "es": "MOS de carga: circuito abierto"
+ },
+ "MOS de charge collé": {
+  "en": "Charge MOS stuck",
+  "es": "MOS de carga bloqueado"
+ },
+ "MOS de charge trop chaud": {
+  "en": "Charge MOS too hot",
+  "es": "MOS de carga demasiado caliente"
+ },
+ "MOS de décharge : circuit ouvert": {
+  "en": "Discharge MOS: open circuit",
+  "es": "MOS de descarga: circuito abierto"
+ },
+ "MOS de décharge : couper arrête la planche": {
+  "en": "Discharge MOS: turning off stops the board",
+  "es": "MOS de descarga: desactivarlo detiene la tabla"
+ },
+ "MOS de décharge collé": {
+  "en": "Discharge MOS stuck",
+  "es": "MOS de descarga bloqueado"
+ },
+ "MOS de décharge trop chaud": {
+  "en": "Discharge MOS too hot",
+  "es": "MOS de descarga demasiado caliente"
+ },
+ "MOT": {
+  "en": "MOT",
+  "es": "MOT"
+ },
+ "MOTEUR ARMÉ": {
+  "en": "MOTOR ARMED",
+  "es": "MOTOR ARMADO"
+ },
+ "Maintenance": {
+  "en": "Maintenance",
+  "es": "Mantenimiento"
+ },
+ "Maintenir": {
+  "en": "Hold",
+  "es": "Mantener"
+ },
+ "Manuel d'utilisation": {
+  "en": "User manual",
+  "es": "Manual de usuario"
+ },
+ "Manuel de la télécommande": {
+  "en": "Remote manual",
+  "es": "Manual del mando"
+ },
+ "Masqué": {
+  "en": "Hidden",
+  "es": "Oculto"
+ },
+ "Matériel": {
+  "en": "Hardware",
+  "es": "Hardware"
+ },
+ "Maytech 6579": {
+  "en": "Maytech 6579",
+  "es": "Maytech 6579"
+ },
+ "Maytech 6579 110KV": {
+  "en": "Maytech 6579 110KV",
+  "es": "Maytech 6579 110KV"
+ },
+ "Menus par inclinaison": {
+  "en": "Tilt menus",
+  "es": "Menús por inclinación"
+ },
+ "Mes sorties": {
+  "en": "My rides",
+  "es": "Mis salidas"
+ },
+ "Mesure de R et L…": {
+  "en": "Measuring R and L…",
+  "es": "Midiendo R y L…"
+ },
+ "Mesure de tension pack en panne": {
+  "en": "Pack voltage measurement failed",
+  "es": "Medición de tensión del pack averiada"
+ },
+ "Mesure de tension perdue": {
+  "en": "Voltage measurement lost",
+  "es": "Medición de tensión perdida"
+ },
+ "Mesure impossible": {
+  "en": "Measurement failed",
+  "es": "No se pudo medir"
+ },
+ "Mesure la résistance, l'inductance et le flux du moteur, règle les courants et le régulateur. Compte une à deux minutes.": {
+  "en": "Measures the motor's resistance, inductance and flux linkage, sets the currents and the controller. Takes one to two minutes.",
+  "es": "Mide la resistencia, la inductancia y el flujo del motor, ajusta las corrientes y el regulador. Tarda uno o dos minutos."
+ },
+ "Mesure terminée": {
+  "en": "Measurement complete",
+  "es": "Medición terminada"
+ },
+ "Mesurer R et L seulement": {
+  "en": "Measure R and L only",
+  "es": "Medir solo R y L"
+ },
+ "Mesuré": {
+  "en": "Measured",
+  "es": "Medido"
+ },
+ "Mettre à jour": {
+  "en": "Update",
+  "es": "Actualizar"
+ },
+ "Mettre à jour vers": {
+  "en": "Update to",
+  "es": "Actualizar a"
+ },
+ "Mini outrunner": {
+  "en": "Mini outrunner",
+  "es": "Mini outrunner"
+ },
+ "Mis à jour par le tracker toutes les 2 s · démarrage n°": {
+  "en": "Updated by the tracker every 2 s · boot #",
+  "es": "Actualizado por el tracker cada 2 s · arranque n.º"
+ },
+ "Mis à jour à": {
+  "en": "Updated at",
+  "es": "Actualizado a las"
+ },
+ "Mise en veille après": {
+  "en": "Sleep after",
+  "es": "Suspender tras"
+ },
+ "Mise à jour": {
+  "en": "Update",
+  "es": "Actualización"
+ },
+ "Mise à jour du firmware": {
+  "en": "Firmware update",
+  "es": "Actualización del firmware"
+ },
+ "Mise à jour échouée :": {
+  "en": "Update failed:",
+  "es": "Actualización fallida:"
+ },
+ "Modbus (récent)": {
+  "en": "Modbus (recent)",
+  "es": "Modbus (reciente)"
+ },
+ "Mode d'entrée": {
+  "en": "Input mode",
+  "es": "Modo de entrada"
+ },
+ "Mode de commande": {
+  "en": "Control mode",
+  "es": "Modo de control"
+ },
+ "Module de courant en panne": {
+  "en": "Current module failed",
+  "es": "Módulo de corriente averiado"
+ },
+ "Module oublié dans les réglages du téléphone": {
+  "en": "Module forgotten in phone settings",
+  "es": "Módulo olvidado en los ajustes del teléfono"
+ },
+ "Mon compte Lite Foil": {
+  "en": "My Lite Foil account",
+  "es": "Mi cuenta Lite Foil"
+ },
+ "Mot de passe": {
+  "en": "Password",
+  "es": "Contraseña"
+ },
+ "Mot de passe des réglages": {
+  "en": "Settings password",
+  "es": "Contraseña de los ajustes"
+ },
+ "Mot de passe incorrect": {
+  "en": "Wrong password",
+  "es": "Contraseña incorrecta"
+ },
+ "Moteur": {
+  "en": "Motor",
+  "es": "Motor"
+ },
+ "Moteur : réduction dès": {
+  "en": "Motor: reduction from",
+  "es": "Motor: reducción desde"
+ },
+ "Moteur max": {
+  "en": "Motor max",
+  "es": "Motor máx."
+ },
+ "Moteur moyeu DD": {
+  "en": "DD hub motor",
+  "es": "Motor de buje DD"
+ },
+ "Moteur, chacun": {
+  "en": "Motor, each",
+  "es": "Motor, cada uno"
+ },
+ "Moyenne": {
+  "en": "Average",
+  "es": "Media"
+ },
+ "Mémoire EEPROM en panne": {
+  "en": "EEPROM memory failed",
+  "es": "Memoria EEPROM averiada"
+ },
+ "Même principe pour le frein.": {
+  "en": "Same principle for the brake.",
+  "es": "Mismo principio para el freno."
+ },
+ "Ne marche que si le moteur a une sonde.": {
+  "en": "Only works if the motor has a sensor.",
+  "es": "Solo funciona si el motor tiene sonda."
+ },
+ "Nombre de cellules en série": {
+  "en": "Number of cells in series",
+  "es": "Número de celdas en serie"
+ },
+ "Nombre de cellules trop bas": {
+  "en": "Cell count too low",
+  "es": "Número de celdas demasiado bajo"
+ },
+ "Nombre de cellules trop haut": {
+  "en": "Cell count too high",
+  "es": "Número de celdas demasiado alto"
+ },
+ "Non connecté": {
+  "en": "Not connected",
+  "es": "No conectado"
+ },
+ "Non connectée": {
+  "en": "Not connected",
+  "es": "No conectada"
+ },
+ "Nordic UART": {
+  "en": "Nordic UART",
+  "es": "Nordic UART"
+ },
+ "NotFoundError": {
+  "en": "NotFoundError",
+  "es": "NotFoundError"
+ },
+ "Notification tronquée (": {
+  "en": "Notification truncated (",
+  "es": "Notificación truncada ("
+ },
+ "Nouvelle version disponible": {
+  "en": "New version available",
+  "es": "Nueva versión disponible"
+ },
+ "Négatif = départ plus doux et plus de précision à bas régime ; positif = plus réactif.": {
+  "en": "Negative = softer start and more precision at low RPM; positive = more responsive.",
+  "es": "Negativo = arranque más suave y más precisión a bajas revoluciones; positivo = más reactivo."
+ },
+ "OFF": {
+  "en": "OFF",
+  "es": "OFF"
+ },
+ "OK": {
+  "en": "OK",
+  "es": "OK"
+ },
+ "ON": {
+  "en": "ON",
+  "es": "ON"
+ },
+ "Obligatoire : une mise à jour peut remettre les réglages à zéro.": {
+  "en": "Required: an update may reset the settings.",
+  "es": "Obligatorio: una actualización puede restablecer los ajustes."
+ },
+ "Odomètre": {
+  "en": "Odometer",
+  "es": "Odómetro"
+ },
+ "Off": {
+  "en": "Off",
+  "es": "Off"
+ },
+ "On (apprentissage fait sur la télécommande)": {
+  "en": "On (learning done on the remote)",
+  "es": "On (aprendizaje hecho en el mando)"
+ },
+ "Openloop": {
+  "en": "Openloop",
+  "es": "Openloop"
+ },
+ "Outrunner moyen": {
+  "en": "Medium outrunner",
+  "es": "Outrunner mediano"
+ },
+ "Ouvrir SportsTrackLive": {
+  "en": "Open SportsTrackLive",
+  "es": "Abrir SportsTrackLive"
+ },
+ "Ouvrir le manuel": {
+  "en": "Open the manual",
+  "es": "Abrir el manual"
+ },
+ "POST": {
+  "en": "POST",
+  "es": "POST"
+ },
+ "PPM": {
+  "en": "PPM",
+  "es": "PPM"
+ },
+ "PPM : récepteur radio classique. ADC : gâchette analogique. UART : télécommande VESC série. Avec « PPM and UART », la télécommande radio et le module Bluetooth marchent ensemble.": {
+  "en": "PPM: classic radio receiver. ADC: analog trigger. UART: serial VESC remote. With \"PPM and UART\", the radio remote and the Bluetooth module work together.",
+  "es": "PPM: receptor de radio clásico. ADC: gatillo analógico. UART: mando VESC serie. Con «PPM and UART», el mando de radio y el módulo Bluetooth funcionan juntos."
+ },
+ "Pack bas : alerte": {
+  "en": "Pack low: alert",
+  "es": "Pack bajo: alerta"
+ },
+ "Pack bas : coupure décharge": {
+  "en": "Pack low: discharge cut-off",
+  "es": "Pack bajo: corte de descarga"
+ },
+ "Pack haut : alerte": {
+  "en": "Pack high: alert",
+  "es": "Pack alto: alerta"
+ },
+ "Pack haut : coupure charge": {
+  "en": "Pack high: charge cut-off",
+  "es": "Pack alto: corte de carga"
+ },
+ "Pack trop bas (niveau 1)": {
+  "en": "Pack too low (level 1)",
+  "es": "Pack demasiado bajo (nivel 1)"
+ },
+ "Pack trop bas (niveau 2)": {
+  "en": "Pack too low (level 2)",
+  "es": "Pack demasiado bajo (nivel 2)"
+ },
+ "Pack trop haut (niveau 1)": {
+  "en": "Pack too high (level 1)",
+  "es": "Pack demasiado alto (nivel 1)"
+ },
+ "Pack trop haut (niveau 2)": {
+  "en": "Pack too high (level 2)",
+  "es": "Pack demasiado alto (nivel 2)"
+ },
+ "Pas connecté.": {
+  "en": "Not connected.",
+  "es": "No conectado."
+ },
+ "Pas connectée.": {
+  "en": "Not connected.",
+  "es": "No conectada."
+ },
+ "Pas d'accès à votre position par le téléphone : le GPS est celui du tracker.": {
+  "en": "No access to your location by the phone: the GPS is the tracker's.",
+  "es": "Sin acceso a su ubicación por parte del teléfono: el GPS es el del tracker."
+ },
+ "Pas de GPS sur cet appareil : la session n'aura que la télémétrie": {
+  "en": "No GPS on this device: the session will only have telemetry",
+  "es": "Sin GPS en este dispositivo: la sesión solo tendrá telemetría"
+ },
+ "Pas de compte Lite Foil, pas de serveur Lite Foil : aucune donnée n'est collectée par l'éditeur.": {
+  "en": "No Lite Foil account, no Lite Foil server: no data is collected by the publisher.",
+  "es": "Sin cuenta Lite Foil ni servidor Lite Foil: el editor no recopila ningún dato."
+ },
+ "Pas de configuration pour ce matériel.": {
+  "en": "No configuration for this hardware.",
+  "es": "No hay configuración para este hardware."
+ },
+ "Pas de description pour ce réglage.": {
+  "en": "No description for this setting.",
+  "es": "No hay descripción para este ajuste."
+ },
+ "Pas de défaut, échec pour une raison inconnue.": {
+  "en": "No fault, failed for an unknown reason.",
+  "es": "Sin fallo; ha fallado por un motivo desconocido."
+ },
+ "Pas de mesure d'audience, pas de publicité, pas de traceur.": {
+  "en": "No analytics, no advertising, no trackers.",
+  "es": "Sin medición de audiencia, sin publicidad, sin rastreadores."
+ },
+ "Pas de position GPS dans cette session": {
+  "en": "No GPS position in this session",
+  "es": "Sin posición GPS en esta sesión"
+ },
+ "Pas de réponse Modbus, essai A5…": {
+  "en": "No Modbus response, trying A5…",
+  "es": "Sin respuesta Modbus, probando A5…"
+ },
+ "Pas de signal PPM : vérifie le récepteur": {
+  "en": "No PPM signal: check the receiver",
+  "es": "Sin señal PPM: revisa el receptor"
+ },
+ "Pas de sonde moteur": {
+  "en": "No motor sensor",
+  "es": "Sin sonda de motor"
+ },
+ "Pause": {
+  "en": "Pause",
+  "es": "Pausa"
+ },
+ "Pertes max": {
+  "en": "Max losses",
+  "es": "Pérdidas máx."
+ },
+ "Petit EDF": {
+  "en": "Small EDF",
+  "es": "EDF pequeño"
+ },
+ "Petit inrunner": {
+  "en": "Small inrunner",
+  "es": "Inrunner pequeño"
+ },
+ "Petit outrunner": {
+  "en": "Small outrunner",
+  "es": "Outrunner pequeño"
+ },
+ "Peu utilisé sur un eFoil.": {
+  "en": "Rarely used on an eFoil.",
+  "es": "Poco usado en un eFoil."
+ },
+ "Photo": {
+  "en": "Photo",
+  "es": "Foto"
+ },
+ "Pilotage": {
+  "en": "Control",
+  "es": "Pilotaje"
+ },
+ "Planches Lite Foil": {
+  "en": "Lite Foil boards",
+  "es": "Tablas Lite Foil"
+ },
+ "Plein gaz.": {
+  "en": "Full throttle.",
+  "es": "Gas a fondo."
+ },
+ "Plein écran": {
+  "en": "Fullscreen",
+  "es": "Pantalla completa"
+ },
+ "Plus aucune puissance sous cette tension.": {
+  "en": "No more power below this voltage.",
+  "es": "Sin potencia por debajo de esta tensión."
+ },
+ "Plusieurs contrôleurs": {
+  "en": "Multiple controllers",
+  "es": "Varios controladores"
+ },
+ "Points acquittés": {
+  "en": "Acknowledged points",
+  "es": "Puntos confirmados"
+ },
+ "Points de départ (fiche Maytech, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur.": {
+  "en": "Starting points (Maytech datasheet, eFoil guides). FOC detection is still essential: it measures your motor.",
+  "es": "Valores de partida (ficha de Maytech, guías de eFoil). La detección FOC sigue siendo imprescindible: mide tu motor."
+ },
+ "Points de départ (fiche Maytech, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur. Sur la télécommande Maytech : 10 paires de pôles, rapport 1,0, mode « Surfboard ».": {
+  "en": "Starting points (Maytech datasheet, eFoil guides). FOC detection is still essential: it measures your motor. On the Maytech remote: 10 pole pairs, ratio 1.0, \"Surfboard\" mode.",
+  "es": "Puntos de partida (ficha Maytech, guías eFoil). La detección FOC sigue siendo imprescindible: mide tu motor. En el mando Maytech: 10 pares de polos, relación 1,0, modo «Surfboard»."
+ },
+ "Polices de caractères chargées depuis Google Fonts (fonts.googleapis.com) : votre adresse IP est alors vue par Google, comme pour toute ressource web.": {
+  "en": "Fonts loaded from Google Fonts (fonts.googleapis.com): your IP address is then seen by Google, as with any web resource.",
+  "es": "Fuentes cargadas desde Google Fonts (fonts.googleapis.com): Google ve entonces su dirección IP, como con cualquier recurso web."
+ },
+ "Politique de confidentialité": {
+  "en": "Privacy policy",
+  "es": "Política de privacidad"
+ },
+ "Position en direct": {
+  "en": "Live position",
+  "es": "Posición en directo"
+ },
+ "Position, vitesse, satellites, batterie, état du réseau et de la session sont lus par Bluetooth pour être affichés à l'écran. Ils ne sont ni enregistrés par l'application ni transmis par elle.": {
+  "en": "Position, speed, satellites, battery, network and session status are read over Bluetooth to be shown on screen. They are neither recorded nor transmitted by the app.",
+  "es": "La posición, la velocidad, los satélites, la batería y el estado de la red y de la sesión se leen por Bluetooth para mostrarlos en pantalla. La aplicación no los guarda ni los transmite."
+ },
+ "Poussée mini": {
+  "en": "Min thrust",
+  "es": "Empuje mín."
+ },
+ "Profil": {
+  "en": "Profile",
+  "es": "Perfil"
+ },
+ "Profil moteur": {
+  "en": "Motor profile",
+  "es": "Perfil de motor"
+ },
+ "Proposer une amélioration": {
+  "en": "Suggest an improvement",
+  "es": "Proponer una mejora"
+ },
+ "Protection active : le BMS coupe.": {
+  "en": "Protection active: the BMS cuts off.",
+  "es": "Protección activa: el BMS corta."
+ },
+ "Protection court-circuit": {
+  "en": "Short-circuit protection",
+  "es": "Protección contra cortocircuito"
+ },
+ "Protections": {
+  "en": "Protections",
+  "es": "Protecciones"
+ },
+ "Protections cohérentes": {
+  "en": "Protections consistent",
+  "es": "Protecciones coherentes"
+ },
+ "Protections du BMS": {
+  "en": "BMS protections",
+  "es": "Protecciones del BMS"
+ },
+ "Protections non lues (BMS Modbus connecté requis)": {
+  "en": "Protections not read (connected Modbus BMS required)",
+  "es": "Protecciones no leídas (se requiere BMS Modbus conectado)"
+ },
+ "Protections relues": {
+  "en": "Protections re-read",
+  "es": "Protecciones releídas"
+ },
+ "Protections écrites ✓": {
+  "en": "Protections written ✓",
+  "es": "Protecciones escritas ✓"
+ },
+ "Protocole": {
+  "en": "Protocol",
+  "es": "Protocolo"
+ },
+ "Protocole A5 détecté": {
+  "en": "A5 protocol detected",
+  "es": "Protocolo A5 detectado"
+ },
+ "Protocole Daly (Modbus et A5) · compatible BMS Daly SMART": {
+  "en": "Daly protocol (Modbus and A5) · compatible with Daly SMART BMS",
+  "es": "Protocolo Daly (Modbus y A5) · compatible con BMS Daly SMART"
+ },
+ "Protocole Modbus détecté": {
+  "en": "Modbus protocol detected",
+  "es": "Protocolo Modbus detectado"
+ },
+ "Protocole Modbus · réglages disponibles": {
+  "en": "Modbus protocol · settings available",
+  "es": "Protocolo Modbus · ajustes disponibles"
+ },
+ "Précharge ratée": {
+  "en": "Precharge failed",
+  "es": "Precarga fallida"
+ },
+ "Préparation de": {
+  "en": "Preparing",
+  "es": "Preparando"
+ },
+ "Puce de mesure (AFE) en panne": {
+  "en": "Measurement chip (AFE) failed",
+  "es": "Chip de medición (AFE) averiado"
+ },
+ "Puissance": {
+  "en": "Power",
+  "es": "Potencia"
+ },
+ "Puissance max": {
+  "en": "Max power",
+  "es": "Potencia máx."
+ },
+ "Puissance moteur": {
+  "en": "Motor power",
+  "es": "Potencia del motor"
+ },
+ "Pôles": {
+  "en": "Poles",
+  "es": "Polos"
+ },
+ "REC": {
+  "en": "REC",
+  "es": "REC"
+ },
+ "Raison": {
+  "en": "Reason",
+  "es": "Motivo"
+ },
+ "Rampe d'accélération": {
+  "en": "Acceleration ramp",
+  "es": "Rampa de aceleración"
+ },
+ "Rampe de relâchement": {
+  "en": "Release ramp",
+  "es": "Rampa al soltar"
+ },
+ "Rapport cyclique maximal.": {
+  "en": "Maximum duty cycle.",
+  "es": "Ciclo de trabajo máximo."
+ },
+ "Recentrer": {
+  "en": "Recenter",
+  "es": "Recentrar"
+ },
+ "Recherche de la batterie…": {
+  "en": "Searching for battery…",
+  "es": "Buscando la batería…"
+ },
+ "Recherche de la télécommande…": {
+  "en": "Searching for remote…",
+  "es": "Buscando el mando…"
+ },
+ "Recherche du contrôleur…": {
+  "en": "Searching for controller…",
+  "es": "Buscando el controlador…"
+ },
+ "Recherche du tracker…": {
+  "en": "Searching for tracker…",
+  "es": "Buscando el tracker…"
+ },
+ "Rechercher un réglage (current, battery, ppm…)": {
+  "en": "Search a setting (current, battery, ppm…)",
+  "es": "Buscar un ajuste (current, battery, ppm…)"
+ },
+ "Reconnecter": {
+  "en": "Reconnect",
+  "es": "Reconectar"
+ },
+ "Reconnecté ✓": {
+  "en": "Reconnected ✓",
+  "es": "Reconectado ✓"
+ },
+ "Reconnexion": {
+  "en": "Reconnection",
+  "es": "Reconexión"
+ },
+ "Reconnexion en cours, patiente…": {
+  "en": "Reconnecting, please wait…",
+  "es": "Reconectando, espera…"
+ },
+ "Reconnexion…": {
+  "en": "Reconnecting…",
+  "es": "Reconectando…"
+ },
+ "Recopier": {
+  "en": "Copy over",
+  "es": "Copiar"
+ },
+ "Redémarrage simulé": {
+  "en": "Simulated restart",
+  "es": "Reinicio simulado"
+ },
+ "Redémarrage sur le nouveau firmware…": {
+  "en": "Restarting on the new firmware…",
+  "es": "Reiniciando con el nuevo firmware…"
+ },
+ "Redémarrage…": {
+  "en": "Restarting…",
+  "es": "Reiniciando…"
+ },
+ "Redémarrer": {
+  "en": "Restart",
+  "es": "Reiniciar"
+ },
+ "Redémarrer le BMS": {
+  "en": "Restart BMS",
+  "es": "Reiniciar el BMS"
+ },
+ "Redémarrer le BMS ? La batterie coupera quelques secondes.": {
+  "en": "Restart the BMS? The battery will cut out for a few seconds.",
+  "es": "¿Reiniciar el BMS? La batería se cortará unos segundos."
+ },
+ "Redémarrer le contrôleur ?": {
+  "en": "Restart the controller?",
+  "es": "¿Reiniciar el controlador?"
+ },
+ "Refusé par SportsTrackLive (HTTP": {
+  "en": "Rejected by SportsTrackLive (HTTP",
+  "es": "Rechazado por SportsTrackLive (HTTP"
+ },
+ "Rejoindre le groupe WhatsApp": {
+  "en": "Join the WhatsApp group",
+  "es": "Unirse al grupo de WhatsApp"
+ },
+ "Relie ton tracker à ton compte pour publier tes sorties": {
+  "en": "Link your tracker to your account to publish your rides",
+  "es": "Vincula tu tracker a tu cuenta para publicar tus salidas"
+ },
+ "Relire": {
+  "en": "Re-read",
+  "es": "Releer"
+ },
+ "Remettre le courant à zéro": {
+  "en": "Reset current to zero",
+  "es": "Poner la corriente a cero"
+ },
+ "Reprendre": {
+  "en": "Resume",
+  "es": "Reanudar"
+ },
+ "Reprise au morceau": {
+  "en": "Resuming at chunk",
+  "es": "Reanudando en el bloque"
+ },
+ "Retour à Lite Foil": {
+  "en": "Back to Lite Foil",
+  "es": "Volver a Lite Foil"
+ },
+ "Retour à l'application": {
+  "en": "Back to the app",
+  "es": "Volver a la aplicación"
+ },
+ "Riders Lite Foil": {
+  "en": "Lite Foil riders",
+  "es": "Riders de Lite Foil"
+ },
+ "Rien pour l'instant.": {
+  "en": "Nothing yet.",
+  "es": "Nada por ahora."
+ },
+ "Rien à envoyer : tous les champs sont vides.": {
+  "en": "Nothing to send: all fields are empty.",
+  "es": "Nada que enviar: todos los campos están vacíos."
+ },
+ "Rien à sauvegarder : configuration non lue": {
+  "en": "Nothing to save: configuration not read",
+  "es": "Nada que guardar: configuración no leída"
+ },
+ "Rien à signaler": {
+  "en": "All clear",
+  "es": "Todo en orden"
+ },
+ "Roulis": {
+  "en": "Roll",
+  "es": "Alabeo"
+ },
+ "Règle habituelle Li-ion : 3,0 à 3,2 V par cellule (12S : 37 V). Ne descends pas sous 3,0 V par cellule.": {
+  "en": "Usual Li-ion rule: 3.0 to 3.2 V per cell (12S: 37 V). Don't go below 3.0 V per cell.",
+  "es": "Regla habitual Li-ion: 3,0 a 3,2 V por celda (12S: 37 V). No bajes de 3,0 V por celda."
+ },
+ "Règle habituelle Li-ion : 3,4 à 3,5 V par cellule (12S : 41 V). Trop haut, la puissance chute tôt ; trop bas, la batterie s'use.": {
+  "en": "Usual Li-ion rule: 3.4 to 3.5 V per cell (12S: 41 V). Too high and power drops early; too low and the battery wears out.",
+  "es": "Regla habitual Li-ion: 3,4 a 3,5 V por celda (12S: 41 V). Demasiado alto, la potencia cae pronto; demasiado bajo, la batería se desgasta."
+ },
+ "Récepteur PPM": {
+  "en": "PPM receiver",
+  "es": "Receptor PPM"
+ },
+ "Récepteur radio (PPM) : la télécommande envoie une impulsion de 1 à 2 ms.": {
+  "en": "Radio receiver (PPM): the remote sends a 1 to 2 ms pulse.",
+  "es": "Receptor de radio (PPM): el mando envía un pulso de 1 a 2 ms."
+ },
+ "Régime": {
+  "en": "RPM",
+  "es": "Revoluciones"
+ },
+ "Régime (ERPM)": {
+  "en": "RPM (ERPM)",
+  "es": "Revoluciones (ERPM)"
+ },
+ "Régime moteur": {
+  "en": "Motor RPM",
+  "es": "Revoluciones del motor"
+ },
+ "Réglage complet du BMS Daly par Bluetooth : état, cellules, alarmes, protections, commandes.": {
+  "en": "Full Daly BMS setup over Bluetooth: status, cells, alarms, protections, commands.",
+  "es": "Configuración completa del BMS Daly por Bluetooth: estado, celdas, alarmas, protecciones, comandos."
+ },
+ "Réglage complet du contrôleur VESC par Bluetooth : télémétrie, configuration moteur et app, détection, firmware.": {
+  "en": "Full VESC controller setup over Bluetooth: telemetry, motor and app configuration, detection, firmware.",
+  "es": "Configuración completa del controlador VESC por Bluetooth: telemetría, configuración de motor y app, detección, firmware."
+ },
+ "Réglages": {
+  "en": "Settings",
+  "es": "Ajustes"
+ },
+ "Réglages avancés": {
+  "en": "Advanced settings",
+  "es": "Ajustes avanzados"
+ },
+ "Réglages de la gâchette": {
+  "en": "Trigger settings",
+  "es": "Ajustes del gatillo"
+ },
+ "Réglages envoyés :": {
+  "en": "Settings sent:",
+  "es": "Ajustes enviados:"
+ },
+ "Réglages envoyés.": {
+  "en": "Settings sent.",
+  "es": "Ajustes enviados."
+ },
+ "Réglages essentiels": {
+  "en": "Essential settings",
+  "es": "Ajustes esenciales"
+ },
+ "Réglages essentiels et détection": {
+  "en": "Essential settings and detection",
+  "es": "Ajustes esenciales y detección"
+ },
+ "Réglages lus :": {
+  "en": "Settings read:",
+  "es": "Ajustes leídos:"
+ },
+ "Réglages moteur, détection, graphiques, firmware": {
+  "en": "Motor settings, detection, graphs, firmware",
+  "es": "Ajustes del motor, detección, gráficas, firmware"
+ },
+ "Réglages non disponibles": {
+  "en": "Settings not available",
+  "es": "Ajustes no disponibles"
+ },
+ "Réglages recopiés sur": {
+  "en": "Settings copied to",
+  "es": "Ajustes copiados en"
+ },
+ "Réglages relus.": {
+  "en": "Settings re-read.",
+  "es": "Ajustes releídos."
+ },
+ "Régénéré": {
+  "en": "Regenerated",
+  "es": "Regenerado"
+ },
+ "Réinstaller": {
+  "en": "Reinstall",
+  "es": "Reinstalar"
+ },
+ "Réponse illisible de SportsTrackLive.": {
+  "en": "Unreadable response from SportsTrackLive.",
+  "es": "Respuesta ilegible de SportsTrackLive."
+ },
+ "Réponse sans jeton : identifiants non confirmés.": {
+  "en": "Response without token: credentials not confirmed.",
+  "es": "Respuesta sin token: credenciales no confirmadas."
+ },
+ "Réseau": {
+  "en": "Network",
+  "es": "Red"
+ },
+ "Réseau —": {
+  "en": "Network —",
+  "es": "Red —"
+ },
+ "Résistance": {
+  "en": "Resistance",
+  "es": "Resistencia"
+ },
+ "Saisis l'e-mail et le mot de passe.": {
+  "en": "Enter the email and password.",
+  "es": "Introduce el correo y la contraseña."
+ },
+ "Sans capteur dès": {
+  "en": "Sensorless from",
+  "es": "Sin sensores desde"
+ },
+ "Satellites": {
+  "en": "Satellites",
+  "es": "Satélites"
+ },
+ "Sauvegarde des protections": {
+  "en": "Protections backup",
+  "es": "Copia de las protecciones"
+ },
+ "Sauvegarde téléchargée ✓": {
+  "en": "Backup downloaded ✓",
+  "es": "Copia descargada ✓"
+ },
+ "Sauvegarder la configuration": {
+  "en": "Back up configuration",
+  "es": "Guardar copia de la configuración"
+ },
+ "Sauvegardes de configuration": {
+  "en": "Configuration backups",
+  "es": "Copias de la configuración"
+ },
+ "Scan CAN :": {
+  "en": "CAN scan:",
+  "es": "Escaneo CAN:"
+ },
+ "Scanner le bus CAN": {
+  "en": "Scan CAN bus",
+  "es": "Escanear el bus CAN"
+ },
+ "Se connecter": {
+  "en": "Connect",
+  "es": "Conectar"
+ },
+ "Sensibilité gâchette": {
+  "en": "Trigger sensitivity",
+  "es": "Sensibilidad del gatillo"
+ },
+ "Sert au calcul du niveau de batterie et des coupures. Une batterie 12S chargée fait 50,4 V (4,2 V par cellule).": {
+  "en": "Used to compute battery level and cut-offs. A charged 12S battery is 50.4 V (4.2 V per cell).",
+  "es": "Sirve para calcular el nivel de batería y los cortes. Una batería 12S cargada da 50,4 V (4,2 V por celda)."
+ },
+ "Sert à l'estimation d'autonomie.": {
+  "en": "Used for range estimation.",
+  "es": "Sirve para estimar la autonomía."
+ },
+ "Serveur (hôte de l'API)": {
+  "en": "Server (API host)",
+  "es": "Servidor (host de la API)"
+ },
+ "Services tiers chargés par la page": {
+  "en": "Third-party services loaded by the page",
+  "es": "Servicios de terceros cargados por la página"
+ },
+ "Session": {
+  "en": "Session",
+  "es": "Sesión"
+ },
+ "Session Lite Foil": {
+  "en": "Lite Foil session",
+  "es": "Sesión Lite Foil"
+ },
+ "Session STL": {
+  "en": "STL session",
+  "es": "Sesión STL"
+ },
+ "Session en cours :": {
+  "en": "Current session:",
+  "es": "Sesión en curso:"
+ },
+ "Session enregistrée ✓": {
+  "en": "Session saved ✓",
+  "es": "Sesión guardada ✓"
+ },
+ "Session lancée : garde l'écran allumé et le téléphone près de la planche": {
+  "en": "Session started: keep the screen on and the phone near the board",
+  "es": "Sesión iniciada: mantén la pantalla encendida y el teléfono cerca de la tabla"
+ },
+ "Session trop courte, non enregistrée": {
+  "en": "Session too short, not saved",
+  "es": "Sesión demasiado corta, no guardada"
+ },
+ "Sessions": {
+  "en": "Sessions",
+  "es": "Sesiones"
+ },
+ "Sessions enregistrées": {
+  "en": "Saved sessions",
+  "es": "Sesiones guardadas"
+ },
+ "Si le module apparaît dans les réglages Bluetooth du téléphone (appareils appairés), choisis « Oublier ». Une liaison système empêche l'appli de s'y connecter.": {
+  "en": "If the module appears in the phone's Bluetooth settings (paired devices), choose \"Forget\". A system pairing prevents the app from connecting to it.",
+  "es": "Si el módulo aparece en los ajustes Bluetooth del teléfono (dispositivos vinculados), elige «Olvidar». Una vinculación del sistema impide que la app se conecte a él."
+ },
+ "Si vous renseignez la clé d'application (option avancée), l'application vérifie elle-même vos identifiants auprès de sportstracklive.com avant de les enregistrer. Le mot de passe n'est pas conservé par l'application ; l'e-mail et la clé le sont, sur votre téléphone uniquement, pour pré-remplir le formulaire.": {
+  "en": "If you enter the application key (advanced option), the app itself checks your credentials with sportstracklive.com before saving them. The password is not kept by the app; the email and key are, on your phone only, to pre-fill the form.",
+  "es": "Si introduce la clave de aplicación (opción avanzada), la aplicación verifica por sí misma sus credenciales con sportstracklive.com antes de guardarlas. La aplicación no conserva la contraseña; el correo y la clave sí, solo en su teléfono, para rellenar el formulario."
+ },
+ "Signal radio à l'écran": {
+  "en": "On-screen radio signal",
+  "es": "Señal de radio en pantalla"
+ },
+ "Simulé": {
+  "en": "Simulated",
+  "es": "Simulado"
+ },
+ "Site litefoil.fr": {
+  "en": "litefoil.fr website",
+  "es": "Web litefoil.fr"
+ },
+ "Sonde": {
+  "en": "Sensor",
+  "es": "Sonda"
+ },
+ "Sonde de température en panne": {
+  "en": "Temperature sensor failed",
+  "es": "Sonda de temperatura averiada"
+ },
+ "Sonde du MOS de charge en panne": {
+  "en": "Charge MOS sensor failed",
+  "es": "Sonda del MOS de carga averiada"
+ },
+ "Sonde du MOS de décharge en panne": {
+  "en": "Discharge MOS sensor failed",
+  "es": "Sonda del MOS de descarga averiada"
+ },
+ "Sonde du moteur": {
+  "en": "Motor sensor",
+  "es": "Sonda del motor"
+ },
+ "Sondes": {
+  "en": "Sensors",
+  "es": "Sondas"
+ },
+ "Sondes de température": {
+  "en": "Temperature sensors",
+  "es": "Sondas de temperatura"
+ },
+ "Sonnerie": {
+  "en": "Ring",
+  "es": "Timbre"
+ },
+ "Sous-tension": {
+  "en": "Undervoltage",
+  "es": "Subtensión"
+ },
+ "Sous-tension MCU": {
+  "en": "MCU undervoltage",
+  "es": "Subtensión MCU"
+ },
+ "Sous-tension driver": {
+  "en": "Driver undervoltage",
+  "es": "Subtensión del driver"
+ },
+ "SportsTrackLive": {
+  "en": "SportsTrackLive",
+  "es": "SportsTrackLive"
+ },
+ "SportsTrackLive a répondu HTTP": {
+  "en": "SportsTrackLive returned HTTP",
+  "es": "SportsTrackLive respondió HTTP"
+ },
+ "SportsTrackLive injoignable (": {
+  "en": "SportsTrackLive unreachable (",
+  "es": "SportsTrackLive inaccesible ("
+ },
+ "Stop": {
+  "en": "Stop",
+  "es": "Parar"
+ },
+ "Suivi": {
+  "en": "Tracking",
+  "es": "Seguimiento"
+ },
+ "Suivi STL": {
+  "en": "STL tracking",
+  "es": "Seguimiento STL"
+ },
+ "Suivi arrêté.": {
+  "en": "Tracking stopped.",
+  "es": "Seguimiento detenido."
+ },
+ "Suivi démarré.": {
+  "en": "Tracking started.",
+  "es": "Seguimiento iniciado."
+ },
+ "Suivi —": {
+  "en": "Tracking —",
+  "es": "Seguimiento —"
+ },
+ "Suppression des données": {
+  "en": "Data deletion",
+  "es": "Eliminación de datos"
+ },
+ "Supprimer": {
+  "en": "Delete",
+  "es": "Eliminar"
+ },
+ "Supprimer cette session ?": {
+  "en": "Delete this session?",
+  "es": "¿Eliminar esta sesión?"
+ },
+ "Supprimer cette sortie": {
+  "en": "Delete this ride",
+  "es": "Eliminar esta salida"
+ },
+ "Supprimer cette sortie de la télécommande ?": {
+  "en": "Delete this ride from the remote?",
+  "es": "¿Eliminar esta salida del mando?"
+ },
+ "Sur iPhone, l'application Bluefy permet d'ouvrir cette page.": {
+  "en": "On iPhone, the Bluefy app lets you open this page.",
+  "es": "En iPhone, la app Bluefy permite abrir esta página."
+ },
+ "Sur la télécommande : ouvre le menu (A + B), va sur": {
+  "en": "On the remote: open the menu (A + B), go to",
+  "es": "En el mando: abre el menú (A + B), ve a"
+ },
+ "Sur la télécommande Maytech : 10 paires de pôles, rapport 1,0, mode « Surfboard ».": {
+  "en": "On the Maytech remote: 10 pole pairs, ratio 1.0, \"Surfboard\" mode.",
+  "es": "En el mando Maytech: 10 pares de polos, relación 1,0, modo «Surfboard»."
+ },
+ "Sur un eFoil on freine peu : une petite valeur (−5 à −10 A) suffit.": {
+  "en": "On an eFoil you rarely brake: a small value (−5 to −10 A) is enough.",
+  "es": "En un eFoil se frena poco: basta un valor pequeño (−5 a −10 A)."
+ },
+ "Surchauffe contrôleur": {
+  "en": "Controller overheating",
+  "es": "Sobrecalentamiento del controlador"
+ },
+ "Surchauffe moteur": {
+  "en": "Motor overheating",
+  "es": "Sobrecalentamiento del motor"
+ },
+ "Surintensité": {
+  "en": "Overcurrent",
+  "es": "Sobrecorriente"
+ },
+ "Surtension": {
+  "en": "Overvoltage",
+  "es": "Sobretensión"
+ },
+ "Surtension driver": {
+  "en": "Driver overvoltage",
+  "es": "Sobretensión del driver"
+ },
+ "Sécurité matérielle : coupure immédiate au-delà.": {
+  "en": "Hardware safety: immediate cut-off beyond this.",
+  "es": "Seguridad de hardware: corte inmediato por encima."
+ },
+ "Ta batterie a entre 12 et 16 cellules : vérifie le « S » écrit dessus.": {
+  "en": "Your battery has between 12 and 16 cells: check the \"S\" written on it.",
+  "es": "Tu batería tiene entre 12 y 16 celdas: comprueba la «S» escrita en ella."
+ },
+ "Ta batterie,": {
+  "en": "Your battery,",
+  "es": "Tu batería,"
+ },
+ "Tachymètre": {
+  "en": "Tachometer",
+  "es": "Tacómetro"
+ },
+ "Tangage": {
+  "en": "Pitch",
+  "es": "Cabeceo"
+ },
+ "Temp. contrôleur": {
+  "en": "Controller temp.",
+  "es": "Temp. controlador"
+ },
+ "Temp. moteur": {
+  "en": "Motor temp.",
+  "es": "Temp. motor"
+ },
+ "Temps moteur armé": {
+  "en": "Motor armed time",
+  "es": "Tiempo de motor armado"
+ },
+ "Temps pour passer de 0 à plein gaz : plus long = démarrages plus doux.": {
+  "en": "Time to go from 0 to full throttle: longer = smoother starts.",
+  "es": "Tiempo para pasar de 0 a gas a fondo: más largo = arranques más suaves."
+ },
+ "Temps pour revenir à 0 quand tu relâches.": {
+  "en": "Time to return to 0 when you release.",
+  "es": "Tiempo para volver a 0 cuando sueltas."
+ },
+ "Temps sans courant avant que le BMS s’endorme.": {
+  "en": "Time without current before the BMS goes to sleep.",
+  "es": "Tiempo sin corriente antes de que el BMS se duerma."
+ },
+ "Température": {
+  "en": "Temperature",
+  "es": "Temperatura"
+ },
+ "Température de charge trop basse (1)": {
+  "en": "Charge temperature too low (1)",
+  "es": "Temperatura de carga demasiado baja (1)"
+ },
+ "Température de charge trop basse (2)": {
+  "en": "Charge temperature too low (2)",
+  "es": "Temperatura de carga demasiado baja (2)"
+ },
+ "Température de charge trop haute (1)": {
+  "en": "Charge temperature too high (1)",
+  "es": "Temperatura de carga demasiado alta (1)"
+ },
+ "Température de charge trop haute (2)": {
+  "en": "Charge temperature too high (2)",
+  "es": "Temperatura de carga demasiado alta (2)"
+ },
+ "Température de décharge trop basse (1)": {
+  "en": "Discharge temperature too low (1)",
+  "es": "Temperatura de descarga demasiado baja (1)"
+ },
+ "Température de décharge trop basse (2)": {
+  "en": "Discharge temperature too low (2)",
+  "es": "Temperatura de descarga demasiado baja (2)"
+ },
+ "Température de décharge trop haute (1)": {
+  "en": "Discharge temperature too high (1)",
+  "es": "Temperatura de descarga demasiado alta (1)"
+ },
+ "Température de décharge trop haute (2)": {
+  "en": "Discharge temperature too high (2)",
+  "es": "Temperatura de descarga demasiado alta (2)"
+ },
+ "Températures": {
+  "en": "Temperatures",
+  "es": "Temperaturas"
+ },
+ "Tension": {
+  "en": "Voltage",
+  "es": "Tensión"
+ },
+ "Tension 1": {
+  "en": "Voltage 1",
+  "es": "Tensión 1"
+ },
+ "Tension 2": {
+  "en": "Voltage 2",
+  "es": "Tensión 2"
+ },
+ "Tension batterie": {
+  "en": "Battery voltage",
+  "es": "Tensión de batería"
+ },
+ "Tension de chaque cellule": {
+  "en": "Voltage of each cell",
+  "es": "Tensión de cada celda"
+ },
+ "Tension de référence cellule": {
+  "en": "Cell reference voltage",
+  "es": "Tensión de referencia de celda"
+ },
+ "Tension des cellules": {
+  "en": "Cell voltages",
+  "es": "Tensión de las celdas"
+ },
+ "Tension du pack": {
+  "en": "Pack voltage",
+  "es": "Tensión del pack"
+ },
+ "Tension nominale d’une cellule.": {
+  "en": "Nominal voltage of one cell.",
+  "es": "Tensión nominal de una celda."
+ },
+ "Tension pack": {
+  "en": "Pack voltage",
+  "es": "Tensión pack"
+ },
+ "Tensions pack et cellules différentes": {
+  "en": "Pack and cell voltages differ",
+  "es": "Tensiones de pack y celdas diferentes"
+ },
+ "Terminal": {
+  "en": "Terminal",
+  "es": "Terminal"
+ },
+ "Timelapse": {
+  "en": "Timelapse",
+  "es": "Timelapse"
+ },
+ "Titanate (LTO)": {
+  "en": "Titanate (LTO)",
+  "es": "Titanato (LTO)"
+ },
+ "Ton contrôleur,": {
+  "en": "Your controller,",
+  "es": "Tu controlador,"
+ },
+ "Ton moteur": {
+  "en": "Your motor",
+  "es": "Tu motor"
+ },
+ "Ton poids": {
+  "en": "Your weight",
+  "es": "Tu peso"
+ },
+ "Tout effacer": {
+  "en": "Clear all",
+  "es": "Borrar todo"
+ },
+ "Tracker": {
+  "en": "Tracker",
+  "es": "Tracker"
+ },
+ "Tracker GPS": {
+  "en": "GPS tracker",
+  "es": "Tracker GPS"
+ },
+ "Tracker déconnecté": {
+  "en": "Tracker disconnected",
+  "es": "Tracker desconectado"
+ },
+ "Type de moteur": {
+  "en": "Motor type",
+  "es": "Tipo de motor"
+ },
+ "Type de thermistance du moteur, ou « Disabled » s'il n'y en a pas.": {
+  "en": "Motor thermistor type, or \"Disabled\" if there is none.",
+  "es": "Tipo de termistor del motor, o «Disabled» si no hay."
+ },
+ "Télécharge d'abord la sauvegarde (étape 1)": {
+  "en": "Download the backup first (step 1)",
+  "es": "Descarga primero la copia de seguridad (paso 1)"
+ },
+ "Téléchargement du firmware": {
+  "en": "Downloading firmware",
+  "es": "Descarga del firmware"
+ },
+ "Télécharger": {
+  "en": "Download",
+  "es": "Descargar"
+ },
+ "Télécharger (PDF)": {
+  "en": "Download (PDF)",
+  "es": "Descargar (PDF)"
+ },
+ "Télécharger la sauvegarde complète": {
+  "en": "Download full backup",
+  "es": "Descargar copia de seguridad completa"
+ },
+ "Télécommande": {
+  "en": "Remote",
+  "es": "Mando"
+ },
+ "Télécommande connectée.": {
+  "en": "Remote connected.",
+  "es": "Mando conectado."
+ },
+ "Télécommande déconnectée": {
+  "en": "Remote disconnected",
+  "es": "Mando desconectado"
+ },
+ "Télécommande déconnectée.": {
+  "en": "Remote disconnected.",
+  "es": "Mando desconectado."
+ },
+ "Télécommande série (UART) : la commande arrive par le câble COMM.": {
+  "en": "Serial remote (UART): the command comes through the COMM cable.",
+  "es": "Mando serie (UART): la orden llega por el cable COMM."
+ },
+ "UART": {
+  "en": "UART",
+  "es": "UART"
+ },
+ "UART désactivé": {
+  "en": "UART disabled",
+  "es": "UART desactivado"
+ },
+ "UART toujours actif": {
+  "en": "UART always on",
+  "es": "UART siempre activo"
+ },
+ "USB": {
+  "en": "USB",
+  "es": "USB"
+ },
+ "UUID": {
+  "en": "UUID",
+  "es": "UUID"
+ },
+ "Un firmware qui ne correspond pas au matériel (": {
+  "en": "A firmware that doesn't match the hardware (",
+  "es": "Un firmware que no corresponde al hardware ("
+ },
+ "Un point toutes les (s)": {
+  "en": "One point every (s)",
+  "es": "Un punto cada (s)"
+ },
+ "Une copie de la configuration est gardée sur ce téléphone à chaque connexion et avant chaque écriture. En cas de mauvais réglage, il suffit de la recharger puis d'écrire.": {
+  "en": "A copy of the configuration is kept on this phone at each connection and before each write. If a setting goes wrong, just reload it and write.",
+  "es": "Se guarda una copia de la configuración en este teléfono en cada conexión y antes de cada escritura. Si algo queda mal ajustado, basta con recargarla y escribir."
+ },
+ "Une fois enregistré, la tuile « Compte dans le tracker » passe au": {
+  "en": "Once saved, the \"Account in tracker\" tile turns",
+  "es": "Una vez guardado, el recuadro «Cuenta en el tracker» pasa a"
+ },
+ "Une nouvelle façon de rider. Les pages du site s'ouvrent dans ton navigateur.": {
+  "en": "A new way to ride. Site pages open in your browser.",
+  "es": "Una nueva forma de ridear. Las páginas del sitio se abren en tu navegador."
+ },
+ "Une seule appli à la fois": {
+  "en": "Only one app at a time",
+  "es": "Solo una app a la vez"
+ },
+ "Unités": {
+  "en": "Units",
+  "es": "Unidades"
+ },
+ "Usage : hélice (eFoil).": {
+  "en": "Use: propeller (eFoil).",
+  "es": "Uso: hélice (eFoil)."
+ },
+ "Utilise Chrome sur Android.": {
+  "en": "Use Chrome on Android.",
+  "es": "Usa Chrome en Android."
+ },
+ "V : Maytech annonce 24–48 V avec l'hélice MICP27F.": {
+  "en": "V: Maytech rates it 24–48 V with the MICP27F propeller.",
+  "es": "V: Maytech indica 24–48 V con la hélice MICP27F."
+ },
+ "V chargée": {
+  "en": "V charged",
+  "es": "V cargada"
+ },
+ "V mesurés, impossible avec": {
+  "en": "V measured, impossible with",
+  "es": "V medidos, imposible con"
+ },
+ "V mesurés, soit": {
+  "en": "V measured, i.e.",
+  "es": "V medidos, es decir"
+ },
+ "V mesurés, trop peu pour": {
+  "en": "V measured, too low for",
+  "es": "V medidos, demasiado poco para"
+ },
+ "V par cellule : au-delà de 4,25 V, une cellule Li-ion se dégrade et devient dangereuse.": {
+  "en": "V per cell: above 4.25 V, a Li-ion cell degrades and becomes dangerous.",
+  "es": "V por celda: por encima de 4,25 V, una celda Li-ion se degrada y se vuelve peligrosa."
+ },
+ "V par cellule : risque de décharge profonde. Vise environ": {
+  "en": "V per cell: risk of deep discharge. Aim for about",
+  "es": "V por celda: riesgo de descarga profunda. Apunta a unos"
+ },
+ "V par cellule : sous 2,8 V, les cellules Li-ion s’usent vite.": {
+  "en": "V per cell: below 2.8 V, Li-ion cells wear out fast.",
+  "es": "V por celda: por debajo de 2,8 V, las celdas Li-ion se desgastan rápido."
+ },
+ "V par cellule : tu perds de l'autonomie. Vise environ": {
+  "en": "V per cell: you lose range. Aim for about",
+  "es": "V por celda: pierdes autonomía. Apunta a unos"
+ },
+ "V par cellule.": {
+  "en": "V per cell.",
+  "es": "V por celda."
+ },
+ "V pour": {
+  "en": "V for",
+  "es": "V para"
+ },
+ "V) doit être au-dessus de la coupure complète (": {
+  "en": "V) must be above full cutoff (",
+  "es": "V) debe estar por encima del corte total ("
+ },
+ "V). Ta batterie a entre": {
+  "en": "V). Your battery has between",
+  "es": "V). Tu batería tiene entre"
+ },
+ "V. max": {
+  "en": "V max",
+  "es": "V máx."
+ },
+ "V. moyenne (en vol)": {
+  "en": "Avg V (riding)",
+  "es": "V media (en vuelo)"
+ },
+ "VESC": {
+  "en": "VESC",
+  "es": "VESC"
+ },
+ "VESC (live)": {
+  "en": "VESC (live)",
+  "es": "VESC (en vivo)"
+ },
+ "VESC simulé": {
+  "en": "Simulated VESC",
+  "es": "VESC simulado"
+ },
+ "Valeurs par défaut": {
+  "en": "Default values",
+  "es": "Valores por defecto"
+ },
+ "Valeurs par défaut chargées — « Écrire » pour les appliquer": {
+  "en": "Defaults loaded — \"Write\" to apply them",
+  "es": "Valores por defecto cargados — «Escribir» para aplicarlos"
+ },
+ "Version": {
+  "en": "Version",
+  "es": "Versión"
+ },
+ "Version reconnue, toutes les définitions de réglages sont à jour.": {
+  "en": "Version recognized, all setting definitions are up to date.",
+  "es": "Versión reconocida, todas las definiciones de ajustes están al día."
+ },
+ "Vidéo": {
+  "en": "Video",
+  "es": "Vídeo"
+ },
+ "Vidéos (YouTube)": {
+  "en": "Videos (YouTube)",
+  "es": "Vídeos (YouTube)"
+ },
+ "Vitesse": {
+  "en": "Speed",
+  "es": "Velocidad"
+ },
+ "Vitesse (km/h)": {
+  "en": "Speed (km/h)",
+  "es": "Velocidad (km/h)"
+ },
+ "Vitesse bridée": {
+  "en": "Speed limited",
+  "es": "Velocidad limitada"
+ },
+ "Vitesse en grand": {
+  "en": "Speed in large",
+  "es": "Velocidad en grande"
+ },
+ "Vitesse max": {
+  "en": "Max speed",
+  "es": "Velocidad máx."
+ },
+ "Voir": {
+  "en": "View",
+  "es": "Ver"
+ },
+ "Voir la session sur SportsTrackLive": {
+  "en": "View session on SportsTrackLive",
+  "es": "Ver la sesión en SportsTrackLive"
+ },
+ "Vérification auprès de SportsTrackLive…": {
+  "en": "Checking with SportsTrackLive…",
+  "es": "Comprobando con SportsTrackLive…"
+ },
+ "Vérification de l'empreinte et redémarrage…": {
+  "en": "Verifying checksum and restarting…",
+  "es": "Verificando la huella y reiniciando…"
+ },
+ "Vérifications": {
+  "en": "Checks",
+  "es": "Comprobaciones"
+ },
+ "Vérifie ces points dans l'ordre : ils règlent presque tous les cas.": {
+  "en": "Check these points in order: they solve almost every case.",
+  "es": "Comprueba estos puntos en orden: resuelven casi todos los casos."
+ },
+ "Vérifie la tension demandée par le module (3,3 V ou 5 V) et que la masse est commune avec le VESC.": {
+  "en": "Check the voltage required by the module (3.3 V or 5 V) and that ground is shared with the VESC.",
+  "es": "Comprueba la tensión que pide el módulo (3,3 V o 5 V) y que la masa sea común con el VESC."
+ },
+ "Vérifie que la batterie est allumée, que l'appli Daly est fermée, et que le BMS n'est pas appairé dans les réglages Bluetooth du téléphone (« Oublier »).": {
+  "en": "Check that the battery is on, the Daly app is closed, and the BMS is not paired in the phone's Bluetooth settings (\"Forget\").",
+  "es": "Comprueba que la batería esté encendida, que la app Daly esté cerrada y que el BMS no esté emparejado en los ajustes Bluetooth del teléfono («Olvidar»)."
+ },
+ "Watchdog": {
+  "en": "Watchdog",
+  "es": "Watchdog"
+ },
+ "Wh": {
+  "en": "Wh",
+  "es": "Wh"
+ },
+ "Wh consommés": {
+  "en": "Wh used",
+  "es": "Wh consumidos"
+ },
+ "Wh ·": {
+  "en": "Wh ·",
+  "es": "Wh ·"
+ },
+ "Wh/km": {
+  "en": "Wh/km",
+  "es": "Wh/km"
+ },
+ "X-STL-Secret-Key": {
+  "en": "X-STL-Secret-Key",
+  "es": "X-STL-Secret-Key"
+ },
+ "Z\" fill=\"url(#": {
+  "en": "Z\" fill=\"url(#",
+  "es": "Z\" fill=\"url(#"
+ },
+ "Zone morte": {
+  "en": "Deadband",
+  "es": "Zona muerta"
+ },
+ "a une version plus récente que celle publiée.": {
+  "en": "has a newer version than the published one.",
+  "es": "tiene una versión más reciente que la publicada."
+ },
+ "abord, repli automatique sur l": {
+  "en": "abord, repli automatique sur l",
+  "es": "abord, repli automatique sur l"
+ },
+ "abord, repli sur le protocole A5 (comme l": {
+  "en": "abord, repli sur le protocole A5 (comme l",
+  "es": "abord, repli sur le protocole A5 (comme l"
+ },
+ "accélération": {
+  "en": "acceleration",
+  "es": "aceleración"
+ },
+ "ack:": {
+  "en": "ack:",
+  "es": "ack:"
+ },
+ "actif": {
+  "en": "active",
+  "es": "activo"
+ },
+ "add to home screen": {
+  "en": "add to home screen",
+  "es": "add to home screen"
+ },
+ "ancien : une mise à jour corrige beaucoup de soucis de détection et de Bluetooth.": {
+  "en": "old: an update fixes many detection and Bluetooth issues.",
+  "es": "antiguo: una actualización corrige muchos problemas de detección y de Bluetooth."
+ },
+ "anneau de ../index.html et de l": {
+  "en": "anneau de ../index.html et de l",
+  "es": "anneau de ../index.html et de l"
+ },
+ "annulé": {
+  "en": "cancelled",
+  "es": "cancelado"
+ },
+ "app ·": {
+  "en": "app ·",
+  "es": "app ·"
+ },
+ "archive VESC": {
+  "en": "VESC archive",
+  "es": "archivo VESC"
+ },
+ "arrêté": {
+  "en": "stopped",
+  "es": "detenido"
+ },
+ "au doigt": {
+  "en": "by finger",
+  "es": "con el dedo"
+ },
+ "au lieu de": {
+  "en": "instead of",
+  "es": "en lugar de"
+ },
+ "aucun": {
+  "en": "none",
+  "es": "ninguno"
+ },
+ "aucun service UART connu sur ce module": {
+  "en": "no known UART service on this module",
+  "es": "ningún servicio UART conocido en este módulo"
+ },
+ "aucune": {
+  "en": "none",
+  "es": "ninguna"
+ },
+ "autorisation refusée": {
+  "en": "permission denied",
+  "es": "permiso denegado"
+ },
+ "autorisée": {
+  "en": "allowed",
+  "es": "autorizada"
+ },
+ "banner bad": {
+  "en": "banner bad",
+  "es": "banner bad"
+ },
+ "banner warn": {
+  "en": "banner warn",
+  "es": "banner warn"
+ },
+ "batterie": {
+  "en": "battery",
+  "es": "batería"
+ },
+ "btn primary": {
+  "en": "btn primary",
+  "es": "btn primary"
+ },
+ "btn primary wide": {
+  "en": "btn primary wide",
+  "es": "btn primary wide"
+ },
+ "btn small": {
+  "en": "btn small",
+  "es": "btn small"
+ },
+ "btn wide": {
+  "en": "btn wide",
+  "es": "btn wide"
+ },
+ "car.) :": {
+  "en": "chars):",
+  "es": "car.):"
+ },
+ "car.) et relecture impossible (": {
+  "en": "chars) and read-back impossible (",
+  "es": "car.) y relectura imposible ("
+ },
+ "card cfg-empty": {
+  "en": "card cfg-empty",
+  "es": "card cfg-empty"
+ },
+ "card chart-card": {
+  "en": "card chart-card",
+  "es": "card chart-card"
+ },
+ "card checks": {
+  "en": "card checks",
+  "es": "card checks"
+ },
+ "card dual": {
+  "en": "card dual",
+  "es": "card dual"
+ },
+ "card lock-card": {
+  "en": "card lock-card",
+  "es": "card lock-card"
+ },
+ "card profile": {
+  "en": "card profile",
+  "es": "card profile"
+ },
+ "ce fichier n'est pas une sauvegarde Lite Foil": {
+  "en": "this file is not a Lite Foil backup",
+  "es": "este archivo no es una copia de seguridad de Lite Foil"
+ },
+ "ce fichier n'est pas une sauvegarde de BMS Lite Foil": {
+  "en": "this file is not a Lite Foil BMS backup",
+  "es": "este archivo no es una copia de seguridad de BMS Lite Foil"
+ },
+ "cellule par cellule": {
+  "en": "cell by cell",
+  "es": "celda por celda"
+ },
+ "cellules (max": {
+  "en": "cells (max",
+  "es": "celdas (máx."
+ },
+ "cellules : vérifie le « S » écrit dessus.": {
+  "en": "cells: check the \"S\" written on it.",
+  "es": "celdas: comprueba la «S» escrita en ella."
+ },
+ "cellules. Vérifie le « S » de ta batterie.": {
+  "en": "cells. Check your battery's \"S\".",
+  "es": "celdas. Comprueba la «S» de tu batería."
+ },
+ "cette télécommande n'a pas de journal (firmware trop ancien)": {
+  "en": "this remote has no log (firmware too old)",
+  "es": "este mando no tiene registro (firmware demasiado antiguo)"
+ },
+ "charge": {
+  "en": "charging",
+  "es": "carga"
+ },
+ "chips scroll cfg-groups": {
+  "en": "chips scroll cfg-groups",
+  "es": "chips scroll cfg-groups"
+ },
+ "chips scroll cfg-subs": {
+  "en": "chips scroll cfg-subs",
+  "es": "chips scroll cfg-subs"
+ },
+ "clé X-STL-Secret-Key fournie par SportsTrackLive": {
+  "en": "X-STL-Secret-Key provided by SportsTrackLive",
+  "es": "clave X-STL-Secret-Key proporcionada por SportsTrackLive"
+ },
+ "configuration illisible": {
+  "en": "unreadable configuration",
+  "es": "configuración ilegible"
+ },
+ "connecte d'abord le contrôleur": {
+  "en": "connect the controller first",
+  "es": "conecta primero el controlador"
+ },
+ "connecté": {
+  "en": "connected",
+  "es": "conectado"
+ },
+ "connectée": {
+  "en": "connected",
+  "es": "conectada"
+ },
+ "contrôleurs sur le bus CAN": {
+  "en": "controllers on the CAN bus",
+  "es": "controladores en el bus CAN"
+ },
+ "coupée": {
+  "en": "off",
+  "es": "apagada"
+ },
+ "dans le tracker": {
+  "en": "in the tracker",
+  "es": "en el tracker"
+ },
+ "date inconnue": {
+  "en": "unknown date",
+  "es": "fecha desconocida"
+ },
+ "de test": {
+  "en": "test",
+  "es": "de prueba"
+ },
+ "début": {
+  "en": "start",
+  "es": "inicio"
+ },
+ "décharge": {
+  "en": "discharge",
+  "es": "descarga"
+ },
+ "désarmé": {
+  "en": "disarmed",
+  "es": "desarmado"
+ },
+ "eFoil · ~1,1 kg": {
+  "en": "eFoil · ~1.1 kg",
+  "es": "eFoil · ~1,1 kg"
+ },
+ "empreinte du fichier différente : téléchargement corrompu": {
+  "en": "file checksum mismatch: corrupted download",
+  "es": "huella del archivo diferente: descarga corrupta"
+ },
+ "en attente": {
+  "en": "pending",
+  "es": "en espera"
+ },
+ "en cours": {
+  "en": "in progress",
+  "es": "en curso"
+ },
+ "en direct": {
+  "en": "live",
+  "es": "en directo"
+ },
+ "en ligne": {
+  "en": "online",
+  "es": "en línea"
+ },
+ "entrée": {
+  "en": "input",
+  "es": "entrada"
+ },
+ "envoi n": {
+  "en": "send #",
+  "es": "envío n.º"
+ },
+ "err:seq:": {
+  "en": "err:seq:",
+  "es": "err:seq:"
+ },
+ "est conservé.": {
+  "en": "is kept.",
+  "es": "se conserva."
+ },
+ "est à jour.": {
+  "en": "is up to date.",
+  "es": "está al día."
+ },
+ "et appuie sur": {
+  "en": "and tap",
+  "es": "y pulsa"
+ },
+ "frein": {
+  "en": "brake",
+  "es": "freno"
+ },
+ "gaz": {
+  "en": "throttle",
+  "es": "acelerador"
+ },
+ "gaz envoyé": {
+  "en": "throttle sent",
+  "es": "gas enviado"
+ },
+ "gaz envoyé à la planche": {
+  "en": "throttle sent to the board",
+  "es": "gas enviado a la tabla"
+ },
+ "gaz envoyé —": {
+  "en": "throttle sent —",
+  "es": "gas enviado —"
+ },
+ "gaz — %": {
+  "en": "throttle — %",
+  "es": "gas — %"
+ },
+ "gâchette": {
+  "en": "trigger",
+  "es": "gatillo"
+ },
+ "gâchette —": {
+  "en": "trigger —",
+  "es": "gatillo —"
+ },
+ "hors ligne": {
+  "en": "offline",
+  "es": "sin conexión"
+ },
+ "identifiants refusés": {
+  "en": "credentials rejected",
+  "es": "credenciales rechazadas"
+ },
+ "il est enregistré dans le tracker, pas sur ce téléphone": {
+  "en": "it's stored in the tracker, not on this phone",
+  "es": "está guardado en el tracker, no en este teléfono"
+ },
+ "inactif": {
+  "en": "inactive",
+  "es": "inactivo"
+ },
+ "installé dans": {
+  "en": "installed in",
+  "es": "instalado en"
+ },
+ "installé.": {
+  "en": "installed.",
+  "es": "instalado."
+ },
+ "interface partagées par les pages de l": {
+  "en": "interface partagées par les pages de l",
+  "es": "interface partagées par les pages de l"
+ },
+ "interrompt, par exemple quand l": {
+  "en": "interrompt, par exemple quand l",
+  "es": "interrompt, par exemple quand l"
+ },
+ "iot.1nce.net": {
+  "en": "iot.1nce.net",
+  "es": "iot.1nce.net"
+ },
+ "item muted small-text": {
+  "en": "item muted small-text",
+  "es": "item muted small-text"
+ },
+ "jusqu'à 3 min": {
+  "en": "up to 3 min",
+  "es": "hasta 3 min"
+ },
+ "km/h": {
+  "en": "km/h",
+  "es": "km/h"
+ },
+ "km/h ·": {
+  "en": "km/h ·",
+  "es": "km/h ·"
+ },
+ "ko ·": {
+  "en": "KB ·",
+  "es": "KB ·"
+ },
+ "kv-grid profile-values": {
+  "en": "kv-grid profile-values",
+  "es": "kv-grid profile-values"
+ },
+ "la batterie": {
+  "en": "the battery",
+  "es": "la batería"
+ },
+ "la télécommande": {
+  "en": "the remote",
+  "es": "el mando"
+ },
+ "le BMS n'a pas confirmé l'écriture": {
+  "en": "the BMS didn't confirm the write",
+  "es": "el BMS no ha confirmado la escritura"
+ },
+ "le BMS ne répond ni en Modbus ni en A5": {
+  "en": "the BMS responds neither in Modbus nor in A5",
+  "es": "el BMS no responde ni en Modbus ni en A5"
+ },
+ "le dernier module": {
+  "en": "the last module",
+  "es": "el último módulo"
+ },
+ "le tracker": {
+  "en": "the tracker",
+  "es": "el tracker"
+ },
+ "litefoil.fr/pages/contact": {
+  "en": "litefoil.fr/pages/contact",
+  "es": "litefoil.fr/pages/contact"
+ },
+ "mWb attendus pour un": {
+  "en": "mWb expected for a",
+  "es": "mWb esperados para un"
+ },
+ "mWb mesurés,": {
+  "en": "mWb measured,",
+  "es": "mWb medidos,"
+ },
+ "mWb pour un": {
+  "en": "mWb for a",
+  "es": "mWb para un"
+ },
+ "mWb, attendu environ": {
+  "en": "mWb, expected about",
+  "es": "mWb, esperado unos"
+ },
+ "max —": {
+  "en": "max —",
+  "es": "máx. —"
+ },
+ "mesures enregistrées": {
+  "en": "recorded measurements",
+  "es": "medidas registradas"
+ },
+ "min à ce rythme": {
+  "en": "min at this rate",
+  "es": "min a este ritmo"
+ },
+ "module injoignable": {
+  "en": "module unreachable",
+  "es": "módulo inaccesible"
+ },
+ "moteur": {
+  "en": "motor",
+  "es": "motor"
+ },
+ "moteur ·": {
+  "en": "motor ·",
+  "es": "motor ·"
+ },
+ "muted small-text": {
+  "en": "muted small-text",
+  "es": "muted small-text"
+ },
+ "non": {
+  "en": "no",
+  "es": "no"
+ },
+ "non appairée": {
+  "en": "not paired",
+  "es": "no emparejado"
+ },
+ "non connecté": {
+  "en": "not connected",
+  "es": "no conectado"
+ },
+ "non connectée": {
+  "en": "not connected",
+  "es": "no conectada"
+ },
+ "non répertorié": {
+  "en": "not listed",
+  "es": "no listado"
+ },
+ "non répertorié par VESC Tool : réglages lus avec les définitions": {
+  "en": "not listed by VESC Tool: settings read with the definitions",
+  "es": "no listado por VESC Tool: ajustes leídos con las definiciones"
+ },
+ "non écrite": {
+  "en": "not written",
+  "es": "no escrita"
+ },
+ "octets par morceaux de": {
+  "en": "bytes in chunks of",
+  "es": "bytes en bloques de"
+ },
+ "octets). Utilise VESC Tool.": {
+  "en": "bytes). Use VESC Tool.",
+  "es": "bytes). Usa VESC Tool."
+ },
+ "ok:begin:": {
+  "en": "ok:begin:",
+  "es": "ok:begin:"
+ },
+ "ota_begin:": {
+  "en": "ota_begin:",
+  "es": "ota_begin:"
+ },
+ "oui": {
+  "en": "yes",
+  "es": "sí"
+ },
+ "paramètres chargés depuis la sauvegarde. Vérifie puis « Écrire ».": {
+  "en": "parameters loaded from the backup. Check, then \"Write\".",
+  "es": "parámetros cargados desde la copia de seguridad. Revisa y luego «Escribir»."
+ },
+ "paramètres chargés. Vérifie puis « Écrire ».": {
+  "en": "parameters loaded. Check, then \"Write\".",
+  "es": "parámetros cargados. Revisa y luego «Escribir»."
+ },
+ "paramètres importés. Vérifie puis « Écrire ».": {
+  "en": "parameters imported. Check, then \"Write\".",
+  "es": "parámetros importados. Revisa y luego «Escribir»."
+ },
+ "pas de compte": {
+  "en": "no account",
+  "es": "sin cuenta"
+ },
+ "pas de fix": {
+  "en": "no fix",
+  "es": "sin fix"
+ },
+ "pas de liaison": {
+  "en": "no link",
+  "es": "sin enlace"
+ },
+ "pas de réponse": {
+  "en": "no response",
+  "es": "sin respuesta"
+ },
+ "pas de réponse de": {
+  "en": "no response from",
+  "es": "sin respuesta de"
+ },
+ "pas de réponse du BMS": {
+  "en": "no response from the BMS",
+  "es": "sin respuesta del BMS"
+ },
+ "pas de signal": {
+  "en": "no signal",
+  "es": "sin señal"
+ },
+ "pas de signal pour le moment": {
+  "en": "no signal yet",
+  "es": "sin señal por ahora"
+ },
+ "pendant la détection.": {
+  "en": "during detection.",
+  "es": "durante la detección."
+ },
+ "position de la gâchette": {
+  "en": "trigger position",
+  "es": "posición del gatillo"
+ },
+ "position indisponible": {
+  "en": "position unavailable",
+  "es": "posición no disponible"
+ },
+ "position non disponible en UART": {
+  "en": "position not available over UART",
+  "es": "posición no disponible en UART"
+ },
+ "pour comparer sa version avec la dernière publiée (": {
+  "en": "to compare its version with the latest published one (",
+  "es": "para comparar su versión con la última publicada ("
+ },
+ "prenom@exemple.fr": {
+  "en": "firstname@example.com",
+  "es": "nombre@ejemplo.com"
+ },
+ "pts en attente": {
+  "en": "pts pending",
+  "es": "pts en espera"
+ },
+ "px) rotate(": {
+  "en": "px) rotate(",
+  "es": "px) rotate("
+ },
+ "qui se connecte à SportsTrackLive et publie ta trace — même sans téléphone à côté.": {
+  "en": "that connects to SportsTrackLive and publishes your track — even with no phone nearby.",
+  "es": "que se conecta a SportsTrackLive y publica tu recorrido — incluso sin teléfono cerca."
+ },
+ "repos": {
+  "en": "idle",
+  "es": "reposo"
+ },
+ "réglages chargés : vérifie puis « Écrire »": {
+  "en": "settings loaded: check, then \"Write\"",
+  "es": "ajustes cargados: revisa y luego «Escribir»"
+ },
+ "réglages non disponibles avec ce BMS (ancien protocole)": {
+  "en": "settings not available with this BMS (old protocol)",
+  "es": "ajustes no disponibles con este BMS (protocolo antiguo)"
+ },
+ "réglages préremplis. Vérifie puis « Écrire ». Lance ensuite la détection FOC.": {
+  "en": "settings prefilled. Check, then \"Write\". Then run FOC detection.",
+  "es": "ajustes prerrellenados. Revisa y luego «Escribir». Después lanza la detección FOC."
+ },
+ "réglages sur": {
+  "en": "settings on",
+  "es": "ajustes en"
+ },
+ "résultat": {
+  "en": "result",
+  "es": "resultado"
+ },
+ "seg wide": {
+  "en": "seg wide",
+  "es": "seg wide"
+ },
+ "sur la carte SportsTrackLive.": {
+  "en": "on the SportsTrackLive map.",
+  "es": "en el mapa de SportsTrackLive."
+ },
+ "taille inattendue (": {
+  "en": "unexpected size (",
+  "es": "tamaño inesperado ("
+ },
+ "tension": {
+  "en": "voltage",
+  "es": "tensión"
+ },
+ "tracker déconnecté": {
+  "en": "tracker disconnected",
+  "es": "tracker desconectado"
+ },
+ "tracker lui-même": {
+  "en": "the tracker itself",
+  "es": "el propio tracker"
+ },
+ "trame illisible (": {
+  "en": "unreadable frame (",
+  "es": "trama ilegible ("
+ },
+ "tu saisis ton e-mail et ton mot de passe SportsTrackLive ci-dessous, l'appli les écrit": {
+  "en": "you enter your SportsTrackLive e-mail and password below, the app writes them",
+  "es": "introduces tu e-mail y tu contraseña de SportsTrackLive abajo, la app los escribe"
+ },
+ "téléchargement impossible (": {
+  "en": "download failed (",
+  "es": "descarga imposible ("
+ },
+ "télécommande déconnectée": {
+  "en": "remote disconnected",
+  "es": "mando desconectado"
+ },
+ "un moteur à l": {
+  "en": "un moteur à l",
+  "es": "un moteur à l"
+ },
+ "use strict": {
+  "en": "use strict",
+  "es": "use strict"
+ },
+ "v bad": {
+  "en": "v bad",
+  "es": "v bad"
+ },
+ "v good": {
+  "en": "v good",
+  "es": "v good"
+ },
+ "v warn": {
+  "en": "v warn",
+  "es": "v warn"
+ },
+ "version de configuration inconnue (signature": {
+  "en": "unknown configuration version (signature",
+  "es": "versión de configuración desconocida (firma"
+ },
+ "~2 kg": {
+  "en": "~2 kg",
+  "es": "~2 kg"
+ },
+ "~6 kg": {
+  "en": "~6 kg",
+  "es": "~6 kg"
+ },
+ "© Esri, Maxar, Earthstar Geographics": {
+  "en": "© Esri, Maxar, Earthstar Geographics",
+  "es": "© Esri, Maxar, Earthstar Geographics"
+ },
+ "© OpenStreetMap": {
+  "en": "© OpenStreetMap",
+  "es": "© OpenStreetMap"
+ },
+ "« APP to Use » doit inclure l'UART (« UART », « PPM and UART » ou « ADC and UART »), ou « Enable Permanent UART » doit être coché. En « PPM » seul, le Bluetooth ne parle pas au contrôleur. À corriger par USB si besoin.": {
+  "en": "\"APP to Use\" must include UART (\"UART\", \"PPM and UART\" or \"ADC and UART\"), or \"Enable Permanent UART\" must be checked. With \"PPM\" alone, Bluetooth can't talk to the controller. Fix over USB if needed.",
+  "es": "«APP to Use» debe incluir el UART («UART», «PPM and UART» o «ADC and UART»), o «Enable Permanent UART» debe estar marcado. Con «PPM» solo, el Bluetooth no habla con el controlador. Corrígelo por USB si hace falta."
+ },
+ "« APP to Use » vaut «": {
+  "en": "\"APP to Use\" is \"",
+  "es": "«APP to Use» vale «"
+ },
+ "« Courant à zéro » : à faire batterie au repos (rien de branché) si le BMS affiche un petit courant permanent.": {
+  "en": "\"Zero current\": do it with the battery at rest (nothing plugged in) if the BMS shows a small permanent current.",
+  "es": "«Corriente a cero»: hazlo con la batería en reposo (nada conectado) si el BMS muestra una pequeña corriente permanente."
+ },
+ "« Effacer le compte » dans l'application retire l'e-mail et le mot de passe du tracker. Effacer les données du site dans votre navigateur retire l'e-mail et la clé mémorisés sur le téléphone. Pour vos sorties, utilisez votre compte SportsTrackLive.": {
+  "en": "\"Delete account\" in the app removes the e-mail and password from the tracker. Clearing the site data in your browser removes the e-mail and key stored on the phone. For your sessions, use your SportsTrackLive account.",
+  "es": "«Borrar la cuenta» en la aplicación elimina el e-mail y la contraseña del tracker. Borrar los datos del sitio en tu navegador elimina el e-mail y la clave guardados en el teléfono. Para tus salidas, usa tu cuenta de SportsTrackLive."
+ },
+ "µs. « Écrire » pour enregistrer.": {
+  "en": "µs. \"Write\" to save.",
+  "es": "µs. «Escribir» para guardar."
+ },
+ "· CAN": {
+  "en": "· CAN",
+  "es": "· CAN"
+ },
+ "· Chrome sur Android (Safari et iOS n'ont pas le Bluetooth web). Menu de Chrome → « Ajouter à l'écran d'accueil » pour l'avoir comme une application.": {
+  "en": "· Chrome on Android (Safari and iOS don't have web Bluetooth). Chrome menu → \"Add to Home screen\" to use it like an app.",
+  "es": "· Chrome en Android (Safari e iOS no tienen Bluetooth web). Menú de Chrome → «Añadir a pantalla de inicio» para tenerla como una aplicación."
+ },
+ "· NON ENRÔLÉ sur le serveur": {
+  "en": "· NOT ENROLLED on the server",
+  "es": "· NO REGISTRADO en el servidor"
+ },
+ "· aucun compte saisi": {
+  "en": "· no account entered",
+  "es": "· ninguna cuenta introducida"
+ },
+ "· compte :": {
+  "en": "· account:",
+  "es": "· cuenta:"
+ },
+ "· encore": {
+  "en": "· still",
+  "es": "· aún"
+ },
+ "· heure non réglée": {
+  "en": "· time not set",
+  "es": "· hora no ajustada"
+ },
+ "· journal": {
+  "en": "· log",
+  "es": "· registro"
+ },
+ "· max": {
+  "en": "· max",
+  "es": "· máx."
+ },
+ "· plus long vol": {
+  "en": "· longest ride",
+  "es": "· vuelo más largo"
+ },
+ "· vol": {
+  "en": "· ride",
+  "es": "· vuelo"
+ },
+ "· © Lite Foil": {
+  "en": "· © Lite Foil",
+  "es": "· © Lite Foil"
+ },
+ "» : le module Bluetooth risque de ne plus parler au contrôleur. Choisis une option avec UART (page Télécommande).": {
+  "en": "\": the Bluetooth module may no longer talk to the controller. Choose an option with UART (Remote page).",
+  "es": "»: el módulo Bluetooth podría dejar de hablar con el controlador. Elige una opción con UART (página Mando)."
+ },
+ "À l'armement": {
+  "en": "On arming",
+  "es": "Al armar"
+ },
+ "À régler d'après la batterie (décharge max de ses cellules × nombre en parallèle). Avec deux contrôleurs, chacun prend cette valeur : le total est doublé.": {
+  "en": "Set according to the battery (max discharge of its cells × number in parallel). With two controllers, each takes this value: the total is doubled.",
+  "es": "Ajústalo según la batería (descarga máx. de sus celdas × número en paralelo). Con dos controladores, cada uno toma este valor: el total se duplica."
+ },
+ "Ça ne se connecte pas ?": {
+  "en": "Won't connect?",
+  "es": "¿No se conecta?"
+ },
+ "Écart": {
+  "en": "Delta",
+  "es": "Diferencia"
+ },
+ "Écart cellules": {
+  "en": "Cell delta",
+  "es": "Diferencia de celdas"
+ },
+ "Écart cellules : alerte": {
+  "en": "Cell delta: warning",
+  "es": "Diferencia de celdas: alerta"
+ },
+ "Écart cellules : coupure": {
+  "en": "Cell delta: cutoff",
+  "es": "Diferencia de celdas: corte"
+ },
+ "Écart de température : alerte": {
+  "en": "Temperature delta: warning",
+  "es": "Diferencia de temperatura: alerta"
+ },
+ "Écart de température : coupure": {
+  "en": "Temperature delta: cutoff",
+  "es": "Diferencia de temperatura: corte"
+ },
+ "Écart de température trop grand (1)": {
+  "en": "Temperature delta too large (1)",
+  "es": "Diferencia de temperatura demasiado grande (1)"
+ },
+ "Écart de température trop grand (2)": {
+  "en": "Temperature delta too large (2)",
+  "es": "Diferencia de temperatura demasiado grande (2)"
+ },
+ "Écart entre cellules": {
+  "en": "Delta between cells",
+  "es": "Diferencia entre celdas"
+ },
+ "Écart entre cellules trop grand (1)": {
+  "en": "Cell delta too large (1)",
+  "es": "Diferencia entre celdas demasiado grande (1)"
+ },
+ "Écart entre cellules trop grand (2)": {
+  "en": "Cell delta too large (2)",
+  "es": "Diferencia entre celdas demasiado grande (2)"
+ },
+ "Écart minimal entre cellules pour équilibrer.": {
+  "en": "Minimum delta between cells to balance.",
+  "es": "Diferencia mínima entre celdas para equilibrar."
+ },
+ "Écarts et équilibrage": {
+  "en": "Deltas and balancing",
+  "es": "Diferencias y equilibrado"
+ },
+ "Échec :": {
+  "en": "Failed:",
+  "es": "Error:"
+ },
+ "Échec d'écriture à l'adresse": {
+  "en": "Write failed at address",
+  "es": "Fallo de escritura en la dirección"
+ },
+ "Échec de l'écriture :": {
+  "en": "Write failed:",
+  "es": "Error de escritura:"
+ },
+ "Échec de la connexion": {
+  "en": "Connection failed",
+  "es": "Error de conexión"
+ },
+ "Écran d'accueil": {
+  "en": "Home screen",
+  "es": "Pantalla de inicio"
+ },
+ "Écrire": {
+  "en": "Write",
+  "es": "Escribir"
+ },
+ "Écrire dans le VESC ?": {
+  "en": "Write to the VESC?",
+  "es": "¿Escribir en el VESC?"
+ },
+ "Écrire la configuration ?": {
+  "en": "Write the configuration?",
+  "es": "¿Escribir la configuración?"
+ },
+ "Écris d'abord tes modifications sur ce contrôleur": {
+  "en": "Write your changes to this controller first",
+  "es": "Escribe primero tus cambios en este controlador"
+ },
+ "Écrit, mais le contrôleur a corrigé :": {
+  "en": "Written, but the controller corrected:",
+  "es": "Escrito, pero el controlador ha corregido:"
+ },
+ "Énergie": {
+  "en": "Energy",
+  "es": "Energía"
+ },
+ "Équilibrage": {
+  "en": "Balancing",
+  "es": "Equilibrado"
+ },
+ "Équilibrage dès": {
+  "en": "Balancing from",
+  "es": "Equilibrado desde"
+ },
+ "Équilibrage si écart >": {
+  "en": "Balancing if delta >",
+  "es": "Equilibrado si diferencia >"
+ },
+ "Équilibrage très tôt": {
+  "en": "Balancing very early",
+  "es": "Equilibrado muy pronto"
+ },
+ "Équilibrage —": {
+  "en": "Balancing —",
+  "es": "Equilibrado —"
+ },
+ "État": {
+  "en": "Status",
+  "es": "Estado"
+ },
+ "État de charge": {
+  "en": "State of charge",
+  "es": "Estado de carga"
+ },
+ "État en direct": {
+  "en": "Live status",
+  "es": "Estado en directo"
+ },
+ "État lu (": {
+  "en": "Status read (",
+  "es": "Estado leído ("
+ },
+ "Éteins la planche dix secondes, rallume-la, puis réessaie. Sur Android, couper puis rallumer le Bluetooth du téléphone aide aussi.": {
+  "en": "Turn the board off for ten seconds, turn it back on, then try again. On Android, turning the phone's Bluetooth off and on also helps.",
+  "es": "Apaga la tabla diez segundos, vuelve a encenderla y luego inténtalo de nuevo. En Android, apagar y encender el Bluetooth del teléfono también ayuda."
+ },
+ "à l'arrêt ·": {
+  "en": "stopped ·",
+  "es": "parado ·"
+ },
+ "à écrire": {
+  "en": "to write",
+  "es": "por escribir"
+ },
+ "échelle jusqu": {
+  "en": "échelle jusqu",
+  "es": "échelle jusqu"
+ },
+ "écriture": {
+  "en": "write",
+  "es": "escritura"
+ },
+ "écriture impossible": {
+  "en": "write impossible",
+  "es": "escritura imposible"
+ },
+ "écriture échouée :": {
+  "en": "write failed:",
+  "es": "escritura fallida:"
+ },
+ "① E-mail de ton compte SportsTrackLive": {
+  "en": "① Your SportsTrackLive account e-mail",
+  "es": "① E-mail de tu cuenta SportsTrackLive"
+ },
+ "② Mot de passe SportsTrackLive": {
+  "en": "② SportsTrackLive password",
+  "es": "② Contraseña de SportsTrackLive"
+ },
+ "③ Enregistrer dans le tracker": {
+  "en": "③ Save to tracker",
+  "es": "③ Guardar en el tracker"
+ },
+ "● en cours": {
+  "en": "● in progress",
+  "es": "● en curso"
+ }
+}

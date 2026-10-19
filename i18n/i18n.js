@@ -90,6 +90,13 @@
     var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(s);
     var core = m[2];
     var res = exact.has(core) ? exact.get(core) : null;
+    // Paragraphe écrit sur plusieurs lignes dans le HTML : on compare sans les retours ni l'indentation.
+    if (res === null && /\s{2,}|\n/.test(core)) {
+      var flat = core.replace(/\s+/g, ' ');
+      if (exact.has(flat)) res = exact.get(flat);
+      // Retour à la ligne suivi d'une indentation : mise en forme du HTML, pas une vraie ligne.
+      else if (/\d/.test(flat) && templ.has(flat.replace(NUM, '{#}')) || /\n[ \t]+\S/.test(core)) res = trCore(flat);
+    }
     if (res === null && core.indexOf('\n') >= 0) {
       res = core.split('\n').map(function (line) {
         var lm = /^(\s*)(.*?)(\s*)$/.exec(line);

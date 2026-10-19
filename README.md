@@ -56,6 +56,18 @@ l'appli Daly SMART BMS au même style : cellules une par une, alarmes en frança
 protection (avec mot de passe, vérifications et aperçu avant écriture), MOS de charge et décharge,
 calibrage de la charge, infos et sauvegarde du BMS. Détails : `bms/README.md`.
 
+## Langues
+
+L'appli, les ateliers et la page de confidentialité existent en **français, anglais et espagnol**.
+Drapeaux en haut à droite de la vidéo d'accueil (et dans l'en-tête des ateliers) ; au premier
+lancement, la langue du téléphone est choisie, sinon le français. Le changement se fait sans
+recharger la page, donc sans couper le Bluetooth.
+
+Le texte reste écrit en français dans le code ; `i18n/i18n.js` traduit l'affichage (y compris ce
+qui s'affiche ensuite, les confirmations et les graphiques). Traductions : `i18n/strings.json`
+(français → anglais, espagnol) ; après une modification, `python3 i18n/tools/build.py` régénère
+`i18n/en.json` et `i18n/es.json`. Un texte ajouté sans traduction s'affiche en français.
+
 ## Pourquoi un hébergement web
 
 Le Bluetooth web (`navigator.bluetooth`) exige un contexte sécurisé : la page
