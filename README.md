@@ -37,6 +37,16 @@ session à la mise sous tension suivante si elle a moins de 6 h (et la reprend s
 moins de 10 min : simple micro-coupure). « Arrêter le suivi » depuis la page ferme la
 session immédiatement.
 
+## Atelier VESC
+
+L'onglet **VESC** affiche la télémétrie ; la carte « Atelier VESC » ouvre `vesc/`, une réplique de
+VESC Tool au style de l'application : tableau de bord et graphiques en direct, journal CSV, tous les
+réglages moteur et app (firmwares 3.55 à 7.01, reconnus par leur signature), aperçu des changements
+avant écriture, sauvegardes automatiques sur le téléphone, import/export XML compatible VESC Tool,
+détection FOC, pilotage « maintenir pour activer », entrées PPM/ADC/IMU, terminal, firmware. Modules
+Bluetooth Nordic UART et HM-10, USB, et un mode démo sans matériel. Détails : `vesc/README.md`.
+Code sous GPL-3.0 (`vesc/LICENSE`), comme VESC Tool.
+
 ## Pourquoi un hébergement web
 
 Le Bluetooth web (`navigator.bluetooth`) exige un contexte sécurisé : la page

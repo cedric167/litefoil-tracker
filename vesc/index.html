@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Lite Foil · VESC</title>
+  <meta name="description" content="Réglage complet du contrôleur VESC par Bluetooth : télémétrie, configuration moteur et app, détection, firmware.">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="apple-touch-icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="../" aria-label="Retour à Lite Foil">
+      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+    </a>
+    <img class="logo" src="../litefoil-logo.png" alt="Lite Foil">
+    <div class="title">
+      <span class="serif">Atelier VESC</span>
+      <span class="sub" id="topSub">Contrôleur moteur</span>
+    </div>
+    <button class="conn-pill" id="connPill" type="button">
+      <span class="lamp" id="lamp"></span><span id="connText">Hors ligne</span>
+    </button>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-page="home" class="active">Accueil</button>
+    <button data-page="realtime">Direct</button>
+    <button data-page="mcconf">Moteur</button>
+    <button data-page="appconf">App</button>
+    <button data-page="wizard">Détection</button>
+    <button data-page="control">Pilotage</button>
+    <button data-page="inputs">Entrées</button>
+    <button data-page="terminal">Terminal</button>
+    <button data-page="firmware">Firmware</button>
+  </nav>
+
+  <main>
+    <!-- ================================================================ Accueil -->
+    <section class="page active" id="page-home">
+      <div class="card connect-card" id="connectCard">
+        <div class="connect-art" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fe3e6"/><stop offset="1" stop-color="#148a90"/></linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#e7f6f7" stroke-width="10"/>
+            <circle cx="60" cy="60" r="54" fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round" stroke-dasharray="250 400" transform="rotate(-210 60 60)"/>
+            <path d="M64 28 44 64h14l-4 28 22-38H62z" fill="#0b0d10"/>
+          </svg>
+        </div>
+        <h1 class="serif">Ton contrôleur, <em>au doigt</em></h1>
+        <p class="muted">Allume la planche, puis connecte le module Bluetooth du VESC. Toutes les fonctions de VESC Tool, depuis le téléphone.</p>
+        <div class="stack">
+          <button id="btnBle" class="btn primary wide">
+            <svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg>Connecter en Bluetooth
+          </button>
+          <div class="row2">
+            <button id="btnUsb" class="btn">USB</button>
+            <button id="btnDemo" class="btn">Démo</button>
+          </div>
+        </div>
+        <p id="bleSupport" class="banner warn" hidden></p>
+      </div>
+
+      <div id="homeLive" hidden>
+        <div class="card hero-metric">
+          <div class="hm-top"><span class="hm-label">Puissance</span><span class="hm-max" id="hPowMax">max —</span></div>
+          <div class="hm-value"><span id="hPow">—</span><span class="hm-unit">W</span></div>
+          <div class="spark" id="hPowSpark"></div>
+        </div>
+        <div class="dash-grid">
+          <div class="card ring-card"><div class="m-label">Batterie</div><div class="ring" id="hBatRing"></div><div class="m-sub" id="hBatSub">—</div></div>
+          <div class="card ring-card"><div class="m-label">Gaz</div><div class="ring" id="hDutyRing"></div><div class="m-sub" id="hRpmSub">—</div></div>
+          <div class="card metric"><div class="m-label">Contrôleur</div><div class="m-value"><span id="hTf">—</span><span class="m-unit">°C</span></div><div class="temp-bar"><i id="hTfBar"></i></div></div>
+          <div class="card metric"><div class="m-label">Moteur</div><div class="m-value"><span id="hTm">—</span><span class="m-unit">°C</span></div><div class="temp-bar"><i id="hTmBar"></i></div></div>
+        </div>
+        <div id="hFault" class="banner bad" hidden></div>
+      </div>
+
+      <div class="section-label" id="devLabel" hidden>Contrôleur</div>
+      <div class="card" id="infoCard" hidden>
+        <div class="dev-head">
+          <div class="dev-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></div>
+          <div>
+            <div class="dev-name" id="devName">—</div>
+            <div class="dev-sub" id="devSub">—</div>
+          </div>
+        </div>
+        <div class="kv-grid" id="fwInfo"></div>
+        <div class="chips" id="canList"></div>
+        <div class="row-btns">
+          <button id="btnScanCan" class="btn small">Scanner le bus CAN</button>
+          <button id="btnReboot" class="btn small ghost">Redémarrer</button>
+          <button id="btnDisconnect" class="btn small ghost danger-text">Déconnecter</button>
+        </div>
+      </div>
+
+      <div class="section-label">Sauvegardes de configuration</div>
+      <div class="card">
+        <p class="muted small-text">Une copie de la configuration est gardée sur ce téléphone à chaque connexion et avant chaque écriture.
+          En cas de mauvais réglage, il suffit de la recharger puis d'écrire.</p>
+        <div class="ioslist" id="backupList"></div>
+      </div>
+    </section>
+
+    <!-- ================================================================ Direct -->
+    <section class="page" id="page-realtime">
+      <div class="seg-row">
+        <button id="btnRtStream" class="btn primary">Démarrer</button>
+        <div class="seg" id="rtRate">
+          <button data-v="100">10 Hz</button><button data-v="200" class="on">5 Hz</button><button data-v="500">2 Hz</button>
+        </div>
+        <button id="btnRtRecord" class="btn icon" title="Enregistrer un journal CSV">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg><span>CSV</span>
+        </button>
+      </div>
+      <div id="faultBanner" class="banner bad" hidden></div>
+      <div class="tiles" id="rtTiles"></div>
+      <div class="chips scroll" id="chartSeries"></div>
+      <div id="charts"></div>
+    </section>
+
+    <!-- ================================================================ Configurations -->
+    <section class="page config-page" id="page-mcconf" data-kind="mcconf"></section>
+    <section class="page config-page" id="page-appconf" data-kind="appconf"></section>
+
+    <!-- ================================================================ Détection -->
+    <section class="page" id="page-wizard">
+      <div class="card">
+        <h2 class="serif">Détection FOC</h2>
+        <p class="muted">Mesure la résistance, l'inductance et le flux du moteur, règle les courants et le régulateur. Compte une à deux minutes.</p>
+        <div class="banner warn">Le moteur va tourner. Hélice démontée ou planche bien calée, mains loin de l'hélice.</div>
+        <div class="section-label">Type de moteur</div>
+        <div class="motor-list" id="wizMotor"></div>
+        <details class="adv">
+          <summary>Réglages avancés</summary>
+          <div class="grid2">
+            <label class="field"><span>Pertes max</span><div class="input-unit"><input id="wizLoss" type="number" step="1" inputmode="decimal"><i>W</i></div></label>
+            <label class="field"><span>Openloop</span><div class="input-unit"><input id="wizOl" type="number" step="50" inputmode="decimal"><i>ERPM</i></div></label>
+            <label class="field"><span>Sans capteur dès</span><div class="input-unit"><input id="wizSl" type="number" step="100" inputmode="decimal"><i>ERPM</i></div></label>
+            <label class="field"><span>Courant batterie max</span><div class="input-unit"><input id="wizImax" type="number" step="5" value="0" inputmode="decimal"><i>A</i></div></label>
+            <label class="field"><span>Courant de régén.</span><div class="input-unit"><input id="wizImin" type="number" step="5" value="0" inputmode="decimal"><i>A</i></div></label>
+          </div>
+          <p class="muted small-text">0 = valeurs par défaut du contrôleur.</p>
+        </details>
+        <label class="switch"><input type="checkbox" id="wizCan"><span></span>Détecter aussi les VESC du bus CAN</label>
+        <div class="stack">
+          <button id="btnDetect" class="btn primary wide">Lancer la détection</button>
+          <button id="btnDetectRL" class="btn wide">Mesurer R et L seulement</button>
+        </div>
+      </div>
+      <div class="card result-card" id="wizResultCard" hidden>
+        <div class="result-head"><span class="badge" id="wizBadge"></span><h2 class="serif" id="wizTitle"></h2></div>
+        <div class="kv-grid" id="wizResult"></div>
+        <div class="loader" id="wizLoader"><i></i></div>
+      </div>
+    </section>
+
+    <!-- ================================================================ Pilotage -->
+    <section class="page" id="page-control">
+      <div class="card hero-metric">
+        <div class="hm-top"><span class="hm-label">Régime moteur</span><span class="hm-max" id="ctlDuty">gaz — %</span></div>
+        <div class="hm-value"><span id="ctlRpm">—</span><span class="hm-unit">ERPM</span></div>
+        <div class="ctl-sub"><span id="ctlCur">— A</span><span id="ctlVin">— V</span><span id="ctlFault"></span></div>
+      </div>
+      <div class="banner warn">Le moteur ne tourne que tant que ton doigt reste sur le bouton. Hélice démontée.</div>
+      <div class="seg wide" id="ctlMode">
+        <button data-mode="duty" class="on">Gaz</button><button data-mode="current">Courant</button>
+        <button data-mode="rpm">Régime</button><button data-mode="brake">Frein</button>
+      </div>
+      <div class="card ctl-card">
+        <div class="ctl-val"><span id="ctlValue">10</span><small id="ctlUnit">%</small></div>
+        <input type="range" id="ctlRange">
+        <div class="ctl-scale"><span id="ctlMin"></span><span id="ctlMax"></span></div>
+        <button class="hold-btn" id="btnHold">
+          <span class="hold-ring"></span><span class="hold-txt">Maintenir</span>
+        </button>
+        <button id="btnStop" class="btn stop wide">Arrêt</button>
+      </div>
+    </section>
+
+    <!-- ================================================================ Entrées -->
+    <section class="page" id="page-inputs">
+      <div class="seg-row"><button id="btnInStream" class="btn primary">Démarrer</button></div>
+      <div class="card"><div class="m-label">Récepteur PPM</div>
+        <div class="bar-gauge"><i id="inPpmBar"></i><span class="mid"></span></div>
+        <div class="kv-grid" id="inPpm"></div></div>
+      <div class="card"><div class="m-label">Entrées analogiques (ADC)</div>
+        <div class="bar-gauge"><i id="inAdcBar"></i></div>
+        <div class="kv-grid" id="inAdc"></div></div>
+      <div class="card"><div class="m-label">Centrale inertielle</div>
+        <div class="horizon"><div class="horizon-sky" id="inHorizon"></div><span class="horizon-mark"></span></div>
+        <div class="kv-grid" id="inImu"></div></div>
+    </section>
+
+    <!-- ================================================================ Terminal -->
+    <section class="page" id="page-terminal">
+      <div class="chips scroll">
+        <button class="chip" data-cmd="help">help</button>
+        <button class="chip" data-cmd="faults">faults</button>
+        <button class="chip" data-cmd="hw_status">hw_status</button>
+        <button class="chip" data-cmd="uptime">uptime</button>
+        <button class="chip" data-cmd="foc_state">foc_state</button>
+        <button class="chip" data-cmd="last_adc_duration">last_adc_duration</button>
+        <button class="chip ghost" id="btnTermClear">Effacer</button>
+      </div>
+      <pre id="termOut" class="term"></pre>
+      <form id="termForm" class="term-form">
+        <input id="termIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Commande…">
+        <button class="btn primary">Envoyer</button>
+      </form>
+    </section>
+
+    <!-- ================================================================ Firmware -->
+    <section class="page" id="page-firmware">
+      <div class="card">
+        <h2 class="serif">Mise à jour du firmware</h2>
+        <div class="banner warn">Un firmware qui ne correspond pas au matériel (<b id="fwHwName">?</b>) peut rendre le contrôleur
+          inutilisable. Ne coupe pas l'alimentation et garde le téléphone près de la planche : par Bluetooth l'envoi dure plusieurs minutes.</div>
+        <label class="file-drop">
+          <input type="file" id="fwFile" accept=".bin">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
+          <span id="fwFileName">Choisir un fichier .bin</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="fwAllCan"><span></span>Envoyer à tous les VESC du bus CAN</label>
+        <div class="stack">
+          <button id="btnFwUpload" class="btn primary wide" disabled>Envoyer le firmware</button>
+          <button id="btnFwCancel" class="btn wide" hidden>Annuler</button>
+        </div>
+        <div class="progress" hidden><div></div></div>
+        <p id="fwStatus" class="muted center"></p>
+        <p class="muted small-text">Firmwares officiels : <a href="https://github.com/vedderb/vesc_fw_archive" target="_blank" rel="noopener">archive VESC</a>.
+          Les fichiers compressés (heatshrink) ne sont pas encore pris en charge : utiliser VESC Tool pour ceux-là.</p>
+      </div>
+    </section>
+
+    <footer>Basé sur VESC Tool de Benjamin Vedder · GPL-3.0</footer>
+  </main>
+
+  <!-- Barre d'écriture flottante des configurations -->
+  <div class="savebar" id="saveBar" hidden>
+    <span id="saveText">—</span>
+    <button class="btn ghost-dark" id="saveUndo">Annuler</button>
+    <button class="btn accent" id="saveWrite">Écrire</button>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <dialog id="helpDialog" class="sheet">
+    <div class="sheet-grab"></div>
+    <h3 class="serif" id="helpTitle"></h3>
+    <code id="helpName"></code>
+    <div id="helpBody"></div>
+    <form method="dialog"><button class="btn wide">Fermer</button></form>
+  </dialog>
+
+  <dialog id="diffDialog" class="sheet">
+    <div class="sheet-grab"></div>
+    <h3 class="serif" id="diffTitle">Écrire dans le VESC ?</h3>
+    <div id="diffList" class="diff-list"></div>
+    <form method="dialog" class="row2">
+      <button class="btn" value="cancel">Annuler</button>
+      <button class="btn primary" value="ok">Écrire</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
