@@ -3,11 +3,13 @@ import { BleTransport, SerialTransport } from './transport.js';
 import { SimTransport } from './sim.js';
 import { COMM, Writer } from './protocol.js';
 import {
-  T, definitionForFw, definitionForSignature, displayValue, fromDisplayValue, displayRange,
+  T, definitionForFw, definitionForSignature, displayValue, fromDisplayValue, displayRange, loadIndex,
 } from './config.js';
-
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+import { showDiagnostic } from './diag.js';
+import { initEssentials } from './essentials.js';
+import { initRemote } from './remote.js';
+import { initSession } from './session.js';
+import { $, $$, toast, fmt, fmtInt, clamp, download, pickFile, el, setKv, haptic } from './ui.js';
 
 const state = {
   vesc: null,
@@ -19,72 +21,19 @@ const state = {
 const hold = { timer: null };
 const inputs = { running: false, timer: null };
 
-// ================================================================ utilitaires
-
-let toastTimer = null;
-function toast(msg, error = false) {
-  const t = $('#toast');
-  t.textContent = msg;
-  t.classList.toggle('error', error);
-  t.hidden = false;
-  t.style.animation = 'none';
-  void t.offsetWidth;
-  t.style.animation = '';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.hidden = true; }, error ? 6000 : 2800);
-}
-
-const fmt = (v, dec = 1) => (Number.isFinite(v) ? v.toFixed(dec) : '—');
-const fmtInt = (v) => (Number.isFinite(v) ? Math.round(v).toLocaleString('fr-FR') : '—');
-const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
-
-function download(name, content, type = 'text/plain') {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], { type }));
-  a.download = name;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-
-function pickFile(accept) {
-  return new Promise((resolve) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = accept;
-    input.onchange = () => resolve(input.files[0] || null);
-    input.click();
-  });
-}
-
-function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
-}
-
-function setKv(container, pairs) {
-  container.replaceChildren();
-  for (const [k, v, opts = {}] of pairs) {
-    const box = el('div', 'kv' + (opts.full ? ' full' : ''));
-    box.append(el('div', 'k', k), el('div', 'v' + (opts.mono ? ' mono' : ''), v));
-    container.append(box);
-  }
-}
-
-const connected = () => !!state.vesc;
+const connected = () => !!state.vesc && state.linkUp;
 
 function requireConn() {
+  if (state.vesc && !state.linkUp) {
+    toast('Reconnexion en cours, patiente…', true);
+    return false;
+  }
   if (!connected()) {
     toast("Connecte d'abord le contrôleur", true);
     showPage('home');
     return false;
   }
   return true;
-}
-
-function haptic(ms) {
-  try { navigator.vibrate?.(ms); } catch (e) { /* non pris en charge */ }
 }
 
 // Garde l'écran allumé tant que le contrôleur est connecté (envoi de firmware, détection…).
@@ -154,6 +103,10 @@ function showPage(page) {
   if (page !== 'inputs') stopInputs();
   updateSaveBar();
   if (page === 'realtime') requestAnimationFrame(drawCharts);
+  if (page === 'essentials') essentials.render();
+  if (page === 'remote') remote.render(); else remote.stop();
+  if (page === 'sessions') session.onShow();
+  if (page === 'firmware') updateFwGate();
   history.replaceState(null, '', '#' + page);
   telemetry.kick();
 }
@@ -179,6 +132,7 @@ $('#btnBle').onclick = () => connect(new BleTransport());
 $('#btnUsb').onclick = () => connect(new SerialTransport());
 $('#btnDemo').onclick = () => connect(new SimTransport());
 $('#btnDisconnect').onclick = () => disconnect();
+$('#btnDiag').onclick = () => showDiagnostic();
 
 function setConn(text, cls) {
   $('#connText').textContent = text;
@@ -186,19 +140,23 @@ function setConn(text, cls) {
   $('#connPill').classList.toggle('on', cls === 'on');
 }
 
-async function connect(transport) {
+async function connect(transport, device = null) {
   if (state.vesc) await disconnect();
   const vesc = new Vesc(transport);
   setConn('Connexion…', 'busy');
   try {
-    await vesc.open();
+    await vesc.open(device);
   } catch (e) {
     setConn('Hors ligne', '');
-    if (e.name !== 'NotFoundError') toast('Connexion impossible : ' + e.message, true);
+    if (e.name !== 'NotFoundError') {
+      toast('Connexion impossible : ' + e.message, true);
+      showDiagnostic(e.message);
+    }
     return;
   }
   state.vesc = vesc;
-  vesc.addEventListener('close', () => onDisconnected());
+  state.linkUp = true;
+  vesc.addEventListener('close', () => onLinkLost(vesc));
   vesc.addEventListener('print', (e) => termAppend(e.detail));
   setConn('En ligne', 'on');
   haptic(30);
@@ -210,9 +168,40 @@ async function connect(transport) {
     backupAll('Connexion');
     toast('Connecté à ' + transport.name + (transport.profile ? ' (' + transport.profile + ')' : ''));
   } catch (e) {
-    toast('Connecté, mais lecture impossible : ' + e.message, true);
+    toast('Connecté au module, mais le contrôleur ne répond pas', true);
+    showDiagnostic(e.message);
   }
   telemetry.kick();
+}
+
+// Coupure radio : on garde l'état (et les modifications non écrites) et on réessaie tout seul.
+async function onLinkLost(vesc) {
+  if (state.vesc !== vesc || !state.linkUp) return;
+  state.linkUp = false;
+  stopHold();
+  if (!vesc.transport.canReconnect) { onDisconnected(); return; }
+  setConn('Reconnexion…', 'busy');
+  toast('Liaison perdue, reconnexion…', true);
+  haptic([60, 40, 60]);
+  const delays = [500, 1000, 2000, 3000, 5000, 5000, 8000, 10000, 15000, 20000];
+  for (const d of delays) {
+    await new Promise((r) => setTimeout(r, d));
+    if (state.vesc !== vesc || !vesc.transport.canReconnect) return;
+    if (document.hidden) continue;
+    try {
+      await vesc.transport.reconnect();
+      vesc.decoder.reset();
+      await vesc.getFwVersion();
+      state.linkUp = true;
+      setConn('En ligne', 'on');
+      toast('Reconnecté ✓');
+      haptic(30);
+      if (session.rec) session.mark('Reconnexion');
+      telemetry.kick();
+      return;
+    } catch (e) { /* on réessaie */ }
+  }
+  onDisconnected();
 }
 
 async function disconnect() {
@@ -226,6 +215,7 @@ async function disconnect() {
 function onDisconnected(manual = false) {
   if (!state.vesc) return;
   state.vesc = null;
+  state.linkUp = false;
   stopHold();
   stopInputs();
   keepAwake(false);
@@ -236,8 +226,20 @@ function onDisconnected(manual = false) {
   $('#devLabel').hidden = true;
   $('#topSub').textContent = 'Contrôleur moteur';
   canDevs.length = 0;
+  refreshLastDevice();
   if (!manual) toast('Contrôleur déconnecté', true);
 }
+
+// Bouton « Reconnecter <module> » : reprend le dernier module sans passer par la liste.
+async function refreshLastDevice() {
+  const btn = $('#btnLast');
+  const dev = BleTransport.supported ? await BleTransport.lastDevice() : null;
+  btn.hidden = !dev;
+  if (!dev) return;
+  btn.querySelector('span').textContent = 'Reconnecter ' + (dev.name || 'le dernier module');
+  btn.onclick = () => connect(new BleTransport(), dev);
+}
+refreshLastDevice();
 
 // Lit les informations et les configurations du VESC ciblé (local ou CAN).
 async function loadTarget() {
@@ -268,6 +270,18 @@ async function loadTarget() {
   }
   await readConfig('mcconf', false, true);
   await readConfig('appconf', false, true);
+  warnVersion(fw, ver);
+}
+
+// Versions qui ne figurent pas dans VESC Tool : source fréquente de détections ratées sur les forums.
+async function warnVersion(fw, ver) {
+  const index = await loadIndex();
+  const known = index.some((e) => (e.fw || [e.folder]).includes(ver));
+  const box = $('#verWarn');
+  box.hidden = known && !fw.isTestFw && fw.major >= 5;
+  if (fw.major < 5) box.textContent = 'Firmware ' + ver + ' ancien : une mise à jour corrige beaucoup de soucis de détection et de Bluetooth.';
+  else box.textContent = 'Firmware ' + ver + (fw.isTestFw ? ' de test' : '') + ' non répertorié par VESC Tool : réglages lus avec les définitions '
+    + (state.configs.mcconf?.folder || '?') + ' (même signature). Vérifie la page Essentiel.';
 }
 
 const canDevs = [];
@@ -301,6 +315,7 @@ $('#btnScanCan').onclick = async () => {
     const devs = await state.vesc.pingCan();
     canDevs.splice(0, canDevs.length, ...devs);
     renderCanChips();
+    if (state.page === 'essentials') essentials.render();
     toast(devs.length ? devs.length + ' contrôleur(s) sur le CAN' : 'Aucun autre contrôleur sur le CAN');
   } catch (e) {
     toast('Scan CAN : ' + e.message, true);
@@ -382,6 +397,61 @@ function restoreBackup(b) {
 
 renderBackups();
 
+// Fichier de sauvegarde complet : les deux configurations, en valeurs et en XML VESC Tool.
+function downloadFullBackup() {
+  const fw = state.fw || {};
+  const configs = {};
+  for (const kind of ['mcconf', 'appconf']) {
+    const cfg = state.configs[kind];
+    const snap = state.readSnap[kind];
+    if (!cfg || !snap) continue;
+    // On sauvegarde ce qui est dans le contrôleur (dernière lecture), pas les modifications en cours.
+    const cur = cfg.snapshot();
+    cfg.restore(snap);
+    configs[kind] = { folder: cfg.folder, values: snap, xml: cfg.toXml() };
+    cfg.restore(cur);
+  }
+  if (!Object.keys(configs).length) { toast('Rien à sauvegarder : configuration non lue', true); return false; }
+  const data = { app: 'lite-foil-vesc', version: 1, date: new Date().toISOString(), hw: fw.hw, uuid: fw.uuid,
+    firmware: fw.major + '.' + String(fw.minor).padStart(2, '0'), can: state.vesc?.canId ?? -1, configs };
+  download('sauvegarde_vesc_' + (fw.hw || 'vesc') + '_' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.json',
+    JSON.stringify(data, null, 1), 'application/json');
+  toast('Sauvegarde téléchargée ✓');
+  return true;
+}
+
+$('#btnBackupDl').onclick = () => { if (requireConn()) downloadFullBackup(); };
+$('#btnBackupImport').onclick = async () => {
+  const f = await pickFile('.json,.xml');
+  if (!f) return;
+  try {
+    const text = await f.text();
+    if (f.name.endsWith('.xml')) {
+      const kind = text.includes('<MCConfiguration') ? 'mcconf' : 'appconf';
+      if (!state.configs[kind]) throw new Error("connecte d'abord le contrôleur");
+      const n = state.configs[kind].fromXml(text);
+      showPage(kind);
+      toast(n + ' paramètres importés. Vérifie puis « Écrire ».');
+      return;
+    }
+    const data = JSON.parse(text);
+    if (data.app !== 'lite-foil-vesc' || !data.configs) throw new Error("ce fichier n'est pas une sauvegarde Lite Foil");
+    let n = 0;
+    for (const [kind, c] of Object.entries(data.configs)) {
+      const cfg = state.configs[kind];
+      if (!cfg) continue;
+      const values = Object.fromEntries(Object.entries(c.values).filter(([k]) => cfg.has(k)));
+      cfg.restore(values);
+      n += Object.keys(values).length;
+    }
+    if (!n) throw new Error("connecte d'abord le contrôleur");
+    showPage('essentials');
+    toast(n + ' paramètres chargés depuis la sauvegarde. Vérifie puis « Écrire ».');
+  } catch (e) {
+    toast('Import impossible : ' + e.message, true);
+  }
+};
+
 // ================================================================ configurations
 
 async function readConfig(kind, defaults = false, quiet = false) {
@@ -400,8 +470,20 @@ async function readConfig(kind, defaults = false, quiet = false) {
   }
   cfg.deserialize(bytes);
   state.configs[kind] = cfg;
+  if (!cfg.pageHooked) {
+    cfg.pageHooked = true;
+    cfg.onChange((name) => {
+      if (state.page === 'essentials') essentials.refresh();
+      if (state.page === 'remote') {
+        if (name === 'app_to_use' || name === null) remote.render(); else remote.drawCurve();
+      }
+      updateSaveBar();
+    });
+  }
   if (!defaults) state.readSnap[kind] = cfg.snapshot();
   renderConfigPage(kind);
+  if (state.page === 'essentials') essentials.render();
+  if (state.page === 'remote') remote.render();
   updateSaveBar();
   if (!quiet) toast(defaults ? 'Valeurs par défaut chargées — « Écrire » pour les appliquer' : 'Configuration relue');
 }
@@ -423,25 +505,30 @@ function valueText(p, v) {
   return String(v) + unit;
 }
 
+// Pages qui éditent des configurations : quelles configurations la barre « Écrire » concerne.
+const PAGE_KINDS = { mcconf: ['mcconf'], appconf: ['appconf'], essentials: ['mcconf', 'appconf'], remote: ['appconf'] };
+
 // Montre les changements avant écriture ; résout true si l'utilisateur confirme.
-function confirmDiff(kind) {
-  const cfg = state.configs[kind];
-  const snap = state.readSnap[kind] || {};
-  const names = state.readSnap[kind] ? cfg.diff(snap) : [];
+function confirmDiff(kinds) {
   const list = $('#diffList');
   list.replaceChildren();
-  $('#diffTitle').textContent = names.length
-    ? names.length + ' changement' + (names.length > 1 ? 's' : '') + ' à écrire'
-    : 'Écrire la configuration ?';
-  if (!names.length) list.append(el('div', 'empty', 'Aucun paramètre modifié depuis la dernière lecture.'));
-  for (const n of names) {
-    const p = cfg.params[n];
-    const row = el('div', 'd');
-    const right = el('span');
-    right.append(el('span', 'old', valueText(p, snap[n])), document.createTextNode('  →  '), el('span', 'new', valueText(p, p.value)));
-    row.append(el('span', '', p.n || n), right, el('small', '', n));
-    list.append(row);
+  let total = 0;
+  for (const kind of kinds) {
+    const cfg = state.configs[kind];
+    const snap = state.readSnap[kind];
+    if (!cfg || !snap) continue;
+    for (const n of cfg.diff(snap)) {
+      const p = cfg.params[n];
+      const row = el('div', 'd');
+      const right = el('span');
+      right.append(el('span', 'old', valueText(p, snap[n])), document.createTextNode('  →  '), el('span', 'new', valueText(p, p.value)));
+      row.append(el('span', '', p.n || n), right, el('small', '', (kind === 'mcconf' ? 'moteur · ' : 'app · ') + n));
+      list.append(row);
+      total++;
+    }
   }
+  $('#diffTitle').textContent = total ? total + ' changement' + (total > 1 ? 's' : '') + ' à écrire' : 'Écrire la configuration ?';
+  if (!total) list.append(el('div', 'empty', 'Aucun paramètre modifié depuis la dernière lecture.'));
   const dlg = $('#diffDialog');
   dlg.returnValue = '';
   dlg.showModal();
@@ -450,38 +537,50 @@ function confirmDiff(kind) {
   });
 }
 
-async function writeConfig(kind) {
-  if (!requireConn()) return;
-  const cfg = state.configs[kind];
-  if (!cfg || !(await confirmDiff(kind))) return;
-  if (state.readSnap[kind]) backup(kind, 'Avant écriture', state.readSnap[kind]);
-  try {
-    await state.vesc.setConfig(cfg);
-    // Relit pour vérifier, comme VESC Tool.
-    const wanted = cfg.snapshot();
-    await readConfig(kind, false, true);
-    const diff = cfg.diff(wanted);
-    haptic([20, 40, 20]);
-    if (diff.length) {
-      toast('Écrit, mais le contrôleur a corrigé : ' + diff.slice(0, 4).join(', ') + (diff.length > 4 ? '…' : ''), true);
-    } else {
-      toast('Configuration écrite ✓');
+async function writeConfig(kinds) {
+  if (typeof kinds === 'string') kinds = [kinds];
+  if (!requireConn()) return false;
+  // Sans modification, on écrit quand même la configuration de la page (comme VESC Tool).
+  const dirty = kinds.filter((k) => state.configs[k] && dirtyCount(k));
+  const todo = dirty.length ? dirty : kinds.filter((k) => state.configs[k]);
+  if (!todo.length || !(await confirmDiff(todo))) return false;
+  let ok = true;
+  for (const kind of todo) {
+    const cfg = state.configs[kind];
+    if (state.readSnap[kind]) backup(kind, 'Avant écriture', state.readSnap[kind]);
+    try {
+      await state.vesc.setConfig(cfg);
+      // Relit pour vérifier, comme VESC Tool.
+      const wanted = cfg.snapshot();
+      await readConfig(kind, false, true);
+      const diff = cfg.diff(wanted);
+      if (diff.length) {
+        ok = false;
+        toast('Écrit, mais le contrôleur a corrigé : ' + diff.slice(0, 4).join(', ') + (diff.length > 4 ? '…' : ''), true);
+      }
+    } catch (e) {
+      ok = false;
+      toast("Échec de l'écriture : " + e.message, true);
     }
-  } catch (e) {
-    toast("Échec de l'écriture : " + e.message, true);
   }
+  if (ok) {
+    haptic([20, 40, 20]);
+    toast('Configuration écrite ✓');
+  }
+  return ok;
 }
 
 function updateSaveBar() {
-  const kind = state.page === 'mcconf' || state.page === 'appconf' ? state.page : null;
-  const n = kind ? dirtyCount(kind) : 0;
+  const kinds = PAGE_KINDS[state.page] || [];
+  const n = kinds.reduce((a, k) => a + dirtyCount(k), 0);
   $('#saveBar').hidden = !n;
   if (n) $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non écrite' + (n > 1 ? 's' : '');
 }
-$('#saveWrite').onclick = () => writeConfig(state.page);
+$('#saveWrite').onclick = () => writeConfig(PAGE_KINDS[state.page] || []);
 $('#saveUndo').onclick = () => {
-  const cfg = state.configs[state.page];
-  if (cfg && state.readSnap[state.page]) cfg.restore(state.readSnap[state.page]);
+  for (const k of PAGE_KINDS[state.page] || []) {
+    if (state.configs[k] && state.readSnap[k] && dirtyCount(k)) state.configs[k].restore(state.readSnap[k]);
+  }
 };
 
 window.addEventListener('beforeunload', (e) => {
@@ -633,11 +732,11 @@ function renderConfigPage(kind) {
   drawParams();
 }
 
-function makeParamRow(cfg, name) {
+function makeParamRow(cfg, name, opts = {}) {
   const p = cfg.params[name];
   const row = el('div', 'param');
-  const label = el('div', 'name', p.n || name);
-  label.append(el('small', '', name));
+  const label = el('div', 'name', opts.label || p.n || name);
+  label.append(el('small', opts.hint ? 'hint' : '', opts.hint || name));
   const edit = el('div', 'edit');
   let update = () => {};
 
@@ -723,9 +822,10 @@ function makeParamRow(cfg, name) {
   const help = el('button', 'help-btn', '?');
   help.title = 'Aide';
   help.onclick = () => {
-    $('#helpTitle').textContent = p.n || name;
+    $('#helpTitle').textContent = opts.label || p.n || name;
     $('#helpName').textContent = name;
-    $('#helpBody').textContent = p.d || 'Pas de description pour ce réglage.';
+    $('#helpBody').textContent = (opts.help ? opts.help + '\n\nDescription d\'origine (VESC Tool) :\n' : '')
+      + (p.d || 'Pas de description pour ce réglage.');
     $('#helpDialog').showModal();
   };
 
@@ -769,7 +869,7 @@ const telemetry = {
   timer: null,
   running: false,
   wanted() {
-    return connected() && (!!rt.recording || (!rt.paused && ['home', 'realtime', 'control'].includes(state.page)));
+    return connected() && (!!rt.recording || !!session.rec || (!rt.paused && ['home', 'realtime', 'control', 'essentials'].includes(state.page)));
   },
   kick() {
     if (this.running || !this.wanted()) return;
@@ -786,7 +886,7 @@ const telemetry = {
       v.t = Date.now();
       onValues(v);
     } catch (e) { /* délai dépassé : on réessaie */ }
-    const period = state.page === 'realtime' || rt.recording ? rt.rate : 250;
+    const period = state.page === 'realtime' || rt.recording || session.rec ? rt.rate : state.page === 'essentials' ? 2000 : 250;
     this.timer = setTimeout(() => this.loop(), Math.max(20, period - (performance.now() - t0)));
   },
 };
@@ -835,6 +935,10 @@ function batteryLevel(vin) {
 }
 
 function onValues(v) {
+  const first = !state.lastValues;
+  state.lastValues = v;
+  if (session.rec) session.add(v);
+  if (state.page === 'essentials' && first) essentials.refresh();
   rt.history.push(v);
   if (rt.history.length > rt.maxPoints) rt.history.shift();
   if (rt.recording) rt.recording.push(v);
@@ -1000,25 +1104,30 @@ $('#btnRtRecord').onclick = () => {
 // ================================================================ détection FOC
 
 const MOTORS = [
-  // Nom, poids, pertes max (W), openloop ERPM, sensorless ERPM (préréglages de l'assistant VESC Tool)
-  ['Mini outrunner', '~75 g', 20, 1400, 4000],
-  ['Petit outrunner', '~200 g', 50, 1400, 4000],
-  ['Outrunner moyen', '~750 g', 120, 700, 4000],
-  ['Gros outrunner', '~2 kg', 400, 700, 4000],
-  ['Petit inrunner', '~200 g', 50, 1400, 4000],
-  ['Inrunner moyen', '~750 g', 140, 1400, 4000],
-  ['Gros inrunner', '~2 kg', 400, 1000, 4000],
-  ['Moteur moyeu DD', '~6 kg', 150, 300, 2000],
-  ['Petit EDF', '~200 g', 110, 1400, 4000],
+  // Nom, poids, pertes max (W), openloop ERPM, sensorless ERPM, image (préréglages de l'assistant VESC Tool)
+  ['Maytech 6579', 'eFoil · ~1,1 kg', 150, 700, 4000, 'maytech_6579.svg'],
+  ['Mini outrunner', '~75 g', 20, 1400, 4000, 'outrunner_mini.webp'],
+  ['Petit outrunner', '~200 g', 50, 1400, 4000, 'outrunner_small.webp'],
+  ['Outrunner moyen', '~750 g', 120, 700, 4000, '6374.webp'],
+  ['Gros outrunner', '~2 kg', 400, 700, 4000, 'outrunner_large.svg'],
+  ['Petit inrunner', '~200 g', 50, 1400, 4000, 'inrunner_small.webp'],
+  ['Inrunner moyen', '~750 g', 140, 1400, 4000, 'inrunner_medium.webp'],
+  ['Gros inrunner', '~2 kg', 400, 1000, 4000, 'inrunner_large.svg'],
+  ['Moteur moyeu DD', '~6 kg', 150, 300, 2000, 'ebike_dd_1kw.webp'],
+  ['Petit EDF', '~200 g', 110, 1400, 4000, 'edf_small.webp'],
 ];
 
-let motorSel = 2;
+let motorSel = 0;
 function drawMotors() {
   const box = $('#wizMotor');
   box.replaceChildren();
-  MOTORS.forEach(([n, w], i) => {
-    const b = el('button', i === motorSel ? 'on' : '', n);
-    b.append(el('small', '', w));
+  MOTORS.forEach(([n, w, , , , img], i) => {
+    const b = el('button', i === motorSel ? 'on' : '');
+    const pic = el('img');
+    pic.src = 'img/motors/' + img;
+    pic.alt = '';
+    pic.loading = 'lazy';
+    b.append(pic, el('span', '', n), el('small', '', w));
     b.onclick = () => { motorSel = i; drawMotors(); applyMotor(); };
     box.append(b);
   });
@@ -1060,6 +1169,16 @@ $('#btnDetect').onclick = async () => {
   const v = state.vesc;
   try {
     if (state.readSnap.mcconf) backup('mcconf', 'Avant détection', state.readSnap.mcconf);
+    // Usage « Propeller » de l'assistant VESC Tool (mobile/SetupWizardFoc.qml), écrit avant la détection.
+    const mc = state.configs.mcconf;
+    if (mc && !dirtyCount('mcconf')) {
+      const usage = { l_duty_start: 1.0, m_fault_stop_time_ms: 500, 'bms.limit_mode': 3 };
+      for (const [k, val] of Object.entries(usage)) if (mc.has(k)) mc.set(k, val, true);
+      if (dirtyCount('mcconf')) {
+        await v.setConfig(mc);
+        await readConfig('mcconf', false, true);
+      }
+    }
     // Comme VESC Tool : coupe la sortie des apps (télécommande) pendant la détection.
     await v.send(new Writer().uint8(COMM.APP_DISABLE_OUTPUT).int8(1).int32(180000).toBytes());
     const res = await v.detectAllFoc({
@@ -1241,17 +1360,38 @@ $('#btnTermClear').onclick = () => termOut.replaceChildren();
 
 // ================================================================ firmware
 
-const fwState = { bytes: null, cancel: false };
+const fwState = { bytes: null, cancel: false, backedUp: new Set() };
+
+// L'envoi n'est possible qu'après avoir téléchargé une sauvegarde de CE contrôleur
+// (un avis App Store raconte une config perdue après une mise à jour sans sauvegarde).
+function fwBackupKey() {
+  return (state.fw?.uuid || '?') + ':' + (state.vesc?.canId ?? -1);
+}
+function updateFwGate() {
+  const done = fwState.backedUp.has(fwBackupKey());
+  $('#fwStep1').classList.toggle('done', done);
+  $('#fwBackupTxt').textContent = done ? 'Sauvegarde téléchargée ✓' : 'Obligatoire : une mise à jour peut remettre les réglages à zéro.';
+  $('#btnFwUpload').disabled = !fwState.bytes || !done;
+}
+$('#btnFwBackup').onclick = () => {
+  if (!requireConn()) return;
+  if (downloadFullBackup()) {
+    fwState.backedUp.add(fwBackupKey());
+    updateFwGate();
+  }
+};
+
 $('#fwFile').onchange = async (e) => {
   const f = e.target.files[0];
   fwState.bytes = f ? new Uint8Array(await f.arrayBuffer()) : null;
-  $('#btnFwUpload').disabled = !fwState.bytes;
+  updateFwGate();
   $('#fwFileName').textContent = f ? f.name + ' · ' + Math.round(fwState.bytes.length / 1024) + ' Ko' : 'Choisir un fichier .bin';
   $('.file-drop').classList.toggle('has', !!f);
 };
 
 $('#btnFwUpload').onclick = async () => {
   if (!requireConn() || !fwState.bytes) return;
+  if (!fwState.backedUp.has(fwBackupKey())) { toast("Télécharge d'abord la sauvegarde (étape 1)", true); return; }
   if (!confirm('Envoyer ce firmware au contrôleur ' + (state.fw?.hw || '?') + ' ?\nNe coupe pas l\'alimentation pendant l\'envoi.')) return;
   fwState.cancel = false;
   const bar = $('.progress');
@@ -1277,11 +1417,37 @@ $('#btnFwUpload').onclick = async () => {
     $('#fwStatus').textContent = 'Erreur : ' + e.message;
     toast(e.message, true);
   } finally {
-    $('#btnFwUpload').disabled = false;
+    updateFwGate();
     $('#btnFwCancel').hidden = true;
   }
 };
 $('#btnFwCancel').onclick = () => { fwState.cancel = true; };
+
+// ================================================================ pages complémentaires
+
+const ctx = {
+  state,
+  connected,
+  requireConn,
+  makeParamRow,
+  dirtyCount,
+  keepAwake,
+  canDevs: () => canDevs,
+  kickTelemetry: () => telemetry.kick(),
+  disableOutput: (ms) => state.vesc?.send(new Writer().uint8(COMM.APP_DISABLE_OUTPUT).int8(1).int32(ms).toBytes()),
+  // Lit la configuration du contrôleur ciblé dans une instance séparée (recopie vers le bus CAN).
+  async readOther(kind) {
+    const bytes = await state.vesc.getConfigBytes(kind);
+    const sig = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(0);
+    const cfg = await definitionForSignature(kind, sig);
+    if (!cfg || !cfg.deserialize(bytes)) throw new Error('configuration illisible');
+    return cfg;
+  },
+};
+const essentials = initEssentials(ctx);
+window.lfVesc = state; // inspection depuis la console du navigateur
+const remote = initRemote(ctx);
+const session = initSession(ctx);
 
 // ================================================================ démarrage
 
