@@ -94,6 +94,9 @@ export function initEssentials(ctx) {
       }
       page.append(list);
     }
+    const save = el('button', 'btn primary wide page-save', 'Enregistrer les réglages');
+    save.onclick = () => ctx.save();
+    page.append(save);
     refresh();
   }
 

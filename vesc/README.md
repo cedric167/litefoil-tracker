@@ -19,6 +19,14 @@ Adresse : <https://cedric167.github.io/litefoil-tracker/vesc/>
 | Terminal | Commandes du terminal VESC |
 | Firmware | Envoi d'un `.bin` non compressé, seulement après avoir téléchargé une sauvegarde |
 
+Accès : l'atelier s'ouvre avec un code (empreinte SHA-256 dans `js/lock.js`, demandé une fois par
+session du navigateur). C'est une protection contre les changements par erreur, pas une sécurité
+forte : le code de la page reste lisible par qui le cherche.
+
+Langues : les noms, explications, choix et groupes des réglages VESC Tool sont traduits en français
+et en espagnol (`config/tr/strings.json`, anglais → français, espagnol ; `fr.json` et `es.json` en
+sont tirés). En anglais, l'atelier affiche les textes d'origine de VESC Tool.
+
 Liaison : en cas de coupure, l'atelier se reconnecte tout seul au même module (sans perdre les
 modifications non écrites) ; le diagnostic reprend les causes réelles de « could not read firmware
 version » relevées sur les forums.

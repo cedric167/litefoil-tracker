@@ -310,7 +310,7 @@ function renderCanChips() {
 
 async function selectTarget(id) {
   if (!state.vesc || state.vesc.canId === id) return;
-  if (dirtyCount() && !confirm('Des modifications non écrites seront perdues. Continuer ?')) return;
+  if (dirtyCount() && !confirm('Des modifications non enregistrées seront perdues. Continuer ?')) return;
   state.vesc.canId = id;
   try {
     await loadTarget();
@@ -403,7 +403,7 @@ function restoreBackup(b) {
   const values = Object.fromEntries(Object.entries(b.values).filter(([k]) => cfg.has(k)));
   cfg.restore(values);
   showPage(b.kind);
-  toast(Object.keys(values).length + ' paramètres chargés. Vérifie puis « Écrire ».');
+  toast(Object.keys(values).length + ' paramètres chargés. Vérifie puis « Enregistrer ».');
 }
 
 renderBackups();
@@ -442,7 +442,7 @@ $('#btnBackupImport').onclick = async () => {
       if (!state.configs[kind]) throw new Error("connecte d'abord le contrôleur");
       const n = state.configs[kind].fromXml(text);
       showPage(kind);
-      toast(n + ' paramètres importés. Vérifie puis « Écrire ».');
+      toast(n + ' paramètres importés. Vérifie puis « Enregistrer ».');
       return;
     }
     const data = JSON.parse(text);
@@ -457,7 +457,7 @@ $('#btnBackupImport').onclick = async () => {
     }
     if (!n) throw new Error("connecte d'abord le contrôleur");
     showPage('essentials');
-    toast(n + ' paramètres chargés depuis la sauvegarde. Vérifie puis « Écrire ».');
+    toast(n + ' paramètres chargés depuis la sauvegarde. Vérifie puis « Enregistrer ».');
   } catch (e) {
     toast('Import impossible : ' + e.message, true);
   }
@@ -496,7 +496,7 @@ async function readConfig(kind, defaults = false, quiet = false) {
   if (state.page === 'essentials') essentials.render();
   if (state.page === 'remote') remote.render();
   updateSaveBar();
-  if (!quiet) toast(defaults ? 'Valeurs par défaut chargées — « Écrire » pour les appliquer' : 'Configuration relue');
+  if (!quiet) toast(defaults ? 'Valeurs par défaut chargées — « Enregistrer » pour les appliquer' : 'Configuration relue');
 }
 
 function dirtyCount(kind) {
@@ -516,7 +516,7 @@ function valueText(p, v) {
   return String(v) + unit;
 }
 
-// Pages qui éditent des configurations : quelles configurations la barre « Écrire » concerne.
+// Pages qui éditent des configurations : quelles configurations la barre « Enregistrer » concerne.
 const PAGE_KINDS = { mcconf: ['mcconf'], appconf: ['appconf'], essentials: ['mcconf', 'appconf'], remote: ['appconf'] };
 
 // Montre les changements avant écriture ; résout true si l'utilisateur confirme.
@@ -538,7 +538,7 @@ function confirmDiff(kinds) {
       total++;
     }
   }
-  $('#diffTitle').textContent = total ? total + ' changement' + (total > 1 ? 's' : '') + ' à écrire' : 'Écrire la configuration ?';
+  $('#diffTitle').textContent = total ? total + ' changement' + (total > 1 ? 's' : '') + ' à enregistrer' : 'Enregistrer la configuration ?';
   if (!total) list.append(el('div', 'empty', 'Aucun paramètre modifié depuis la dernière lecture.'));
   const dlg = $('#diffDialog');
   dlg.returnValue = '';
@@ -576,7 +576,7 @@ async function writeConfig(kinds) {
   }
   if (ok) {
     haptic([20, 40, 20]);
-    toast('Configuration écrite ✓');
+    toast('Paramètres enregistrés dans le VESC ✓');
   }
   return ok;
 }
@@ -585,7 +585,7 @@ function updateSaveBar() {
   const kinds = PAGE_KINDS[state.page] || [];
   const n = kinds.reduce((a, k) => a + dirtyCount(k), 0);
   $('#saveBar').hidden = !n;
-  if (n) $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non écrite' + (n > 1 ? 's' : '');
+  if (n) $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non enregistrée' + (n > 1 ? 's' : '');
 }
 $('#saveWrite').onclick = () => writeConfig(PAGE_KINDS[state.page] || []);
 $('#saveUndo').onclick = () => {
@@ -639,7 +639,7 @@ function renderConfigPage(kind) {
   search.innerHTML = SEARCH_ICON;
   const input = el('input');
   input.type = 'search';
-  input.placeholder = 'Rechercher un réglage (current, battery, ppm…)';
+  input.placeholder = 'Rechercher un réglage (courant, batterie, ppm…)';
   input.value = vs.search;
   search.append(input);
   const groups = el('div', 'chips scroll cfg-groups');
@@ -652,9 +652,10 @@ function renderConfigPage(kind) {
     b.onclick = fn;
     actions.append(b);
   };
+  act('Enregistrer', 'primary', () => writeConfig(kind));
   act('Relire', '', () => readConfig(kind).catch((e) => toast(e.message, true)));
   act('Valeurs par défaut', '', () => {
-    if (confirm('Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Écrire ».')) {
+    if (confirm('Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Enregistrer ».')) {
       readConfig(kind, true).catch((e) => toast(e.message, true));
     }
   });
@@ -665,7 +666,7 @@ function renderConfigPage(kind) {
     if (!f) return;
     try {
       const n = cfg.fromXml(await f.text());
-      toast(n + ' paramètres importés. Vérifie puis « Écrire ».');
+      toast(n + ' paramètres importés. Vérifie puis « Enregistrer ».');
     } catch (e) {
       toast('Import impossible : ' + e.message, true);
     }
@@ -1467,6 +1468,7 @@ const ctx = {
   makeParamRow,
   dirtyCount,
   keepAwake,
+  save: () => writeConfig(PAGE_KINDS[state.page] || []),
   onProfile: () => showMotorCard(),
   canDevs: () => canDevs,
   kickTelemetry: () => telemetry.kick(),

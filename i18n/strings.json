@@ -167,6 +167,14 @@
   "en": "0 = controller defaults.",
   "es": "0 = valores por defecto del controlador."
  },
+ "1 changement à enregistrer": {
+  "en": "1 change to save",
+  "es": "1 cambio por guardar"
+ },
+ "1 modification non enregistrée": {
+  "en": "1 unsaved change",
+  "es": "1 cambio sin guardar"
+ },
  "10 Ah": {
   "en": "10 Ah",
   "es": "10 Ah"
@@ -287,9 +295,17 @@
   "en": "2 Hz",
   "es": "2 Hz"
  },
+ "2 changements à enregistrer": {
+  "en": "2 changes to save",
+  "es": "2 cambios por guardar"
+ },
  "2 min": {
   "en": "2 min",
   "es": "2 min"
+ },
+ "2 modifications non enregistrées": {
+  "en": "2 unsaved changes",
+  "es": "2 cambios sin guardar"
  },
  "20 Ah": {
   "en": "20 Ah",
@@ -807,6 +823,10 @@
   "en": "No inconsistency detected.",
   "es": "No se detectó ninguna incoherencia."
  },
+ "Aucune modification à enregistrer": {
+  "en": "No changes to save",
+  "es": "Ningún cambio por guardar"
+ },
  "Aucune session enregistrée pour le moment.": {
   "en": "No sessions recorded yet.",
   "es": "Aún no hay sesiones registradas."
@@ -1191,6 +1211,10 @@
   "en": "Load",
   "es": "Cargar"
  },
+ "Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Enregistrer ».": {
+  "en": "Load the firmware defaults? Nothing will be written until you click \"Save\".",
+  "es": "¿Cargar los valores por defecto del firmware? No se Guardará nada hasta que pulses «Guardar»."
+ },
  "Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Écrire ».": {
   "en": "Load the firmware defaults? Nothing will be written until you click \"Write\".",
   "es": "¿Cargar los valores por defecto del firmware? No se escribirá nada hasta que pulses «Escribir»."
@@ -1230,6 +1254,14 @@
  "Cible : contrôleur local": {
   "en": "Target: local controller",
   "es": "Destino: controlador local"
+ },
+ "Code": {
+  "en": "Code",
+  "es": "Código"
+ },
+ "Code incorrect": {
+  "en": "Wrong code",
+  "es": "Código incorrecto"
  },
  "Code machine": {
   "en": "Machine code",
@@ -1703,9 +1735,17 @@
   "en": "DRV",
   "es": "DRV"
  },
+ "Des modifications non enregistrées seront perdues. Continuer ?": {
+  "en": "Unsaved changes will be lost. Continue?",
+  "es": "Los cambios sin guardar se perderán. ¿Continuar?"
+ },
  "Des modifications non écrites seront perdues. Continuer ?": {
   "en": "Unwritten changes will be lost. Continue?",
   "es": "Los cambios no escritos se perderán. ¿Continuar?"
+ },
+ "Description VESC Tool :": {
+  "en": "VESC Tool description:",
+  "es": "Descripción de VESC Tool:"
  },
  "Description d'origine (VESC Tool) :": {
   "en": "Original description (VESC Tool):",
@@ -1983,13 +2023,29 @@
   "en": "Saving log…",
   "es": "Guardando el registro…"
  },
+ "Enregistrer": {
+  "en": "Save",
+  "es": "Guardar"
+ },
  "Enregistrer dans la télécommande": {
   "en": "Save to the remote",
   "es": "Guardar en el mando"
  },
+ "Enregistrer dans le VESC ?": {
+  "en": "Save to the VESC?",
+  "es": "¿Guardar en el VESC?"
+ },
  "Enregistrer dans le tracker": {
   "en": "Save to the tracker",
   "es": "Guardar en el tracker"
+ },
+ "Enregistrer la configuration ?": {
+  "en": "Save the configuration?",
+  "es": "¿Guardar la configuración?"
+ },
+ "Enregistrer les réglages": {
+  "en": "Save settings",
+  "es": "Guardar los ajustes"
  },
  "Enregistrer un journal CSV": {
   "en": "Record a CSV log",
@@ -2007,9 +2063,17 @@
   "en": "Enter",
   "es": "Enter"
  },
+ "Entre le code d'accès pour ouvrir l'atelier.": {
+  "en": "Enter the access code to open the workshop.",
+  "es": "Introduce el código de acceso para abrir el taller."
+ },
  "Entre une valeur entre 0 et 100 %": {
   "en": "Enter a value between 0 and 100 %",
   "es": "Introduce un valor entre 0 y 100 %"
+ },
+ "Entrer": {
+  "en": "Enter",
+  "es": "Entrar"
  },
  "Entrée utilisée": {
   "en": "Input used",
@@ -3175,6 +3239,14 @@
   "en": "Pack too high (level 2)",
   "es": "Pack demasiado alto (nivel 2)"
  },
+ "Paramètres enregistrés dans le BMS ✓": {
+  "en": "Settings saved to the BMS ✓",
+  "es": "Ajustes guardados en el BMS ✓"
+ },
+ "Paramètres enregistrés dans le VESC ✓": {
+  "en": "Settings saved to the VESC ✓",
+  "es": "Ajustes guardados en el VESC ✓"
+ },
  "Pas connecté.": {
   "en": "Not connected.",
   "es": "No conectado."
@@ -3442,6 +3514,10 @@
  "Recherche du tracker…": {
   "en": "Searching for tracker…",
   "es": "Buscando el tracker…"
+ },
+ "Rechercher un réglage (courant, batterie, ppm…)": {
+  "en": "Search a setting (current, battery, ppm…)",
+  "es": "Buscar un ajuste (corriente, batería, ppm…)"
  },
  "Rechercher un réglage (current, battery, ppm…)": {
   "en": "Search a setting (current, battery, ppm…)",
@@ -4271,6 +4347,10 @@
   "en": "Default values",
   "es": "Valores por defecto"
  },
+ "Valeurs par défaut chargées — « Enregistrer » pour les appliquer": {
+  "en": "Defaults loaded — \"Save\" to apply them",
+  "es": "Valores por defecto cargados — «Guardar» para aplicarlos"
+ },
  "Valeurs par défaut chargées — « Écrire » pour les appliquer": {
   "en": "Defaults loaded — \"Write\" to apply them",
   "es": "Valores por defecto cargados — «Escribir» para aplicarlos"
@@ -4867,13 +4947,25 @@
   "en": "yes",
   "es": "sí"
  },
+ "paramètres chargés depuis la sauvegarde. Vérifie puis « Enregistrer ».": {
+  "en": "parameters loaded from the backup. Check, then \"Save\".",
+  "es": "parámetros cargados desde la copia de seguridad. Revisa y luego «Guardar»."
+ },
  "paramètres chargés depuis la sauvegarde. Vérifie puis « Écrire ».": {
   "en": "parameters loaded from the backup. Check, then \"Write\".",
   "es": "parámetros cargados desde la copia de seguridad. Revisa y luego «Escribir»."
  },
+ "paramètres chargés. Vérifie puis « Enregistrer ».": {
+  "en": "parameters loaded. Check, then \"Save\".",
+  "es": "parámetros cargados. Revisa y luego «Guardar»."
+ },
  "paramètres chargés. Vérifie puis « Écrire ».": {
   "en": "parameters loaded. Check, then \"Write\".",
   "es": "parámetros cargados. Revisa y luego «Escribir»."
+ },
+ "paramètres importés. Vérifie puis « Enregistrer ».": {
+  "en": "parameters imported. Check, then \"Save\".",
+  "es": "parámetros importados. Revisa y luego «Guardar»."
  },
  "paramètres importés. Vérifie puis « Écrire ».": {
   "en": "parameters imported. Check, then \"Write\".",
@@ -4951,6 +5043,10 @@
   "en": "idle",
   "es": "reposo"
  },
+ "réglages chargés : vérifie puis « Enregistrer »": {
+  "en": "settings loaded: check, then \"Save\"",
+  "es": "ajustes cargados: revisa y luego «Guardar»"
+ },
  "réglages chargés : vérifie puis « Écrire »": {
   "en": "settings loaded: check, then \"Write\"",
   "es": "ajustes cargados: revisa y luego «Escribir»"
@@ -4958,6 +5054,10 @@
  "réglages non disponibles avec ce BMS (ancien protocole)": {
   "en": "settings not available with this BMS (old protocol)",
   "es": "ajustes no disponibles con este BMS (protocolo antiguo)"
+ },
+ "réglages préremplis. Vérifie puis « Enregistrer ». Lance ensuite la détection FOC.": {
+  "en": "settings prefilled. Check, then \"Save\". Then run FOC detection.",
+  "es": "ajustes prerrellenados. Revisa y luego «Guardar». Después lanza la detección FOC."
  },
  "réglages préremplis. Vérifie puis « Écrire ». Lance ensuite la détection FOC.": {
   "en": "settings prefilled. Check, then \"Write\". Then run FOC detection.",
@@ -5066,6 +5166,10 @@
  "« Effacer le compte » dans l'application retire l'e-mail et le mot de passe du tracker. Effacer les données du site dans votre navigateur retire l'e-mail et la clé mémorisés sur le téléphone. Pour vos sorties, utilisez votre compte SportsTrackLive.": {
   "en": "\"Delete account\" in the app removes the e-mail and password from the tracker. Clearing the site data in your browser removes the e-mail and key stored on the phone. For your sessions, use your SportsTrackLive account.",
   "es": "«Borrar la cuenta» en la aplicación elimina el e-mail y la contraseña del tracker. Borrar los datos del sitio en tu navegador elimina el e-mail y la clave guardados en el teléfono. Para tus salidas, usa tu cuenta de SportsTrackLive."
+ },
+ "µs. « Enregistrer » pour enregistrer.": {
+  "en": "µs. \"Save\" to save.",
+  "es": "µs. «Guardar» para guardar."
  },
  "µs. « Écrire » pour enregistrer.": {
   "en": "µs. \"Write\" to save.",

@@ -490,3 +490,20 @@ canvas.curve { width: 100%; height: 230px; display: block; margin-top: 6px; }
 .dual .section-img { object-fit: contain; max-height: 140px; box-shadow: none; margin: 10px 0; }
 .diag-img { display: block; width: 100%; max-width: 280px; border-radius: 12px; margin: 10px 0 4px; }
 .diag-list span.diag-cap { font-size: 12.5px; }
+
+.page-save { margin-top: 16px; }
+
+/* ------------------------------------------------------------- code d'accès */
+body.locked { overflow: hidden; }
+.lock-screen { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px;
+  background: linear-gradient(180deg, var(--bg1), var(--bg2)); }
+.lock-screen[hidden] { display: none; }
+.lock-box { width: min(360px, 100%); text-align: center; background: var(--card); border: 1px solid var(--line-soft); border-radius: 26px;
+  padding: 28px 22px 20px; box-shadow: var(--sh); display: flex; flex-direction: column; gap: 10px; }
+.lock-logo { height: 46px; width: auto; margin: 0 auto; }
+.lock-box h1 { font-size: 32px; margin: 4px 0 0; }
+.lock-box p { margin: 0; }
+.lock-box input { text-align: center; font-size: 24px; letter-spacing: .4em; padding: 14px; margin-top: 6px; }
+.lock-err { color: var(--bad); font-weight: 600; font-size: 14px; }
+.shake { animation: shake .4s; }
+@keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
