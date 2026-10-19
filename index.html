@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
+<script src="i18n/i18n.js"></script>
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,6 +128,7 @@
   .hero .brand img { height:56px; filter:drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
   .hero .brand span { font-family:"Instrument Serif", Georgia, serif; font-size:18px; line-height:1.2; text-align:right;
                       text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  .hero-lang { position:absolute; top:12px; right:12px; z-index:3; }
   .hero .play { position:absolute; inset:0; margin:auto; width:64px; height:64px; border-radius:50%; border:none;
                 background:rgba(255,255,255,.9); color:#000; font-size:26px; padding:0; display:none; }
   .hero.paused .play { display:block; }
@@ -246,6 +248,7 @@
   <!-- The site's hero video (litefoil.fr, 480p rendition) and the logo on it. Autoplay is
        muted and skipped on metered connections: the clip is 12 MB. -->
   <div class="hero" id="hero">
+    <div class="hero-lang" data-lang-picker="row"></div>
     <img class="poster" src="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=900" alt="">
     <video id="heroVideo" muted loop autoplay playsinline preload="auto"
       poster="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=900"

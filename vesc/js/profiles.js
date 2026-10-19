@@ -1,5 +1,5 @@
 // Profils moteur : réglages de départ pour les moteurs eFoil courants, remplis dans la configuration
-// (rien n'est écrit sans passer par la barre « Écrire »). La détection FOC reste indispensable :
+// (rien n'est écrit sans passer par la barre « Enregistrer »). La détection FOC reste indispensable :
 // résistance, inductance et flux varient d'un moteur à l'autre, même de même modèle.
 
 import { el, fmt, toast } from './ui.js';
@@ -137,7 +137,7 @@ export function profileCard(ctx, onApplied) {
     for (const [k, val] of Object.entries(v)) if (cfg.has(k)) { cfg.set(k, val, true); n++; }
     cfg._emit(null);
     saveProfile('maytech6579');
-    toast(n + ' réglages préremplis. Vérifie puis « Écrire ». Lance ensuite la détection FOC.');
+    toast(n + ' réglages préremplis. Vérifie puis « Enregistrer ». Lance ensuite la détection FOC.');
     onApplied?.();
   };
   card.append(btn, el('p', 'muted small-text',

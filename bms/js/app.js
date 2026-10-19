@@ -449,7 +449,12 @@ async function renderSettings() {
   const acts = el('div', 'cfg-actions');
   const reread = el('button', 'btn small', 'Relire');
   reread.onclick = async () => { state.settings = await state.bms.readSettings(); state.edits = {}; renderSettings(); toast('Protections relues'); };
-  acts.append(reread);
+  const saveBtn = el('button', 'btn small primary', 'Enregistrer');
+  saveBtn.onclick = () => {
+    if (!Object.keys(state.edits).length) { toast('Aucune modification à enregistrer'); return; }
+    $('#saveWrite').click();
+  };
+  acts.append(saveBtn, reread);
   page.append(acts);
 
   for (const [group, items] of SETTINGS) {
@@ -518,7 +523,7 @@ function refreshChecks() {
 function updateSaveBar() {
   const n = Object.keys(state.edits).length;
   $('#saveBar').hidden = !(n && state.page === 'settings');
-  $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non écrite' + (n > 1 ? 's' : '');
+  $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non enregistrée' + (n > 1 ? 's' : '');
 }
 $('#saveUndo').onclick = () => { state.edits = {}; renderSettings(); updateSaveBar(); };
 $('#saveWrite').onclick = async () => {
@@ -534,8 +539,8 @@ $('#saveWrite').onclick = async () => {
   });
   const box = el('div', 'diff-list');
   box.append(...rows);
-  const ok = await sheet(list.length + ' changement' + (list.length > 1 ? 's' : '') + ' à écrire', [box],
-    [{ label: 'Annuler', value: 'no' }, { label: 'Écrire', value: 'ok', cls: 'primary' }]);
+  const ok = await sheet(list.length + ' changement' + (list.length > 1 ? 's' : '') + ' à enregistrer', [box],
+    [{ label: 'Annuler', value: 'no' }, { label: 'Enregistrer', value: 'ok', cls: 'primary' }]);
   if (ok !== 'ok') return;
   backupLocal('Avant écriture');
   let done = 0;
@@ -547,7 +552,7 @@ $('#saveWrite').onclick = async () => {
     state.settings = await state.bms.readSettings();
     state.edits = {};
     haptic([20, 40, 20]);
-    toast('Protections écrites ✓');
+    toast('Paramètres enregistrés dans le BMS ✓');
   } catch (e) {
     toast('Arrêt après ' + done + ' écriture(s) : ' + e.message, true);
   }
@@ -588,7 +593,7 @@ $('#btnRestore').onclick = async () => {
       if (state.settings[k] && Math.abs(state.settings[k].value - v) > 1e-9) { state.edits[k] = v; n++; }
     }
     showPage('settings');
-    toast(n ? n + ' réglages chargés : vérifie puis « Écrire »' : 'Identique aux réglages actuels');
+    toast(n ? n + ' réglages chargés : vérifie puis « Enregistrer »' : 'Identique aux réglages actuels');
   } catch (e) {
     toast('Import impossible : ' + e.message, true);
   }

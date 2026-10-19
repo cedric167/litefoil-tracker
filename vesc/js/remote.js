@@ -123,6 +123,9 @@ export function initRemote(ctx) {
       btn.onclick = () => calibrate(btn);
       page.append(btn);
     }
+    const save = el('button', 'btn primary wide page-save', 'Enregistrer les réglages');
+    save.onclick = () => ctx.save();
+    page.append(save);
     drawCurve();
     start();
   }
@@ -243,7 +246,7 @@ export function initRemote(ctx) {
     app.set('app_ppm_conf.pulse_end', Number(max.toFixed(3)));
     app.set('app_ppm_conf.pulse_center', Number(center.toFixed(3)));
     haptic([20, 40, 20]);
-    toast('Calibré : ' + fmt(min * 1000, 0) + ' / ' + fmt(center * 1000, 0) + ' / ' + fmt(max * 1000, 0) + ' µs. « Écrire » pour enregistrer.');
+    toast('Calibré : ' + fmt(min * 1000, 0) + ' / ' + fmt(center * 1000, 0) + ' / ' + fmt(max * 1000, 0) + ' µs. « Enregistrer » pour enregistrer.');
   }
 
   return { render, drawCurve, start, stop };

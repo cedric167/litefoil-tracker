@@ -310,7 +310,7 @@ function renderCanChips() {
 
 async function selectTarget(id) {
   if (!state.vesc || state.vesc.canId === id) return;
-  if (dirtyCount() && !confirm('Des modifications non écrites seront perdues. Continuer ?')) return;
+  if (dirtyCount() && !confirm('Des modifications non enregistrées seront perdues. Continuer ?')) return;
   state.vesc.canId = id;
   try {
     await loadTarget();
@@ -403,7 +403,7 @@ function restoreBackup(b) {
   const values = Object.fromEntries(Object.entries(b.values).filter(([k]) => cfg.has(k)));
   cfg.restore(values);
   showPage(b.kind);
-  toast(Object.keys(values).length + ' paramètres chargés. Vérifie puis « Écrire ».');
+  toast(Object.keys(values).length + ' paramètres chargés. Vérifie puis « Enregistrer ».');
 }
 
 renderBackups();
@@ -442,7 +442,7 @@ $('#btnBackupImport').onclick = async () => {
       if (!state.configs[kind]) throw new Error("connecte d'abord le contrôleur");
       const n = state.configs[kind].fromXml(text);
       showPage(kind);
-      toast(n + ' paramètres importés. Vérifie puis « Écrire ».');
+      toast(n + ' paramètres importés. Vérifie puis « Enregistrer ».');
       return;
     }
     const data = JSON.parse(text);
@@ -457,7 +457,7 @@ $('#btnBackupImport').onclick = async () => {
     }
     if (!n) throw new Error("connecte d'abord le contrôleur");
     showPage('essentials');
-    toast(n + ' paramètres chargés depuis la sauvegarde. Vérifie puis « Écrire ».');
+    toast(n + ' paramètres chargés depuis la sauvegarde. Vérifie puis « Enregistrer ».');
   } catch (e) {
     toast('Import impossible : ' + e.message, true);
   }
@@ -496,7 +496,7 @@ async function readConfig(kind, defaults = false, quiet = false) {
   if (state.page === 'essentials') essentials.render();
   if (state.page === 'remote') remote.render();
   updateSaveBar();
-  if (!quiet) toast(defaults ? 'Valeurs par défaut chargées — « Écrire » pour les appliquer' : 'Configuration relue');
+  if (!quiet) toast(defaults ? 'Valeurs par défaut chargées — « Enregistrer » pour les appliquer' : 'Configuration relue');
 }
 
 function dirtyCount(kind) {
@@ -509,14 +509,14 @@ function dirtyCount(kind) {
 }
 
 function valueText(p, v) {
-  if (p.t === T.ENUM) return p.e?.[v] ?? String(v);
+  if (p.t === T.ENUM) return P(p.e?.[v]) ?? String(v);
   if (p.t === T.BOOL) return v ? 'oui' : 'non';
   const unit = p.pct ? ' %' : (p.u ? ' ' + p.u.trim() : '');
   if (p.t === T.DOUBLE) return String(Number(displayValue({ ...p, value: v }).toFixed(4))) + unit;
   return String(v) + unit;
 }
 
-// Pages qui éditent des configurations : quelles configurations la barre « Écrire » concerne.
+// Pages qui éditent des configurations : quelles configurations la barre « Enregistrer » concerne.
 const PAGE_KINDS = { mcconf: ['mcconf'], appconf: ['appconf'], essentials: ['mcconf', 'appconf'], remote: ['appconf'] };
 
 // Montre les changements avant écriture ; résout true si l'utilisateur confirme.
@@ -533,12 +533,12 @@ function confirmDiff(kinds) {
       const row = el('div', 'd');
       const right = el('span');
       right.append(el('span', 'old', valueText(p, snap[n])), document.createTextNode('  →  '), el('span', 'new', valueText(p, p.value)));
-      row.append(el('span', '', p.n || n), right, el('small', '', (kind === 'mcconf' ? 'moteur · ' : 'app · ') + n));
+      row.append(el('span', '', P(p.n) || n), right, el('small', '', (kind === 'mcconf' ? 'moteur · ' : 'app · ') + n));
       list.append(row);
       total++;
     }
   }
-  $('#diffTitle').textContent = total ? total + ' changement' + (total > 1 ? 's' : '') + ' à écrire' : 'Écrire la configuration ?';
+  $('#diffTitle').textContent = total ? total + ' changement' + (total > 1 ? 's' : '') + ' à enregistrer' : 'Enregistrer la configuration ?';
   if (!total) list.append(el('div', 'empty', 'Aucun paramètre modifié depuis la dernière lecture.'));
   const dlg = $('#diffDialog');
   dlg.returnValue = '';
@@ -576,7 +576,7 @@ async function writeConfig(kinds) {
   }
   if (ok) {
     haptic([20, 40, 20]);
-    toast('Configuration écrite ✓');
+    toast('Paramètres enregistrés dans le VESC ✓');
   }
   return ok;
 }
@@ -585,7 +585,7 @@ function updateSaveBar() {
   const kinds = PAGE_KINDS[state.page] || [];
   const n = kinds.reduce((a, k) => a + dirtyCount(k), 0);
   $('#saveBar').hidden = !n;
-  if (n) $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non écrite' + (n > 1 ? 's' : '');
+  if (n) $('#saveText').textContent = n + ' modification' + (n > 1 ? 's' : '') + ' non enregistrée' + (n > 1 ? 's' : '');
 }
 $('#saveWrite').onclick = () => writeConfig(PAGE_KINDS[state.page] || []);
 $('#saveUndo').onclick = () => {
@@ -652,9 +652,10 @@ function renderConfigPage(kind) {
     b.onclick = fn;
     actions.append(b);
   };
+  act('Enregistrer', 'primary', () => writeConfig(kind));
   act('Relire', '', () => readConfig(kind).catch((e) => toast(e.message, true)));
   act('Valeurs par défaut', '', () => {
-    if (confirm('Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Écrire ».')) {
+    if (confirm('Charger les valeurs par défaut du firmware ? Rien ne sera écrit tant que tu ne cliques pas sur « Enregistrer ».')) {
       readConfig(kind, true).catch((e) => toast(e.message, true));
     }
   });
@@ -665,7 +666,7 @@ function renderConfigPage(kind) {
     if (!f) return;
     try {
       const n = cfg.fromXml(await f.text());
-      toast(n + ' paramètres importés. Vérifie puis « Écrire ».');
+      toast(n + ' paramètres importés. Vérifie puis « Enregistrer ».');
     } catch (e) {
       toast('Import impossible : ' + e.message, true);
     }
@@ -685,13 +686,13 @@ function renderConfigPage(kind) {
     const mods = modsSet();
     cfg.groups.forEach(([gname, gsubs], gi) => {
       const names = gsubs.flatMap((s) => s[1]);
-      const c = el('button', 'chip' + (gi === vs.group && !vs.search ? ' on' : '') + (names.some((n) => mods.has(n)) ? ' mod' : ''), gname);
+      const c = el('button', 'chip' + (gi === vs.group && !vs.search ? ' on' : '') + (names.some((n) => mods.has(n)) ? ' mod' : ''), P(gname));
       c.onclick = () => { vs.group = gi; vs.sub = 0; vs.search = ''; input.value = ''; drawNav(); drawParams(); };
       groups.append(c);
     });
     if (vs.search) return;
     cfg.groups[vs.group][1].forEach(([sname, names], si) => {
-      const c = el('button', 'chip' + (si === vs.sub ? ' on' : '') + (names.some((n) => mods.has(n)) ? ' mod' : ''), sname);
+      const c = el('button', 'chip' + (si === vs.sub ? ' on' : '') + (names.some((n) => mods.has(n)) ? ' mod' : ''), P(sname));
       c.onclick = () => { vs.sub = si; drawNav(); drawParams(); };
       subs.append(c);
     });
@@ -703,16 +704,17 @@ function renderConfigPage(kind) {
     let names;
     if (vs.search) {
       const q = vs.search.toLowerCase();
-      names = Object.keys(cfg.params).filter((n) => n.toLowerCase().includes(q) || (cfg.params[n].n || '').toLowerCase().includes(q));
+      names = Object.keys(cfg.params).filter((n) => n.toLowerCase().includes(q) || (cfg.params[n].n || '').toLowerCase().includes(q)
+        || (P(cfg.params[n].n) || '').toLowerCase().includes(q));
       title.textContent = names.length + ' résultat' + (names.length > 1 ? 's' : '');
     } else {
       const [sname, sn] = cfg.groups[vs.group][1][vs.sub];
       names = sn;
-      title.textContent = sname;
+      title.textContent = P(sname);
     }
     for (const name of names) {
       if (name.startsWith('::sep::')) {
-        list.append(el('div', 'sep', name.slice(7)));
+        list.append(el('div', 'sep', P(name.slice(7))));
         continue;
       }
       if (!cfg.has(name)) continue;
@@ -746,7 +748,7 @@ function renderConfigPage(kind) {
 function makeParamRow(cfg, name, opts = {}) {
   const p = cfg.params[name];
   const row = el('div', 'param');
-  const label = el('div', 'name', opts.label || p.n || name);
+  const label = el('div', 'name', opts.label || P(p.n) || name);
   label.append(el('small', opts.hint ? 'hint' : '', opts.hint || name));
   const edit = el('div', 'edit');
   let update = () => {};
@@ -782,7 +784,7 @@ function makeParamRow(cfg, name, opts = {}) {
     }
     case T.ENUM: {
       const sel = el('select');
-      (p.e || []).forEach((n, i) => sel.append(new Option(n, String(i))));
+      (p.e || []).forEach((n, i) => sel.append(new Option(P(n), String(i))));
       update = () => { sel.value = String(p.value); };
       sel.onchange = () => cfg.set(name, Number(sel.value));
       edit.append(sel);
@@ -809,7 +811,7 @@ function makeParamRow(cfg, name, opts = {}) {
           const v = p.value & 0xFF;
           cfg.set(name, cb.checked ? v | (1 << i) : v & ~(1 << i));
         };
-        l.append(cb, n);
+        l.append(cb, P(n));
         box.append(l);
         return cb;
       });
@@ -833,10 +835,10 @@ function makeParamRow(cfg, name, opts = {}) {
   const help = el('button', 'help-btn', '?');
   help.title = 'Aide';
   help.onclick = () => {
-    $('#helpTitle').textContent = opts.label || p.n || name;
+    $('#helpTitle').textContent = opts.label || P(p.n) || name;
     $('#helpName').textContent = name;
-    $('#helpBody').textContent = (opts.help ? opts.help + '\n\nDescription d\'origine (VESC Tool) :\n' : '')
-      + (p.d || 'Pas de description pour ce réglage.');
+    $('#helpBody').textContent = (opts.help ? opts.help + '\n\nDescription VESC Tool :\n' : '')
+      + (D(p.d) || 'Pas de description pour ce réglage.');
     $('#helpDialog').showModal();
   };
 
@@ -844,6 +846,33 @@ function makeParamRow(cfg, name, opts = {}) {
   update();
   return { el: row, update };
 }
+
+// Explications des réglages VESC Tool (anglais d'origine) traduites selon la langue choisie :
+// vesc/config/tr/fr.json et es.json, { "texte anglais": "traduction" }. En anglais : textes d'origine.
+let paramTr = new Map();
+// Noms, groupes et choix restent en anglais comme dans VESC Tool ; seules les explications sont traduites.
+function P(s) {
+  return s;
+}
+function D(s) {
+  return (s && paramTr.get(s)) || s;
+}
+async function loadParamTr() {
+  const lang = window.LF_I18N?.lang || 'fr';
+  paramTr = new Map();
+  if (lang === 'en') return;
+  try {
+    const r = await fetch('config/tr/' + lang + '.json');
+    if (r.ok) paramTr = new Map(Object.entries(await r.json()));
+  } catch (e) { /* hors ligne sans cache : textes d'origine */ }
+}
+await loadParamTr();
+window.LF_I18N?.onChange(async () => {
+  await loadParamTr();
+  renderConfigPages();
+  if (state.page === 'essentials') essentials.render();
+  if (state.page === 'remote') remote.render();
+});
 
 renderConfigPages();
 
@@ -1212,7 +1241,7 @@ $('#btnDetect').onclick = async () => {
         ['Inductance', fmt(mc.get('foc_motor_l') * 1e6, 2) + ' µH'],
         ['Flux', fmt(mc.get('foc_motor_flux_linkage') * 1e3, 2) + ' mWb'],
         ...(mc.has('foc_motor_ld_lq_diff') ? [['Lq − Ld', fmt(mc.get('foc_motor_ld_lq_diff') * 1e6, 2) + ' µH']] : []),
-        ['Capteurs', mc.params.foc_sensor_mode?.e?.[mc.get('foc_sensor_mode')] ?? '?'],
+        ['Capteurs', P(mc.params.foc_sensor_mode?.e?.[mc.get('foc_sensor_mode')]) ?? '?'],
         ['Compensation temp.', mc.get('foc_temp_comp') ? 'oui' : 'non'],
         ['ID CAN', String(app?.get('controller_id') ?? '?')],
       ]);
@@ -1443,6 +1472,7 @@ const ctx = {
   makeParamRow,
   dirtyCount,
   keepAwake,
+  save: () => writeConfig(PAGE_KINDS[state.page] || []),
   onProfile: () => showMotorCard(),
   canDevs: () => canDevs,
   kickTelemetry: () => telemetry.kick(),
