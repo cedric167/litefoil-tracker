@@ -43,7 +43,9 @@ L'onglet **VESC** affiche la télémétrie ; la carte « Atelier VESC » ouvre `
 VESC Tool au style de l'application : tableau de bord et graphiques en direct, journal CSV, tous les
 réglages moteur et app (firmwares 3.55 à 7.01, reconnus par leur signature), aperçu des changements
 avant écriture, sauvegardes automatiques sur le téléphone, import/export XML compatible VESC Tool,
-détection FOC, pilotage « maintenir pour activer », entrées PPM/ADC/IMU, terminal, firmware. Modules
+détection FOC, pilotage « maintenir pour activer », entrées PPM/ADC/IMU, terminal, firmware, plus une
+page « Essentiel » (réglages clés en français et vérifications), des sessions GPS sur carte, une page
+Télécommande (courbe de gaz, calibration) et la reconnexion automatique. Modules
 Bluetooth Nordic UART et HM-10, USB, et un mode démo sans matériel. Détails : `vesc/README.md`.
 Code sous GPL-3.0 (`vesc/LICENSE`), comme VESC Tool.
 

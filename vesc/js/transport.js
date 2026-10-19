@@ -7,6 +7,12 @@ const NUS_TX = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // notifications du VESC
 const HM10_SERVICE = '0000ffe0-0000-1000-8000-00805f9b34fb';
 const HM10_CHAR = '0000ffe1-0000-1000-8000-00805f9b34fb';
 
+const LAST_DEVICE_KEY = 'lf-vesc-last-device';
+
+function withTimeout(promise, ms, msg) {
+  return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
+}
+
 export class BleTransport {
   constructor() {
     this.name = 'Bluetooth';
@@ -23,14 +29,28 @@ export class BleTransport {
     return typeof navigator !== 'undefined' && !!navigator.bluetooth;
   }
 
-  async open() {
-    this.device = await navigator.bluetooth.requestDevice({
+  async open(device = null) {
+    this.device = device || await navigator.bluetooth.requestDevice({
       filters: [{ services: [NUS_SERVICE] }, { services: [HM10_SERVICE] }, { namePrefix: 'VESC' }, { namePrefix: 'HMSoft' }],
       optionalServices: [NUS_SERVICE, HM10_SERVICE],
     });
     this.name = this.device.name || 'VESC';
     this.device.addEventListener('gattserverdisconnected', () => this.onClose());
-    const server = await this.device.gatt.connect();
+    try { localStorage.setItem(LAST_DEVICE_KEY, JSON.stringify({ id: this.device.id, name: this.name })); } catch (e) { /* stockage bloqué */ }
+    await this._setup();
+  }
+
+  get canReconnect() {
+    return !!this.device;
+  }
+
+  // Reprend le même module après une coupure, sans repasser par la liste du navigateur.
+  async reconnect() {
+    await this._setup();
+  }
+
+  async _setup() {
+    const server = await withTimeout(this.device.gatt.connect(), 10000, 'module injoignable');
     let tx;
     try {
       const service = await server.getPrimaryService(NUS_SERVICE);
@@ -48,11 +68,27 @@ export class BleTransport {
         throw new Error('aucun service UART connu sur ce module');
       }
     }
-    tx.addEventListener('characteristicvaluechanged', (ev) => {
-      const v = ev.target.value;
-      this.onData(new Uint8Array(v.buffer, v.byteOffset, v.byteLength));
-    });
+    this.queue = Promise.resolve();
+    if (this.tx !== tx) {
+      tx.addEventListener('characteristicvaluechanged', (ev) => {
+        const v = ev.target.value;
+        this.onData(new Uint8Array(v.buffer, v.byteOffset, v.byteLength));
+      });
+      this.tx = tx;
+    }
     await tx.startNotifications();
+  }
+
+  // Dernier module utilisé, s'il est encore autorisé pour cette page (Chrome : navigator.bluetooth.getDevices).
+  static async lastDevice() {
+    try {
+      const last = JSON.parse(localStorage.getItem(LAST_DEVICE_KEY) || 'null');
+      if (!last || !navigator.bluetooth?.getDevices) return null;
+      const devices = await navigator.bluetooth.getDevices();
+      return devices.find((d) => d.id === last.id) || null;
+    } catch (e) {
+      return null;
+    }
   }
 
   write(data) {
@@ -68,7 +104,9 @@ export class BleTransport {
   }
 
   async close() {
-    if (this.device?.gatt?.connected) this.device.gatt.disconnect();
+    const d = this.device;
+    this.device = null; // plus de reconnexion après une déconnexion voulue
+    if (d?.gatt?.connected) d.gatt.disconnect();
   }
 }
 

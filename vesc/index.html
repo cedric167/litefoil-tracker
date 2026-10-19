@@ -12,6 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -31,10 +33,13 @@
 
   <nav class="tabs" id="tabs">
     <button data-page="home" class="active">Accueil</button>
+    <button data-page="essentials">Essentiel</button>
     <button data-page="realtime">Direct</button>
+    <button data-page="sessions">Sessions</button>
+    <button data-page="remote">Télécommande</button>
+    <button data-page="wizard">Détection</button>
     <button data-page="mcconf">Moteur</button>
     <button data-page="appconf">App</button>
-    <button data-page="wizard">Détection</button>
     <button data-page="control">Pilotage</button>
     <button data-page="inputs">Entrées</button>
     <button data-page="terminal">Terminal</button>
@@ -58,6 +63,9 @@
         <h1 class="serif">Ton contrôleur, <em>au doigt</em></h1>
         <p class="muted">Allume la planche, puis connecte le module Bluetooth du VESC. Toutes les fonctions de VESC Tool, depuis le téléphone.</p>
         <div class="stack">
+          <button id="btnLast" class="btn accent wide" hidden>
+            <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2"/><path d="M19 3v3.5h-3.5M5 21v-3.5h3.5"/></svg><span>Reconnecter</span>
+          </button>
           <button id="btnBle" class="btn primary wide">
             <svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg>Connecter en Bluetooth
           </button>
@@ -66,6 +74,7 @@
             <button id="btnDemo" class="btn">Démo</button>
           </div>
         </div>
+        <button id="btnDiag" class="link-btn">Ça ne se connecte pas ?</button>
         <p id="bleSupport" class="banner warn" hidden></p>
       </div>
 
@@ -93,6 +102,7 @@
             <div class="dev-sub" id="devSub">—</div>
           </div>
         </div>
+        <div class="banner warn" id="verWarn" hidden></div>
         <div class="kv-grid" id="fwInfo"></div>
         <div class="chips" id="canList"></div>
         <div class="row-btns">
@@ -106,9 +116,41 @@
       <div class="card">
         <p class="muted small-text">Une copie de la configuration est gardée sur ce téléphone à chaque connexion et avant chaque écriture.
           En cas de mauvais réglage, il suffit de la recharger puis d'écrire.</p>
+        <div class="row-btns">
+          <button id="btnBackupDl" class="btn small">Télécharger la sauvegarde complète</button>
+          <button id="btnBackupImport" class="btn small ghost">Importer un fichier</button>
+        </div>
         <div class="ioslist" id="backupList"></div>
       </div>
     </section>
+
+    <!-- ================================================================ Essentiel -->
+    <section class="page" id="page-essentials"></section>
+
+    <!-- ================================================================ Sessions -->
+    <section class="page" id="page-sessions">
+      <div class="card hero-metric">
+        <div class="hm-top"><span class="hm-label">Session</span><span class="hm-max" id="sesGps">GPS —</span></div>
+        <div class="ses-live" id="sesLive" hidden>
+          <div><div class="hm-value"><span id="sesSpd">—</span><span class="hm-unit">km/h</span></div></div>
+          <div class="ses-pow"><span id="sesPow">—</span> W</div>
+        </div>
+        <p class="muted small-text ses-intro">Enregistre ta sortie : trace GPS du téléphone et télémétrie du contrôleur, colorée selon la puissance.
+          Garde l'écran allumé et le téléphone dans une pochette étanche sur toi ou dans la planche.</p>
+        <button id="btnSes" class="btn primary wide">Démarrer une session</button>
+      </div>
+      <div class="card map-card">
+        <div class="ch-head"><span class="m-label" id="sesTitle">Carte</span>
+          <span class="legend"><i style="background:#5acdd1"></i>faible <i style="background:#f5c76a"></i> <i style="background:#d1343f"></i>forte</span></div>
+        <div id="sesMap"></div>
+        <div class="kv-grid" id="sesStats" style="margin-top:12px"></div>
+      </div>
+      <div class="section-label">Sessions enregistrées</div>
+      <div class="ioslist" id="sesList"></div>
+    </section>
+
+    <!-- ================================================================ Télécommande -->
+    <section class="page" id="page-remote"></section>
 
     <!-- ================================================================ Direct -->
     <section class="page" id="page-realtime">
@@ -224,6 +266,12 @@
         <h2 class="serif">Mise à jour du firmware</h2>
         <div class="banner warn">Un firmware qui ne correspond pas au matériel (<b id="fwHwName">?</b>) peut rendre le contrôleur
           inutilisable. Ne coupe pas l'alimentation et garde le téléphone près de la planche : par Bluetooth l'envoi dure plusieurs minutes.</div>
+        <div class="fw-step" id="fwStep1">
+          <span class="step-n">1</span>
+          <div><b>Sauvegarder la configuration</b><span id="fwBackupTxt">Obligatoire : une mise à jour peut remettre les réglages à zéro.</span></div>
+          <button id="btnFwBackup" class="btn small">Télécharger</button>
+        </div>
+        <div class="fw-step"><span class="step-n">2</span><div><b>Choisir le firmware</b><span>Fichier .bin prévu pour ton matériel.</span></div></div>
         <label class="file-drop">
           <input type="file" id="fwFile" accept=".bin">
           <svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>

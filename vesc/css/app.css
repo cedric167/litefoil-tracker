@@ -257,7 +257,7 @@ select {
 .good { color: var(--ok) !important; } .warn-c { color: var(--warn) !important; } .bad-c { color: var(--bad) !important; }
 
 .chart-card { padding: 14px 14px 10px; }
-.chart-card .ch-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 2px 6px; }
+.ch-head, .chart-card .ch-head { display: flex; flex-wrap: wrap; row-gap: 4px; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 2px 6px; }
 .chart-card .ch-leg { display: flex; gap: 12px; font-size: 13px; font-variant-numeric: tabular-nums; flex-wrap: wrap; justify-content: flex-end; }
 .chart-card .ch-leg i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; }
 .chart-card canvas { width: 100%; height: 140px; display: block; }
@@ -416,3 +416,50 @@ dialog::backdrop { background: rgba(11, 13, 16, .35); backdrop-filter: blur(2px)
 .diff-list .empty { padding: 14px; color: var(--muted); text-align: center; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* ------------------------------------------------------------- diagnostic et feuilles génériques */
+.link-btn { margin-top: 14px; border: 0; background: none; color: var(--accent-ink); font: 600 14px var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.sheet-body { overflow: auto; margin: 10px 0 16px; }
+.diag-list { margin: 8px 0 0; padding: 0; list-style: none; counter-reset: d; }
+.diag-list li { counter-increment: d; position: relative; padding: 10px 0 10px 42px; border-top: 1px solid var(--line-soft); }
+.diag-list li:first-child { border-top: 0; }
+.diag-list li::before { content: counter(d); position: absolute; left: 0; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.diag-list b { display: block; font-size: 15px; }
+.diag-list span { font-size: 14px; color: var(--muted); }
+
+/* ------------------------------------------------------------- essentiel */
+.param .name small.hint { font: 12.5px/1.35 var(--sans); color: var(--muted); margin-top: 2px; }
+.checks { padding: 6px 14px; }
+.check { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line-soft); }
+.check:first-child { border-top: 0; }
+.check-ic { width: 26px; height: 26px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; margin-top: 1px; }
+.check.ok .check-ic { background: var(--ok); }
+.check.info .check-ic { background: #0a84ff; }
+.check.warn .check-ic { background: var(--warn); }
+.check.bad .check-ic { background: var(--bad); }
+.check b { display: block; font-size: 15px; }
+.check > div > span { display: block; font-size: 13.5px; color: var(--muted); }
+.dual .kv-grid { margin: 10px 0 12px; }
+
+/* ------------------------------------------------------------- télécommande */
+canvas.curve { width: 100%; height: 230px; display: block; margin-top: 6px; }
+
+/* ------------------------------------------------------------- sessions */
+.ses-live { display: flex; align-items: flex-end; justify-content: space-between; position: relative; z-index: 1; }
+.ses-pow { font-family: var(--serif); font-size: 30px; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.ses-intro { position: relative; z-index: 1; margin: 8px 0 14px; }
+#sesMap { height: 300px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line-soft); background: #dfe6ea; }
+.map-card .legend { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.map-card .legend i { display: inline-block; width: 14px; height: 6px; border-radius: 3px; }
+.leaflet-container { font: inherit; }
+.btn.primary.stop { background: var(--bad); border-color: var(--bad); }
+
+/* ------------------------------------------------------------- firmware */
+.fw-step { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px; border-radius: 16px; background: var(--tile); border: 1px solid var(--line-soft); }
+.fw-step > div { flex: 1; min-width: 0; }
+.fw-step b { display: block; font-size: 15px; }
+.fw-step span:not(.step-n) { font-size: 13px; color: var(--muted); }
+.fw-step .step-n { width: 28px; height: 28px; flex: none; border-radius: 50%; background: var(--text); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.fw-step.done { border-color: var(--ok); background: #effaf3; }
+.fw-step.done .step-n { background: var(--ok); }
+.map-off { height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; color: var(--muted); font-size: 14px; }

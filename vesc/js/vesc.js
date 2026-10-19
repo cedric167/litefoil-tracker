@@ -17,8 +17,8 @@ export class Vesc extends EventTarget {
     transport.onClose = () => this.dispatchEvent(new Event('close'));
   }
 
-  async open() {
-    await this.transport.open();
+  async open(device = null) {
+    await this.transport.open(device);
   }
 
   async close() {

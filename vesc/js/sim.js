@@ -29,10 +29,27 @@ export class SimTransport {
 
   async close() {
     clearInterval(this.timer);
+    this.closed = true;
     this.onClose();
   }
 
+  get canReconnect() {
+    return !this.closed;
+  }
+
+  // Simule une coupure radio (test de la reconnexion automatique).
+  simulateDrop() {
+    this.dropped = true;
+    this.onClose();
+  }
+
+  async reconnect() {
+    await new Promise((r) => setTimeout(r, 800));
+    this.dropped = false;
+  }
+
   write(data) {
+    if (this.dropped) return Promise.resolve();
     // Petit délai pour imiter la latence BLE.
     setTimeout(() => this.decoder.push(data), 15);
     return Promise.resolve();
