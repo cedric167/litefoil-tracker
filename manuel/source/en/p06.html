@@ -1,0 +1,56 @@
+<section class="page">
+  <h1><span class="n">05</span> Motor safety</h1>
+  <table>
+    <tr><th style="width:31%">Protection</th><th>How it works</th></tr>
+    <tr><td class="key">Disarmed start</td><td>Every time you power on and every time the remote wakes from sleep, the motor is locked. It takes a deliberate press on
+      A, with the trigger at rest (less than 6% of travel).</td></tr>
+    <tr><td class="key">Red screen</td><td>While the motor is locked, the screen is red with a big padlock: no possible doubt about the state, even out of the
+      corner of your eye.</td></tr>
+    <tr><td class="key">Link loss</td><td>Remote: disarms if there is no telemetry for 0.5 s. Receiver: motor to neutral if there is no command for 0.5 s.
+      Fail-safe: it's silence that cuts the motor.</td></tr>
+    <tr><td class="key">Auto disarm</td><td>Adjustable from 1 to 10 s (or OFF): with no throttle during that time, the motor locks itself. Ideal after a
+      fall.</td></tr>
+    <tr><td class="key">Disarm refused under throttle</td><td>Pressing A while the trigger is above 15% is ignored with a beep: release it first.</td></tr>
+    <tr><td class="key">Power off refused when armed</td><td>You can't switch the remote off while the motor is armed.</td></tr>
+    <tr><td class="key">Dead zone</td><td>A clean zero with hysteresis (7% to start, 4% to return): the motor doesn't twitch at rest.</td></tr>
+    <tr><td class="key">Protected pairing</td><td>The receiver only accepts pairing during the 5 s after it is powered up, with the remote less than a metre
+      away, and refuses any new remote while its own is connected. After that it only listens to its remote's address: a nearby eFoil can
+      neither pick up nor send commands.</td></tr>
+    <tr><td class="key">Charging</td><td>Plugging in the charger disarms immediately and blocks riding.</td></tr>
+    <tr><td class="key">Touch</td><td>The touchscreen never responds on the riding screen, while charging, or with the motor armed.</td></tr>
+  </table>
+
+  <h1 style="margin-top:18pt"><span class="n">06</span> Trigger, modes and riding settings</h1>
+  <div class="cols" style="margin-top:12pt">
+    <div>
+      <h2 style="margin-top:0">Power modes</h2>
+      <table>
+        <tr><th style="width:20%">Mode</th><th style="width:40%">Max power</th><th>Letter on screen</th></tr>
+        <tr><td class="key">LOW</td><td>60%</td><td><b style="color:#2e9e3e">L</b> green</td></tr>
+        <tr><td class="key">MED</td><td>80%</td><td><b style="color:#d4a106">M</b> yellow</td></tr>
+        <tr><td class="key">HIGH</td><td>100%</td><td><b style="color:#e53935">H</b> red</td></tr>
+      </table>
+      <p>Switch with a press on <span class="k">B</span> while riding, or set the default mode in the “Speed” menu. The mode is remembered.</p>
+      <h2>Sensitivity (4 curves)</h2>
+      <p>Level 0: nice and gentle (quadratic response, ideal for learning). Level 3: linear, direct response. Levels 1 and 2 are in
+        between.</p>
+    </div>
+    <div>
+      <h2 style="margin-top:0">Startup boost (minimum thrust)</h2>
+      <p>From 0 to 24% in steps of 3: the thrust applied as soon as you leave zero, so you take off cleanly without having to hunt for the
+        trigger's starting point.</p>
+      <h2>Learning and calibration</h2>
+      <p>While riding, any reading beyond a known end stop becomes the new end stop, and is saved. The guided calibration every time you
+        power on (section 3) protects against drift. The “Calibrate throttle” menu opens a full manual calibration in two guided steps (step
+        1 / 2 trigger released, step 2 / 2 trigger fully pulled, value in millivolts shown live, <span class="k">A</span> confirms each step),
+        for a first setup or after changing a magnet. <span class="k">B</span> or the chevron cancels at any time. Green dot “OK!” then back
+        to the menu; red dot “TRAVEL TOO SHORT” if the measured travel is under 150 mV (magnet too far?), and the old calibration is then
+        kept.</p>
+      <h2>Board battery</h2>
+      <p>The percentage shown is calculated from the pack voltage and the number of cells set in the “Battery” menu (8 to 20 S), with a
+        realistic Li-ion discharge curve. Visual alert below 44 V.</p>
+    </div>
+  </div>
+
+  <div class="footer"><span>Lite Foil remote · datasheet and user manual · firmware 1.15.0</span><span>6</span></div>
+</section>

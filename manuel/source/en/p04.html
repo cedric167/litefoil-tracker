@@ -1,0 +1,103 @@
+<section class="page">
+  <h1><span class="n">03</span> Getting started</h1>
+
+  <h2 style="margin-top:0">Power on</h2>
+  <p>Hold <span class="k">A</span> for <b>3 seconds</b>. A shorter press won't wake the remote, so it can't switch on by accident in a bag. The
+    sequence takes about 5 seconds: a big “Hello” in the chosen language, then the Lite Foil logo, then the guided trigger calibration,
+    then the red “DISARMED” screen. <b>The remote always starts disarmed.</b></p>
+
+  <div class="figs" style="gap:5.5pt;margin:5pt 0 4pt">
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="c cy" style="top:108px;font-size:45px;font-weight:900">Hello</div>
+      </div>
+      <div class="t">1. Hello</div><div class="s">2 seconds</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr light" style="--z:.5"><img src="crops/p04-logo.png" style="width:240px;height:280px;display:block;margin:0"></div>
+      <div class="t">2. Logo</div><div class="s">3 seconds</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="bar" style="background:#111"></div><div class="title cy" style="font-size:21px;top:6px">TRIGGER</div>
+        <div class="c gy" style="top:43px;font-size:11px;font-weight:600;color:#aaa">STEP 1 / 2</div>
+        <div class="c" style="top:62px;font-size:18.5px;font-weight:800;line-height:1.1">RELEASE THE<br>TRIGGER</div>
+        <div style="position:absolute;left:29px;width:180px;top:150px;height:17px;border-radius:9px;background:#1f2622"><div style="width:65%;height:100%;border-radius:9px;background:#00ffff"></div></div>
+        <div class="c" style="top:206px;font-size:12px;font-weight:600;color:#aaa">rest 412 mV</div>
+        <div style="position:absolute;left:29px;width:180px;top:245px;height:31px;border-radius:7px;background:#006400;color:#3cff4a;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">A = skip</div>
+      </div>
+      <div class="t">3. Trigger, step 1</div><div class="s">release; the bar fills<br>in 1.5&nbsp;s</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="bar" style="background:#111"></div><div class="title cy" style="font-size:21px;top:6px">TRIGGER</div>
+        <div class="c" style="top:43px;font-size:11px;font-weight:600;color:#aaa">STEP 2 / 2</div>
+        <div class="c" style="top:62px;font-size:18.5px;font-weight:800;line-height:1.1">PULL FULLY<br>AND HOLD</div>
+        <div style="position:absolute;left:29px;width:180px;top:150px;height:17px;border-radius:9px;background:#1f2622"><div style="width:39%;height:100%;border-radius:9px;background:#2bff45"></div></div>
+        <div class="c" style="top:206px;font-size:12px;font-weight:600;color:#aaa">full 2381 mV</div>
+        <div style="position:absolute;left:29px;width:180px;top:245px;height:31px;border-radius:7px;background:#006400;color:#3cff4a;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">A = skip</div>
+      </div>
+      <div class="t">3b. Step 2</div><div class="s">only if the rest position<br>moved: pull fully</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="bar" style="background:#111"></div><div class="title cy" style="font-size:21px;top:6px">TRIGGER</div>
+        <div class="c gr" style="top:88px;font-size:54px;font-weight:900;color:#2bff45">OK!</div>
+        <div class="c" style="top:168px;font-size:12px;font-weight:600;color:#aaa">rest 412 full 2381</div>
+      </div>
+      <div class="t">4. OK!</div><div class="s">rest / full values<br>saved</div>
+    </div>
+  </div>
+
+  <div class="note"><b>Guided calibration, every time you power on.</b> The remote checks the trigger's rest position over 1.5 s of
+    stable reading, without asking you anything. If the rest position has moved by more than 2% since last time (sensor, magnet,
+    temperature), it also asks you to pull fully. It never blocks you: <span class="k">A</span> skips the step and keeps the old value; no
+    action for 6 s does the same. The motor can't spin during the sequence. Too short a travel is rejected (“TRAVEL TOO SHORT, magnet
+    too far?”).</div>
+
+  <div class="cols" style="margin-top:12pt">
+    <div>
+      <h2 style="margin-top:0">Power off</h2>
+      <p>On the riding screen, <b>motor disarmed</b>, hold <span class="k">A</span>: after 0.8 s the screen shows “Shutting down… keep A
+        pressed”, and 1.2 s later the remote shows a big “See you soon”, one word per line, and goes to sleep. Letting go earlier
+        cancels. <b>Power off is refused while the motor is armed</b>: you don't cut the control of a spinning motor. Before going to
+        sleep, it asks the tracker to close the current session and freezes any running timer.</p>
+      <h2>Auto sleep</h2>
+      <p>After <b>20 minutes</b> with no action at all (button, trigger, touch), and only if the motor is disarmed, the remote switches
+        itself off. Never while on the charger, never while the app is connected.</p>
+    </div>
+    <div>
+      <h2 style="margin-top:0">Charging</h2>
+      <p>Plug in the charger: the “CHARGING” screen appears with the percentage and the voltage, and a blinking green dot. The motor is
+        disarmed the moment you plug in, and riding is blocked. Bluetooth switches on by itself for the app (settings, update).
+        Once it has been full for 2 minutes, the remote switches off; the charger can stay plugged in. Plugging in a remote that is off
+        wakes it straight onto this screen.</p>
+      <div class="figs" style="gap:5pt;margin:6pt 0 0">
+        <div class="fig" style="width:78pt">
+          <div class="scr" style="--z:.4">
+            <div class="c cy" style="top:40px;font-size:29px;font-weight:900;letter-spacing:-.5px">CHARGING</div>
+            <div class="c" style="top:115px;font-size:11px;font-weight:800;color:#2bff45">78%</div>
+            <div class="c" style="top:178px;font-size:20px;font-weight:800;color:#ccc">4.02 V</div>
+            <div style="position:absolute;left:113px;top:232px;width:14px;height:14px;border-radius:7px;background:#2bff45"></div>
+          </div>
+          <div class="t">Charging</div><div class="s">% and voltage, Bluetooth on</div>
+        </div>
+        <div class="fig" style="width:78pt">
+          <div class="scr" style="--z:.4">
+            <div class="c or" style="top:100px;font-size:18px;font-weight:800">Shutting down…</div>
+            <div class="c" style="top:146px;font-size:11px;font-weight:700;color:#bbb">keep A pressed</div>
+          </div>
+          <div class="t">Shutting down…</div><div class="s">after holding A for 0.8&nbsp;s</div>
+        </div>
+        <div class="fig" style="width:78pt">
+          <div class="scr" style="--z:.4">
+            <div class="c cy" style="top:52px;font-size:37px;font-weight:900;line-height:55px">See<br>you<br>soon</div>
+          </div>
+          <div class="t">See you soon</div><div class="s">2 s, then the remote goes to sleep</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer"><span>Lite Foil remote · datasheet and user manual · firmware 1.15.0</span><span>4</span></div>
+</section>

@@ -1,0 +1,62 @@
+/* Shared look of the Lite Foil remote manual (A4, one .page per sheet). */
+@page { size: 594.96pt 841.92pt; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Open Sans", "Segoe UI", sans-serif; color: #1d1d1f; font-size: 8.3pt; line-height: 1.5;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 594.96pt; height: 841.92pt; padding: 30pt 33.75pt 0; position: relative; overflow: hidden; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+h1 { font-size: 15pt; font-weight: 800; margin: 0 0 10pt; padding-bottom: 5pt; border-bottom: 1.6pt solid #00bcd4; display: flex; align-items: center; gap: 7pt; }
+h1 .n { color: #00bcd4; }
+h2 { font-size: 10pt; font-weight: 700; margin: 11pt 0 5pt; display: flex; align-items: center; gap: 6pt; }
+h3 { font-size: 8.8pt; font-weight: 700; margin: 8pt 0 3pt; }
+p { margin: 0 0 5pt; }
+b, strong { font-weight: 700; }
+.muted { color: #6b7280; }
+.small { font-size: 7.4pt; }
+ul, ol { margin: 2pt 0 5pt; padding-left: 14pt; }
+li { margin: 0 0 2pt; }
+/* key caps for the A and B buttons */
+.k { display: inline-flex; align-items: center; justify-content: center; min-width: 11pt; height: 11pt; padding: 0 2.5pt;
+  border: 0.8pt solid #9ccbf2; border-radius: 2.6pt; color: #1565c0; font-weight: 800; font-size: 7pt; background: #f3f9ff;
+  vertical-align: 0.5pt; line-height: 1; }
+.chip { display: inline-block; font-size: 6.6pt; font-weight: 600; padding: 1pt 6pt; border-radius: 8pt; background: #e0f7fa;
+  color: #00838f; border: 0.6pt solid #b2ebf2; vertical-align: middle; }
+.chip.orange { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
+/* tables */
+table { width: 100%; border-collapse: collapse; margin: 3pt 0 6pt; }
+th { text-align: left; font-weight: 600; font-size: 7.6pt; padding: 4pt 6pt; background: #f4f5f7; border-bottom: 0.8pt solid #d9dce1; }
+td { padding: 4pt 6pt; border-bottom: 0.6pt solid #eceef1; vertical-align: top; }
+td.key, th.key { font-weight: 700; }
+table.compact td { padding: 2.2pt 6pt; }
+/* side notes */
+.note { background: #f4fbfc; border-left: 2.4pt solid #00bcd4; padding: 5pt 9pt; border-radius: 0 5pt 5pt 0; margin: 6pt 0; }
+.note.warn { background: #fff7ec; border-left-color: #ff9800; }
+.note.bad { background: #fdf0f0; border-left-color: #e53935; }
+/* layout helpers */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18pt; }
+.cols.c37 { grid-template-columns: 3fr 7fr; }
+.cols.c73 { grid-template-columns: 7fr 3fr; }
+.cols.c64 { grid-template-columns: 6fr 4fr; }
+.cols.c46 { grid-template-columns: 4fr 6fr; }
+/* figures: a row of cropped visuals with a caption under each */
+.figs { display: flex; justify-content: center; gap: 10pt; margin: 6pt 0 8pt; align-items: flex-start; }
+.fig { text-align: center; flex: 0 0 auto; }
+.fig img { display: block; margin: 0 auto 3pt; }
+.fig .t { font-weight: 700; font-size: 7.6pt; }
+.fig .s { color: #6b7280; font-size: 7.2pt; line-height: 1.35; }
+.footer { position: absolute; left: 33.75pt; right: 33.75pt; top: 758pt; display: flex; justify-content: space-between;
+  font-size: 6.8pt; color: #9aa0a6; border-top: 0.6pt solid #eceef1; padding-top: 3pt; }
+.card { border: 0.7pt solid #e3e6ea; border-radius: 6pt; padding: 5pt 8pt; margin-bottom: 5pt; break-inside: avoid; }
+
+/* ---- Remote screen mockups. Author the content in real screen pixels (240 x 280, firmware font Nunito),
+   then scale the whole screen with --z (0.5 = 120 x 140 px ≈ 90 x 105 pt). ---- */
+.scr { zoom: var(--z, .5); width: 240px; height: 280px; background: #000; color: #fff; border-radius: 26px;
+  box-shadow: 0 0 0 9px #1b1c1f, 0 8px 22px 9px rgba(0,0,0,.18); margin: 9px auto 14px; position: relative; overflow: hidden;
+  font-family: "Nunito", sans-serif; font-weight: 700; line-height: 1.15; }
+.scr.light { background: #f4f4f4; color: #111; }
+.scr .bar { position: absolute; left: 0; right: 0; top: 0; height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 17px; }
+.scr .title { position: absolute; left: 0; right: 0; top: 8px; text-align: center; font-size: 17px; font-weight: 800; }
+.scr .hint { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font-size: 10.5px; font-weight: 600; color: #bbb; }
+.scr .c { position: absolute; left: 0; right: 0; text-align: center; }
+.cy { color: #00e5ff; } .gr { color: #34e36b; } .ye { color: #ffd60a; } .or { color: #ff9f0a; } .rd { color: #ff3b30; } .gy { color: #8e8e93; }

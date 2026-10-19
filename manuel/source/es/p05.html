@@ -1,0 +1,118 @@
+<section class="page">
+  <h1><span class="n">04</span> La pantalla de navegación</h1>
+  <p>Dos pantallas imposibles de confundir: <b>roja con un candado</b> mientras el motor está bloqueado, <b>negra con el arco de gas</b> en
+    cuanto está armado. La pantalla táctil está desactivada en ambas: una mano mojada o una ola no pueden activar nada.</p>
+
+  <div class="figs" style="gap:14pt;margin:3pt 0 4pt">
+    <!-- disarmed -->
+    <div class="fig" style="width:140pt">
+      <div class="scr" style="--z:.63;background:#1a0000">
+        <div style="position:absolute;left:6px;top:9px;font-size:10.5px;font-weight:600;color:#ddd">8 SAT</div>
+        <div class="c" style="top:7px;font-size:19px;font-weight:800;color:#c8c8c8">14:32</div>
+        <div style="position:absolute;right:5px;top:2px;font-size:22px;font-weight:800;color:#c8c8c8">86%</div>
+        <svg style="position:absolute;left:84px;top:80px" width="72" height="82" viewBox="0 0 72 82">
+          <path d="M18 34V24a18 18 0 0 1 36 0v10" fill="none" stroke="#ff3b30" stroke-width="5"/>
+          <rect x="8.5" y="31.5" width="55" height="45" rx="9" fill="none" stroke="#ff3b30" stroke-width="5"/>
+          <circle cx="36" cy="50" r="5.5" fill="#ff3b30"/><rect x="34" y="52" width="4" height="12" rx="1.5" fill="#ff3b30"/>
+        </svg>
+        <div class="c rd" style="top:176px;font-size:35px;font-weight:900;letter-spacing:-.6px">DESARMADO</div>
+        <div class="c" style="top:217px;font-size:10.5px;font-weight:700;color:#ddd">motor bloqueado</div>
+        <div style="position:absolute;left:30px;right:30px;top:238px;height:40px;border-radius:9px;background:#2a0000;text-align:center;padding-top:6px">
+          <div class="ye" style="font-size:11px;font-weight:700">Botón A = ARMAR</div>
+          <div style="font-size:10px;font-weight:700;color:#ddd;margin-top:3px">gatillo en reposo</div>
+        </div>
+      </div>
+      <div class="t">Desarmado</div><div class="s">motor bloqueado, A = armar (gatillo en reposo)</div>
+    </div>
+    <!-- armed, speed theme -->
+    <div class="fig" style="width:140pt">
+      <div class="scr" style="--z:.63">
+        <div class="bar" style="height:25px;background:#111;padding:0 5px 0 8px">
+          <svg width="31" height="16" viewBox="0 0 31 16"><rect x="0" y="12" width="5" height="4" fill="#00e5ff"/><rect x="8" y="8" width="5" height="8" fill="#00e5ff"/><rect x="16" y="4" width="5" height="12" fill="#00e5ff"/><rect x="24.6" y="0.6" width="4.8" height="14.8" fill="none" stroke="#bbb" stroke-width="1.2"/></svg>
+          <span class="cy" style="font-size:19px;font-weight:800">8S</span>
+          <span style="width:10px;height:10px;border-radius:5px;background:#34e36b"></span>
+          <span class="cy" style="font-size:19px;font-weight:800">14:32</span>
+          <span class="gr" style="font-size:19px;font-weight:800">86%</span>
+        </div>
+        <svg style="position:absolute;left:0;top:0" width="240" height="280" viewBox="0 0 240 280">
+          <defs><linearGradient id="p05-gsp" gradientUnits="userSpaceOnUse" x1="50" y1="200" x2="150" y2="40"><stop offset="0" stop-color="#00d0ff"/><stop offset="1" stop-color="#2affcf"/></linearGradient></defs>
+          <path d="M52.8 202.2A95 95 0 1 1 187.2 202.2" fill="none" stroke="#1c1c1c" stroke-width="18" stroke-linecap="round"/>
+          <path d="M52.8 202.2A95 95 0 0 1 147.8 44.2" fill="none" stroke="url(#p05-gsp)" stroke-width="18" stroke-linecap="round"/>
+          <path d="M168 24L154 28.5L163.5 38z" fill="#00e5ff"/>
+        </svg>
+        <div style="position:absolute;left:170px;top:27px;font-size:10px;font-weight:700" class="cy">1.2km</div>
+        <div class="c ye" style="top:66px;font-size:26px;font-weight:900">M</div>
+        <div class="c" style="top:92px;font-size:62px;font-weight:900;line-height:1">27</div>
+        <div class="c cy" style="top:151px;font-size:7.5px;font-weight:700">km/h</div>
+        <div class="c gr" style="top:165px;font-size:17px;font-weight:800">72%</div>
+        <div class="c cy" style="top:196px;font-size:12px;font-weight:800">MAX 31</div>
+        <div style="position:absolute;left:0;right:0;top:229px;display:grid;grid-template-columns:88px 64px 88px;text-align:center;font-size:22px;font-weight:800">
+          <span class="cy">51</span><span>1840</span><span>38</span>
+          <span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">VOLT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">WATT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">TEMP</span>
+        </div>
+      </div>
+      <div class="t">Armado, tema «velocidad»</div><div class="s">velocidad en grande, batería de la tabla<br>debajo</div>
+    </div>
+    <!-- armed, battery theme -->
+    <div class="fig" style="width:140pt">
+      <div class="scr" style="--z:.63">
+        <div class="bar" style="height:25px;background:#111;padding:0 5px 0 8px">
+          <svg width="31" height="16" viewBox="0 0 31 16"><rect x="0" y="12" width="5" height="4" fill="#00e5ff"/><rect x="8" y="8" width="5" height="8" fill="#00e5ff"/><rect x="16" y="4" width="5" height="12" fill="#00e5ff"/><rect x="24.6" y="0.6" width="4.8" height="14.8" fill="none" stroke="#bbb" stroke-width="1.2"/></svg>
+          <span class="cy" style="font-size:19px;font-weight:800">8S</span>
+          <span style="width:10px;height:10px;border-radius:5px;background:#34e36b"></span>
+          <span class="cy" style="font-size:19px;font-weight:800">14:32</span>
+          <span class="gr" style="font-size:19px;font-weight:800">86%</span>
+        </div>
+        <svg style="position:absolute;left:0;top:0" width="240" height="280" viewBox="0 0 240 280">
+          <defs><linearGradient id="p05-gbt" gradientUnits="userSpaceOnUse" x1="50" y1="200" x2="50" y2="70"><stop offset="0" stop-color="#00d0ff"/><stop offset="1" stop-color="#14fff0"/></linearGradient></defs>
+          <path d="M52.8 202.2A95 95 0 1 1 187.2 202.2" fill="none" stroke="#1c1c1c" stroke-width="18" stroke-linecap="round"/>
+          <path d="M52.8 202.2A95 95 0 0 1 45.1 76.5" fill="none" stroke="url(#p05-gbt)" stroke-width="18" stroke-linecap="round"/>
+        </svg>
+        <div class="c gr" style="top:66px;font-size:26px;font-weight:900">L</div>
+        <div class="c" style="top:92px;font-size:62px;font-weight:900;line-height:1">72</div>
+        <div style="position:absolute;left:96px;top:169px;font-size:17px;font-weight:800" class="cy">27</div>
+        <div style="position:absolute;left:141px;top:175px;font-size:7.5px;font-weight:700;color:#ddd">km/h</div>
+        <div class="c cy" style="top:196px;font-size:12px;font-weight:800">MAX 31</div>
+        <div style="position:absolute;left:0;right:0;top:229px;display:grid;grid-template-columns:88px 64px 88px;text-align:center;font-size:22px;font-weight:800">
+          <span class="cy">51</span><span>1840</span><span>38</span>
+          <span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">VOLT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">WATT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">TEMP</span>
+        </div>
+      </div>
+      <div class="t">Armado, tema «batería»</div><div class="s">batería en grande, velocidad debajo</div>
+    </div>
+  </div>
+
+  <table style="line-height:1.32">
+    <tr><th style="width:22%">Zona</th><th>Contenido</th></tr>
+    <tr><td>Barra superior</td><td><b>Señal de radio</b> en 4 barras según la fuerza real de la señal · <b>satélites</b> del GPS de la tabla («8S»,
+      en cian a partir de 4 satélites) · <b>punto del tracker</b> (opcional) · <b>hora</b> (reloj interno ajustado por la app y corregido por el
+      GPS de la tabla), sustituida por el crono cuando está en marcha · <b>batería del mando</b> en %, verde / naranja / roja</td></tr>
+    <tr><td>Centro</td><td><b>Arco de gas</b> degradado que sigue al gatillo · <b>letra del modo</b> L (verde), M (amarilla) o H (roja) ·
+      <b>velocidad GPS</b> en grande con la unidad · <b>batería de la tabla</b> en % (coloreada según el nivel) · <b>MAX</b>: velocidad máxima
+      de la salida, seguida de la <b>autonomía estimada</b> «25min 9km» en cuanto la capacidad de la batería está configurada (Wh restantes
+      parado) · <b>L25</b> arriba a la derecha cuando hay un límite de velocidad configurado, en naranja mientras el receptor limita</td></tr>
+    <tr><td>Parte inferior</td><td><b>VOLT</b> tensión del pack · <b>WATT</b> potencia instantánea · <b>TEMP</b> temperatura del controlador del motor,
+      leídos en directo del VESC. Sustituidos por <b>NO LINK</b> en rojo si se pierde el enlace de radio.</td></tr>
+    <tr><td>Punto del tracker</td><td><span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#2ebd4e;vertical-align:-0.5pt"></span> verde: sesión en directo en sportstracklive.com · <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#ef8b14;vertical-align:-0.5pt"></span> naranja: seguimiento iniciado,
+      esperando el GPS o el 4G · <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#8e8e93;vertical-align:-0.5pt"></span> gris: seguimiento detenido · <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#e53935;vertical-align:-0.5pt"></span> rojo: cuenta rechazada · <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#f2c200;vertical-align:-0.5pt"></span> amarillo:
+      sin cuenta · <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#e53935;vertical-align:-0.5pt"></span> <b>!</b> alerta de emergencia en curso · sin punto: no hay tracker</td></tr>
+    <tr><td>Avisos</td><td>«● REC 00:42» bajo la barra superior durante una grabación de cámara · <b>flecha + distancia</b> hacia el punto de
+      partida, a la derecha bajo la barra superior, en cuanto estás a más de 100 m (sección 10) · «SALIDA» 1 s al iniciar el crono y, al
+      pararlo, el tiempo en grande durante 3 s con la V.MAX, la distancia, el número de caídas y el vuelo más largo · barra roja a lo largo
+      de la parte inferior mientras mantienes B hacia la emergencia</td></tr>
+  </table>
+
+  <h2 style="margin-top:10pt">Los botones en la pantalla de navegación</h2>
+  <table style="line-height:1.32">
+    <tr><th style="width:22%">Gesto</th><th>Efecto</th></tr>
+    <tr><td><span class="k">A</span> corta</td><td>Armar (gatillo en reposo obligatorio; si no, pitido de rechazo) o desarmar (gas soltado obligatorio:
+      a plena aceleración la pulsación se rechaza, para evitar un desarme accidental)</td></tr>
+    <tr><td><span class="k">B</span> corta</td><td>Siguiente modo de potencia: LOW → MED → HIGH → LOW, aplicado medio segundo después de la pulsación</td></tr>
+    <tr><td><span class="k">B</span> × 3 rápidas</td><td>Crono: salida, o parada si está en marcha (sección 11)</td></tr>
+    <tr><td><span class="k">B</span> mantener 5 s</td><td>Página EMERGENCIA, barra roja de progreso en la parte inferior de la pantalla; si sueltas antes, se cancela</td></tr>
+    <tr><td><span class="k">A</span> mantener 2 s</td><td>Apagado, solo con el motor desarmado</td></tr>
+    <tr><td><span class="k">A</span> + <span class="k">B</span> a la vez</td><td>Menú (150 ms de pulsación simultánea); el mismo gesto para salir</td></tr>
+  </table>
+
+  <div class="footer"><span>Mando Lite Foil · ficha técnica y manual de uso · firmware 1.15.0</span><span>5</span></div>
+</section>

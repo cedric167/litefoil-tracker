@@ -1,0 +1,57 @@
+<section class="page">
+  <h1><span class="n">05</span> Seguridad del motor</h1>
+  <table style="line-height:1.38">
+    <tr><th style="width:27%">Protección</th><th>Funcionamiento</th></tr>
+    <tr><td class="key">Arranque desarmado</td><td>En cada encendido y cada vez que sale del reposo, el motor está bloqueado. Hace falta una pulsación voluntaria
+      en A, con el gatillo en reposo (menos del 6 % del recorrido).</td></tr>
+    <tr><td class="key">Pantalla roja</td><td>Mientras el motor está bloqueado, la pantalla es roja con un gran candado: ninguna duda posible sobre el estado,
+      ni siquiera con el rabillo del ojo.</td></tr>
+    <tr><td class="key">Pérdida de enlace</td><td>Mando: se desarma si no recibe telemetría durante 0,5 s. Receptor: motor en neutro si no recibe ninguna orden
+      durante 0,5 s. Seguridad positiva: es el silencio lo que corta.</td></tr>
+    <tr><td class="key">Desarme automático</td><td>Ajustable de 1 a 10 s (u OFF): sin gas durante ese tiempo, el motor se bloquea solo. Ideal después de una
+      caída.</td></tr>
+    <tr><td class="key">Desarme rechazado con gas</td><td>Una pulsación en A mientras el gatillo supera el 15 % se ignora con un pitido: primero suelta.</td></tr>
+    <tr><td class="key">Apagado rechazado si está armado</td><td>Imposible apagar el mando mientras el motor está armado.</td></tr>
+    <tr><td class="key">Zona muerta</td><td>Cero limpio con histéresis (7 % para arrancar, 4 % para volver): el motor no se estremece en reposo.</td></tr>
+    <tr><td class="key">Emparejamiento protegido</td><td>El receptor solo acepta un emparejamiento durante los 5 s posteriores a su encendido, con el mando a menos
+      de un metro, y rechaza cualquier mando nuevo mientras el suyo esté conectado. Después solo escucha la dirección de su mando: un eFoil
+      cercano no puede ni captarlo ni controlarlo.</td></tr>
+    <tr><td class="key">Carga</td><td>Conectar el cargador desarma inmediatamente y bloquea la navegación.</td></tr>
+    <tr><td class="key">Táctil</td><td>La pantalla táctil nunca responde en la pantalla de navegación, durante la carga ni con el motor armado.</td></tr>
+  </table>
+
+  <h1 style="margin-top:13pt"><span class="n">06</span> Gatillo, modos y ajustes de conducción</h1>
+  <div class="cols" style="margin-top:10pt;grid-template-columns:5fr 6fr">
+    <div>
+      <h2 style="margin-top:0">Modos de potencia</h2>
+      <table>
+        <tr><th style="width:20%">Modo</th><th style="width:38%">Potencia máx.</th><th>Letra en pantalla</th></tr>
+        <tr><td class="key">LOW</td><td>60 %</td><td><b style="color:#2e9e3e">L</b> verde</td></tr>
+        <tr><td class="key">MED</td><td>80 %</td><td><b style="color:#d4a106">M</b> amarilla</td></tr>
+        <tr><td class="key">HIGH</td><td>100 %</td><td><b style="color:#e53935">H</b> roja</td></tr>
+      </table>
+      <p>Se cambia con una pulsación en <span class="k">B</span> mientras navegas, o eligiendo el modo por defecto en el menú «Velocidad». El modo
+        queda memorizado.</p>
+      <h2>Sensibilidad (4 curvas)</h2>
+      <p>Nivel 0: todo suavidad (respuesta cuadrática, ideal para aprender). Nivel 3: lineal, respuesta directa. Los niveles 1 y 2 son
+        intermedios.</p>
+    </div>
+    <div style="line-height:1.44">
+      <h2 style="margin-top:0">Empuje inicial (empuje mínimo)</h2>
+      <p>De 0 a 24 % en pasos de 3: el empuje que se aplica en cuanto sales del cero, para despegar con decisión sin tener que buscar el
+        punto de arranque del gatillo.</p>
+      <h2>Aprendizaje y calibración</h2>
+      <p>Mientras navegas, cualquier lectura más allá de un tope conocido se convierte en el nuevo tope y queda memorizada. La calibración
+        guiada en cada encendido (sección 3) protege contra la deriva. El menú «Calibrar gas» abre una calibración manual completa en dos
+        pasos guiados (paso 1 / 2 gatillo suelto, paso 2 / 2 gatillo a fondo, valor en milivoltios mostrado en directo, <span class="k">A</span>
+        valida cada paso), para una primera puesta en marcha o tras cambiar un imán. <span class="k">B</span> o el chevrón cancela en
+        cualquier momento. Punto verde «¡OK!» y vuelta al menú; punto rojo «RECORRIDO DEMASIADO CORTO» si el recorrido medido es inferior a
+        150 mV (¿imán demasiado lejos?), y en ese caso se conserva la calibración anterior.</p>
+      <h2>Batería de la tabla</h2>
+      <p>El porcentaje mostrado se calcula a partir de la tensión del pack y del número de celdas configurado en el menú «Batería» (8 a
+        20 S), con una curva de descarga Li-ion realista. Alerta visual por debajo de 44 V.</p>
+    </div>
+  </div>
+
+  <div class="footer"><span>Mando Lite Foil · ficha técnica y manual de uso · firmware 1.15.0</span><span>6</span></div>
+</section>

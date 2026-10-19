@@ -1,0 +1,178 @@
+<style>
+.s19 td.c, .s19 th.c { text-align: center; width: 66pt; }
+.s19 .yes { color: #12a150; font-weight: 800; font-size: 9pt; }
+.s19 .no { color: #b9bec6; font-weight: 700; }
+.s19 .card h3 { margin: 0 0 2pt; font-size: 8.6pt; font-weight: 700; display: flex; align-items: center; gap: 5pt; }
+.s19 .card h3 .dot { width: 6pt; height: 6pt; border-radius: 3pt; background: #00bcd4; flex: none; }
+.s19 .card.trk h3 .dot { background: #ff9800; }
+.s19 .note { background: #f4fbfc; border-left: 2.4pt solid #00bcd4; padding: 5pt 8pt; border-radius: 0 5pt 5pt 0; margin: 6pt 0; }
+.s19 .note.warn { background: #fff7ec; border-left-color: #ff9800; }
+.s19 svg text { font-family: "Open Sans", sans-serif; }
+.s19 .versions { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin: 4pt 0 6pt; }
+.s19 .ver { border-radius: 8pt; padding: 8pt 10pt; color: #fff; }
+.s19 .ver.cl { background: linear-gradient(135deg, #00acc1, #00838f); }
+.s19 .ver.tr { background: linear-gradient(135deg, #ffa726, #ef6c00); }
+.s19 .ver .t { font-size: 11pt; font-weight: 800; }
+.s19 .ver .s { font-size: 7.6pt; opacity: .95; }
+.s19.p2 { font-size: 7.9pt; line-height: 1.36; }
+.s19.p2 h2 { margin-top: 4pt; }
+.s19.p2 .note { margin: 4pt 0; padding: 4pt 8pt; }
+.page.s19 { line-height: 1.42; }
+.s19 .card p { margin: 0; }
+.s19.p2 .card { padding: 4.5pt 8pt 4pt; margin-bottom: 4.5pt; }
+.s19.p2 h2 { margin: 4pt 0 5pt; }
+.s19 td { padding: 3.1pt 6pt; }
+</style>
+
+
+<!-- ============================================================ page 1 -->
+<section class="page s19">
+  <h1><span class="n">19</span> Le récepteur : version classique et version tracker</h1>
+  <p>Le récepteur est la carte électronique logée dans le caisson de la planche. Il reçoit par radio les ordres de la télécommande,
+    les transmet au contrôleur moteur (VESC) et renvoie à la télécommande tout ce qu'elle affiche : batterie, puissance, température,
+    vitesse GPS. Il existe en <b>deux versions</b>. La télécommande, l'application et toutes les commandes de ce manuel sont les mêmes pour les deux.</p>
+
+  <div class="versions">
+    <div class="ver cl"><div class="t">Version classique</div>
+      <div class="s">Pilotage radio, sécurités, GPS de la planche, limite de vitesse, retour au point de départ, télémétrie du moteur.</div></div>
+    <div class="ver tr"><div class="t">Version avec tracker</div>
+      <div class="s">Tout ce que fait la classique, plus un module GPS / 4G : suivi en direct sur internet, alerte d'urgence, sorties gardées dans le compte SportsTrackLive.</div></div>
+  </div>
+
+  <!-- Schéma des liaisons -->
+  <svg viewBox="0 0 528 168" width="528pt" height="168pt" style="display:block;margin:2pt 0 4pt">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#00acc1"/></marker>
+      <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef6c00"/></marker>
+    </defs>
+    <!-- caisson de la planche -->
+    <rect x="150" y="6" width="372" height="96" rx="10" fill="#f7f9fa" stroke="#d9dde2" stroke-dasharray="4 3"/>
+    <text x="160" y="20" font-size="8" fill="#8a9099" font-weight="600">DANS LA PLANCHE</text>
+    <!-- télécommande -->
+    <rect x="4" y="30" width="104" height="48" rx="9" fill="#1d1d1f"/>
+    <text x="56" y="51" font-size="10" fill="#fff" font-weight="700" text-anchor="middle">Télécommande</text>
+    <text x="56" y="65" font-size="7.5" fill="#9fe7ef" text-anchor="middle">gâchette · écran · menu</text>
+    <!-- récepteur -->
+    <rect x="186" y="30" width="112" height="48" rx="9" fill="#00acc1"/>
+    <text x="242" y="51" font-size="10" fill="#fff" font-weight="700" text-anchor="middle">Récepteur</text>
+    <text x="242" y="65" font-size="7.5" fill="#e0f7fa" text-anchor="middle">radio · GPS · sécurités</text>
+    <!-- VESC + moteur -->
+    <rect x="334" y="30" width="80" height="48" rx="9" fill="#fff" stroke="#00acc1" stroke-width="1.4"/>
+    <text x="374" y="51" font-size="9.5" font-weight="700" text-anchor="middle">Contrôleur</text>
+    <text x="374" y="65" font-size="7.5" fill="#666" text-anchor="middle">VESC</text>
+    <rect x="436" y="30" width="76" height="48" rx="9" fill="#fff" stroke="#c6ccd3" stroke-width="1.2"/>
+    <text x="474" y="51" font-size="9.5" font-weight="700" text-anchor="middle">Moteur</text>
+    <text x="474" y="65" font-size="7.5" fill="#666" text-anchor="middle">et batterie</text>
+    <!-- liaisons -->
+    <line x1="110" y1="44" x2="184" y2="44" stroke="#00acc1" stroke-width="1.6" marker-end="url(#ar)"/>
+    <line x1="184" y1="64" x2="110" y2="64" stroke="#00acc1" stroke-width="1.6" marker-end="url(#ar)"/>
+    <text x="147" y="38" font-size="6.8" fill="#00838f" text-anchor="middle">gaz, 50 fois/s</text>
+    <text x="147" y="76" font-size="6.8" fill="#00838f" text-anchor="middle">télémétrie, 10 fois/s</text>
+    <line x1="300" y1="54" x2="332" y2="54" stroke="#00acc1" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <line x1="416" y1="54" x2="434" y2="54" stroke="#c6ccd3" stroke-width="1.6"/>
+    <text x="147" y="96" font-size="6.8" fill="#666" text-anchor="middle">radio 2,4 GHz dédiée</text>
+    <!-- tracker (option) -->
+    <rect x="186" y="116" width="112" height="46" rx="9" fill="#fff" stroke="#ef6c00" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="242" y="136" font-size="10" font-weight="700" text-anchor="middle" fill="#ef6c00">Tracker</text>
+    <text x="242" y="150" font-size="7.5" fill="#666" text-anchor="middle">option · GPS 5 Hz · 4G</text>
+    <line x1="242" y1="80" x2="242" y2="114" stroke="#ef6c00" stroke-width="1.6" stroke-dasharray="3 2"/>
+    <text x="248" y="100" font-size="6.8" fill="#ef6c00">3 fils</text>
+    <line x1="300" y1="132" x2="388" y2="132" stroke="#ef6c00" stroke-width="1.6" marker-end="url(#ao)"/>
+    <text x="344" y="126" font-size="6.8" fill="#ef6c00" text-anchor="middle">4G, positions</text>
+    <rect x="390" y="116" width="132" height="32" rx="8" fill="#fff3e0"/>
+    <text x="456" y="130" font-size="8.5" font-weight="700" text-anchor="middle">sportstracklive.com</text>
+    <text x="456" y="142" font-size="7" fill="#666" text-anchor="middle">suivi en direct · alerte</text>
+    <line x1="184" y1="146" x2="110" y2="146" stroke="#ef6c00" stroke-width="1.4" stroke-dasharray="3 2" marker-start="url(#ao)" marker-end="url(#ao)"/>
+    <rect x="4" y="130" width="104" height="32" rx="8" fill="#f4f5f7"/>
+    <text x="56" y="144" font-size="8.5" font-weight="700" text-anchor="middle">Appli Lite Foil</text>
+    <text x="56" y="155" font-size="7" fill="#666" text-anchor="middle">Bluetooth, à terre</text>
+  </svg>
+
+  <h2>Les deux versions, fonction par fonction</h2>
+  <table>
+    <tr><th>Fonction</th><th class="c">Classique</th><th class="c">Avec tracker</th><th>Détail</th></tr>
+    <tr><td>Pilotage du moteur par radio</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Gaz reçus 50 fois par seconde et transmis au contrôleur</td></tr>
+    <tr><td>Sécurités (coupure 0,5 s, appairage protégé)</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Section 05 ; détail page suivante</td></tr>
+    <tr><td>Télémétrie : VOLT, WATT, TEMP, signal</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Lue en direct sur le contrôleur, renvoyée 10 fois par seconde</td></tr>
+    <tr><td>GPS de la planche : vitesse, heure, satellites</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Vitesse en grand, MAX, heure recalée, « 8S » sur l'écran de roulage</td></tr>
+    <tr><td>Limite de vitesse GPS</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Appliquée par le récepteur (section 15)</td></tr>
+    <tr><td>Retour au point de départ</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Position et cap envoyés deux fois par seconde (section 10)</td></tr>
+    <tr><td>Autonomie estimée, chronos, chutes, vols</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Calculés par la télécommande avec les données du récepteur</td></tr>
+    <tr><td>Suivi en direct sur internet</td><td class="c no">—</td><td class="c yes">✓</td><td>Sur sportstracklive.com, sans téléphone sur l'eau (section 09)</td></tr>
+    <tr><td>Alerte d'urgence avec position</td><td class="c no">—</td><td class="c yes">✓</td><td>Aux contacts d'urgence du compte (section 11)</td></tr>
+    <tr><td>Sorties gardées dans le compte en ligne</td><td class="c no">—</td><td class="c yes">✓</td><td>Trace, vitesse et max dans le compte SportsTrackLive</td></tr>
+    <tr><td>Onglet Tracker de l'application</td><td class="c no">—</td><td class="c yes">✓</td><td>Compte, état, réglages, mise à jour, par Bluetooth</td></tr>
+  </table>
+
+  <div class="note"><b>Quelle version ai-je ?</b> Menu de la télécommande, tuile SportsTrackLive : « TRACKER ABSENT » = version classique.
+    Sur l'écran de roulage, la pastille tracker de la barre haute n'apparaît qu'avec la version tracker.</div>
+
+  <div class="footer"><span>Télécommande Lite Foil · fiche technique et manuel · firmware 1.15.0</span><span>20</span></div>
+</section>
+
+<!-- ============================================================ page 2 -->
+<section class="page s19 p2">
+  <h1><span class="n">19</span> Le récepteur : les fonctions en détail</h1>
+
+  <div class="cols">
+    <div>
+      <h2>Version classique</h2>
+      <div class="card"><h3><span class="dot"></span>Liaison radio</h3>
+        <p>Radio 2,4 GHz dédiée, à la puissance d'émission maximale. Le récepteur reçoit la position de la gâchette 50 fois par seconde
+          et renvoie la télémétrie 10 fois par seconde. Il n'écoute que l'adresse de sa télécommande : un eFoil voisin ne peut ni capter ni commander.</p></div>
+      <div class="card"><h3><span class="dot"></span>Sécurité positive</h3>
+        <p>Sans commande pendant 0,5 s, le récepteur remet le moteur au neutre ; de son côté la télécommande désarme. C'est le silence qui
+          coupe : télécommande perdue, éteinte ou hors de portée, le moteur s'arrête.</p></div>
+      <div class="card"><h3><span class="dot"></span>Appairage</h3>
+        <p>Accepté seulement pendant les 5 s qui suivent la mise sous tension de la planche, télécommande à moins d'un mètre. Une seule
+          télécommande liée, mémorisée et conservée aux mises à jour ; toute autre demande est refusée tant qu'elle est connectée (section 08).</p></div>
+      <div class="card"><h3><span class="dot"></span>Commande du moteur et télémétrie</h3>
+        <p>Le récepteur transmet le gaz au contrôleur moteur (VESC) et y lit en direct la tension du pack, la puissance et la température
+          du contrôleur : ce sont les VOLT, WATT et TEMP du bas de l'écran, remplacés par NO LINK si la liaison tombe.</p></div>
+      <div class="card"><h3><span class="dot"></span>GPS de la planche</h3>
+        <p>Vitesse affichée en grand et vitesse max de la sortie, nombre de satellites, heure qui recale l'horloge de la télécommande,
+          position et cap envoyés deux fois par seconde pour la boussole du retour.</p></div>
+      <div class="card"><h3><span class="dot"></span>Limite de vitesse GPS</h3>
+        <p>Le récepteur compare 50 fois par seconde la vitesse GPS à la limite réglée sur la télécommande et abaisse en douceur le plafond
+          de gaz, jamais sous 20 %, sans coupure. Sans fix GPS, pas de limitation (section 15).</p></div>
+      <div class="card"><h3><span class="dot"></span>Point de départ</h3>
+        <p>Mémorisé au premier armement de la sortie avec un fix GPS, ou redéfini avec B maintenu sur la page Retour. Oublié à l'extinction (section 10).</p></div>
+      <div class="note warn" style="margin-top:4pt">Limite de vitesse et retour au point de départ demandent un récepteur mis à jour en octobre 2026.
+        Avec un récepteur plus ancien, la limite est ignorée et la page Retour affiche « cap : récepteur à mettre à jour ».</div>
+    </div>
+
+    <div>
+      <h2>Version avec tracker <span class="chip" style="background:#fff3e0;color:#ef6c00;border-color:#ffe0b2">option tracker</span></h2>
+      <div class="card trk"><h3><span class="dot"></span>Le module</h3>
+        <p>Dans la planche, alimenté par elle : GPS propre à 5 Hz, modem 4G avec carte SIM internationale, connexion sécurisée au site,
+          Bluetooth sous le nom <b>LITEFOIL-TRACKER</b> pour l'application.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Suivi en direct</h3>
+        <p>Lancé depuis la tuile SportsTrackLive de la télécommande ou depuis l'application. Le tracker allume sa 4G, se connecte au compte
+          et ouvre la session au premier point GPS. Arrêt par le même interrupteur, à l'extinction de la télécommande, ou après 10 minutes sans elle.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Sans réseau, rien n'est perdu</h3>
+        <p>Les points attendent et partent dès que la 4G revient. Après une coupure de courant, le tracker reprend la session si elle a moins de 10 minutes.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Alerte d'urgence</h3>
+        <p>B maintenu 5 s sur l'écran de roulage, puis B 3 s sur la page URGENCE : la position GPS part aux contacts d'urgence du compte,
+          le suivi en direct est forcé et maintenu tant que l'alerte dure (section 11).</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Compte SportsTrackLive</h3>
+        <p>E-mail et mot de passe saisis une fois dans l'application, onglet Tracker, vérifiés puis écrits dans le tracker, pas dans le
+          téléphone. « Effacer le compte » les retire.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>État visible partout</h3>
+        <p>Pastille de la barre haute (verte : en direct, orange : attente GPS / 4G, grise : arrêté, rouge : compte refusé, jaune : pas de compte, ! : alerte).
+          Page Tracker : numéro de session, points envoyés, réseau, satellites.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Réglages avancés (application)</h3>
+        <p>Intervalle entre deux points (1 à 60 s), délai entre deux envois (5 à 3 600 s), APN de la carte SIM, adresse du serveur.
+          Une valeur refusée laisse l'ancienne.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Mise à jour</h3>
+        <p>Onglet Tracker, carte Mise à jour, planche allumée : 3 à 6 minutes, redémarrage automatique. Tracker d'avant octobre 2026 :
+          la première fois par câble USB sur le récepteur, ensuite par l'application.</p></div>
+    </div>
+  </div>
+
+  <div class="note"><b>Passer de la classique à la version tracker.</b> Le tracker s'ajoute plus tard dans la planche avec trois fils.
+    Rien à changer sur la télécommande : appairage, réglages, chronos et journal de bord restent, et la tuile SportsTrackLive passe
+    de « TRACKER ABSENT » à « SUIVI ARRÊTÉ ». Il reste à saisir le compte dans l'application.</div>
+  <div class="note warn">Le suivi en direct et l'alerte d'urgence dépendent de la couverture 4G : ils ne remplacent pas les moyens de sécurité obligatoires.</div>
+
+  <div class="footer"><span>Télécommande Lite Foil · fiche technique et manuel · firmware 1.15.0</span><span>21</span></div>
+</section>

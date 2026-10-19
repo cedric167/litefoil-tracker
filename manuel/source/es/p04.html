@@ -1,0 +1,103 @@
+<section class="page">
+  <h1><span class="n">03</span> Primeros pasos</h1>
+
+  <h2 style="margin-top:0">Encendido</h2>
+  <p>Mantén <span class="k">A</span> durante <b>3 segundos</b>. Una pulsación más corta no despierta el mando: es imposible encenderlo por error
+    dentro de una bolsa. La secuencia dura unos 5 segundos: «Hola» en grande en el idioma elegido, luego el logo Lite Foil, luego la
+    calibración guiada del gatillo y, por último, la pantalla roja «DESARMADO». <b>El mando siempre arranca desarmado.</b></p>
+
+  <div class="figs" style="gap:5.5pt;margin:5pt 0 4pt">
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="c cy" style="top:108px;font-size:45px;font-weight:900">Hola</div>
+      </div>
+      <div class="t">1. Hola</div><div class="s">2 segundos</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr light" style="--z:.5"><img src="crops/p04-logo.png" style="width:240px;height:280px;display:block;margin:0"></div>
+      <div class="t">2. Logo</div><div class="s">3 segundos</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="bar" style="background:#111"></div><div class="title cy" style="font-size:21px;top:6px">GATILLO</div>
+        <div class="c gy" style="top:43px;font-size:11px;font-weight:600;color:#aaa">PASO 1 / 2</div>
+        <div class="c" style="top:62px;font-size:18.5px;font-weight:800;line-height:1.1">SUELTA EL<br>GATILLO</div>
+        <div style="position:absolute;left:29px;width:180px;top:150px;height:17px;border-radius:9px;background:#1f2622"><div style="width:65%;height:100%;border-radius:9px;background:#00ffff"></div></div>
+        <div class="c" style="top:206px;font-size:12px;font-weight:600;color:#aaa">reposo 412 mV</div>
+        <div style="position:absolute;left:29px;width:180px;top:245px;height:31px;border-radius:7px;background:#006400;color:#3cff4a;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">A = saltar</div>
+      </div>
+      <div class="t">3. Gatillo, paso 1</div><div class="s">suelta; la barra se llena<br>en 1,5&nbsp;s</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="bar" style="background:#111"></div><div class="title cy" style="font-size:21px;top:6px">GATILLO</div>
+        <div class="c" style="top:43px;font-size:11px;font-weight:600;color:#aaa">PASO 2 / 2</div>
+        <div class="c" style="top:62px;font-size:18.5px;font-weight:800;line-height:1.1">APRIETA A FONDO<br>Y MANTÉN</div>
+        <div style="position:absolute;left:29px;width:180px;top:150px;height:17px;border-radius:9px;background:#1f2622"><div style="width:39%;height:100%;border-radius:9px;background:#2bff45"></div></div>
+        <div class="c" style="top:206px;font-size:12px;font-weight:600;color:#aaa">fondo 2381 mV</div>
+        <div style="position:absolute;left:29px;width:180px;top:245px;height:31px;border-radius:7px;background:#006400;color:#3cff4a;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">A = saltar</div>
+      </div>
+      <div class="t">3 bis. Paso 2</div><div class="s">solo si el reposo se ha<br>movido: aprieta a fondo</div>
+    </div>
+    <div class="fig" style="width:96pt">
+      <div class="scr" style="--z:.5">
+        <div class="bar" style="background:#111"></div><div class="title cy" style="font-size:21px;top:6px">GATILLO</div>
+        <div class="c gr" style="top:88px;font-size:54px;font-weight:900;color:#2bff45">¡OK!</div>
+        <div class="c" style="top:168px;font-size:12px;font-weight:600;color:#aaa">reposo 412 fondo 2381</div>
+      </div>
+      <div class="t">4. ¡OK!</div><div class="s">valores de reposo / fondo<br>guardados</div>
+    </div>
+  </div>
+
+  <div class="note"><b>Calibración guiada, en cada encendido.</b> El mando comprueba la posición de reposo del gatillo durante 1,5 s de
+    lectura estable, sin pedirte nada. Si el reposo se ha movido más de un 2 % desde la última vez (sensor, imán, temperatura), además
+    te pide que aprietes a fondo. Nunca te bloquea: <span class="k">A</span> salta el paso y se conserva el valor anterior; si no haces
+    nada durante 6 s, igual. El motor no puede girar durante la secuencia. Un recorrido demasiado corto se rechaza («RECORRIDO
+    DEMASIADO CORTO, ¿imán demasiado lejos?»).</div>
+
+  <div class="cols" style="margin-top:12pt">
+    <div>
+      <h2 style="margin-top:0">Apagado</h2>
+      <p>En la pantalla de navegación, con el <b>motor desarmado</b>, mantén <span class="k">A</span>: a los 0,8 s la pantalla muestra
+        «Apagando… mantén A pulsado» y, 1,2 s después, el mando muestra «Hasta pronto» en grande, una palabra por línea, y se duerme.
+        Si sueltas antes, se cancela. <b>El apagado se rechaza mientras el motor está armado</b>: no se corta el control de un motor que
+        gira. Antes de dormirse, pide al tracker que cierre la sesión en curso y congela el crono si estaba en marcha.</p>
+      <h2>Reposo automático</h2>
+      <p>Tras <b>20 minutos</b> sin ninguna acción (botón, gatillo, toque), y solo si el motor está desarmado, el mando se apaga solo.
+        Nunca en el cargador, nunca cuando la app está conectada.</p>
+    </div>
+    <div>
+      <h2 style="margin-top:0">Carga</h2>
+      <p>Conecta el cargador: aparece la pantalla «CARGANDO» con el porcentaje y la tensión, y un punto verde parpadeante. El motor se
+        desarma en el instante de conectarlo y la navegación queda bloqueada. El Bluetooth se enciende solo para la app (ajustes,
+        actualización). Cuando lleva 2 minutos llena, el mando se apaga; el cargador puede quedarse conectado. Conectar un mando apagado
+        lo despierta directamente en esta pantalla.</p>
+      <div class="figs" style="gap:5pt;margin:6pt 0 0">
+        <div class="fig" style="width:78pt">
+          <div class="scr" style="--z:.4">
+            <div class="c cy" style="top:40px;font-size:29px;font-weight:900;letter-spacing:-.5px">CARGANDO</div>
+            <div class="c" style="top:115px;font-size:11px;font-weight:800;color:#2bff45">78%</div>
+            <div class="c" style="top:178px;font-size:20px;font-weight:800;color:#ccc">4.02 V</div>
+            <div style="position:absolute;left:113px;top:232px;width:14px;height:14px;border-radius:7px;background:#2bff45"></div>
+          </div>
+          <div class="t">Cargando</div><div class="s">% y tensión, Bluetooth activo</div>
+        </div>
+        <div class="fig" style="width:78pt">
+          <div class="scr" style="--z:.4">
+            <div class="c or" style="top:100px;font-size:18px;font-weight:800">Apagando…</div>
+            <div class="c" style="top:146px;font-size:11px;font-weight:700;color:#bbb">mantén A pulsado</div>
+          </div>
+          <div class="t">Apagando…</div><div class="s">tras mantener A 0,8&nbsp;s</div>
+        </div>
+        <div class="fig" style="width:78pt">
+          <div class="scr" style="--z:.4">
+            <div class="c cy" style="top:80px;font-size:37px;font-weight:900;line-height:55px">¡Hasta<br>pronto!</div>
+          </div>
+          <div class="t">Hasta pronto</div><div class="s">2 s, luego el mando se duerme</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer"><span>Mando Lite Foil · ficha técnica y manual de uso · firmware 1.15.0</span><span>4</span></div>
+</section>

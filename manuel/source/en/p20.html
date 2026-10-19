@@ -1,0 +1,178 @@
+<style>
+.s19 td.c, .s19 th.c { text-align: center; width: 66pt; }
+.s19 .yes { color: #12a150; font-weight: 800; font-size: 9pt; }
+.s19 .no { color: #b9bec6; font-weight: 700; }
+.s19 .card h3 { margin: 0 0 2pt; font-size: 8.6pt; font-weight: 700; display: flex; align-items: center; gap: 5pt; }
+.s19 .card h3 .dot { width: 6pt; height: 6pt; border-radius: 3pt; background: #00bcd4; flex: none; }
+.s19 .card.trk h3 .dot { background: #ff9800; }
+.s19 .note { background: #f4fbfc; border-left: 2.4pt solid #00bcd4; padding: 5pt 8pt; border-radius: 0 5pt 5pt 0; margin: 6pt 0; }
+.s19 .note.warn { background: #fff7ec; border-left-color: #ff9800; }
+.s19 svg text { font-family: "Open Sans", sans-serif; }
+.s19 .versions { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin: 4pt 0 6pt; }
+.s19 .ver { border-radius: 8pt; padding: 8pt 10pt; color: #fff; }
+.s19 .ver.cl { background: linear-gradient(135deg, #00acc1, #00838f); }
+.s19 .ver.tr { background: linear-gradient(135deg, #ffa726, #ef6c00); }
+.s19 .ver .t { font-size: 11pt; font-weight: 800; }
+.s19 .ver .s { font-size: 7.6pt; opacity: .95; }
+.s19.p2 { font-size: 7.9pt; line-height: 1.36; }
+.s19.p2 h2 { margin-top: 4pt; }
+.s19.p2 .note { margin: 4pt 0; padding: 4pt 8pt; }
+.page.s19 { line-height: 1.42; }
+.s19 .card p { margin: 0; }
+.s19.p2 .card { padding: 4.5pt 8pt 4pt; margin-bottom: 4.5pt; }
+.s19.p2 h2 { margin: 4pt 0 5pt; }
+.s19 td { padding: 3.1pt 6pt; }
+</style>
+
+
+<!-- ============================================================ page 1 -->
+<section class="page s19">
+  <h1><span class="n">19</span> The receiver: standard and tracker versions</h1>
+  <p>The receiver is the electronic board housed in the board's compartment. It receives the remote's commands by radio,
+    passes them to the motor controller (VESC) and sends back to the remote everything it displays: battery, power, temperature,
+    GPS speed. It comes in <b>two versions</b>. The remote, the app and every control in this manual are the same for both.</p>
+
+  <div class="versions">
+    <div class="ver cl"><div class="t">Standard version</div>
+      <div class="s">Radio control, safety features, board GPS, speed limit, return to start, motor telemetry.</div></div>
+    <div class="ver tr"><div class="t">Tracker version</div>
+      <div class="s">Everything the standard version does, plus a GPS / 4G module: live tracking on the internet, emergency alert, rides kept in the SportsTrackLive account.</div></div>
+  </div>
+
+  <!-- Schéma des liaisons -->
+  <svg viewBox="0 0 528 168" width="528pt" height="168pt" style="display:block;margin:2pt 0 4pt">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#00acc1"/></marker>
+      <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef6c00"/></marker>
+    </defs>
+    <!-- caisson de la planche -->
+    <rect x="150" y="6" width="372" height="96" rx="10" fill="#f7f9fa" stroke="#d9dde2" stroke-dasharray="4 3"/>
+    <text x="160" y="20" font-size="8" fill="#8a9099" font-weight="600">INSIDE THE BOARD</text>
+    <!-- télécommande -->
+    <rect x="4" y="30" width="104" height="48" rx="9" fill="#1d1d1f"/>
+    <text x="56" y="51" font-size="10" fill="#fff" font-weight="700" text-anchor="middle">Remote</text>
+    <text x="56" y="65" font-size="7.5" fill="#9fe7ef" text-anchor="middle">trigger · screen · menu</text>
+    <!-- récepteur -->
+    <rect x="186" y="30" width="112" height="48" rx="9" fill="#00acc1"/>
+    <text x="242" y="51" font-size="10" fill="#fff" font-weight="700" text-anchor="middle">Receiver</text>
+    <text x="242" y="65" font-size="7.5" fill="#e0f7fa" text-anchor="middle">radio · GPS · safety</text>
+    <!-- VESC + moteur -->
+    <rect x="334" y="30" width="80" height="48" rx="9" fill="#fff" stroke="#00acc1" stroke-width="1.4"/>
+    <text x="374" y="51" font-size="9.5" font-weight="700" text-anchor="middle">Controller</text>
+    <text x="374" y="65" font-size="7.5" fill="#666" text-anchor="middle">VESC</text>
+    <rect x="436" y="30" width="76" height="48" rx="9" fill="#fff" stroke="#c6ccd3" stroke-width="1.2"/>
+    <text x="474" y="51" font-size="9.5" font-weight="700" text-anchor="middle">Motor</text>
+    <text x="474" y="65" font-size="7.5" fill="#666" text-anchor="middle">and battery</text>
+    <!-- liaisons -->
+    <line x1="110" y1="44" x2="184" y2="44" stroke="#00acc1" stroke-width="1.6" marker-end="url(#ar)"/>
+    <line x1="184" y1="64" x2="110" y2="64" stroke="#00acc1" stroke-width="1.6" marker-end="url(#ar)"/>
+    <text x="147" y="38" font-size="6.8" fill="#00838f" text-anchor="middle">throttle, 50×/s</text>
+    <text x="147" y="76" font-size="6.8" fill="#00838f" text-anchor="middle">telemetry, 10×/s</text>
+    <line x1="300" y1="54" x2="332" y2="54" stroke="#00acc1" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <line x1="416" y1="54" x2="434" y2="54" stroke="#c6ccd3" stroke-width="1.6"/>
+    <text x="147" y="96" font-size="6.8" fill="#666" text-anchor="middle">dedicated 2.4 GHz radio</text>
+    <!-- tracker (option) -->
+    <rect x="186" y="116" width="112" height="46" rx="9" fill="#fff" stroke="#ef6c00" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="242" y="136" font-size="10" font-weight="700" text-anchor="middle" fill="#ef6c00">Tracker</text>
+    <text x="242" y="150" font-size="7.5" fill="#666" text-anchor="middle">option · 5 Hz GPS · 4G</text>
+    <line x1="242" y1="80" x2="242" y2="114" stroke="#ef6c00" stroke-width="1.6" stroke-dasharray="3 2"/>
+    <text x="248" y="100" font-size="6.8" fill="#ef6c00">3 wires</text>
+    <line x1="300" y1="132" x2="388" y2="132" stroke="#ef6c00" stroke-width="1.6" marker-end="url(#ao)"/>
+    <text x="344" y="126" font-size="6.8" fill="#ef6c00" text-anchor="middle">4G, positions</text>
+    <rect x="390" y="116" width="132" height="32" rx="8" fill="#fff3e0"/>
+    <text x="456" y="130" font-size="8.5" font-weight="700" text-anchor="middle">sportstracklive.com</text>
+    <text x="456" y="142" font-size="7" fill="#666" text-anchor="middle">live tracking · alert</text>
+    <line x1="184" y1="146" x2="110" y2="146" stroke="#ef6c00" stroke-width="1.4" stroke-dasharray="3 2" marker-start="url(#ao)" marker-end="url(#ao)"/>
+    <rect x="4" y="130" width="104" height="32" rx="8" fill="#f4f5f7"/>
+    <text x="56" y="144" font-size="8.5" font-weight="700" text-anchor="middle">Lite Foil app</text>
+    <text x="56" y="155" font-size="7" fill="#666" text-anchor="middle">Bluetooth, on shore</text>
+  </svg>
+
+  <h2>The two versions, feature by feature</h2>
+  <table>
+    <tr><th>Feature</th><th class="c">Standard</th><th class="c">With tracker</th><th>Details</th></tr>
+    <tr><td>Motor control by radio</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Throttle received 50 times per second and passed to the controller</td></tr>
+    <tr><td>Safety (0.5 s cut-off, protected pairing)</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Section 05; details on the next page</td></tr>
+    <tr><td>Telemetry: VOLT, WATT, TEMP, signal</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Read live from the controller, sent back 10 times per second</td></tr>
+    <tr><td>Board GPS: speed, time, satellites</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Large speed, MAX, corrected time, "8S" on the riding screen</td></tr>
+    <tr><td>GPS speed limit</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Applied by the receiver (section 15)</td></tr>
+    <tr><td>Return to start</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Position and heading sent twice per second (section 10)</td></tr>
+    <tr><td>Estimated range, timed runs, falls, flights</td><td class="c yes">✓</td><td class="c yes">✓</td><td>Calculated by the remote from the receiver's data</td></tr>
+    <tr><td>Live tracking on the internet</td><td class="c no">—</td><td class="c yes">✓</td><td>On sportstracklive.com, with no phone on the water (section 09)</td></tr>
+    <tr><td>Emergency alert with position</td><td class="c no">—</td><td class="c yes">✓</td><td>To the account's emergency contacts (section 11)</td></tr>
+    <tr><td>Rides kept in the online account</td><td class="c no">—</td><td class="c yes">✓</td><td>Track, speed and max in the SportsTrackLive account</td></tr>
+    <tr><td>Tracker tab of the app</td><td class="c no">—</td><td class="c yes">✓</td><td>Account, status, settings, update, over Bluetooth</td></tr>
+  </table>
+
+  <div class="note"><b>Which version do I have?</b> Remote menu, SportsTrackLive tile: "NO TRACKER" = standard version.
+    On the riding screen, the tracker dot in the top bar only appears with the tracker version.</div>
+
+  <div class="footer"><span>Lite Foil remote · datasheet and user manual · firmware 1.15.0</span><span>20</span></div>
+</section>
+
+<!-- ============================================================ page 2 -->
+<section class="page s19 p2">
+  <h1><span class="n">19</span> The receiver: features in detail</h1>
+
+  <div class="cols">
+    <div>
+      <h2>Standard version</h2>
+      <div class="card"><h3><span class="dot"></span>Radio link</h3>
+        <p>Dedicated 2.4 GHz radio at maximum transmit power. The receiver gets the trigger position 50 times per second
+          and sends telemetry back 10 times per second. It only listens to its own remote's address: a nearby eFoil can neither listen in nor take control.</p></div>
+      <div class="card"><h3><span class="dot"></span>Fail-safe</h3>
+        <p>With no command for 0.5 s, the receiver sets the motor to neutral; on its side the remote disarms. Silence is what
+          cuts: remote lost, switched off or out of range, the motor stops.</p></div>
+      <div class="card"><h3><span class="dot"></span>Pairing</h3>
+        <p>Accepted only during the 5 s after the board is powered on, with the remote less than a metre away. A single
+          linked remote, stored and kept through updates; any other request is refused while it is connected (section 08).</p></div>
+      <div class="card"><h3><span class="dot"></span>Motor control and telemetry</h3>
+        <p>The receiver passes the throttle to the motor controller (VESC) and reads from it, live, the pack voltage, the power and the
+          controller temperature: these are the VOLT, WATT and TEMP at the bottom of the screen, replaced by NO LINK if the link drops.</p></div>
+      <div class="card"><h3><span class="dot"></span>Board GPS</h3>
+        <p>Speed shown large and max speed of the ride, number of satellites, time that corrects the remote's clock,
+          position and heading sent twice per second for the return compass.</p></div>
+      <div class="card"><h3><span class="dot"></span>GPS speed limit</h3>
+        <p>The receiver compares the GPS speed with the limit set on the remote 50 times per second and smoothly lowers the throttle
+          ceiling, never below 20 %, with no cut-off. Without a GPS fix, no limiting (section 15).</p></div>
+      <div class="card"><h3><span class="dot"></span>Starting point</h3>
+        <p>Stored the first time you arm during the ride with a GPS fix, or reset by holding B on the Return page. Forgotten at power-off (section 10).</p></div>
+      <div class="note warn" style="margin-top:4pt">Speed limit and return to start need a receiver updated in October 2026.
+        With an older receiver, the limit is ignored and the Return page shows "heading: update receiver".</div>
+    </div>
+
+    <div>
+      <h2>Tracker version <span class="chip orange">tracker option</span></h2>
+      <div class="card trk"><h3><span class="dot"></span>The module</h3>
+        <p>Inside the board, powered by it: its own 5 Hz GPS, 4G modem with an international SIM card, secure connection to the website,
+          Bluetooth under the name <b>LITEFOIL-TRACKER</b> for the app.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Live tracking</h3>
+        <p>Started from the remote's SportsTrackLive tile or from the app. The tracker turns on its 4G, logs into the account
+          and opens the session at the first GPS point. Stopped by the same switch, when the remote is switched off, or after 10 minutes without it.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>No network, nothing lost</h3>
+        <p>Points wait and are sent as soon as 4G comes back. After a power cut, the tracker resumes the session if it is less than 10 minutes old.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Emergency alert</h3>
+        <p>Hold B for 5 s on the riding screen, then B for 3 s on the EMERGENCY page: the GPS position goes to the account's emergency contacts,
+          live tracking is forced on and kept on while the alert lasts (section 11).</p></div>
+      <div class="card trk"><h3><span class="dot"></span>SportsTrackLive account</h3>
+        <p>E-mail and password entered once in the app, Tracker tab, checked and then written into the tracker, not the
+          phone. "Erase account" removes them.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Status visible everywhere</h3>
+        <p>Dot in the top bar (green: live, orange: waiting for GPS / 4G, grey: stopped, red: account refused, yellow: no account, !: alert).
+          Tracker page: session number, points sent, network, satellites.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Advanced settings (app)</h3>
+        <p>Interval between two points (1 to 60 s), delay between two uploads (5 to 3,600 s), SIM card APN, server address.
+          A refused value keeps the previous one.</p></div>
+      <div class="card trk"><h3><span class="dot"></span>Update</h3>
+        <p>Tracker tab, Update card, board switched on: 3 to 6 minutes, automatic restart. Tracker from before October 2026:
+          the first time by USB cable on the receiver, then through the app.</p></div>
+    </div>
+  </div>
+
+  <div class="note"><b>Upgrading from standard to tracker.</b> The tracker can be added to the board later with three wires.
+    Nothing to change on the remote: pairing, settings, timed runs and logbook stay, and the SportsTrackLive tile goes
+    from "NO TRACKER" to "TRACKING STOPPED". All that remains is to enter the account in the app.</div>
+  <div class="note warn">Live tracking and the emergency alert depend on 4G coverage: they do not replace mandatory safety equipment.</div>
+
+  <div class="footer"><span>Lite Foil remote · datasheet and user manual · firmware 1.15.0</span><span>21</span></div>
+</section>

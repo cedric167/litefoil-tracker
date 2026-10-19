@@ -1,0 +1,121 @@
+<section class="page">
+  <h1><span class="n">04</span> The riding screen</h1>
+  <p>Two screens you can't mix up: <b>red with a padlock</b> while the motor is locked, <b>black with the throttle arc</b> as soon as it is
+    armed. Touch is disabled on both screens: a wet hand or a wave can't trigger anything.</p>
+
+  <div class="figs" style="gap:12pt;margin:4pt 0 6pt">
+    <!-- disarmed -->
+    <div class="fig" style="width:140pt">
+      <div class="scr" style="--z:.67;background:#1a0000">
+        <div style="position:absolute;left:6px;top:9px;font-size:10.5px;font-weight:600;color:#ddd">8 SAT</div>
+        <div class="c" style="top:7px;font-size:19px;font-weight:800;color:#c8c8c8">14:32</div>
+        <div style="position:absolute;right:5px;top:2px;font-size:22px;font-weight:800;color:#c8c8c8">86%</div>
+        <svg style="position:absolute;left:84px;top:80px" width="72" height="82" viewBox="0 0 72 82">
+          <path d="M18 34V24a18 18 0 0 1 36 0v10" fill="none" stroke="#ff3b30" stroke-width="5"/>
+          <rect x="8.5" y="31.5" width="55" height="45" rx="9" fill="none" stroke="#ff3b30" stroke-width="5"/>
+          <circle cx="36" cy="50" r="5.5" fill="#ff3b30"/><rect x="34" y="52" width="4" height="12" rx="1.5" fill="#ff3b30"/>
+        </svg>
+        <div class="c rd" style="top:176px;font-size:40px;font-weight:900;letter-spacing:-.3px">DISARMED</div>
+        <div class="c" style="top:217px;font-size:10.5px;font-weight:700;color:#ddd">motor locked</div>
+        <div style="position:absolute;left:30px;right:30px;top:238px;height:40px;border-radius:9px;background:#2a0000;text-align:center;padding-top:6px">
+          <div class="ye" style="font-size:11px;font-weight:700">Button A = ARM</div>
+          <div style="font-size:10px;font-weight:700;color:#ddd;margin-top:3px">trigger at rest</div>
+        </div>
+      </div>
+      <div class="t">Disarmed</div><div class="s">motor locked, A = arm (trigger at rest)</div>
+    </div>
+    <!-- armed, speed theme -->
+    <div class="fig" style="width:140pt">
+      <div class="scr" style="--z:.67">
+        <div class="bar" style="height:25px;background:#111;padding:0 5px 0 8px">
+          <svg width="31" height="16" viewBox="0 0 31 16"><rect x="0" y="12" width="5" height="4" fill="#00e5ff"/><rect x="8" y="8" width="5" height="8" fill="#00e5ff"/><rect x="16" y="4" width="5" height="12" fill="#00e5ff"/><rect x="24.6" y="0.6" width="4.8" height="14.8" fill="none" stroke="#bbb" stroke-width="1.2"/></svg>
+          <span class="cy" style="font-size:19px;font-weight:800">8S</span>
+          <span style="width:10px;height:10px;border-radius:5px;background:#34e36b"></span>
+          <span class="cy" style="font-size:19px;font-weight:800">14:32</span>
+          <span class="gr" style="font-size:19px;font-weight:800">86%</span>
+        </div>
+        <svg style="position:absolute;left:0;top:0" width="240" height="280" viewBox="0 0 240 280">
+          <defs><linearGradient id="p05-gsp" gradientUnits="userSpaceOnUse" x1="50" y1="200" x2="150" y2="40"><stop offset="0" stop-color="#00d0ff"/><stop offset="1" stop-color="#2affcf"/></linearGradient></defs>
+          <path d="M52.8 202.2A95 95 0 1 1 187.2 202.2" fill="none" stroke="#1c1c1c" stroke-width="18" stroke-linecap="round"/>
+          <path d="M52.8 202.2A95 95 0 0 1 147.8 44.2" fill="none" stroke="url(#p05-gsp)" stroke-width="18" stroke-linecap="round"/>
+          <path d="M168 24L154 28.5L163.5 38z" fill="#00e5ff"/>
+        </svg>
+        <div style="position:absolute;left:170px;top:27px;font-size:10px;font-weight:700" class="cy">1.2km</div>
+        <div class="c ye" style="top:66px;font-size:26px;font-weight:900">M</div>
+        <div class="c" style="top:92px;font-size:62px;font-weight:900;line-height:1">27</div>
+        <div class="c cy" style="top:151px;font-size:7.5px;font-weight:700">km/h</div>
+        <div class="c gr" style="top:165px;font-size:17px;font-weight:800">72%</div>
+        <div class="c cy" style="top:196px;font-size:12px;font-weight:800">MAX 31</div>
+        <div style="position:absolute;left:0;right:0;top:229px;display:grid;grid-template-columns:88px 64px 88px;text-align:center;font-size:22px;font-weight:800">
+          <span class="cy">51</span><span>1840</span><span>38</span>
+          <span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">VOLT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">WATT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">TEMP</span>
+        </div>
+      </div>
+      <div class="t">Armed, “speed” theme</div><div class="s">speed in large, board battery<br>underneath</div>
+    </div>
+    <!-- armed, battery theme -->
+    <div class="fig" style="width:140pt">
+      <div class="scr" style="--z:.67">
+        <div class="bar" style="height:25px;background:#111;padding:0 5px 0 8px">
+          <svg width="31" height="16" viewBox="0 0 31 16"><rect x="0" y="12" width="5" height="4" fill="#00e5ff"/><rect x="8" y="8" width="5" height="8" fill="#00e5ff"/><rect x="16" y="4" width="5" height="12" fill="#00e5ff"/><rect x="24.6" y="0.6" width="4.8" height="14.8" fill="none" stroke="#bbb" stroke-width="1.2"/></svg>
+          <span class="cy" style="font-size:19px;font-weight:800">8S</span>
+          <span style="width:10px;height:10px;border-radius:5px;background:#34e36b"></span>
+          <span class="cy" style="font-size:19px;font-weight:800">14:32</span>
+          <span class="gr" style="font-size:19px;font-weight:800">86%</span>
+        </div>
+        <svg style="position:absolute;left:0;top:0" width="240" height="280" viewBox="0 0 240 280">
+          <defs><linearGradient id="p05-gbt" gradientUnits="userSpaceOnUse" x1="50" y1="200" x2="50" y2="70"><stop offset="0" stop-color="#00d0ff"/><stop offset="1" stop-color="#14fff0"/></linearGradient></defs>
+          <path d="M52.8 202.2A95 95 0 1 1 187.2 202.2" fill="none" stroke="#1c1c1c" stroke-width="18" stroke-linecap="round"/>
+          <path d="M52.8 202.2A95 95 0 0 1 45.1 76.5" fill="none" stroke="url(#p05-gbt)" stroke-width="18" stroke-linecap="round"/>
+        </svg>
+        <div class="c gr" style="top:66px;font-size:26px;font-weight:900">L</div>
+        <div class="c" style="top:92px;font-size:62px;font-weight:900;line-height:1">72</div>
+        <div style="position:absolute;left:96px;top:169px;font-size:17px;font-weight:800" class="cy">27</div>
+        <div style="position:absolute;left:141px;top:175px;font-size:7.5px;font-weight:700;color:#ddd">km/h</div>
+        <div class="c cy" style="top:196px;font-size:12px;font-weight:800">MAX 31</div>
+        <div style="position:absolute;left:0;right:0;top:229px;display:grid;grid-template-columns:88px 64px 88px;text-align:center;font-size:22px;font-weight:800">
+          <span class="cy">51</span><span>1840</span><span>38</span>
+          <span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">VOLT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">WATT</span><span style="font-size:10px;font-weight:600;color:#999;margin-top:8px">TEMP</span>
+        </div>
+      </div>
+      <div class="t">Armed, “battery” theme</div><div class="s">battery in large, speed underneath</div>
+    </div>
+  </div>
+
+  <table style="line-height:1.38">
+    <tr><th style="width:31%">Zone</th><th>Content</th></tr>
+    <tr><td>Top bar</td><td><b>Radio signal</b> in 4 bars based on the real signal strength · <b>satellites</b> of the board's GPS (“8S”, cyan
+      from 4 satellites) · <b>tracker dot</b> (option) · <b>time</b> (internal clock set by the app, corrected by the board's GPS), replaced
+      by the timer while it runs · <b>remote battery</b> in %, green / orange / red</td></tr>
+    <tr><td>Centre</td><td><b>Throttle arc</b> with a gradient that follows the trigger · <b>mode letter</b> L (green), M (yellow) or H (red) · large
+      <b>GPS speed</b> with its unit · <b>board battery</b> in % (coloured by level) · <b>MAX</b>: top speed of the session, followed by the
+      <b>estimated range</b> “25min 9km” as soon as the battery capacity is set (Wh remaining at standstill) · <b>L25</b> top right when a
+      speed limit is set, in orange while the receiver is limiting</td></tr>
+    <tr><td>Bottom</td><td><b>VOLT</b> pack voltage · <b>WATT</b> instant power · <b>TEMP</b> motor controller temperature, read live from the VESC.
+      Replaced by <b>NO LINK</b> in red if the radio link drops.</td></tr>
+    <tr><td>Tracker dot</td><td><span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#2ebd4e;vertical-align:-0.5pt"></span> green: live session on sportstracklive.com ·
+      <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#ef8b14;vertical-align:-0.5pt"></span> orange: tracking started, waiting for GPS or 4G ·
+      <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#8e8e93;vertical-align:-0.5pt"></span> grey: tracking stopped ·
+      <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#e53935;vertical-align:-0.5pt"></span> red: account rejected ·
+      <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#f2c200;vertical-align:-0.5pt"></span> yellow: no account ·
+      <span style="display:inline-block;width:7pt;height:7pt;border-radius:50%;background:#e53935;vertical-align:-0.5pt"></span> <b>!</b> emergency alert in progress · none: no tracker</td></tr>
+    <tr><td>Banners</td><td>“● REC 00:42” under the top bar while a camera is recording · <b>arrow + distance</b> to the starting point, on the
+      right under the top bar, as soon as you are more than 100 m away (section 10) · “START” for 1 s when the timer starts, then on stop
+      the time in large for 3 s with the top speed, the distance, the number of falls and the longest flight · red bar along the bottom
+      while you hold B towards emergency</td></tr>
+  </table>
+
+  <h2 style="margin-top:12pt">The buttons on the riding screen</h2>
+  <table style="line-height:1.38">
+    <tr><th style="width:31%">Gesture</th><th>Effect</th></tr>
+    <tr><td><span class="k">A</span> short</td><td>Arm (trigger must be at rest, otherwise a refusal beep) or disarm (throttle must be released: at full
+      throttle the press is refused, to avoid disarming by accident)</td></tr>
+    <tr><td><span class="k">B</span> short</td><td>Next power mode: LOW → MED → HIGH → LOW, applied half a second after the press</td></tr>
+    <tr><td><span class="k">B</span> × 3 quick</td><td>Timer: start, or stop if it's running (section 11)</td></tr>
+    <tr><td><span class="k">B</span> hold 5 s</td><td>EMERGENCY page, red progress bar at the bottom of the screen; letting go earlier cancels</td></tr>
+    <tr><td><span class="k">A</span> hold 2 s</td><td>Power off, motor disarmed only</td></tr>
+    <tr><td><span class="k">A</span> + <span class="k">B</span> together</td><td>Menu (150 ms of simultaneous press); same gesture to leave it</td></tr>
+  </table>
+
+  <div class="footer"><span>Lite Foil remote · datasheet and user manual · firmware 1.15.0</span><span>5</span></div>
+</section>

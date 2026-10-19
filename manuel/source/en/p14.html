@@ -1,0 +1,76 @@
+<section class="page">
+  <h1><span class="n">14</span> Bluetooth, logbook and updates</h1>
+  <div style="display:grid;grid-template-columns:1fr 236pt;gap:0 16pt">
+    <div>
+      <h2 style="margin-top:2pt">Making the remote visible</h2>
+      <p>Menu, “Bluetooth” tile, flip the switch: the remote advertises itself as <b>LITEFOIL-REMOTE</b> for 5 minutes, then
+        turns itself off if nobody connects. On the charger, it switches on by itself; while riding with the motor armed, it is always off. The
+        page shows the name, the version, the battery and the app's signal.</p>
+
+      <h2>Logbook</h2>
+      <p>The remote records every ride in its memory, one line per second as long as the board is linked: time, GPS
+        position, speed, throttle, pack voltage, remote battery, mode and armed state. 70 KB per hour, 3 MB kept (the oldest
+        rides are erased automatically), one file per power-on. Transfer to the app over Bluetooth, ten seconds per hour of riding; nothing
+        goes out to the internet.</p>
+
+      <h2>Firmware update, step by step</h2>
+      <ol>
+        <li>Remote on the charger (“CHARGING” screen, <b>Bluetooth already on</b>). Phone with internet.</li>
+        <li>App, <b>Remote</b> tab, “Connect”, pick LITEFOIL-REMOTE.</li>
+        <li><b>Update</b> card: the installed version and the available version are shown, with what's new. Tap <b>“Update to x.y.z”</b>.</li>
+        <li>The remote's Bluetooth page shows a blue bar and “UPDATING, do not switch off”. Buttons and touch are ignored. About 2 minutes.</li>
+        <li>Automatic restart: “Hello”, logo, trigger calibration. The new version can be read on the Bluetooth page and in the app.</li>
+      </ol>
+    </div>
+    <div><div style="display:grid;grid-template-columns:113pt 113pt;gap:11pt 10pt;padding-top:8pt"><div class="fig" style="width:113pt"><div class="scr" style="--z:.556;margin:9px auto;border-radius:6px;box-shadow:0 0 0 9px #0b0b0d,0 6px 16px 9px rgba(0,0,0,.16)">
+<div style="position:absolute;left:0;right:0;top:0;height:34px;background:#101410"></div><svg style="position:absolute;left:7px;top:7px" width="14" height="20" viewBox="0 0 14 20"><path d="M11.5 2 L3 10 L11.5 18" fill="none" stroke="#0a84ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="title" style="top:8px;font-size:15.5px">Bluetooth</div><svg style="position:absolute;right:11px;top:5px" width="24" height="24" viewBox="0 0 24 24"><defs><linearGradient id="bgen0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc8ff"/><stop offset="1" stop-color="#0a7cf5"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#bgen0)"/><path d="M7.5 8.2 L16 15.6 L12 19.2 V4.8 L16 8.4 L7.5 15.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>
+<div style="position:absolute;left:65px;top:46px;width:110px;height:56px;border-radius:28px;background:#34c759"><div style="position:absolute;top:3px;right:3px;width:50px;height:50px;border-radius:25px;background:#fff"></div></div>
+<div class="c" style="top:119px;font-size:15px;font-weight:800;color:#0a84ff">VISIBLE</div>
+<div class="c" style="top:142px;font-size:10px;font-weight:700;color:#9898a0">opens the Lite Foil app</div>
+<div style="position:absolute;left:13px;width:215px;top:159px;height:95px;border-radius:10px;background:#181c18;font-size:11px"><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;"><span>Name</span><span>LITEFOIL-REMOTE</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Version</span><span>1.13.3</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Battery</span><span>86% 4.05 V</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>App</span><span><span style="color:#9898a0">--</span></span></div></div>
+<div class="c" style="top:259px;font-size:10px;font-weight:600;color:#808080">Tap or B = toggle&nbsp;&nbsp;A = back</div></div><div class="t" style="margin-top:11pt;font-size:8pt">Visible</div><div class="s" style="font-size:7.6pt">open the Lite Foil app</div></div><div class="fig" style="width:113pt"><div class="scr" style="--z:.556;margin:9px auto;border-radius:6px;box-shadow:0 0 0 9px #0b0b0d,0 6px 16px 9px rgba(0,0,0,.16)">
+<div style="position:absolute;left:0;right:0;top:0;height:34px;background:#101410"></div><svg style="position:absolute;left:7px;top:7px" width="14" height="20" viewBox="0 0 14 20"><path d="M11.5 2 L3 10 L11.5 18" fill="none" stroke="#0a84ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="title" style="top:8px;font-size:15.5px">Bluetooth</div><svg style="position:absolute;right:11px;top:5px" width="24" height="24" viewBox="0 0 24 24"><defs><linearGradient id="bgen1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc8ff"/><stop offset="1" stop-color="#0a7cf5"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#bgen1)"/><path d="M7.5 8.2 L16 15.6 L12 19.2 V4.8 L16 8.4 L7.5 15.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>
+<div style="position:absolute;left:65px;top:46px;width:110px;height:56px;border-radius:28px;background:#34c759"><div style="position:absolute;top:3px;right:3px;width:50px;height:50px;border-radius:25px;background:#fff"></div></div>
+<div class="c" style="top:119px;font-size:15px;font-weight:800;color:#28fc40">APP CONNECTED</div>
+<div class="c" style="top:142px;font-size:10px;font-weight:700;color:#9898a0">settings and live gauge</div>
+<div style="position:absolute;left:13px;width:215px;top:159px;height:95px;border-radius:10px;background:#181c18;font-size:11px"><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;"><span>Name</span><span>LITEFOIL-REMOTE</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Version</span><span>1.13.3</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Battery</span><span>86% 4.05 V</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>App</span><span><span style="color:#28fc40">OK</span></span></div></div>
+<div class="c" style="top:259px;font-size:10px;font-weight:600;color:#808080">Tap or B = toggle&nbsp;&nbsp;A = back</div></div><div class="t" style="margin-top:11pt;font-size:8pt">App connected</div><div class="s" style="font-size:7.6pt">settings and live gauge</div></div><div class="fig" style="width:113pt"><div class="scr" style="--z:.556;margin:9px auto;border-radius:6px;box-shadow:0 0 0 9px #0b0b0d,0 6px 16px 9px rgba(0,0,0,.16)">
+<div style="position:absolute;left:0;right:0;top:0;height:34px;background:#101410"></div><svg style="position:absolute;left:7px;top:7px" width="14" height="20" viewBox="0 0 14 20"><path d="M11.5 2 L3 10 L11.5 18" fill="none" stroke="#0a84ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="title" style="top:8px;font-size:15.5px">Bluetooth</div><svg style="position:absolute;right:11px;top:5px" width="24" height="24" viewBox="0 0 24 24"><defs><linearGradient id="bgen2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc8ff"/><stop offset="1" stop-color="#0a7cf5"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#bgen2)"/><path d="M7.5 8.2 L16 15.6 L12 19.2 V4.8 L16 8.4 L7.5 15.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>
+<div style="position:absolute;left:30px;top:66px;width:180px;height:24px;border-radius:12px;background:#383838;overflow:hidden"><div style="width:65%;height:100%;border-radius:12px;background:#0a84ff"></div></div>
+<div class="c" style="top:94px;font-size:14px;font-weight:800">64%</div>
+<div class="c" style="top:119px;font-size:15px;font-weight:800;color:#0a84ff">UPDATING</div>
+<div class="c" style="top:142px;font-size:10px;font-weight:700;color:#9898a0">do not switch off</div>
+<div style="position:absolute;left:13px;width:215px;top:159px;height:95px;border-radius:10px;background:#181c18;font-size:11px"><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;"><span>Name</span><span>LITEFOIL-REMOTE</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Version</span><span>1.13.3</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Battery</span><span>86% 4.05 V</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>App</span><span><span style="color:#28fc40">OK</span></span></div></div>
+</div><div class="t" style="margin-top:11pt;font-size:8pt">Updating</div><div class="s" style="font-size:7.6pt">progress bar, nothing<br>can be touched</div></div><div class="fig" style="width:113pt"><div class="scr" style="--z:.556;margin:9px auto;border-radius:6px;box-shadow:0 0 0 9px #0b0b0d,0 6px 16px 9px rgba(0,0,0,.16)">
+<div style="position:absolute;left:0;right:0;top:0;height:34px;background:#101410"></div><svg style="position:absolute;left:7px;top:7px" width="14" height="20" viewBox="0 0 14 20"><path d="M11.5 2 L3 10 L11.5 18" fill="none" stroke="#0a84ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="title" style="top:8px;font-size:15.5px">Bluetooth</div><svg style="position:absolute;right:11px;top:5px" width="24" height="24" viewBox="0 0 24 24"><defs><linearGradient id="bgen3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc8ff"/><stop offset="1" stop-color="#0a7cf5"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#bgen3)"/><path d="M7.5 8.2 L16 15.6 L12 19.2 V4.8 L16 8.4 L7.5 15.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>
+<div style="position:absolute;left:65px;top:46px;width:110px;height:56px;border-radius:28px;background:#383838"><div style="position:absolute;top:3px;left:3px;width:50px;height:50px;border-radius:25px;background:#fff"></div></div>
+<div class="c" style="top:119px;font-size:15px;font-weight:800;color:#9898a0">OFF</div>
+<div class="c" style="top:142px;font-size:10px;font-weight:700;color:#9898a0">app unreachable</div>
+<div style="position:absolute;left:13px;width:215px;top:159px;height:95px;border-radius:10px;background:#181c18;font-size:11px"><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;"><span>Name</span><span>LITEFOIL-REMOTE</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Version</span><span>1.13.3</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>Battery</span><span>86% 4.05 V</span></div><div style="display:flex;justify-content:space-between;height:23.75px;align-items:center;margin:0 11px;border-top:.7px solid #484848;"><span>App</span><span><span style="color:#9898a0">--</span></span></div></div>
+<div class="c" style="top:259px;font-size:10px;font-weight:600;color:#808080">Tap or B = toggle&nbsp;&nbsp;A = back</div></div><div class="t" style="margin-top:11pt;font-size:8pt">Off</div><div class="s" style="font-size:7.6pt">default state while riding</div></div></div></div>
+  </div>
+
+  <table class="compact" style="width:290pt;font-size:6.9pt;line-height:1.25;margin-top:2pt">
+    <tr><th colspan="2">After the update</th></tr>
+    <tr><td class="key" style="width:34%">Kept</td><td>Pairing with the board, trigger calibration, all settings, gyro learning, timed runs, odometer, logbook.</td></tr>
+    <tr><td class="key">To redo</td><td>Nothing. If a version changes the format of the timed runs, the old history is simply reset; this is stated in what's new.</td></tr>
+    <tr><td class="key">Interrupted during the transfer</td><td>The old firmware stays in place and the remote restarts on it: simply start the update again.</td></tr>
+    <tr><td class="key">“No update”</td><td>The remote is already up to date, or the phone has no internet when the app checks.</td></tr>
+    <tr><td class="key">Tracker</td><td><b>Tracker</b> tab, Update card, board on, 3 to 6 min, automatic restart. First time (tracker from before October 2026): by USB cable on the receiver, then through the app.</td></tr>
+  </table>
+
+  <h2 style="margin-top:14pt">If the connection doesn't work</h2>
+  <table class="compact" style="font-size:6.9pt;line-height:1.25">
+    <tr><th style="width:31%">Symptom</th><th style="width:34%">Cause</th><th>What to do</th></tr>
+    <tr><td class="key">LITEFOIL-REMOTE missing from the list</td><td>Remote's Bluetooth off (5 min elapsed, or motor armed)</td><td>Flip the Bluetooth switch again, or put the remote on the charger</td></tr>
+    <tr><td class="key">The “Connect” button offers nothing</td><td>Browser without Bluetooth (Safari, Firefox) or phone's Bluetooth off</td><td>Use the app from Google Play or the App Store, or Chrome on Android; turn on the phone's Bluetooth</td></tr>
+    <tr><td class="key">Connection lost after a few seconds</td><td>Too far away, or the app went into the background</td><td>Move closer, keep the app in the foreground during the transfer</td></tr>
+    <tr><td class="key">The update stops halfway</td><td>Bluetooth dropped during the transfer</td><td>Nothing is broken: the old firmware restarts, start the update again</td></tr>
+    <tr><td class="key">“Bluetooth” page: “--” or error</td><td>Bluetooth radio busy with the camera, or faulty</td><td>Flip the switch once (retry), otherwise switch the remote off and on again</td></tr>
+  </table>
+  <div class="footer"><span>Lite Foil remote · datasheet and user manual · firmware 1.15.0</span><span>14</span></div>
+</section>
