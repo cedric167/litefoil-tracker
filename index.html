@@ -129,6 +129,12 @@
   .hero .brand span { font-family:"Instrument Serif", Georgia, serif; font-size:18px; line-height:1.2; text-align:right;
                       text-shadow:0 1px 4px rgba(0,0,0,.6); }
   .hero-lang { position:absolute; top:12px; right:12px; z-index:3; }
+  .manual-dl { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .manual-dl a { display:flex; flex-direction:column; align-items:center; gap:7px; padding:12px 6px 10px; border-radius:16px;
+    border:1px solid rgba(0,0,0,.08); background:#fff; color:inherit; text-decoration:none; font-weight:600; font-size:13px;
+    box-shadow:0 1px 3px rgba(0,0,0,.06); transition:transform .12s; }
+  .manual-dl a:active { transform:scale(.96); }
+  .manual-dl img { width:44px; height:44px; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.08); object-fit:cover; }
   .hero .play { position:absolute; inset:0; margin:auto; width:64px; height:64px; border-radius:50%; border:none;
                 background:rgba(255,255,255,.9); color:#000; font-size:26px; padding:0; display:none; }
   .hero.paused .play { display:block; }
@@ -331,7 +337,7 @@
     <div class="m-label" style="margin:18px 6px 8px">Aide et suggestions</div>
     <div class="ioslist">
       <a href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener"><span class="ic" style="background:#0a84ff"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></span><span class="lb">Proposer une amélioration</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
-      <a href="manuel/telecommande.pdf?v=20261019" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+      <a class="manual-open" href="manuel/telecommande.pdf?v=20261019" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
     </div>
   </section>
 
@@ -725,8 +731,13 @@
       appairage, suivi en direct, retour au point de départ, urgence, caméra, application, gyroscope, référence de toutes les
       commandes, dépannage, récepteur en version classique et en version tracker. PDF de 21 pages (3 Mo), mis à jour à chaque nouvelle version du firmware.</div>
     <div class="row" style="margin-top:12px">
-      <a href="manuel/telecommande.pdf?v=20261019" target="_blank" rel="noopener"><button class="primary" type="button">Ouvrir le manuel</button></a>
-      <a href="manuel/telecommande.pdf?v=20261019" download="Manuel telecommande Lite Foil.pdf"><button type="button">Télécharger (PDF)</button></a>
+      <a class="manual-open" href="manuel/telecommande.pdf?v=20261019" target="_blank" rel="noopener"><button class="primary" type="button">Ouvrir le manuel</button></a>
+    </div>
+    <div class="m-label" style="margin:14px 2px 8px">Télécharger (PDF)</div>
+    <div class="manual-dl" data-no-i18n>
+      <a href="manuel/telecommande.pdf?v=20261019" download="Manuel telecommande Lite Foil.pdf"><img src="i18n/flags/fr.svg" alt=""><span>Français</span></a>
+      <a href="manuel/telecommande-en.pdf?v=20261019" download="Lite Foil remote manual.pdf"><img src="i18n/flags/en.svg" alt=""><span>English</span></a>
+      <a href="manuel/telecommande-es.pdf?v=20261019" download="Manual mando Lite Foil.pdf"><img src="i18n/flags/es.svg" alt=""><span>Español</span></a>
     </div>
   </div>
   </section>
@@ -1867,6 +1878,18 @@
     });
   })();
 
+})();
+</script>
+<script>
+// Manual links open the PDF in the app language (French is the original edition).
+(function () {
+  function setManual() {
+    var l = (window.LF_I18N && LF_I18N.lang) || 'fr';
+    var f = l === 'en' ? 'telecommande-en.pdf' : l === 'es' ? 'telecommande-es.pdf' : 'telecommande.pdf';
+    document.querySelectorAll('a.manual-open').forEach(function (a) { a.href = 'manuel/' + f + '?v=20261019'; });
+  }
+  setManual();
+  if (window.LF_I18N) LF_I18N.onChange(setManual);
 })();
 </script>
 </body>
