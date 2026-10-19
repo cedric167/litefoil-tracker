@@ -711,6 +711,10 @@
   "en": "Devices",
   "es": "Dispositivos"
  },
+ "Application « Lite Foil Tracker » · dernière mise à jour : 19 octobre 2026": {
+  "en": "\"Lite Foil Tracker\" app · last updated: October 19, 2026",
+  "es": "Aplicación «Lite Foil Tracker» · última actualización: 19 de octubre de 2026"
+ },
  "Application « Lite Foil Tracker » · dernière mise à jour : 9 octobre 2026": {
   "en": "\"Lite Foil Tracker\" app · last updated: October 9, 2026",
   "es": "Aplicación «Lite Foil Tracker» · última actualización: 9 de octubre de 2026"
@@ -935,6 +939,10 @@
   "en": "Remote battery",
   "es": "Batería mando"
  },
+ "Batterie, contrôleur moteur et télécommande": {
+  "en": "Battery, motor controller and remote",
+  "es": "Batería, controlador del motor y mando"
+ },
  "Bluetooth": {
   "en": "Bluetooth",
   "es": "Bluetooth"
@@ -942,6 +950,10 @@
  "Bluetooth web indisponible": {
   "en": "Web Bluetooth unavailable",
   "es": "Bluetooth web no disponible"
+ },
+ "Bluetooth, pour parler au tracker « LITEFOIL-TRACKER » et aux autres appareils de la planche, que vous choisissez vous-même dans la liste. Position, seulement pour les sessions de l'Atelier VESC. Aucune autre autorisation.": {
+  "en": "Bluetooth, to talk to the \"LITEFOIL-TRACKER\" tracker and the other devices of the board, which you choose yourself from the list. Location, only for VESC workshop sessions. No other permission.",
+  "es": "Bluetooth, para comunicarse con el tracker «LITEFOIL-TRACKER» y los demás dispositivos de la tabla, que usted mismo elige en la lista. Ubicación, solo para las sesiones del taller VESC. Ningún otro permiso."
  },
  "Bluetooth, pour parler au tracker « LITEFOIL-TRACKER » que vous choisissez vous-même dans la liste. Aucune autre autorisation.": {
   "en": "Bluetooth, to talk to the \"LITEFOIL-TRACKER\" tracker that you pick yourself from the list. No other permission.",
@@ -1142,6 +1154,10 @@
  "Certains BMS s'endorment au repos : branche le chargeur ou tire un peu de courant pour les réveiller.": {
   "en": "Some BMS go to sleep at rest: plug in the charger or draw a little current to wake them up.",
   "es": "Algunos BMS se duermen en reposo: conecta el cargador o consume algo de corriente para despertarlos."
+ },
+ "Ces données ne quittent le téléphone que si vous les téléchargez vous-même (fichiers de sauvegarde, CSV, GPX). Vous pouvez les supprimer dans l'application ou en effaçant les données du site.": {
+  "en": "This data only leaves the phone if you download it yourself (backup files, CSV, GPX). You can delete it in the app or by clearing the site data.",
+  "es": "Estos datos solo salen del teléfono si usted mismo los descarga (archivos de copia, CSV, GPX). Puede borrarlos en la aplicación o borrando los datos del sitio."
  },
  "Cette sauvegarde vient d'un autre contrôleur. La charger quand même ?": {
   "en": "This backup comes from another controller. Load it anyway?",
@@ -1731,6 +1747,10 @@
   "en": "DRV",
   "es": "DRV"
  },
+ "Des copies des réglages de la batterie et du contrôleur moteur, faites automatiquement avant chaque modification, pour pouvoir revenir en arrière.": {
+  "en": "Copies of the battery and motor controller settings, made automatically before each change, so you can go back.",
+  "es": "Copias de los ajustes de la batería y del controlador del motor, hechas automáticamente antes de cada cambio, para poder volver atrás."
+ },
  "Des modifications non enregistrées seront perdues. Continuer ?": {
   "en": "Unsaved changes will be lost. Continue?",
   "es": "Los cambios sin guardar se perderán. ¿Continuar?"
@@ -1786,6 +1806,10 @@
  "Donné par la détection FOC. Les riders eFoil restent en général sous 70 A sur un moteur 65161 ; plus fait chauffer le moteur sans gain réel.": {
   "en": "Given by FOC detection. eFoil riders usually stay under 70 A on a 65161 motor; more heats the motor with no real gain.",
   "es": "Dado por la detección FOC. Los riders de eFoil suelen quedarse por debajo de 70 A con un motor 65161; más calienta el motor sin ganancia real."
+ },
+ "Données gardées sur votre téléphone": {
+  "en": "Data kept on your phone",
+  "es": "Datos guardados en su teléfono"
  },
  "Données saisies dans l'application": {
   "en": "Data entered in the app",
@@ -1966,6 +1990,10 @@
  "Effacer toutes les sorties enregistrées dans la télécommande ?": {
   "en": "Erase all sessions saved in the remote?",
   "es": "¿Borrar todas las salidas guardadas en el mando?"
+ },
+ "Elle sert aussi à suivre et régler, par Bluetooth, la batterie, le contrôleur moteur et la télécommande de la planche (onglets et ateliers Batterie et VESC).": {
+  "en": "It is also used to monitor and set up, over Bluetooth, the battery, motor controller and remote of the board (Battery and VESC tabs and workshops).",
+  "es": "También sirve para supervisar y ajustar, por Bluetooth, la batería, el controlador del motor y el mando de la tabla (pestañas y talleres Batería y VESC)."
  },
  "En ampères-heures (Ah).": {
   "en": "In amp-hours (Ah).",
@@ -2571,6 +2599,10 @@
   "en": "Magnetic flux detection failed.",
   "es": "La detección del flujo magnético ha fallado."
  },
+ "La langue choisie et le dernier appareil Bluetooth utilisé.": {
+  "en": "The chosen language and the last Bluetooth device used.",
+  "es": "El idioma elegido y el último dispositivo Bluetooth utilizado."
+ },
  "La mise à jour passe par Bluetooth (deux à quatre minutes). Garde le téléphone à côté de la télécommande et ne l'éteins pas : elle vérifie l'empreinte du fichier avant d'installer, et garde son firmware actuel en cas de souci.": {
   "en": "The update goes over Bluetooth (two to four minutes). Keep the phone next to the remote and don't turn it off: it checks the file's fingerprint before installing, and keeps its current firmware if anything goes wrong.",
   "es": "La actualización se hace por Bluetooth (de dos a cuatro minutos). Mantén el teléfono junto al mando y no lo apagues: verifica la huella del archivo antes de instalar y conserva su firmware actual si hay algún problema."
@@ -2751,6 +2783,10 @@
   "en": "Level 1 alarms are warnings; at level 2, the BMS cuts charging or discharging.",
   "es": "Las alarmas de nivel 1 son avisos; en el nivel 2, el BMS corta la carga o la descarga."
  },
+ "Les cartes sont chargées depuis Esri (vue satellite) et OpenStreetMap, et leur outil d'affichage depuis cdnjs.cloudflare.com : ces services voient votre adresse IP et les zones de carte affichées.": {
+  "en": "Maps are loaded from Esri (satellite view) and OpenStreetMap, and their display tool from cdnjs.cloudflare.com: these services see your IP address and the map areas shown.",
+  "es": "Los mapas se cargan desde Esri (vista satélite) y OpenStreetMap, y su herramienta de visualización desde cdnjs.cloudflare.com: estos servicios ven su dirección IP y las zonas de mapa mostradas."
+ },
  "Les champs vides ne sont pas envoyés. Un nouvel APN force une reconnexion, le reste s'applique tout de suite.": {
   "en": "Empty fields are not sent. A new APN forces a reconnection; the rest applies immediately.",
   "es": "Los campos vacíos no se envían. Un APN nuevo fuerza una reconexión; el resto se aplica al instante."
@@ -2775,9 +2811,17 @@
   "en": "Settings are read with the definitions",
   "es": "Los ajustes se leen con las definiciones"
  },
+ "Les sessions que vous enregistrez dans l'Atelier VESC : trace GPS et mesures du contrôleur.": {
+  "en": "The sessions you record in the VESC workshop: GPS track and controller measurements.",
+  "es": "Las sesiones que graba en el taller VESC: traza GPS y medidas del controlador."
+ },
  "Les sorties enregistrées par le tracker sont dans ton compte SportsTrackLive.": {
   "en": "Rides recorded by the tracker are in your SportsTrackLive account.",
   "es": "Las salidas grabadas por el tracker están en tu cuenta de SportsTrackLive."
+ },
+ "Leurs mesures (tension, courant, cellules, températures, régime…) et leurs réglages sont lus par Bluetooth pour être affichés et modifiés. Les réglages modifiés sont enregistrés dans l'appareil concerné, jamais sur un serveur.": {
+  "en": "Their measurements (voltage, current, cells, temperatures, RPM…) and settings are read over Bluetooth to be displayed and changed. Changed settings are saved in the device concerned, never on a server.",
+  "es": "Sus medidas (tensión, corriente, celdas, temperaturas, régimen…) y ajustes se leen por Bluetooth para mostrarlos y modificarlos. Los ajustes modificados se guardan en el dispositivo correspondiente, nunca en un servidor."
  },
  "Li-ion (ternaire)": {
   "en": "Li-ion (ternary)",
@@ -3251,6 +3295,10 @@
   "en": "Not connected.",
   "es": "No conectada."
  },
+ "Pas d'accès à la position du téléphone en dehors des sessions que vous lancez vous-même.": {
+  "en": "No access to the phone's location outside the sessions you start yourself.",
+  "es": "Ningún acceso a la ubicación del teléfono fuera de las sesiones que usted mismo inicia."
+ },
  "Pas d'accès à votre position par le téléphone : le GPS est celui du tracker.": {
   "en": "No access to your location by the phone: the GPS is the tracker's.",
   "es": "Sin acceso a su ubicación por parte del teléfono: el GPS es el del tracker."
@@ -3366,6 +3414,10 @@
  "Politique de confidentialité": {
   "en": "Privacy policy",
   "es": "Política de privacidad"
+ },
+ "Position du téléphone": {
+  "en": "Phone location",
+  "es": "Ubicación del teléfono"
  },
  "Position en direct": {
   "en": "Live position",
@@ -3838,6 +3890,10 @@
  "Sessions enregistrées": {
   "en": "Saved sessions",
   "es": "Sesiones guardadas"
+ },
+ "Seulement quand vous lancez une session dans l'Atelier VESC, et après votre accord, l'application lit la position du téléphone pour tracer la sortie sur la carte. Cette trace reste sur le téléphone.": {
+  "en": "Only when you start a session in the VESC workshop, and after your consent, the app reads the phone's location to draw the ride on the map. This track stays on the phone.",
+  "es": "Solo cuando inicia una sesión en el taller VESC, y con su consentimiento, la aplicación lee la ubicación del teléfono para trazar la salida en el mapa. Esta traza se queda en el teléfono."
  },
  "Si le module apparaît dans les réglages Bluetooth du téléphone (appareils appairés), choisis « Oublier ». Une liaison système empêche l'appli de s'y connecter.": {
   "en": "If the module appears in the phone's Bluetooth settings (paired devices), choose \"Forget\". A system pairing prevents the app from connecting to it.",
