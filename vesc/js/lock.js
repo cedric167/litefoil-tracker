@@ -1,10 +1,10 @@
-// Code d'accès de l'Atelier VESC. Seule l'empreinte SHA-256 du code est dans la page.
+// Code d'accès des ateliers (VESC et batterie, même code). Seule l'empreinte SHA-256 du code est dans la page.
 // C'est une protection contre les changements par erreur, pas une sécurité forte :
 // le code de la page reste lisible par qui le cherche.
 (function () {
   'use strict';
   var HASH = '6273c8e2ab7dd05b30f60fc98e32a35e8f660eb19e3b949c8aeac4b225e5816d';
-  var KEY = 'lf-vesc-unlocked';
+  var KEY = 'lf-vesc-unlocked'; // commun aux deux ateliers : un seul code par session
   var screen = document.getElementById('lockScreen');
   var input = document.getElementById('lockCode');
   var err = document.getElementById('lockErr');
