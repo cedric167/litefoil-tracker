@@ -5,6 +5,14 @@ Play Store elle est livrée dans un emballage Android (Trusted Web Activity) qui
 `https://cedric167.github.io/litefoil-tracker/` en plein écran dans Chrome, Bluetooth
 compris. Tout ce qui suit se fait depuis un navigateur, sans outil de développement.
 
+## État au 2026-10-19 — FICHE À METTRE À JOUR (ateliers VESC et batterie)
+
+Nouveaux textes FR/EN/ES dans `store/fiche-play-store.md`. Aucun nouveau paquet Android à
+envoyer : l'application charge la page web, les ateliers y sont déjà. À faire dans la Play
+Console : coller les textes (Fiche principale + Gérer les traductions en-US, es-ES) et mettre
+à jour « Sécurité des données » (Position précise : collectée, non partagée, facultative,
+fonctionnement de l'application). La politique de confidentialité est à jour.
+
 ## État au 2026-10-15 — PRODUCTION ENVOYÉE À L'EXAMEN
 
 - Test interne installé et validé sur le téléphone le 15/10 (Bluetooth OK, pas de barre d'adresse).

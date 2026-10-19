@@ -26,11 +26,13 @@
   <div data-lang-picker="row" style="float:right;margin-top:8px"></div>
   <img src="litefoil-logo.png" alt="Lite Foil" style="height:48px">
   <h1>Politique de confidentialité</h1>
-  <p class="muted">Application « Lite Foil Tracker » · dernière mise à jour : 9 octobre 2026</p>
+  <p class="muted">Application « Lite Foil Tracker » · dernière mise à jour : 19 octobre 2026</p>
 
   <p>L'application Lite Foil Tracker sert à configurer, par Bluetooth, le tracker GPS Lite Foil :
     y enregistrer le compte SportsTrackLive dans lequel les sorties seront publiées, démarrer ou arrêter
     le suivi, et voir l'état du tracker. Elle donne aussi accès au site litefoil.fr.</p>
+  <p>Elle sert aussi à suivre et régler, par Bluetooth, la batterie, le contrôleur moteur et la télécommande
+    de la planche (onglets et ateliers Batterie et VESC).</p>
 
   <h2>Données saisies dans l'application</h2>
   <ul>
@@ -48,6 +50,25 @@
   <p>Position, vitesse, satellites, batterie, état du réseau et de la session sont lus par Bluetooth pour
     être affichés à l'écran. Ils ne sont ni enregistrés par l'application ni transmis par elle.</p>
 
+  <h2>Batterie, contrôleur moteur et télécommande</h2>
+  <p>Leurs mesures (tension, courant, cellules, températures, régime…) et leurs réglages sont lus par Bluetooth
+    pour être affichés et modifiés. Les réglages modifiés sont enregistrés dans l'appareil concerné, jamais
+    sur un serveur.</p>
+
+  <h2>Données gardées sur votre téléphone</h2>
+  <ul>
+    <li>Des copies des réglages de la batterie et du contrôleur moteur, faites automatiquement avant chaque
+      modification, pour pouvoir revenir en arrière.</li>
+    <li>Les sessions que vous enregistrez dans l'Atelier VESC : trace GPS et mesures du contrôleur.</li>
+    <li>La langue choisie et le dernier appareil Bluetooth utilisé.</li>
+  </ul>
+  <p>Ces données ne quittent le téléphone que si vous les téléchargez vous-même (fichiers de sauvegarde,
+    CSV, GPX). Vous pouvez les supprimer dans l'application ou en effaçant les données du site.</p>
+
+  <h2>Position du téléphone</h2>
+  <p>Seulement quand vous lancez une session dans l'Atelier VESC, et après votre accord, l'application lit
+    la position du téléphone pour tracer la sortie sur la carte. Cette trace reste sur le téléphone.</p>
+
   <h2>Ce que fait le tracker</h2>
   <p>Le tracker envoie ses positions à SportsTrackLive, dans le compte que vous lui avez indiqué
     (<a href="https://www.sportstracklive.com/" target="_blank" rel="noopener">sportstracklive.com</a>, voir
@@ -58,7 +79,7 @@
   <ul>
     <li>Pas de compte Lite Foil, pas de serveur Lite Foil : aucune donnée n'est collectée par l'éditeur.</li>
     <li>Pas de mesure d'audience, pas de publicité, pas de traceur.</li>
-    <li>Pas d'accès à votre position par le téléphone : le GPS est celui du tracker.</li>
+    <li>Pas d'accès à la position du téléphone en dehors des sessions que vous lancez vous-même.</li>
   </ul>
 
   <h2>Services tiers chargés par la page</h2>
@@ -66,12 +87,15 @@
     <li>Polices de caractères chargées depuis Google Fonts (fonts.googleapis.com) : votre adresse IP est
       alors vue par Google, comme pour toute ressource web.</li>
     <li>La vidéo et le logo d'accueil sont chargés depuis le site litefoil.fr (hébergé par Shopify).</li>
+    <li>Les cartes sont chargées depuis Esri (vue satellite) et OpenStreetMap, et leur outil d'affichage depuis
+      cdnjs.cloudflare.com : ces services voient votre adresse IP et les zones de carte affichées.</li>
     <li>La page elle-même est hébergée par GitHub Pages, qui voit les adresses IP des visiteurs.</li>
   </ul>
 
   <h2>Autorisations</h2>
-  <p>Bluetooth, pour parler au tracker « LITEFOIL-TRACKER » que vous choisissez vous-même dans la liste.
-    Aucune autre autorisation.</p>
+  <p>Bluetooth, pour parler au tracker « LITEFOIL-TRACKER » et aux autres appareils de la planche, que vous
+    choisissez vous-même dans la liste. Position, seulement pour les sessions de l'Atelier VESC. Aucune autre
+    autorisation.</p>
 
   <h2>Suppression des données</h2>
   <p>« Effacer le compte » dans l'application retire l'e-mail et le mot de passe du tracker. Effacer les
