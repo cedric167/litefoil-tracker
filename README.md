@@ -49,6 +49,13 @@ Télécommande (courbe de gaz, calibration) et la reconnexion automatique. Modul
 Bluetooth Nordic UART et HM-10, USB, et un mode démo sans matériel. Détails : `vesc/README.md`.
 Code sous GPL-3.0 (`vesc/LICENSE`), comme VESC Tool.
 
+## Atelier batterie
+
+L'onglet **Batterie** affiche l'essentiel ; la carte « Atelier batterie » ouvre `bms/`, une réplique de
+l'appli Daly SMART BMS au même style : cellules une par une, alarmes en français, tous les seuils de
+protection (avec mot de passe, vérifications et aperçu avant écriture), MOS de charge et décharge,
+calibrage de la charge, infos et sauvegarde du BMS. Détails : `bms/README.md`.
+
 ## Pourquoi un hébergement web
 
 Le Bluetooth web (`navigator.bluetooth`) exige un contexte sécurisé : la page

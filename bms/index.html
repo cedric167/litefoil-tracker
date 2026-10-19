@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Lite Foil · Batterie</title>
+  <meta name="description" content="Réglage complet du BMS Daly par Bluetooth : état, cellules, alarmes, protections, commandes.">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="apple-touch-icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+  <link rel="stylesheet" href="../vesc/css/app.css">
+  <link rel="stylesheet" href="css/bms.css">
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="../" aria-label="Retour à Lite Foil">
+      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+    </a>
+    <img class="logo" src="../litefoil-logo.png" alt="Lite Foil">
+    <div class="title">
+      <span class="serif">Atelier batterie</span>
+      <span class="sub" id="topSub">BMS Daly</span>
+    </div>
+    <button class="conn-pill" id="connPill" type="button">
+      <span class="lamp" id="lamp"></span><span id="connText">Hors ligne</span>
+    </button>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-page="home" class="active">Accueil</button>
+    <button data-page="cells">Cellules</button>
+    <button data-page="alarms">Alarmes</button>
+    <button data-page="settings">Protections</button>
+    <button data-page="control">Commandes</button>
+    <button data-page="info">Infos</button>
+  </nav>
+
+  <main>
+    <!-- ================================================================ Accueil -->
+    <section class="page active" id="page-home">
+      <div class="card connect-card" id="connectCard">
+        <div class="connect-art" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fe3e6"/><stop offset="1" stop-color="#148a90"/></linearGradient></defs>
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#e7f6f7" stroke-width="10"/>
+            <circle cx="60" cy="60" r="54" fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round" stroke-dasharray="270 400" transform="rotate(-90 60 60)"/>
+            <rect x="38" y="40" width="40" height="44" rx="7" fill="none" stroke="#0b0d10" stroke-width="5"/>
+            <rect x="52" y="33" width="12" height="7" rx="2" fill="#0b0d10"/>
+            <rect x="44" y="62" width="28" height="16" rx="3" fill="#148a90"/>
+          </svg>
+        </div>
+        <h1 class="serif">Ta batterie, <em>cellule par cellule</em></h1>
+        <p class="muted">Allume la batterie et ferme l'appli Daly SMART BMS : le BMS n'accepte qu'un téléphone à la fois.</p>
+        <div class="stack">
+          <button id="btnLast" class="btn accent wide" hidden>
+            <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2"/><path d="M19 3v3.5h-3.5M5 21v-3.5h3.5"/></svg><span>Reconnecter</span>
+          </button>
+          <button id="btnBle" class="btn primary wide">
+            <svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg>Connecter le BMS
+          </button>
+          <button id="btnDemo" class="btn wide">Démo</button>
+        </div>
+        <p id="bleSupport" class="banner warn" hidden></p>
+      </div>
+
+      <div id="homeLive" hidden>
+        <div id="faultTop" class="banner bad" hidden></div>
+        <div class="card soc-hero">
+          <div class="ring big" id="socRing"></div>
+          <div class="soc-side">
+            <div class="m-label" id="flowLabel">—</div>
+            <div class="hm-value"><span id="hW">—</span><span class="hm-unit">W</span></div>
+            <div class="m-sub" id="hRemain">—</div>
+          </div>
+        </div>
+        <div class="dash-grid">
+          <div class="card metric"><div class="m-label">Tension</div><div class="m-value"><span id="hV">—</span><span class="m-unit">V</span></div><div class="spark" id="vSpark"></div></div>
+          <div class="card metric"><div class="m-label">Courant</div><div class="m-value"><span id="hA">—</span><span class="m-unit">A</span></div><div class="spark" id="aSpark"></div></div>
+          <div class="card metric"><div class="m-label">Écart cellules</div><div class="m-value"><span id="hDiff">—</span><span class="m-unit">mV</span></div><div class="m-sub" id="hMinMax">—</div></div>
+          <div class="card metric"><div class="m-label">Température</div><div class="m-value"><span id="hT">—</span><span class="m-unit">°C</span></div><div class="m-sub" id="hCyc">—</div></div>
+        </div>
+        <div class="card">
+          <div class="chips">
+            <span class="chip state" id="chC"><span class="dot"></span>Charge</span>
+            <span class="chip state" id="chD"><span class="dot"></span>Décharge</span>
+            <span class="chip state" id="chB"><span class="dot"></span>Équilibrage</span>
+          </div>
+          <div class="mini-cells" id="miniCells"></div>
+        </div>
+      </div>
+
+      <div class="section-label" id="devLabel" hidden>BMS</div>
+      <div class="card" id="infoCard" hidden>
+        <div class="dev-head">
+          <div class="dev-ic"><svg viewBox="0 0 24 24"><rect x="5" y="6" width="12" height="15" rx="2.5"/><path d="M9 3.5h4"/><path d="M8 15h6"/></svg></div>
+          <div><div class="dev-name" id="devName">—</div><div class="dev-sub" id="devSub">—</div></div>
+        </div>
+        <div class="row-btns">
+          <button id="btnDisconnect" class="btn small ghost danger-text">Déconnecter</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ Cellules -->
+    <section class="page" id="page-cells">
+      <div class="kv-grid" id="cellStats"></div>
+      <div class="card"><div class="m-label">Tension de chaque cellule</div><div class="cell-bars" id="cellBars"></div>
+        <p class="muted small-text">Barre verte : cellule la plus haute ; orange : la plus basse ; ⚡ : en équilibrage. Échelle 3,0 → 4,2 V.</p></div>
+      <div class="card chart-card"><div class="ch-head"><span class="m-label">Écart entre cellules</span><span class="ch-leg" id="diffLeg"></span></div><canvas id="diffChart"></canvas></div>
+      <div class="card"><div class="m-label">Sondes de température</div><div class="kv-grid" id="tempList" style="margin-top:10px"></div></div>
+    </section>
+
+    <!-- ================================================================ Alarmes -->
+    <section class="page" id="page-alarms">
+      <div class="card checks" id="alarmList"></div>
+      <div class="section-label">Journal</div>
+      <div class="ioslist" id="alarmLog"></div>
+      <p class="muted small-text" style="margin:8px 6px">Les alarmes de niveau 1 sont des avertissements ; au niveau 2, le BMS coupe la charge ou la décharge.</p>
+    </section>
+
+    <!-- ================================================================ Protections -->
+    <section class="page" id="page-settings"></section>
+
+    <!-- ================================================================ Commandes -->
+    <section class="page" id="page-control">
+      <div class="card">
+        <div class="m-label">Interrupteurs du BMS</div>
+        <label class="switch big-switch"><input type="checkbox" id="swCharge"><span></span><div><b>Charge autorisée</b><small>MOS de charge</small></div></label>
+        <label class="switch big-switch"><input type="checkbox" id="swDischarge"><span></span><div><b>Décharge autorisée</b><small>MOS de décharge : couper arrête la planche</small></div></label>
+      </div>
+      <div class="card">
+        <div class="m-label">Calibrer la charge (SOC)</div>
+        <p class="muted small-text">Après une charge complète, mets 100 % pour recaler le pourcentage. La valeur actuelle est proposée.</p>
+        <div class="row-input"><div class="input-unit"><input type="number" id="socIn" min="0" max="100" step="0.1" inputmode="decimal"><i>%</i></div>
+          <button class="btn" id="btnSoc100">100 %</button><button class="btn primary" id="btnSoc">Appliquer</button></div>
+      </div>
+      <div class="card" id="advCmds">
+        <div class="m-label">Maintenance</div>
+        <div class="row-btns">
+          <button class="btn small" id="btnZero">Remettre le courant à zéro</button>
+          <button class="btn small" id="btnRestart">Redémarrer le BMS</button>
+        </div>
+        <p class="muted small-text">« Courant à zéro » : à faire batterie au repos (rien de branché) si le BMS affiche un petit courant permanent.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ Infos -->
+    <section class="page" id="page-info">
+      <div class="card"><div class="kv-grid" id="infoList"></div></div>
+      <div class="card">
+        <div class="m-label">Sauvegarde des protections</div>
+        <p class="muted small-text">Garde une copie des réglages du BMS sur ton téléphone, ou recharge-la sur un autre BMS.</p>
+        <div class="row-btns"><button class="btn small" id="btnBackup">Télécharger</button><button class="btn small ghost" id="btnRestore">Importer</button></div>
+      </div>
+    </section>
+
+    <footer>Protocole Daly (Modbus et A5) · compatible BMS Daly SMART</footer>
+  </main>
+
+  <div class="savebar" id="saveBar" hidden>
+    <span id="saveText">—</span>
+    <button class="btn ghost-dark" id="saveUndo">Annuler</button>
+    <button class="btn accent" id="saveWrite">Écrire</button>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
