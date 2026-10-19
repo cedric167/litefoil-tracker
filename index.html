@@ -78,6 +78,8 @@
   .wa .wa-t b { font-size:17.5px; font-weight:700; letter-spacing:-.01em; }
   .wa .wa-t span { font-size:13.5px; opacity:.92; }
   .wa .ch { opacity:.85; flex:none; }
+  .wa.vesc-atelier { background:linear-gradient(135deg,#8fe3e6 0%,#5acdd1 40%,#148a90 100%); box-shadow:0 10px 26px rgba(20,138,144,.28), inset 0 1px 0 rgba(255,255,255,.3); }
+  .wa.vesc-atelier:active { box-shadow:0 6px 16px rgba(20,138,144,.25); }
   .wa.soon { background:linear-gradient(135deg,#c3ccd2,#97a3ab); box-shadow:var(--sh-sm); }
   .wa.fb { background:linear-gradient(135deg,#4a9bff 0%,#1877f2 45%,#0b5ed7 100%); box-shadow:0 10px 26px rgba(24,119,242,.28), inset 0 1px 0 rgba(255,255,255,.28); }
   .wa.fb:active { box-shadow:0 6px 16px rgba(24,119,242,.25); }
@@ -565,6 +567,13 @@
       </div>
       <div class="note" id="vNote">Connecte le contrôleur pour voir la télémétrie.</div>
     </div>
+
+    <a class="wa vesc-atelier" href="vesc/" style="margin-top:14px">
+      <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></span>
+      <span class="wa-t"><b>Atelier VESC</b><span>Réglages moteur, détection, graphiques, firmware</span></span>
+      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <div class="note">L'atelier ouvre sa propre connexion : le contrôleur se déconnecte de cet onglet en y entrant.</div>
 
   </section>
 

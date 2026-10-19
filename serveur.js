@@ -15,11 +15,14 @@ const opts = {
   cert: fs.readFileSync(path.join(DIR, 'cert', 'cert.pem'))
 };
 
-const TYPES = { '.html':'text/html; charset=utf-8', '.md':'text/plain; charset=utf-8' };
+const TYPES = { '.html':'text/html; charset=utf-8', '.md':'text/plain; charset=utf-8',
+                '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8',
+                '.json':'application/json; charset=utf-8', '.png':'image/png', '.svg':'image/svg+xml',
+                '.pdf':'application/pdf' };
 
 https.createServer(opts, (req, res) => {
   let f = decodeURIComponent(req.url.split('?')[0]);
-  if (f === '/' || f === '') f = '/index.html';
+  if (f === '' || f.endsWith('/')) f += 'index.html';
   const p = path.join(DIR, path.normalize(f).replace(/^[\\/]+/, ''));
   if (!p.startsWith(DIR)) { res.writeHead(403); return res.end('interdit'); }
   fs.readFile(p, (err, data) => {
