@@ -1104,25 +1104,30 @@ $('#btnRtRecord').onclick = () => {
 // ================================================================ détection FOC
 
 const MOTORS = [
-  // Nom, poids, pertes max (W), openloop ERPM, sensorless ERPM (préréglages de l'assistant VESC Tool)
-  ['Mini outrunner', '~75 g', 20, 1400, 4000],
-  ['Petit outrunner', '~200 g', 50, 1400, 4000],
-  ['Outrunner moyen', '~750 g', 120, 700, 4000],
-  ['Gros outrunner', '~2 kg', 400, 700, 4000],
-  ['Petit inrunner', '~200 g', 50, 1400, 4000],
-  ['Inrunner moyen', '~750 g', 140, 1400, 4000],
-  ['Gros inrunner', '~2 kg', 400, 1000, 4000],
-  ['Moteur moyeu DD', '~6 kg', 150, 300, 2000],
-  ['Petit EDF', '~200 g', 110, 1400, 4000],
+  // Nom, poids, pertes max (W), openloop ERPM, sensorless ERPM, image (préréglages de l'assistant VESC Tool)
+  ['Maytech 6579', 'eFoil · ~1,1 kg', 150, 700, 4000, 'maytech_6579.svg'],
+  ['Mini outrunner', '~75 g', 20, 1400, 4000, 'outrunner_mini.webp'],
+  ['Petit outrunner', '~200 g', 50, 1400, 4000, 'outrunner_small.webp'],
+  ['Outrunner moyen', '~750 g', 120, 700, 4000, '6374.webp'],
+  ['Gros outrunner', '~2 kg', 400, 700, 4000, 'outrunner_large.svg'],
+  ['Petit inrunner', '~200 g', 50, 1400, 4000, 'inrunner_small.webp'],
+  ['Inrunner moyen', '~750 g', 140, 1400, 4000, 'inrunner_medium.webp'],
+  ['Gros inrunner', '~2 kg', 400, 1000, 4000, 'inrunner_large.svg'],
+  ['Moteur moyeu DD', '~6 kg', 150, 300, 2000, 'ebike_dd_1kw.webp'],
+  ['Petit EDF', '~200 g', 110, 1400, 4000, 'edf_small.webp'],
 ];
 
-let motorSel = 2;
+let motorSel = 0;
 function drawMotors() {
   const box = $('#wizMotor');
   box.replaceChildren();
-  MOTORS.forEach(([n, w], i) => {
-    const b = el('button', i === motorSel ? 'on' : '', n);
-    b.append(el('small', '', w));
+  MOTORS.forEach(([n, w, , , , img], i) => {
+    const b = el('button', i === motorSel ? 'on' : '');
+    const pic = el('img');
+    pic.src = 'img/motors/' + img;
+    pic.alt = '';
+    pic.loading = 'lazy';
+    b.append(pic, el('span', '', n), el('small', '', w));
     b.onclick = () => { motorSel = i; drawMotors(); applyMotor(); };
     box.append(b);
   });
@@ -1164,6 +1169,16 @@ $('#btnDetect').onclick = async () => {
   const v = state.vesc;
   try {
     if (state.readSnap.mcconf) backup('mcconf', 'Avant détection', state.readSnap.mcconf);
+    // Usage « Propeller » de l'assistant VESC Tool (mobile/SetupWizardFoc.qml), écrit avant la détection.
+    const mc = state.configs.mcconf;
+    if (mc && !dirtyCount('mcconf')) {
+      const usage = { l_duty_start: 1.0, m_fault_stop_time_ms: 500, 'bms.limit_mode': 3 };
+      for (const [k, val] of Object.entries(usage)) if (mc.has(k)) mc.set(k, val, true);
+      if (dirtyCount('mcconf')) {
+        await v.setConfig(mc);
+        await readConfig('mcconf', false, true);
+      }
+    }
     // Comme VESC Tool : coupe la sortie des apps (télécommande) pendant la détection.
     await v.send(new Writer().uint8(COMM.APP_DISABLE_OUTPUT).int8(1).int32(180000).toBytes());
     const res = await v.detectAllFoc({

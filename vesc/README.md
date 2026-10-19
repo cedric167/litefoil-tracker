@@ -8,12 +8,12 @@ Adresse : <https://cedric167.github.io/litefoil-tracker/vesc/>
 | Page | Contenu |
 |---|---|
 | Accueil | Connexion Bluetooth (Nordic UART ou HM-10), USB, démo, « Reconnecter » le dernier module ; diagnostic de connexion ; puissance, batterie, gaz, températures ; infos du contrôleur, avertissement de version, bus CAN ; sauvegardes locales et fichier de sauvegarde complet |
-| Essentiel | Les réglages qui comptent sur un eFoil, expliqués en français, avec vérifications (cellules, coupures, gaz bridé, courant absolu, UART) ; doubles contrôleurs : totaux et recopie des réglages sur tout le bus CAN |
+| Essentiel | Profil moteur **Maytech 6579 110KV** (préremplit pôles, coupures, courants selon le poids et la batterie ; contrôle du flux après détection) ; les réglages qui comptent sur un eFoil, expliqués en français, avec vérifications (cellules, coupures, gaz bridé, courant absolu, UART) ; doubles contrôleurs : totaux et recopie des réglages sur tout le bus CAN |
 | Sessions | Trace GPS + télémétrie, carte colorée selon la puissance, historique sur le téléphone, export CSV et GPX |
 | Télécommande | Mode d'entrée, courbe de gaz dessinée (formule du firmware), zone morte, rampes, gâchette en direct, calibration PPM |
 | Direct | Toutes les valeurs temps réel, graphiques, journal CSV |
 | Moteur / App | Tous les réglages `mcconf` / `appconf` groupés comme dans VESC Tool, recherche, aide ; barre « Écrire » avec aperçu des changements ; relecture de vérification ; import/export XML |
-| Détection | Assistant FOC avec les préréglages moteur de VESC Tool, détection CAN, mesure R/L |
+| Détection | Assistant FOC avec les préréglages et photos de moteurs de VESC Tool (plus le Maytech 6579), usage « hélice » appliqué comme VESC Tool, détection CAN, mesure R/L |
 | Pilotage | Gaz, courant, régime, frein, uniquement tant que le bouton est maintenu |
 | Entrées | PPM, ADC, horizon artificiel (IMU) |
 | Terminal | Commandes du terminal VESC |
@@ -38,4 +38,5 @@ node vesc/tests/protocol.test.mjs    # protocole + 50 définitions de paramètre
 python3 vesc/tools/convert_config.py ../vesc_tool/res/config vesc/config   # régénérer les définitions
 ```
 
-Licence GPL-3.0 (`LICENSE`).
+Licence GPL-3.0 (`LICENSE`). Les photos de `img/motors/*.webp` et `img/propeller.webp` viennent de
+VESC Tool (`res/images`, GPL-3.0), réduites ; les illustrations `.svg` sont propres à l'atelier.

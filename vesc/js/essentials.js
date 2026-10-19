@@ -4,6 +4,7 @@
 
 import { $, el, fmt, toast } from './ui.js';
 import { loadIndex } from './config.js';
+import { profileCard, profileChecks } from './profiles.js';
 
 const SECTIONS = [
   ['Batterie', 'mcconf', [
@@ -49,6 +50,9 @@ export function initEssentials(ctx) {
       page.append(empty);
       return;
     }
+
+    page.append(el('div', 'section-label', 'Moteur'));
+    page.append(profileCard(ctx, () => refresh()));
 
     page.append(el('div', 'section-label', 'Vérifications'));
     const checks = el('div', 'card checks');
@@ -169,7 +173,7 @@ async function computeChecks(ctx) {
   const cutE = mc.get('l_battery_cut_end');
 
   if (Number.isFinite(cells) && Number.isFinite(vin) && vin > 5) {
-    if (vin > cells * 4.25) out.push(['bad', 'Nombre de cellules trop bas', fmt(vin) + ' V mesurés, impossible avec ' + cells + ' cellules (max ' + fmt(cells * 4.2) + ' V). Ta batterie a sans doute ' + Math.round(vin / 3.8) + ' cellules.']);
+    if (vin > cells * 4.25) out.push(['bad', 'Nombre de cellules trop bas', fmt(vin) + ' V mesurés, impossible avec ' + cells + ' cellules (max ' + fmt(cells * 4.2) + ' V). Ta batterie a entre ' + Math.ceil(vin / 4.2) + ' et ' + Math.floor(vin / 3.0) + ' cellules : vérifie le « S » écrit dessus.']);
     else if (vin < cells * 2.9) out.push(['bad', 'Nombre de cellules trop haut', fmt(vin) + ' V mesurés, trop peu pour ' + cells + ' cellules. Vérifie le « S » de ta batterie.']);
     else out.push(['ok', cells + ' cellules', fmt(vin) + ' V mesurés, soit ' + fmt(vin / cells, 2) + ' V par cellule.']);
   }
@@ -196,6 +200,7 @@ async function computeChecks(ctx) {
     const permanent = app.has('permanent_uart_enabled') && app.get('permanent_uart_enabled');
     if (!use.includes('UART') && !permanent) out.push(['warn', 'UART désactivé', '« APP to Use » vaut « ' + use + ' » : le module Bluetooth risque de ne plus parler au contrôleur. Choisis une option avec UART (page Télécommande).']);
   }
+  out.push(...profileChecks(mc));
   if (!out.some((c) => c[0] === 'warn' || c[0] === 'bad')) out.push(['ok', 'Rien à signaler', 'Les réglages essentiels sont cohérents.']);
   return out;
 }
