@@ -5,12 +5,12 @@
 import { el, fmt, toast } from './ui.js';
 
 export const PROFILES = {
-  maytech6579: {
-    name: 'Maytech 6579 110KV',
-    img: 'img/motors/maytech_6579.svg',
-    // Fiche Maytech (MTO6579-110-WPC) : 110 KV, 24N20P (10 paires de pôles), 150 A nominal,
-    // 24-48 V avec l'hélice repliable MICP27F, environ 1,1 kg.
-    specs: [['KV', '110 tr/min/V'], ['Pôles', '20 (24N20P)'], ['Courant nominal', '150 A'], ['Tension', '24–48 V (hélice MICP27F)']],
+  motor6579: {
+    name: 'Moteur 6579 110 KV',
+    img: 'img/motors/motor_6579.svg',
+    // Fiche du fabricant : 110 KV, 24N20P (10 paires de pôles), 150 A nominal,
+    // 24-48 V avec l'hélice repliable d'origine, environ 1,1 kg.
+    specs: [['KV', '110 tr/min/V'], ['Pôles', '20 (24N20P)'], ['Courant nominal', '150 A'], ['Tension', "24–48 V (hélice d'origine)"]],
     kv: 110,
     poles: 20,
     maxVolt: 48,
@@ -58,7 +58,7 @@ export function profileValues(p, rider, cells) {
 
 // Carte « Profil moteur » de la page Essentiel.
 export function profileCard(ctx, onApplied) {
-  const p = PROFILES.maytech6579;
+  const p = PROFILES.motor6579;
   const card = el('div', 'card profile');
   const head = el('div', 'profile-head');
   const img = el('img');
@@ -80,7 +80,7 @@ export function profileCard(ctx, onApplied) {
   const mc = ctx.state.configs.mcconf;
   const vin = ctx.state.lastValues?.v_in;
   // La tension seule ne tranche pas (48 V = 12S chargée ou 13S à mi-charge) : on garde le réglage actuel
-  // s'il est cohérent, sinon 12S (recommandation Maytech) si possible, sinon le plus petit nombre possible.
+  // s'il est cohérent, sinon 12S (recommandation du fabricant) si possible, sinon le plus petit nombre possible.
   const fits = (n) => !Number.isFinite(vin) || vin < 20 || (vin <= n * 4.25 && vin >= n * 2.9);
   let cells = mc?.has('si_battery_cells') ? mc.get('si_battery_cells') : 12;
   if (cells < 10 || cells > 14 || !fits(cells)) cells = fits(12) ? 12 : Math.min(14, Math.max(10, Math.ceil(vin / 4.2)));
@@ -123,7 +123,7 @@ export function profileCard(ctx, onApplied) {
     }
     const full = cells * 4.2;
     warn.hidden = full <= p.maxVolt + 3;
-    warn.textContent = 'Batterie chargée à ' + fmt(full, 1) + ' V : Maytech annonce 24–48 V avec l\'hélice MICP27F. '
+    warn.textContent = 'Batterie chargée à ' + fmt(full, 1) + ' V : le fabricant annonce 24–48 V avec l\'hélice repliable d\'origine. '
       + 'Au-delà, l\'hélice tourne plus vite que prévu et le moteur chauffe ; reste en 12S sauf hélice plus petite.';
   }
   preview();
@@ -136,13 +136,13 @@ export function profileCard(ctx, onApplied) {
     let n = 0;
     for (const [k, val] of Object.entries(v)) if (cfg.has(k)) { cfg.set(k, val, true); n++; }
     cfg._emit(null);
-    saveProfile('maytech6579');
+    saveProfile('motor6579');
     toast(n + ' réglages préremplis. Vérifie puis « Enregistrer ». Lance ensuite la détection FOC.');
     onApplied?.();
   };
   card.append(btn, el('p', 'muted small-text',
-    'Points de départ (fiche Maytech, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur. '
-    + "Sur la télécommande Maytech : 10 paires de pôles, rapport 1,0, mode « Surfboard »."));
+    'Points de départ (fiche du fabricant, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur. '
+    + "Sur la télécommande du kit : 10 paires de pôles, rapport 1,0, mode « Surfboard »."));
   return card;
 }
 

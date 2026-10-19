@@ -1,8 +1,7 @@
-// BMS Daly par Bluetooth (service fff0, notification fff1, écriture fff2), deux générations :
-// - Modbus (trames 0xD2, BMS H/K/M/S récents) : mesures, réglages et commandes ;
+// BMS par Bluetooth (service fff0, notification fff1, écriture fff2), deux générations :
+// - Modbus (trames 0xD2, BMS récents) : mesures, réglages et commandes ;
 // - « A5 » (anciens modules) : mesures, MOS et état de charge seulement.
-// Références : « dalyModbusProtocol.xlsx » de Daly (repris par syssi/esphome-daly-bms) et
-// « Daly UART/485 Communications Protocol V1.2 ».
+// Références : tableau des registres Modbus et protocole UART/485 V1.2 publiés par le fabricant.
 
 const SVC = '0000fff0-0000-1000-8000-00805f9b34fb';
 const CH_NOTIFY = '0000fff1-0000-1000-8000-00805f9b34fb';
@@ -27,7 +26,7 @@ export const d2Read = (reg, count) => withCrc([0xD2, 0x03, reg >> 8, reg & 0xFF,
 export const d2Write = (reg, value) => withCrc([0xD2, 0x06, reg >> 8, reg & 0xFF, (value >> 8) & 0xFF, value & 0xFF]);
 
 export function a5Frame(cmd, data = []) {
-  // 0x80 : adresse « appli Bluetooth » du protocole Daly.
+  // 0x80 : adresse « appli Bluetooth » du protocole.
   const f = [0xA5, 0x80, cmd, 0x08, 0, 0, 0, 0, 0, 0, 0, 0];
   data.forEach((b, i) => { f[4 + i] = b; });
   let sum = 0;
@@ -139,7 +138,7 @@ export function regToValue(conv, raw) {
   }
 }
 
-// `prevRaw` garde le signe des courants (la doc Daly ne précise pas lequel est utilisé).
+// `prevRaw` garde le signe des courants (la documentation ne précise pas lequel est utilisé).
 export function valueToReg(conv, v, prevRaw) {
   switch (conv) {
     case 'mv': return Math.round(v * 1000);
@@ -155,7 +154,7 @@ const ascii = (regs) => regs.map((r) => String.fromCharCode(r >> 8, r & 0xFF)).j
 
 // ---------------------------------------------------------------- liaison
 
-export class DalyBms extends EventTarget {
+export class Bms extends EventTarget {
   constructor(transport) {
     super();
     this.t = transport;
@@ -413,7 +412,7 @@ export class BleBms {
 
   async open(device = null) {
     this.device = device || await navigator.bluetooth.requestDevice({
-      filters: [{ services: [0xfff0] }, { namePrefix: 'DL' }, { namePrefix: 'BMS' }, { namePrefix: 'DALY' }],
+      filters: [{ services: [0xfff0] }, { namePrefix: 'DL' }, { namePrefix: 'BMS' }],
       optionalServices: [SVC],
     });
     this.name = this.device.name || 'BMS';
@@ -484,7 +483,7 @@ export class SimBms {
       0x9F: 200, 0xA0: 300, 0xA1: 10, 0xA2: 15, 0xA3: 3900, 0xA4: 30, 0xA5: 1, 0xA6: 1, 0xA8: 80 + 40 };
     for (const [k, v] of Object.entries(s)) set(Number(k), v);
     const str = (reg, text, n) => { for (let i = 0; i < n; i++) set(reg + i, ((text.charCodeAt(2 * i) || 0) << 8) | (text.charCodeAt(2 * i + 1) || 0)); };
-    str(0xA9, '20240512-1.32', 8); str(0xB1, 'DL-H12S-150A', 8); str(0xB9, 'DEMO000123456789', 16); str(0xC9, '123456', 3);
+    str(0xA9, '20240512-1.32', 8); str(0xB1, 'BMS-12S-150A', 8); str(0xB9, 'DEMO000123456789', 16); str(0xC9, '123456', 3);
     set(0xCC, (24 << 8) | 5); set(0xCD, 12 << 8);
     this.soc = 78.4;
   }

@@ -7,7 +7,7 @@ const ASSETS = ["./", "./index.html", "./i18n/i18n.js", "./i18n/en.json", "./i18
   "./vesc/js/config.js", "./vesc/js/transport.js", "./vesc/js/sim.js",
   "./vesc/js/ui.js", "./vesc/js/lock.js", "./vesc/js/diag.js", "./vesc/js/essentials.js", "./vesc/js/remote.js", "./vesc/js/session.js",
   "./vesc/js/profiles.js",
-  "./bms/", "./bms/index.html", "./bms/css/bms.css", "./bms/js/app.js", "./bms/js/daly.js", "./vesc/img/motors/maytech_6579.svg", "./vesc/img/propeller.webp", "./vesc/config/index.json"];
+  "./bms/", "./bms/index.html", "./bms/css/bms.css", "./bms/js/app.js", "./bms/js/protocol.js", "./vesc/img/motors/motor_6579.svg", "./vesc/img/propeller.webp", "./vesc/config/index.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));

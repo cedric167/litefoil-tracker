@@ -52,7 +52,7 @@ Code sous GPL-3.0 (`vesc/LICENSE`), comme VESC Tool.
 ## Atelier batterie
 
 L'onglet **Batterie** affiche l'essentiel ; la carte « Atelier batterie » ouvre `bms/`, une réplique de
-l'appli Daly SMART BMS au même style : cellules une par une, alarmes en français, tous les seuils de
+l'appli du fabricant du BMS au même style : cellules une par une, alarmes en français, tous les seuils de
 protection (avec mot de passe, vérifications et aperçu avant écriture), MOS de charge et décharge,
 calibrage de la charge, infos et sauvegarde du BMS. Détails : `bms/README.md`.
 
