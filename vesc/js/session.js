@@ -1,6 +1,6 @@
 // Sessions : télémétrie du VESC + position GPS du téléphone, tracées sur la carte (couleur = puissance),
 // conservées sur le téléphone (IndexedDB) et exportables en CSV ou GPX. C'est ce que les riders
-// allaient chercher dans Metr.
+// allaient chercher dans des boîtiers d'enregistrement à part.
 
 import { $, el, fmt, fmtInt, fmtDuration, toast, download, haptic, setKv } from './ui.js';
 

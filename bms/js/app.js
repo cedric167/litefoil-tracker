@@ -1,4 +1,4 @@
-import { DalyBms, BleBms, SimBms, SETTINGS, settingList, valueToReg } from './daly.js';
+import { Bms, BleBms, SimBms, SETTINGS, settingList, valueToReg } from './protocol.js';
 import { $, $$, toast, fmt, fmtInt, clamp, download, pickFile, el, setKv, haptic, sheet } from '../../vesc/js/ui.js';
 
 const state = {
@@ -72,7 +72,7 @@ async function keepAwake(on) {
 
 async function connect(transport, device = null) {
   if (state.bms) await disconnect();
-  const bms = new DalyBms(transport);
+  const bms = new Bms(transport);
   setConn('Connexion…', 'busy');
   try {
     await bms.open(device);
@@ -80,7 +80,7 @@ async function connect(transport, device = null) {
     setConn('Hors ligne', '');
     if (e.name !== 'NotFoundError') {
       sheet('Connexion impossible', [el('div', 'banner bad', e.message),
-        el('p', 'muted', "Vérifie que la batterie est allumée, que l'appli Daly est fermée, et que le BMS n'est pas appairé dans les réglages Bluetooth du téléphone (« Oublier »). "
+        el('p', 'muted', "Vérifie que la batterie est allumée, que l'appli du fabricant est fermée, et que le BMS n'est pas appairé dans les réglages Bluetooth du téléphone (« Oublier »). "
           + "Certains BMS s'endorment au repos : branche le chargeur ou tire un peu de courant pour les réveiller.")]);
     }
     try { await bms.close(); } catch (e2) { /* déjà fermé */ }
@@ -155,7 +155,7 @@ function onDisconnected(manual = false) {
   $('#homeLive').hidden = true;
   $('#infoCard').hidden = true;
   $('#devLabel').hidden = true;
-  $('#topSub').textContent = 'BMS Daly';
+  $('#topSub').textContent = 'BMS';
   refreshLast();
   if (!manual) toast('Batterie déconnectée', true);
 }
@@ -413,7 +413,7 @@ async function renderSettings() {
   if (state.bms.proto !== 'd2') {
     const c = el('div', 'card cfg-empty');
     c.append(el('div', 'cfg-title', 'Réglages non disponibles'),
-      el('p', 'muted', "Ce BMS utilise l'ancien protocole Daly (A5), qui ne permet pas de changer les protections par Bluetooth de façon documentée. Les commandes (MOS, charge) restent disponibles."));
+      el('p', 'muted', "Ce BMS utilise l'ancien protocole (A5), qui ne permet pas de changer les protections par Bluetooth de façon documentée. Les commandes (MOS, charge) restent disponibles."));
     page.append(c);
     return;
   }
@@ -423,7 +423,7 @@ async function renderSettings() {
   if (!state.unlocked) {
     const c = el('div', 'card lock-card');
     c.append(el('div', 'cfg-title', 'Mot de passe des réglages'),
-      el('p', 'muted small-text', "Comme dans l'appli Daly : le mot de passe des paramètres (123456 par défaut) protège contre les changements par erreur."));
+      el('p', 'muted small-text', "Comme dans l'appli du fabricant : le mot de passe des paramètres (123456 par défaut) protège contre les changements par erreur."));
     const inp = el('input');
     inp.type = 'password';
     inp.inputMode = 'numeric';

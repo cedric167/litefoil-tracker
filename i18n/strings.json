@@ -339,9 +339,9 @@
   "en": "24 km/h",
   "es": "24 km/h"
  },
- "24–48 V (hélice MICP27F)": {
-  "en": "24–48 V (MICP27F propeller)",
-  "es": "24–48 V (hélice MICP27F)"
+ "24–48 V (hélice d'origine)": {
+  "en": "24–48 V (stock propeller)",
+  "es": "24–48 V (hélice original)"
  },
  "25 Ah": {
   "en": "25 Ah",
@@ -667,9 +667,9 @@
   "en": "Module power",
   "es": "Alimentación del módulo"
  },
- "Allume la batterie et ferme l'appli Daly SMART BMS : le BMS n'accepte qu'un téléphone à la fois.": {
-  "en": "Turn on the battery and close the Daly SMART BMS app: the BMS only accepts one phone at a time.",
-  "es": "Enciende la batería y cierra la app Daly SMART BMS: el BMS solo acepta un teléfono a la vez."
+ "Allume la batterie et ferme l'appli du fabricant : le BMS n'accepte qu'un téléphone à la fois.": {
+  "en": "Turn the battery on and close the manufacturer's app: the BMS accepts only one phone at a time.",
+  "es": "Enciende la batería y cierra la app del fabricante: el BMS solo acepta un teléfono a la vez."
  },
  "Allume la batterie puis appuie sur « Connecter » et choisis le module Bluetooth de ta batterie (le BMS). L'appli reconnaît automatiquement les protocoles courants.": {
   "en": "Turn on the battery, then tap \"Connect\" and pick your battery's Bluetooth module (the BMS). The app automatically recognizes common protocols.",
@@ -867,10 +867,6 @@
   "en": "BMS",
   "es": "BMS"
  },
- "BMS Daly": {
-  "en": "Daly BMS",
-  "es": "BMS Daly"
- },
  "BMS injoignable": {
   "en": "BMS unreachable",
   "es": "BMS inaccesible"
@@ -906,6 +902,10 @@
  "Batterie chargée à": {
   "en": "Battery charged to",
   "es": "Batería cargada al"
+ },
+ "Batterie chargée à 50.4 V : le fabricant annonce 24–48 V avec l'hélice repliable d'origine. Au-delà, l'hélice tourne plus vite que prévu et le moteur chauffe ; reste en 12S sauf hélice plus petite.": {
+  "en": "Battery charged to 50.4 V: the manufacturer states 24–48 V with the stock folding propeller. Above that, the propeller spins faster than intended and the motor heats up; stay at 12S unless you use a smaller propeller.",
+  "es": "Batería cargada a 50.4 V: el fabricante indica 24–48 V con la hélice plegable original. Por encima, la hélice gira más rápido de lo previsto y el motor se calienta; quédate en 12S salvo con una hélice más pequeña."
  },
  "Batterie déconnectée": {
   "en": "Battery disconnected",
@@ -1047,9 +1047,9 @@
   "en": "Map unavailable offline: the session is still recorded.",
   "es": "Mapa no disponible sin conexión: la sesión se registra igualmente."
  },
- "Ce BMS utilise l'ancien protocole Daly (A5), qui ne permet pas de changer les protections par Bluetooth de façon documentée. Les commandes (MOS, charge) restent disponibles.": {
-  "en": "This BMS uses the legacy Daly protocol (A5), which has no documented way to change protections over Bluetooth. Commands (MOS, charge) remain available.",
-  "es": "Este BMS usa el protocolo Daly antiguo (A5), que no permite cambiar las protecciones por Bluetooth de forma documentada. Los comandos (MOS, carga) siguen disponibles."
+ "Ce BMS utilise l'ancien protocole (A5), qui ne permet pas de changer les protections par Bluetooth de façon documentée. Les commandes (MOS, charge) restent disponibles.": {
+  "en": "This BMS uses the old protocol (A5), which has no documented way to change protections over Bluetooth. The commands (MOS, charge) remain available.",
+  "es": "Este BMS usa el protocolo antiguo (A5), que no permite cambiar las protecciones por Bluetooth de forma documentada. Los comandos (MOS, carga) siguen disponibles."
  },
  "Ce n'est pas dangereux, mais la limite batterie ne servira jamais : elle est au-dessus du courant moteur.": {
   "en": "It's not dangerous, but the battery limit will never kick in: it's above the motor current.",
@@ -1287,9 +1287,9 @@
   "en": "Command…",
   "es": "Comando…"
  },
- "Comme dans l'appli Daly : le mot de passe des paramètres (123456 par défaut) protège contre les changements par erreur.": {
-  "en": "Same as in the Daly app: the settings password (123456 by default) protects against accidental changes.",
-  "es": "Como en la app Daly: la contraseña de parámetros (123456 por defecto) protege contra cambios por error."
+ "Comme dans l'appli du fabricant : le mot de passe des paramètres (123456 par défaut) protège contre les changements par erreur.": {
+  "en": "As in the manufacturer's app: the settings password (123456 by default) protects against accidental changes.",
+  "es": "Como en la app del fabricante: la contraseña de los parámetros (123456 por defecto) protege contra cambios por error."
  },
  "Comme le mode « Propeller » de l'assistant VESC Tool : arrêt de 500 ms sur défaut, pas de démarrage HFI, limites du BMS actives.": {
   "en": "Like the \"Propeller\" mode of the VESC Tool wizard: 500 ms stop on fault, no HFI start, BMS limits active.",
@@ -1714,10 +1714,6 @@
  "Câblage TX / RX": {
   "en": "TX / RX wiring",
   "es": "Cableado TX / RX"
- },
- "DALY": {
-  "en": "DALY",
-  "es": "DALY"
  },
  "DEMO000123456789": {
   "en": "DEMO000123456789",
@@ -2395,6 +2391,10 @@
   "en": "Same as current settings",
   "es": "Idéntico a los ajustes actuales"
  },
+ "Il faut un module Bluetooth basse consommation (BLE) prévu pour VESC. Les modules Bluetooth classiques (non BLE) ne fonctionnent pas ; certains vieux modules BLE génériques sont peu fiables.": {
+  "en": "You need a Bluetooth Low Energy (BLE) module made for VESC. Classic (non-BLE) Bluetooth modules don't work; some old generic BLE modules are unreliable.",
+  "es": "Hace falta un módulo Bluetooth de baja energía (BLE) previsto para VESC. Los módulos Bluetooth clásicos (no BLE) no funcionan; algunos módulos BLE genéricos antiguos son poco fiables."
+ },
  "Ils sont transmis par Bluetooth au tracker, qui les conserve dans sa mémoire et les utilise pour se connecter à sportstracklive.com et y publier vos sorties. Ils ne sont envoyés à aucun serveur de Lite Foil. Le bouton « Effacer le compte » les supprime du tracker.": {
   "en": "They are sent via Bluetooth to the tracker, which keeps them in its memory and uses them to connect to sportstracklive.com and publish your sessions there. They are not sent to any Lite Foil server. The \"Erase account\" button removes them from the tracker.",
   "es": "Se transmiten por Bluetooth al tracker, que los conserva en su memoria y los usa para conectarse a sportstracklive.com y publicar allí tus salidas. No se envían a ningún servidor de Lite Foil. El botón «Borrar la cuenta» los elimina del tracker."
@@ -2759,10 +2759,6 @@
   "en": "Firmware 5 and 6 fix many detection and Bluetooth issues. Update if possible.",
   "es": "Los firmwares 5 y 6 corrigen muchos problemas de detección y de Bluetooth. Actualiza si puedes."
  },
- "Les modules VESC (NRF51/NRF52, VESC Express, Flipsky BT) fonctionnent. Les BT05 et HC-05 ne fonctionnent pas ; les vieux HM-10 sont peu fiables.": {
-  "en": "VESC modules (NRF51/NRF52, VESC Express, Flipsky BT) work. BT05 and HC-05 don't work; old HM-10s are unreliable.",
-  "es": "Los módulos VESC (NRF51/NRF52, VESC Express, Flipsky BT) funcionan. Los BT05 y HC-05 no funcionan; los HM-10 antiguos son poco fiables."
- },
  "Les plus belles sessions en images": {
   "en": "The best sessions in pictures",
   "es": "Las mejores sesiones en imágenes"
@@ -2955,14 +2951,6 @@
   "en": "Hardware",
   "es": "Hardware"
  },
- "Maytech 6579": {
-  "en": "Maytech 6579",
-  "es": "Maytech 6579"
- },
- "Maytech 6579 110KV": {
-  "en": "Maytech 6579 110KV",
-  "es": "Maytech 6579 110KV"
- },
  "Menus par inclinaison": {
   "en": "Tilt menus",
   "es": "Menús por inclinación"
@@ -3078,6 +3066,14 @@
  "Moteur": {
   "en": "Motor",
   "es": "Motor"
+ },
+ "Moteur 6579": {
+  "en": "6579 motor",
+  "es": "Motor 6579"
+ },
+ "Moteur 6579 110 KV": {
+  "en": "6579 110 KV motor",
+  "es": "Motor 6579 110 KV"
  },
  "Moteur : réduction dès": {
   "en": "Motor: reduction from",
@@ -3355,13 +3351,13 @@
   "en": "Acknowledged points",
   "es": "Puntos confirmados"
  },
- "Points de départ (fiche Maytech, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur.": {
-  "en": "Starting points (Maytech datasheet, eFoil guides). FOC detection is still essential: it measures your motor.",
-  "es": "Valores de partida (ficha de Maytech, guías de eFoil). La detección FOC sigue siendo imprescindible: mide tu motor."
+ "Points de départ (fiche du fabricant, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur.": {
+  "en": "Starting points (manufacturer datasheet, eFoil guides). FOC detection is still essential: it measures your motor.",
+  "es": "Puntos de partida (ficha del fabricante, guías eFoil). La detección FOC sigue siendo imprescindible: mide tu motor."
  },
- "Points de départ (fiche Maytech, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur. Sur la télécommande Maytech : 10 paires de pôles, rapport 1,0, mode « Surfboard ».": {
-  "en": "Starting points (Maytech datasheet, eFoil guides). FOC detection is still essential: it measures your motor. On the Maytech remote: 10 pole pairs, ratio 1.0, \"Surfboard\" mode.",
-  "es": "Puntos de partida (ficha Maytech, guías eFoil). La detección FOC sigue siendo imprescindible: mide tu motor. En el mando Maytech: 10 pares de polos, relación 1,0, modo «Surfboard»."
+ "Points de départ (fiche du fabricant, guides eFoil). La détection FOC reste indispensable : elle mesure ton moteur. Sur la télécommande du kit : 10 paires de pôles, rapport 1,0, mode « Surfboard ».": {
+  "en": "Starting points (manufacturer datasheet, eFoil guides). FOC detection is still essential: it measures your motor. On the kit remote: 10 pole pairs, ratio 1.0, \"Surfboard\" mode.",
+  "es": "Puntos de partida (ficha del fabricante, guías eFoil). La detección FOC sigue siendo imprescindible: mide tu motor. En el mando del kit: 10 pares de polos, relación 1,0, modo «Surfboard»."
  },
  "Polices de caractères chargées depuis Google Fonts (fonts.googleapis.com) : votre adresse IP est alors vue par Google, comme pour toute ressource web.": {
   "en": "Fonts loaded from Google Fonts (fonts.googleapis.com): your IP address is then seen by Google, as with any web resource.",
@@ -3435,10 +3431,6 @@
   "en": "A5 protocol detected",
   "es": "Protocolo A5 detectado"
  },
- "Protocole Daly (Modbus et A5) · compatible BMS Daly SMART": {
-  "en": "Daly protocol (Modbus and A5) · compatible with Daly SMART BMS",
-  "es": "Protocolo Daly (Modbus y A5) · compatible con BMS Daly SMART"
- },
  "Protocole Modbus détecté": {
   "en": "Modbus protocol detected",
   "es": "Protocolo Modbus detectado"
@@ -3446,6 +3438,10 @@
  "Protocole Modbus · réglages disponibles": {
   "en": "Modbus protocol · settings available",
   "es": "Protocolo Modbus · ajustes disponibles"
+ },
+ "Protocoles Modbus et A5": {
+  "en": "Modbus and A5 protocols",
+  "es": "Protocolos Modbus y A5"
  },
  "Précharge ratée": {
   "en": "Precharge failed",
@@ -3663,9 +3659,9 @@
   "en": "Motor RPM",
   "es": "Revoluciones del motor"
  },
- "Réglage complet du BMS Daly par Bluetooth : état, cellules, alarmes, protections, commandes.": {
-  "en": "Full Daly BMS setup over Bluetooth: status, cells, alarms, protections, commands.",
-  "es": "Configuración completa del BMS Daly por Bluetooth: estado, celdas, alarmas, protecciones, comandos."
+ "Réglage complet du BMS par Bluetooth : état, cellules, alarmes, protections, commandes.": {
+  "en": "Full BMS setup over Bluetooth: status, cells, alarms, protections, commands.",
+  "es": "Ajuste completo del BMS por Bluetooth: estado, celdas, alarmas, protecciones, comandos."
  },
  "Réglage complet du contrôleur VESC par Bluetooth : télémétrie, configuration moteur et app, détection, firmware.": {
   "en": "Full VESC controller setup over Bluetooth: telemetry, motor and app configuration, detection, firmware.",
@@ -3971,9 +3967,9 @@
   "en": "On the remote: open the menu (A + B), go to",
   "es": "En el mando: abre el menú (A + B), ve a"
  },
- "Sur la télécommande Maytech : 10 paires de pôles, rapport 1,0, mode « Surfboard ».": {
-  "en": "On the Maytech remote: 10 pole pairs, ratio 1.0, \"Surfboard\" mode.",
-  "es": "En el mando Maytech: 10 pares de polos, relación 1,0, modo «Surfboard»."
+ "Sur la télécommande du kit : 10 paires de pôles, rapport 1,0, mode « Surfboard ».": {
+  "en": "On the kit remote: 10 pole pairs, ratio 1.0, \"Surfboard\" mode.",
+  "es": "En el mando del kit: 10 pares de polos, relación 1,0, modo «Surfboard»."
  },
  "Sur un eFoil on freine peu : une petite valeur (−5 à −10 A) suffit.": {
   "en": "On an eFoil you rarely brake: a small value (−5 to −10 A) is enough.",
@@ -4271,10 +4267,6 @@
   "en": "Use Chrome on Android.",
   "es": "Usa Chrome en Android."
  },
- "V : Maytech annonce 24–48 V avec l'hélice MICP27F.": {
-  "en": "V: Maytech rates it 24–48 V with the MICP27F propeller.",
-  "es": "V: Maytech indica 24–48 V con la hélice MICP27F."
- },
  "V chargée": {
   "en": "V charged",
   "es": "V cargada"
@@ -4419,9 +4411,9 @@
   "en": "Check the voltage required by the module (3.3 V or 5 V) and that ground is shared with the VESC.",
   "es": "Comprueba la tensión que pide el módulo (3,3 V o 5 V) y que la masa sea común con el VESC."
  },
- "Vérifie que la batterie est allumée, que l'appli Daly est fermée, et que le BMS n'est pas appairé dans les réglages Bluetooth du téléphone (« Oublier »).": {
-  "en": "Check that the battery is on, the Daly app is closed, and the BMS is not paired in the phone's Bluetooth settings (\"Forget\").",
-  "es": "Comprueba que la batería esté encendida, que la app Daly esté cerrada y que el BMS no esté emparejado en los ajustes Bluetooth del teléfono («Olvidar»)."
+ "Vérifie que la batterie est allumée, que l'appli du fabricant est fermée, et que le BMS n'est pas appairé dans les réglages Bluetooth du téléphone (« Oublier »).": {
+  "en": "Check that the battery is on, that the manufacturer's app is closed, and that the BMS isn't paired in the phone's Bluetooth settings (\"Forget\").",
+  "es": "Comprueba que la batería está encendida, que la app del fabricante está cerrada y que el BMS no está emparejado en los ajustes Bluetooth del teléfono («Olvidar»)."
  },
  "Watchdog": {
   "en": "Watchdog",
@@ -4915,6 +4907,10 @@
   "en": "not connected",
   "es": "no conectada"
  },
+ "non enregistrée": {
+  "en": "unsaved",
+  "es": "sin guardar"
+ },
  "non répertorié": {
   "en": "not listed",
   "es": "no listado"
@@ -5374,6 +5370,10 @@
  "Éteins la planche dix secondes, rallume-la, puis réessaie. Sur Android, couper puis rallumer le Bluetooth du téléphone aide aussi.": {
   "en": "Turn the board off for ten seconds, turn it back on, then try again. On Android, turning the phone's Bluetooth off and on also helps.",
   "es": "Apaga la tabla diez segundos, vuelve a encenderla y luego inténtalo de nuevo. En Android, apagar y encender el Bluetooth del teléfono también ayuda."
+ },
+ "à enregistrer": {
+  "en": "to save",
+  "es": "por guardar"
  },
  "à l'arrêt ·": {
   "en": "stopped ·",

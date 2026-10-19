@@ -9,7 +9,7 @@ const STEPS = [
   ['Module oublié dans les réglages du téléphone',
     "Si le module apparaît dans les réglages Bluetooth du téléphone (appareils appairés), choisis « Oublier ». Une liaison système empêche l'appli de s'y connecter."],
   ['Bon type de module',
-    "Les modules VESC (NRF51/NRF52, VESC Express, Flipsky BT) fonctionnent. Les BT05 et HC-05 ne fonctionnent pas ; les vieux HM-10 sont peu fiables."],
+    "Il faut un module Bluetooth basse consommation (BLE) prévu pour VESC. Les modules Bluetooth classiques (non BLE) ne fonctionnent pas ; certains vieux modules BLE génériques sont peu fiables."],
   ["L'UART est activé dans le VESC",
     "« APP to Use » doit inclure l'UART (« UART », « PPM and UART » ou « ADC and UART »), ou « Enable Permanent UART » doit être coché. En « PPM » seul, le Bluetooth ne parle pas au contrôleur. À corriger par USB si besoin."],
   ['Câblage TX / RX',

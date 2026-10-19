@@ -1145,7 +1145,7 @@ $('#btnRtRecord').onclick = () => {
 
 const MOTORS = [
   // Nom, poids, pertes max (W), openloop ERPM, sensorless ERPM, image (préréglages de l'assistant VESC Tool)
-  ['Maytech 6579', 'eFoil · ~1,1 kg', 150, 700, 4000, 'maytech_6579.svg'],
+  ['Moteur 6579', 'eFoil · ~1,1 kg', 150, 700, 4000, 'motor_6579.svg'],
   ['Mini outrunner', '~75 g', 20, 1400, 4000, 'outrunner_mini.webp'],
   ['Petit outrunner', '~200 g', 50, 1400, 4000, 'outrunner_small.webp'],
   ['Outrunner moyen', '~750 g', 120, 700, 4000, '6374.webp'],
