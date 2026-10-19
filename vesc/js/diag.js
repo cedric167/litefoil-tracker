@@ -30,6 +30,12 @@ export function showDiagnostic(error) {
   for (const [title, text] of STEPS) {
     const li = el('li');
     li.append(el('b', '', title), el('span', '', text));
+    if (title.startsWith('Câblage')) {
+      const img = el('img', 'diag-img');
+      img.src = 'img/controller.webp';
+      img.alt = 'Connecteurs du contrôleur : TX et RX sur le connecteur COMM';
+      li.append(img, el('span', 'diag-cap', 'Le module Bluetooth se branche sur le connecteur COMM (TX, RX, 5 V ou 3,3 V, GND).'));
+    }
     list.append(li);
   }
   parts.push(list);

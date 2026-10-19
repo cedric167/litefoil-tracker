@@ -83,6 +83,14 @@ export function initRemote(ctx) {
     page.append(curveCard);
 
     page.append(el('div', 'section-label', "Mode d'entrée"));
+    const inImg = el('div', 'wiz-usage');
+    const pic = el('img');
+    pic.src = 'img/input_' + (pre === 'app_ppm_conf' ? 'ppm' : pre === 'app_adc_conf' ? 'adc' : 'uart') + '.webp';
+    pic.alt = '';
+    inImg.append(pic, el('span', '', pre === 'app_ppm_conf' ? 'Récepteur radio (PPM) : la télécommande envoie une impulsion de 1 à 2 ms.'
+      : pre === 'app_adc_conf' ? 'Gâchette analogique (ADC) : une tension entre 0 et 3,3 V.'
+        : 'Télécommande série (UART) : la commande arrive par le câble COMM.'));
+    page.append(inImg);
     const modeList = el('div', 'params');
     modeList.append(ctx.makeParamRow(app, 'app_to_use', {
       label: 'Entrée utilisée',

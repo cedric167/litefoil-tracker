@@ -38,5 +38,5 @@ node vesc/tests/protocol.test.mjs    # protocole + 50 définitions de paramètre
 python3 vesc/tools/convert_config.py ../vesc_tool/res/config vesc/config   # régénérer les définitions
 ```
 
-Licence GPL-3.0 (`LICENSE`). Les photos de `img/motors/*.webp` et `img/propeller.webp` viennent de
+Licence GPL-3.0 (`LICENSE`). Les photos `img/*.webp` et `img/motors/*.webp` viennent de
 VESC Tool (`res/images`, GPL-3.0), réduites ; les illustrations `.svg` sont propres à l'atelier.

@@ -52,7 +52,7 @@ export function initEssentials(ctx) {
     }
 
     page.append(el('div', 'section-label', 'Moteur'));
-    page.append(profileCard(ctx, () => refresh()));
+    page.append(profileCard(ctx, () => { refresh(); ctx.onProfile?.(); }));
 
     page.append(el('div', 'section-label', 'Vérifications'));
     const checks = el('div', 'card checks');
@@ -63,7 +63,10 @@ export function initEssentials(ctx) {
     if (can.length) {
       const card = el('div', 'card dual');
       const n = can.length + 1;
-      card.append(el('div', 'm-label', n + ' contrôleurs sur le bus CAN'),
+      const can = el('img', 'section-img');
+      can.src = 'img/can_dual.webp';
+      can.alt = '';
+      card.append(el('div', 'm-label', n + ' contrôleurs sur le bus CAN'), can,
         el('p', 'muted small-text', "Chaque contrôleur se règle séparément : les courants batterie et la puissance s'additionnent. "
           + 'Le bouton ci-dessous recopie les réglages de cette page sur les autres contrôleurs.'));
       const total = el('div', 'kv-grid');
@@ -78,6 +81,12 @@ export function initEssentials(ctx) {
       const cfg = ctx.state.configs[kind];
       if (!cfg) continue;
       page.append(el('div', 'section-label', title));
+      if (title === 'Batterie') {
+        const img = el('img', 'section-img');
+        img.src = 'img/battery.webp';
+        img.alt = '';
+        page.append(img);
+      }
       const list = el('div', 'params');
       for (const [name, label, hint, help] of items) {
         if (!cfg.has(name)) continue;
