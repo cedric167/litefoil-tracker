@@ -107,6 +107,10 @@
   "en": "(services:",
   "es": "(servicios:"
  },
+ "(~1 km), jamais l'adresse exacte.": {
+  "en": "(~1 km), never the exact address.",
+  "es": "(~1 km), nunca la dirección exacta."
+ },
  "(« identifiants refusés » si le mot de passe est faux).": {
   "en": "(\"credentials rejected\" if the password is wrong).",
   "es": "(«credenciales rechazadas» si la contraseña es incorrecta)."
@@ -171,9 +175,17 @@
   "en": "1 change to save",
   "es": "1 cambio por guardar"
  },
+ "1 km · en ligne": {
+  "en": "1 km · online",
+  "es": "1 km · en línea"
+ },
  "1 modification non enregistrée": {
   "en": "1 unsaved change",
   "es": "1 cambio sin guardar"
+ },
+ "1 rider bloqué · ": {
+  "en": "1 rider blocked · ",
+  "es": "1 rider bloqueado · "
  },
  "10 Ah": {
   "en": "10 Ah",
@@ -306,6 +318,10 @@
  "2 modifications non enregistrées": {
   "en": "2 unsaved changes",
   "es": "2 cambios sin guardar"
+ },
+ "2 riders bloqués · ": {
+  "en": "2 riders blocked · ",
+  "es": "2 riders bloqueados · "
  },
  "20 Ah": {
   "en": "20 Ah",
@@ -607,6 +623,10 @@
   "en": "ARMED",
   "es": "ARMADO"
  },
+ "Accepte la charte de la communauté pour participer.": {
+  "en": "Accept the community charter to take part.",
+  "es": "Acepta las normas de la comunidad para participar."
+ },
  "Accessoires": {
   "en": "Accessories",
   "es": "Accesorios"
@@ -618,6 +638,14 @@
  "Accél.": {
   "en": "Accel.",
   "es": "Acel."
+ },
+ "Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.": {
+  "en": "Turn on your visibility to appear on the map, see who's riding nearby and meet up on the water.",
+  "es": "Activa tu visibilidad para aparecer en el mapa, ver quién navega cerca y encontraros en el agua."
+ },
+ "Active ta visibilité pour voir les messages près de toi.": {
+  "en": "Turn on visibility to see messages near you.",
+  "es": "Activa la visibilidad para ver los mensajes cerca de ti."
  },
  "Actus, photos et vidéos de la communauté": {
   "en": "Community news, photos and videos",
@@ -803,6 +831,10 @@
   "en": "No firmware published yet.",
   "es": "Todavía no hay firmware publicado."
  },
+ "Aucun message près de toi pour l'instant.": {
+  "en": "No messages near you yet.",
+  "es": "Aún no hay mensajes cerca de ti."
+ },
  "Aucun paramètre modifié depuis la dernière lecture.": {
   "en": "No settings changed since the last read.",
   "es": "Ningún parámetro modificado desde la última lectura."
@@ -942,6 +974,10 @@
  "Batterie, contrôleur moteur et télécommande": {
   "en": "Battery, motor controller and remote",
   "es": "Batería, controlador del motor y mando"
+ },
+ "Bloquer ce rider": {
+  "en": "Block this rider",
+  "es": "Bloquear a este rider"
  },
  "Bluetooth": {
   "en": "Bluetooth",
@@ -1239,6 +1275,10 @@
   "en": "Charging Li-ion below 0 °C damages it.",
   "es": "Cargar un Li-ion por debajo de 0 °C lo daña."
  },
+ "Charte de la communauté": {
+  "en": "Community charter",
+  "es": "Normas de la comunidad"
+ },
  "Chimie": {
   "en": "Chemistry",
   "es": "Química"
@@ -1254,6 +1294,10 @@
  "Choisir un profil": {
   "en": "Choose a profile",
   "es": "Elegir un perfil"
+ },
+ "Choisis un pseudo (ci-dessus) pour discuter.": {
+  "en": "Choose a nickname (above) to chat.",
+  "es": "Elige un apodo (arriba) para chatear."
  },
  "Chrono en cours :": {
   "en": "Timer running:",
@@ -1314,6 +1358,10 @@
  "Comment ça marche :": {
   "en": "How it works:",
   "es": "Cómo funciona:"
+ },
+ "Communauté": {
+  "en": "Community",
+  "es": "Comunidad"
  },
  "Communication interne en panne": {
   "en": "Internal communication failure",
@@ -1787,6 +1835,10 @@
   "en": "Disabled",
   "es": "Disabled"
  },
+ "Discussion": {
+  "en": "Chat",
+  "es": "Chat"
+ },
  "Disponible": {
   "en": "Available",
   "es": "Disponible"
@@ -1898,6 +1950,10 @@
  "Démarrage sécurisé": {
   "en": "Safe start",
   "es": "Arranque seguro"
+ },
+ "Démarre la conversation 👋": {
+  "en": "Start the conversation 👋",
+  "es": "Inicia la conversación 👋"
  },
  "Démarrer": {
   "en": "Start",
@@ -2022,6 +2078,10 @@
  "En ligne": {
   "en": "Online",
   "es": "En línea"
+ },
+ "En participant, tu t'engages à respecter les autres riders.": {
+  "en": "By taking part, you agree to respect other riders.",
+  "es": "Al participar, te comprometes a respetar a los demás riders."
  },
  "English": {
   "en": "English",
@@ -2367,6 +2427,10 @@
   "en": "Trigger fully released (brake).",
   "es": "Gatillo soltado a fondo (freno)."
  },
+ "Géolocalisation non supportée sur cet appareil": {
+  "en": "Geolocation isn't supported on this device",
+  "es": "La geolocalización no es compatible con este dispositivo"
+ },
  "HIGH": {
   "en": "HIGH",
   "es": "HIGH"
@@ -2503,6 +2567,10 @@
   "en": "Iq",
   "es": "Iq"
  },
+ "J'accepte la charte": {
+  "en": "I accept the charter",
+  "es": "Acepto las normas"
+ },
  "Jamais": {
   "en": "Never",
   "es": "Nunca"
@@ -2582,6 +2650,10 @@
  "LOW (60 %)": {
   "en": "LOW (60 %)",
   "es": "LOW (60 %)"
+ },
+ "La carte affiche une": {
+  "en": "The map shows an",
+  "es": "El mapa muestra una"
  },
  "La charge est coupée au-delà (Li-ion : 4,20 à 4,25 V).": {
   "en": "Charging is cut above this (Li-ion: 4.20 to 4.25 V).",
@@ -2799,6 +2871,10 @@
   "en": "The best sessions in pictures",
   "es": "Las mejores sesiones en imágenes"
  },
+ "Les riders connectés près de toi.": {
+  "en": "Riders connected near you.",
+  "es": "Los riders conectados cerca de ti."
+ },
  "Les réglages essentiels sont cohérents.": {
   "en": "Essential settings are consistent.",
   "es": "Los ajustes esenciales son coherentes."
@@ -2995,13 +3071,33 @@
   "en": "Hardware",
   "es": "Hardware"
  },
+ "Me recentrer": {
+  "en": "Recenter",
+  "es": "Centrarme"
+ },
+ "Me rendre visible sur la carte": {
+  "en": "Make me visible on the map",
+  "es": "Hacerme visible en el mapa"
+ },
  "Menus par inclinaison": {
   "en": "Tilt menus",
   "es": "Menús por inclinación"
  },
+ "Merci, le message a été signalé.": {
+  "en": "Thanks, the message has been reported.",
+  "es": "Gracias, el mensaje ha sido reportado."
+ },
  "Mes sorties": {
   "en": "My rides",
   "es": "Mis salidas"
+ },
+ "Message": {
+  "en": "Message",
+  "es": "Mensaje"
+ },
+ "Message privé": {
+  "en": "Private message",
+  "es": "Mensaje privado"
  },
  "Mesure de R et L…": {
   "en": "Measuring R and L…",
@@ -3083,6 +3179,10 @@
   "en": "Control mode",
   "es": "Modo de control"
  },
+ "Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.": {
+  "en": "Demo mode: the riders shown are examples. Real riders will be connected in real time very soon.",
+  "es": "Modo demostración: los riders mostrados son ejemplos. La conexión de riders reales en tiempo real se activará muy pronto."
+ },
  "Module de courant en panne": {
   "en": "Current module failed",
   "es": "Módulo de corriente averiado"
@@ -3090,6 +3190,10 @@
  "Module oublié dans les réglages du téléphone": {
   "en": "Module forgotten in phone settings",
   "es": "Módulo olvidado en los ajustes del teléfono"
+ },
+ "Moi": {
+  "en": "Me",
+  "es": "Yo"
  },
  "Mon compte Lite Foil": {
   "en": "My Lite Foil account",
@@ -3223,6 +3327,10 @@
   "en": "Openloop",
   "es": "Openloop"
  },
+ "Options": {
+  "en": "Options",
+  "es": "Opciones"
+ },
  "Outrunner moyen": {
   "en": "Medium outrunner",
   "es": "Outrunner mediano"
@@ -3287,6 +3395,10 @@
   "en": "Settings saved to the VESC ✓",
   "es": "Ajustes guardados en el VESC ✓"
  },
+ "Partage ta zone approximative avec les autres riders.": {
+  "en": "Shares your approximate area with other riders.",
+  "es": "Comparte tu zona aproximada con los demás riders."
+ },
  "Pas connecté.": {
   "en": "Not connected.",
   "es": "No conectado."
@@ -3346,6 +3458,14 @@
  "Pause": {
   "en": "Pause",
   "es": "Pausa"
+ },
+ "Personne en ligne pour l'instant. Active ta visibilité pour lancer le mouvement !": {
+  "en": "No one online yet. Turn on your visibility to get things started!",
+  "es": "Nadie en línea por ahora. ¡Activa tu visibilidad para empezar!"
+ },
+ "Personne pour l'instant. Active ta visibilité pour lancer le mouvement !": {
+  "en": "No one yet. Turn on your visibility to get things started!",
+  "es": "Nadie por ahora. ¡Activa tu visibilidad para empezar!"
  },
  "Pertes max": {
   "en": "Max losses",
@@ -3423,6 +3543,10 @@
   "en": "Live position",
   "es": "Posición en directo"
  },
+ "Position indisponible — autorise la localisation": {
+  "en": "Location unavailable — allow location access",
+  "es": "Ubicación no disponible — permite el acceso a la ubicación"
+ },
  "Position, vitesse, satellites, batterie, état du réseau et de la session sont lus par Bluetooth pour être affichés à l'écran. Ils ne sont ni enregistrés par l'application ni transmis par elle.": {
   "en": "Position, speed, satellites, battery, network and session status are read over Bluetooth to be shown on screen. They are neither recorded nor transmitted by the app.",
   "es": "La posición, la velocidad, los satélites, la batería y el estado de la red y de la sesión se leen por Bluetooth para mostrarlos en pantalla. La aplicación no los guarda ni los transmite."
@@ -3494,6 +3618,10 @@
  "Protocoles Modbus et A5": {
   "en": "Modbus and A5 protocols",
   "es": "Protocolos Modbus y A5"
+ },
+ "Près de moi": {
+  "en": "Near me",
+  "es": "Cerca de mí"
  },
  "Précharge ratée": {
   "en": "Precharge failed",
@@ -3643,6 +3771,10 @@
   "en": "Reset current to zero",
   "es": "Poner la corriente a cero"
  },
+ "Renseigne un pseudo et active ta visibilité pour discuter.": {
+  "en": "Enter a nickname and turn on visibility to chat.",
+  "es": "Introduce un apodo y activa tu visibilidad para chatear."
+ },
  "Reprendre": {
   "en": "Resume",
   "es": "Reanudar"
@@ -3662,6 +3794,10 @@
  "Riders Lite Foil": {
   "en": "Lite Foil riders",
   "es": "Riders de Lite Foil"
+ },
+ "Riders en ligne (": {
+  "en": "Riders online (",
+  "es": "Riders en línea ("
  },
  "Rien pour l'instant.": {
   "en": "Nothing yet.",
@@ -3799,6 +3935,10 @@
   "en": "Enter the email and password.",
   "es": "Introduce el correo y la contraseña."
  },
+ "Salon": {
+  "en": "Public",
+  "es": "General"
+ },
  "Sans capteur dès": {
   "en": "Sensorless from",
   "es": "Sin sensores desde"
@@ -3907,6 +4047,14 @@
   "en": "On-screen radio signal",
   "es": "Señal de radio en pantalla"
  },
+ "Signaler": {
+  "en": "Report",
+  "es": "Reportar"
+ },
+ "Signaler ce message": {
+  "en": "Report this message",
+  "es": "Reportar este mensaje"
+ },
  "Simulé": {
   "en": "Simulated",
   "es": "Simulado"
@@ -3914,6 +4062,10 @@
  "Site litefoil.fr": {
   "en": "litefoil.fr website",
   "es": "Web litefoil.fr"
+ },
+ "Sois le premier à dire bonjour 👋": {
+  "en": "Be the first to say hi 👋",
+  "es": "Sé el primero en saludar 👋"
  },
  "Sonde": {
   "en": "Sensor",
@@ -4063,6 +4215,10 @@
   "en": "Your battery,",
   "es": "Tu batería,"
  },
+ "Ta position exacte ne quitte jamais ton téléphone : seule une zone arrondie est partagée. Tu peux te rendre invisible à tout moment.": {
+  "en": "Your exact location never leaves your phone: only a rounded area is shared. You can go invisible at any time.",
+  "es": "Tu ubicación exacta nunca sale de tu teléfono: solo se comparte una zona redondeada. Puedes volverte invisible en cualquier momento."
+ },
  "Tachymètre": {
   "en": "Tachometer",
   "es": "Tacómetro"
@@ -4191,6 +4347,10 @@
   "en": "Titanate (LTO)",
   "es": "Titanato (LTO)"
  },
+ "Tolérance zéro": {
+  "en": "Zero tolerance",
+  "es": "Tolerancia cero"
+ },
  "Ton contrôleur,": {
   "en": "Your controller,",
   "es": "Tu controlador,"
@@ -4202,6 +4362,10 @@
  "Ton poids": {
   "en": "Your weight",
   "es": "Tu peso"
+ },
+ "Ton pseudo (visible par les autres)": {
+  "en": "Your nickname (visible to others)",
+  "es": "Tu apodo (visible para los demás)"
  },
  "Tout effacer": {
   "en": "Clear all",
@@ -4218,6 +4382,10 @@
  "Tracker déconnecté": {
   "en": "Tracker disconnected",
   "es": "Tracker desconectado"
+ },
+ "Tu es visible dans ta zone": {
+  "en": "You're visible in your area",
+  "es": "Eres visible en tu zona"
  },
  "Type de moteur": {
   "en": "Motor type",
@@ -4418,6 +4586,14 @@
  "Vidéos (YouTube)": {
   "en": "Videos (YouTube)",
   "es": "Vídeos (YouTube)"
+ },
+ "Visibilité désactivée": {
+  "en": "Visibility off",
+  "es": "Visibilidad desactivada"
+ },
+ "Visible — recherche de ta position…": {
+  "en": "Visible — finding your location…",
+  "es": "Visible — buscando tu ubicación…"
  },
  "Vitesse": {
   "en": "Speed",
@@ -5075,6 +5251,10 @@
   "en": "to compare its version with the latest published one (",
   "es": "para comparar su versión con la última publicada ("
  },
+ "pour le harcèlement, les propos haineux, les contenus choquants, illégaux ou le spam. Tu peux signaler ou bloquer un rider à tout moment ; les comptes abusifs sont exclus.": {
+  "en": "for harassment, hate speech, shocking or illegal content, or spam. You can report or block a rider at any time; abusive accounts are removed.",
+  "es": "para el acoso, los mensajes de odio, los contenidos chocantes, ilegales o el spam. Puedes reportar o bloquear a un rider en cualquier momento; las cuentas abusivas son excluidas."
+ },
  "prenom@exemple.fr": {
   "en": "firstname@example.com",
   "es": "nombre@ejemplo.com"
@@ -5139,6 +5319,10 @@
   "en": "voltage",
   "es": "tensión"
  },
+ "tout débloquer": {
+  "en": "unblock all",
+  "es": "desbloquear todos"
+ },
  "tracker déconnecté": {
   "en": "tracker disconnected",
   "es": "tracker desconectado"
@@ -5186,6 +5370,10 @@
  "version de configuration inconnue (signature": {
   "en": "unknown configuration version (signature",
   "es": "versión de configuración desconocida (firma"
+ },
+ "zone approximative": {
+  "en": "approximate area",
+  "es": "zona aproximada"
  },
  "~2 kg": {
   "en": "~2 kg",
@@ -5283,6 +5471,10 @@
   "en": "On arming",
   "es": "Al armar"
  },
+ "À proximité · en ligne": {
+  "en": "Nearby · online",
+  "es": "Cerca · en línea"
+ },
  "À régler d'après la batterie (décharge max de ses cellules × nombre en parallèle). Avec deux contrôleurs, chacun prend cette valeur : le total est doublé.": {
   "en": "Set according to the battery (max discharge of its cells × number in parallel). With two controllers, each takes this value: the total is doubled.",
   "es": "Ajústalo según la batería (descarga máx. de sus celdas × número en paralelo). Con dos controladores, cada uno toma este valor: el total se duplica."
@@ -5374,6 +5566,10 @@
  "Écrire la configuration ?": {
   "en": "Write the configuration?",
   "es": "¿Escribir la configuración?"
+ },
+ "Écrire un message…": {
+  "en": "Write a message…",
+  "es": "Escribe un mensaje…"
  },
  "Écris d'abord tes modifications sur ce contrôleur": {
   "en": "Write your changes to this controller first",
