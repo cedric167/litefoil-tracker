@@ -1,7 +1,7 @@
 // Service worker for the Lite Foil Tracker page: makes it installable ("add to home
 // screen") and keeps it usable without network — the Bluetooth link to the tracker
 // needs none. Bump CACHE when the page changes so installed copies refresh.
-const CACHE = "lf-tracker-v41";
+const CACHE = "lf-tracker-v42";
 const ASSETS = ["./", "./index.html", "./i18n/i18n.js", "./i18n/en.json", "./i18n/es.json", "./manifest.json", "./icon-192.png", "./icon-512.png", "./litefoil-logo.png", "./confidentialite.html",
   "./vesc/", "./vesc/index.html", "./vesc/css/app.css", "./vesc/js/app.js", "./vesc/js/vesc.js", "./vesc/js/protocol.js",
   "./vesc/js/config.js", "./vesc/js/transport.js", "./vesc/js/sim.js",
