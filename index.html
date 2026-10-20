@@ -148,6 +148,69 @@
   .stlHead #stlLogo{ height:42px; width:auto; flex:none; border-radius:8px; }
   .stlName{ font-weight:700; font-size:18px; letter-spacing:.3px; }
 
+  /* ---------------- Communauté ---------------- */
+  .comm-wrap{ position:relative; }
+  #commMap{ height:300px; border-radius:14px; overflow:hidden; border:1px solid var(--line-soft); background:#dfe6ea; }
+  .comm-wrap:fullscreen{ background:#000; }
+  .comm-wrap:fullscreen #commMap{ height:100vh; border-radius:0; border:none; }
+  #commRecenter{ position:absolute; right:10px; bottom:10px; z-index:500; padding:8px 14px; font-size:13px; }
+  .comm-share{ display:flex; align-items:center; gap:12px; }
+  .comm-share .sw-txt{ flex:1; min-width:0; }
+  .comm-share .sw-txt b{ font-size:15.5px; }
+  .switch{ position:relative; width:52px; height:31px; flex:none; }
+  .switch input{ opacity:0; width:0; height:0; position:absolute; }
+  .switch .sl{ position:absolute; inset:0; background:#d7dde2; border-radius:999px; transition:.2s; cursor:pointer; }
+  .switch .sl::before{ content:""; position:absolute; width:27px; height:27px; left:2px; top:2px; background:#fff; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:.2s; }
+  .switch input:checked + .sl{ background:var(--accent); }
+  .switch input:checked + .sl::before{ transform:translateX(21px); }
+  .comm-stat{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13.5px; color:var(--muted); }
+  .comm-stat .d{ width:8px; height:8px; border-radius:50%; background:var(--muted-2); flex:none; }
+  .comm-stat .d.on{ background:var(--ok); animation:lampPulse 2.4s infinite; }
+  .rider{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-top:1px solid var(--line-soft); }
+  .rider:first-child{ border-top:0; }
+  .rider .av{ width:38px; height:38px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; }
+  .rider .nm{ flex:1; min-width:0; }
+  .rider .nm b{ font-size:15px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rider .nm .sub{ font-size:12.5px; color:var(--muted); }
+  .rider .pm{ flex:none; padding:8px 16px; font-size:13px; border-radius:100px; }
+  .comm-empty{ padding:20px 14px; text-align:center; color:var(--muted); font-size:14px; }
+  .chat-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .seg{ display:flex; gap:4px; background:var(--tile); border-radius:100px; padding:4px; }
+  .seg button{ border:0; background:none; padding:7px 14px; font-size:13px; font-weight:600; color:var(--muted); border-radius:100px; }
+  .seg button.on{ background:#fff; color:var(--text); box-shadow:var(--sh-sm); }
+  .chat-back{ border:0; background:var(--tile); padding:9px 13px; font-size:14px; line-height:1; }
+  .chat-title{ flex:1; min-width:0; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chat-box{ height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; }
+  .msg{ max-width:82%; padding:9px 13px; border-radius:16px; font-size:14.5px; line-height:1.35; word-wrap:break-word; }
+  .msg .who{ font-size:11.5px; font-weight:700; color:var(--accent-ink); margin-bottom:2px; }
+  .msg.them{ align-self:flex-start; background:var(--tile); border:1px solid var(--line-soft); border-bottom-left-radius:5px; }
+  .msg.me{ align-self:flex-end; background:var(--text); color:#fff; border-bottom-right-radius:5px; }
+  .msg .t{ font-size:10.5px; opacity:.55; margin-top:3px; }
+  .chat-input{ display:flex; gap:8px; margin-top:10px; }
+  .chat-input input{ flex:1; }
+  .chat-input button{ flex:none; padding:12px 18px; }
+  .comm-priv{ font-size:12px; color:var(--muted-2); margin-top:10px; display:flex; gap:7px; align-items:flex-start; line-height:1.45; }
+  .comm-priv svg{ width:15px; height:15px; flex:none; stroke:var(--muted-2); fill:none; stroke-width:1.8; margin-top:1px; }
+  .comm-demo{ background:#fff8e6; border:1px solid #f3e2b0; color:#8a6d1b; border-radius:12px; padding:10px 13px; font-size:13px; margin-bottom:12px; }
+  .comm-charter b{ font-size:15.5px; }
+  .comm-charter p{ margin:6px 0 12px; }
+  .comm-charter .primary{ width:100%; }
+  .rider{ gap:10px; }
+  .rider .more{ flex:none; width:34px; height:34px; padding:0; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--muted); font-size:18px; line-height:1; }
+  .rider .pm{ padding:8px 13px; font-size:13px; }
+  .msg{ position:relative; }
+  .msg .flag{ position:absolute; top:-7px; right:-7px; width:22px; height:22px; border-radius:50%; border:1px solid var(--line-soft); background:#fff; color:var(--muted-2); font-size:11px; line-height:1; padding:0; display:none; cursor:pointer; box-shadow:var(--sh-sm); }
+  .msg.them:hover .flag, .msg.them:active .flag{ display:block; }
+  .comm-flaglink{ text-align:center; margin-top:16px; }
+  .comm-flaglink a{ color:var(--muted); font-size:12.5px; text-decoration:underline; cursor:pointer; }
+  .comm-blocked{ font-size:12.5px; color:var(--muted); margin-top:10px; }
+  .comm-blocked a{ color:var(--accent-ink); font-weight:600; cursor:pointer; }
+  .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:flex-end; justify-content:center; padding:14px; }
+  .sheet-card{ background:#fff; border-radius:20px; width:100%; max-width:420px; padding:10px; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+  .sheet-title{ text-align:center; font-weight:700; font-size:14px; color:var(--muted); padding:12px 10px 8px; }
+  .sheet-card button{ width:100%; margin:6px 0; border-radius:14px; }
+  .sheet-card button.warn{ border-color:var(--bad); color:var(--bad); }
+
   /* Pane transition */
   @keyframes fadeUp { from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
   [hidden] { display:none !important; }
@@ -261,6 +324,7 @@
   </div>
   <div class="tabs">
     <button class="tab active" data-tab="dash">Accueil</button>
+    <button class="tab" data-tab="communaute">Communauté</button>
     <button class="tab" data-tab="tracker">Tracker</button>
     <button class="tab" data-tab="batterie">Batterie</button>
     <button class="tab" data-tab="moteur">VESC</button>
@@ -332,6 +396,77 @@
     <div class="ioslist">
       <a href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener"><span class="ic" style="background:#0a84ff"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></span><span class="lb">Proposer une amélioration</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
       <a href="manuel/telecommande.pdf?v=20261017e" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+    </div>
+  </section>
+
+  <section id="tab-communaute" class="tabpane" hidden>
+    <p class="tagline">Les riders connectés près de toi.</p>
+    <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
+
+    <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
+
+    <div class="card comm-charter" id="commCharter" hidden>
+      <b>Charte de la communauté</b>
+      <p class="note">En participant, tu t'engages à respecter les autres riders. <b>Tolérance zéro</b> pour le harcèlement, les propos haineux, les contenus choquants, illégaux ou le spam. Tu peux <b>signaler</b> ou <b>bloquer</b> un rider à tout moment ; les comptes abusifs sont exclus.</p>
+      <button class="primary" id="charterAccept">J'accepte la charte</button>
+    </div>
+
+    <div class="card" style="padding:12px">
+      <div class="comm-wrap" id="commWrap">
+        <div id="commMap"></div>
+        <button id="commRecenter" hidden>Me recentrer</button>
+      </div>
+      <div class="note" id="commMapNote" style="margin-top:10px">La carte affiche une <b>zone approximative</b> (~1 km), jamais l'adresse exacte.</div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="comm-share">
+        <div class="sw-txt">
+          <b>Me rendre visible sur la carte</b>
+          <div class="note" style="margin-top:2px">Partage ta zone approximative avec les autres riders.</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
+      </div>
+      <label for="commPseudo" style="margin-top:14px">Ton pseudo (visible par les autres)</label>
+      <input id="commPseudo" maxlength="24" placeholder="Rider66" autocomplete="off">
+      <div class="comm-stat"><span class="d" id="commDot"></span><span id="commStatTxt">Visibilité désactivée</span></div>
+      <div class="comm-priv">
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span>Ta position exacte ne quitte jamais ton téléphone : seule une zone arrondie est partagée. Tu peux te rendre invisible à tout moment.</span>
+      </div>
+    </div>
+
+    <div class="m-label" style="margin:18px 6px 8px">Riders en ligne (<span id="commCount">0</span>)</div>
+    <div class="ioslist" id="commList"><div class="comm-empty">Personne pour l'instant. Active ta visibilité pour lancer le mouvement !</div></div>
+
+    <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
+    <div class="card">
+      <div class="chat-head">
+        <button class="chat-back" id="chatBack" hidden>←</button>
+        <div class="seg" id="chatSeg">
+          <button data-ch="salon" class="on">Salon</button>
+          <button data-ch="near">Près de moi</button>
+        </div>
+        <div class="chat-title" id="chatTitle" hidden></div>
+      </div>
+      <div class="chat-box" id="chatBox"><div class="comm-empty">Sois le premier à dire bonjour 👋</div></div>
+      <div class="chat-input">
+        <input id="chatInput" maxlength="400" placeholder="Écrire un message…" autocomplete="off">
+        <button class="primary" id="chatSend">Envoyer</button>
+      </div>
+      <div class="note" id="chatNote" style="margin-top:8px">Renseigne un pseudo et active ta visibilité pour discuter.</div>
+    </div>
+
+    <div class="comm-blocked" id="commBlocked" hidden></div>
+    <div class="comm-flaglink"><a id="charterLink">Charte de la communauté · Signaler un problème</a></div>
+
+    <div class="sheet" id="commSheet" hidden>
+      <div class="sheet-card">
+        <div class="sheet-title" id="sheetTitle"></div>
+        <button id="sheetReport">Signaler</button>
+        <button class="warn" id="sheetBlock">Bloquer ce rider</button>
+        <button class="ghost" id="sheetCancel">Annuler</button>
+      </div>
     </div>
   </section>
 
@@ -1273,6 +1408,7 @@
     for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
     for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
     if (name === "tracker") mapOnShow();
+    if (name === "communaute" && window.commOnShow) window.commOnShow();
   }
   for (const tab of document.querySelectorAll(".tab")) {
     tab.addEventListener("click", () => {
@@ -1868,6 +2004,283 @@
   })();
 
 })();
+</script>
+<!-- ================= Communauté : configuration + temps réel ================= -->
+<script>
+  /* Pour relier les vrais téléphones en temps réel, crée un projet Firebase (GRATUIT) :
+       https://console.firebase.google.com
+       1) « Ajouter un projet »
+       2) Compiler > Realtime Database > Créer une base (région Europe, mode verrouillé)
+       3) Compiler > Authentication > Sign-in method > Anonyme > Activer
+       4) Paramètres du projet > Général > Tes applis > Web (</>) : copie la config ici.
+     Tant que ces champs restent vides, l'onglet Communauté tourne en MODE DÉMO. */
+  window.LF_FIREBASE = {
+    apiKey: "",
+    authDomain: "",
+    databaseURL: "",
+    projectId: "",
+    appId: ""
+  };
+</script>
+<script type="module">
+  const $ = id => document.getElementById(id);
+  const cfg = window.LF_FIREBASE || {};
+  const LIVE = !!(cfg.apiKey && cfg.databaseURL);
+  const STALE = 90000, GRID = 100;                  // 1/100 de degré ≈ 1,1 km
+
+  // ---------- utilitaires ----------
+  const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const roundZone = v => Math.round(v*GRID)/GRID;
+  function hdist(a,b){ if(!a||!b) return null;
+    const R=6371, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lng-a.lng)*Math.PI/180, la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180;
+    const x=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2; return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
+  function hue(uid){ let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))%360; return h; }
+  const avatarColor = uid => `hsl(${hue(uid)},60%,47%)`;
+  const timeLabel = t => { const d=new Date(t||Date.now()); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+  const pairKey = (a,b) => [a,b].sort().join("__");
+  const savePseudo = () => { try{ localStorage.setItem("lf.comm.pseudo", me.pseudo); }catch(e){} };
+
+  // ---------- état ----------
+  const me = { uid:null, pseudo:"", pos:null };
+  let riders = {}, curMsgs = [];
+  let chatMode = "salon", dmPeer = null;
+  let sharing = false, geoWatch = null, presenceTimer = null;
+  let backend = null, presenceUnsub = null, chatUnsub = null;
+  let commMap=null, commLayers=null, commReady=false, commCentered=false;
+  let sheetTarget = null, lastPresenceRaw = {};
+  let blocked = new Set(); try{ blocked = new Set(JSON.parse(localStorage.getItem("lf.comm.blocked")||"[]")); }catch(e){}
+  let charterOk = false; try{ charterOk = localStorage.getItem("lf.comm.charter")==="1"; }catch(e){}
+  const saveBlocked = () => { try{ localStorage.setItem("lf.comm.blocked", JSON.stringify([...blocked])); }catch(e){} };
+
+  try{ me.pseudo = localStorage.getItem("lf.comm.pseudo") || ""; }catch(e){}
+  $("commPseudo").value = me.pseudo;
+
+  // ---------- backend Firebase (temps réel) ----------
+  async function makeFirebaseBackend(){
+    const appMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+    const authMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+    const db = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js");
+    const app = appMod.initializeApp(cfg);
+    const auth = authMod.getAuth(app);
+    const cred = await authMod.signInAnonymously(auth);
+    const uid = cred.user.uid;
+    const d = db.getDatabase(app);
+    const presRef = db.ref(d, "presence/"+uid);
+    db.onDisconnect(presRef).remove();
+    return {
+      uid,
+      publishPresence(o){ return o ? db.set(presRef,{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:db.serverTimestamp()}) : db.remove(presRef); },
+      watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
+        for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
+      sendMessage(ch,text){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
+        return db.push(db.ref(d,path),{uid,pseudo:me.pseudo,text,t:db.serverTimestamp(),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); },
+      watchMessages(ch,cb){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
+        return db.onValue(db.query(db.ref(d,path), db.limitToLast(120)), snap=>{ const a=[]; snap.forEach(c=>a.push(c.val())); cb(a); }); },
+      sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); }
+    };
+  }
+
+  // ---------- backend démo (hors ligne, un seul téléphone) ----------
+  function makeDemoBackend(){
+    const uid = "demo-"+Math.random().toString(36).slice(2,8);
+    const base = me.pos || {lat:43.014, lng:3.055};
+    const demo = {
+      "demo-aurel":{pseudo:"Aurel66", lat:roundZone(base.lat+0.012), lng:roundZone(base.lng+0.02), t:Date.now()},
+      "demo-marine":{pseudo:"Marine", lat:roundZone(base.lat-0.03), lng:roundZone(base.lng+0.05), t:Date.now()},
+      "demo-leo":{pseudo:"Léo.Foil", lat:roundZone(base.lat+0.08), lng:roundZone(base.lng-0.04), t:Date.now()}
+    };
+    let mine=null, presCb=null;
+    const msgs={ salon:[
+      {uid:"demo-aurel",pseudo:"Aurel66",text:"Session demain 9h à la plage sud, qui vient ?",t:Date.now()-3600000,lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
+      {uid:"demo-marine",pseudo:"Marine",text:"Partant si le vent est calme 🤙",t:Date.now()-1800000,lat:demo["demo-marine"].lat,lng:demo["demo-marine"].lng}
+    ]};
+    const cbs={}; const fire = ch => { if(cbs[ch]) cbs[ch]([...(msgs[ch]||[])]); };
+    const emit = () => { if(presCb){ const o={...demo}; if(mine) o[uid]=mine; presCb(o); } };
+    return {
+      uid,
+      publishPresence(o){ mine = o?{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:Date.now()}:null; emit(); return Promise.resolve(); },
+      watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
+      sendMessage(ch,text){ (msgs[ch]=msgs[ch]||[]).push({uid,pseudo:me.pseudo,text,t:Date.now(),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); fire(ch);
+        if(ch.startsWith("dm:")) setTimeout(()=>{ msgs[ch].push({uid:dmPeer?dmPeer.uid:"demo",pseudo:dmPeer?dmPeer.pseudo:"Rider",text:"(démo) Salut ! On se capte sur l'eau 👋",t:Date.now()}); fire(ch); },1200);
+        return Promise.resolve(); },
+      watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
+      sendReport(){ return Promise.resolve(); }
+    };
+  }
+
+  // ---------- carte ----------
+  function commMapInit(){
+    if(commReady || !window.L || !$("commMap")) return;
+    commMap = L.map($("commMap"),{zoomControl:true,attributionControl:true}).setView([43.0,3.0],9);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"© Esri, Maxar"}).addTo(commMap);
+    commLayers = L.layerGroup().addTo(commMap);
+    commMap.on("popupopen", e=>{ const a=e.popup._contentNode&&e.popup._contentNode.querySelector("[data-dm]");
+      if(a) a.addEventListener("click", ev=>{ ev.preventDefault(); commMap.closePopup(); openDM(a.dataset.dm,a.dataset.ps); }); });
+    commReady=true;
+  }
+  function renderMap(){
+    commMapInit(); if(!commMap) return;
+    commLayers.clearLayers();
+    for(const k in riders){ const r=riders[k], col=avatarColor(k);
+      L.circle([r.lat,r.lng],{radius:900,color:col,weight:1,fillColor:col,fillOpacity:.12}).addTo(commLayers);
+      L.circleMarker([r.lat,r.lng],{radius:7,color:"#fff",weight:2,fillColor:col,fillOpacity:1})
+        .bindPopup(`<b>${esc(r.pseudo||"Rider")}</b><br><a href="#" data-dm="${esc(k)}" data-ps="${esc(r.pseudo||"Rider")}">Message privé</a>`).addTo(commLayers);
+    }
+    if(sharing && me.pos){
+      L.circle([me.pos.lat,me.pos.lng],{radius:900,color:"#148a90",weight:1,fillColor:"#5acdd1",fillOpacity:.2}).addTo(commLayers);
+      L.circleMarker([me.pos.lat,me.pos.lng],{radius:8,color:"#fff",weight:3,fillColor:"#148a90",fillOpacity:1}).bindPopup("<b>Moi</b>").addTo(commLayers);
+    }
+  }
+  function commRecenter(){ if(!commMap) return; const pts=[]; if(sharing&&me.pos) pts.push([me.pos.lat,me.pos.lng]);
+    for(const k in riders) pts.push([riders[k].lat,riders[k].lng]);
+    if(pts.length) commMap.fitBounds(pts,{padding:[45,45],maxZoom:13}); }
+
+  // ---------- présence / partage ----------
+  function publishMe(){ if(sharing && me.pos && me.pseudo && backend) backend.publishPresence({pseudo:me.pseudo,lat:me.pos.lat,lng:me.pos.lng}); }
+  function startSharing(){
+    sharing=true; $("commDot").classList.add("on"); $("commStatTxt").textContent="Visible — recherche de ta position…";
+    try{ localStorage.setItem("lf.comm.share","1"); }catch(e){}
+    if(navigator.geolocation){
+      geoWatch = navigator.geolocation.watchPosition(p=>{
+        me.pos={lat:roundZone(p.coords.latitude),lng:roundZone(p.coords.longitude)};
+        $("commStatTxt").textContent="Tu es visible dans ta zone"; publishMe(); renderMap();
+        if(!commCentered){ commCentered=true; commRecenter(); } updateChatGate();
+      }, ()=>{ $("commStatTxt").textContent="Position indisponible — autorise la localisation"; },
+      {enableHighAccuracy:false, maximumAge:30000, timeout:20000});
+    } else { $("commStatTxt").textContent="Géolocalisation non supportée sur cet appareil"; }
+    clearInterval(presenceTimer); presenceTimer=setInterval(publishMe,30000); publishMe();
+  }
+  function stopSharing(){
+    sharing=false; $("commDot").classList.remove("on"); $("commStatTxt").textContent="Visibilité désactivée";
+    try{ localStorage.setItem("lf.comm.share","0"); }catch(e){}
+    if(geoWatch!=null && navigator.geolocation){ navigator.geolocation.clearWatch(geoWatch); } geoWatch=null;
+    clearInterval(presenceTimer); presenceTimer=null;
+    if(backend) backend.publishPresence(null); renderMap();
+  }
+
+  // ---------- liste ----------
+  function onPresence(map){
+    lastPresenceRaw = map || {};
+    riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
+    $("commCount").textContent = Object.keys(riders).length;
+    renderList(); renderMap();
+  }
+  function renderList(){
+    const el=$("commList"), ks=Object.keys(riders);
+    if(!ks.length){ el.innerHTML='<div class="comm-empty">Personne en ligne pour l\'instant. Active ta visibilité pour lancer le mouvement&nbsp;!</div>'; return; }
+    ks.sort((a,b)=>{ const da=me.pos?hdist(me.pos,riders[a]):0, db=me.pos?hdist(me.pos,riders[b]):0; return da-db; });
+    el.innerHTML = ks.map(k=>{ const r=riders[k], d=me.pos?hdist(me.pos,r):null;
+      const sub = d==null?"En ligne":(d<1.2?"À proximité · en ligne":Math.round(d)+" km · en ligne");
+      const ini=((r.pseudo||"?").trim().charAt(0)||"?").toUpperCase();
+      return `<div class="rider"><div class="av" style="background:${avatarColor(k)}">${esc(ini)}</div>`+
+        `<div class="nm"><b>${esc(r.pseudo||"Rider")}</b><span class="sub">${sub}</span></div>`+
+        `<button class="pm" data-uid="${esc(k)}" data-ps="${esc(r.pseudo||"Rider")}">Message</button>`+
+        `<button class="more" data-uid="${esc(k)}" data-ps="${esc(r.pseudo||"Rider")}" aria-label="Options">⋯</button></div>`;
+    }).join("");
+    el.querySelectorAll(".pm").forEach(b=> b.addEventListener("click", ()=> openDM(b.dataset.uid,b.dataset.ps)));
+    el.querySelectorAll(".more").forEach(b=> b.addEventListener("click", ()=> openSheet(b.dataset.uid,b.dataset.ps)));
+    renderBlocked();
+  }
+
+  // ---------- chat ----------
+  function currentChannel(){ return (chatMode==="dm" && dmPeer) ? "dm:"+pairKey(me.uid,dmPeer.uid) : "salon"; }
+  function subscribeChat(){ if(chatUnsub){ chatUnsub(); chatUnsub=null; } if(!backend) return;
+    chatUnsub = backend.watchMessages(currentChannel(), m=>{ curMsgs=m; renderChat(); }); }
+  function renderChat(){
+    const box=$("chatBox"); let arr=curMsgs.filter(m=> !blocked.has(m.uid));
+    if(chatMode==="near") arr = arr.filter(m=> m.lat!=null && me.pos && hdist(me.pos,m)<=25);
+    if(!arr.length){ box.innerHTML='<div class="comm-empty">'+(chatMode==="near"?"Aucun message près de toi pour l'instant.":(chatMode==="dm"?"Démarre la conversation 👋":"Sois le premier à dire bonjour 👋"))+'</div>'; return; }
+    arr = arr.slice(-120);
+    box.innerHTML = arr.map((m,i)=>{ const mine=m.uid===me.uid, who=(mine||chatMode==="dm")?"":'<div class="who">'+esc(m.pseudo||"Rider")+'</div>';
+      const flag = mine?"":`<button class="flag" data-i="${i}" title="Signaler ce message" aria-label="Signaler ce message">⚑</button>`;
+      return `<div class="msg ${mine?"me":"them"}">${who}${esc(m.text)}<div class="t">${timeLabel(m.t)}</div>${flag}</div>`; }).join("");
+    box.querySelectorAll(".flag").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) reportMessage(m); }));
+    box.scrollTop = box.scrollHeight;
+  }
+  function openDM(uid,ps){ dmPeer={uid,pseudo:ps}; chatMode="dm";
+    $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").textContent=ps;
+    subscribeChat(); renderChat(); updateChatGate();
+    try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
+  }
+  function closeDM(){ dmPeer=null; chatMode="salon";
+    $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true;
+    $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="salon"));
+    subscribeChat(); renderChat(); updateChatGate();
+  }
+  function updateChatGate(){
+    const ok = !!me.pseudo && charterOk; $("chatSend").disabled=!ok; $("chatInput").disabled=!ok;
+    let n = !charterOk ? "Accepte la charte de la communauté pour participer."
+          : (!me.pseudo ? "Choisis un pseudo (ci-dessus) pour discuter."
+          : (chatMode==="near"&&!me.pos ? "Active ta visibilité pour voir les messages près de toi." : ""));
+    $("chatNote").textContent=n; $("chatNote").hidden = (n==="");
+  }
+  function doSend(){ const inp=$("chatInput"), text=inp.value.trim(); if(!text) return;
+    if(!charterOk){ showCharter(); return; }
+    if(!me.pseudo){ $("commPseudo").focus(); updateChatGate(); return; }
+    if(backend) backend.sendMessage(currentChannel(), text); inp.value="";
+  }
+
+  // ---------- modération ----------
+  function showCharter(){ const c=$("commCharter"); c.hidden=false; try{ c.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} }
+  function acceptCharter(){ charterOk=true; try{ localStorage.setItem("lf.comm.charter","1"); }catch(e){} $("commCharter").hidden=true; updateChatGate(); }
+  function openSheet(uid,ps){ sheetTarget={uid,ps}; $("sheetTitle").textContent=ps||"Rider"; $("commSheet").hidden=false; }
+  function closeSheet(){ sheetTarget=null; $("commSheet").hidden=true; }
+  function doReportUser(){ if(!sheetTarget) return; if(backend) backend.sendReport({type:"user",targetUid:sheetTarget.uid,targetPseudo:sheetTarget.ps});
+    const ps=sheetTarget.ps; closeSheet(); alert("Merci, ton signalement sur « "+ps+" » a bien été envoyé. Tu peux aussi le bloquer."); }
+  function doBlock(){ if(!sheetTarget) return; blocked.add(sheetTarget.uid); saveBlocked();
+    if(dmPeer && dmPeer.uid===sheetTarget.uid) closeDM();
+    closeSheet(); onPresence2(); renderChat(); }
+  function reportMessage(m){ if(!m) return; if(!confirm("Signaler ce message de « "+(m.pseudo||"Rider")+" » ?")) return;
+    if(backend) backend.sendReport({type:"message",targetUid:m.uid,targetPseudo:m.pseudo,text:m.text});
+    alert("Merci, le message a été signalé."); }
+  function renderBlocked(){ const el=$("commBlocked"); if(!el) return;
+    if(!blocked.size){ el.hidden=true; el.innerHTML=""; return; }
+    el.hidden=false; el.innerHTML = blocked.size+" rider"+(blocked.size>1?"s":"")+" bloqué"+(blocked.size>1?"s":"")+" · <a id=\"unblockAll\">tout débloquer</a>";
+    const u=$("unblockAll"); if(u) u.addEventListener("click", ()=>{ blocked.clear(); saveBlocked(); renderBlocked(); onPresence2(); renderChat(); }); }
+  // re-filtre le dernier instantané de présence (après blocage/déblocage)
+  function onPresence2(){ onPresence(lastPresenceRaw); }
+
+  // ---------- câblage UI ----------
+  $("commShare").addEventListener("change", e=>{
+    if(e.target.checked){
+      if(!charterOk){ e.target.checked=false; showCharter(); return; }
+      if(!me.pseudo){ me.pseudo="Rider"+(Math.floor(Math.random()*90)+10); $("commPseudo").value=me.pseudo; savePseudo(); }
+      startSharing();
+    } else stopSharing();
+    updateChatGate();
+  });
+  $("charterAccept").addEventListener("click", acceptCharter);
+  $("charterLink").addEventListener("click", showCharter);
+  $("sheetReport").addEventListener("click", doReportUser);
+  $("sheetBlock").addEventListener("click", doBlock);
+  $("sheetCancel").addEventListener("click", closeSheet);
+  $("commSheet").addEventListener("click", e=>{ if(e.target===$("commSheet")) closeSheet(); });
+  $("commPseudo").addEventListener("input", ()=>{ me.pseudo=$("commPseudo").value.trim().slice(0,24); savePseudo(); updateChatGate(); publishMe(); });
+  $("chatSeg").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
+    chatMode=b.dataset.ch; $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+    subscribeChat(); renderChat(); updateChatGate();
+  }));
+  $("chatBack").addEventListener("click", closeDM);
+  $("chatSend").addEventListener("click", doSend);
+  $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
+  $("commRecenter").addEventListener("click", commRecenter);
+
+  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); };
+
+  // ---------- démarrage ----------
+  (async function(){
+    if(LIVE){ try{ backend = await makeFirebaseBackend(); }catch(err){ console.warn("Firebase indisponible, mode démo :", err); } }
+    if(!backend){ backend = makeDemoBackend(); $("commDemo").hidden=false; }
+    me.uid = backend.uid;
+    presenceUnsub = backend.watchPresence(onPresence);
+    subscribeChat();
+    let want=false; try{ want = localStorage.getItem("lf.comm.share")==="1"; }catch(e){}
+    if(want && me.pseudo && charterOk){ $("commShare").checked=true; startSharing(); }
+    if(!charterOk) $("commCharter").hidden=false;
+    renderBlocked();
+    updateChatGate();
+    if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
+  })();
 </script>
 </body>
 </html>
