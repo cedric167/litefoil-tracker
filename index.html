@@ -2570,8 +2570,8 @@
   if(window.LF_I18N && LF_I18N.onChange) LF_I18N.onChange(()=>{ renderChat(); });
   if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", e=>{
     if(e.data && e.data.type==="notif-open"){
-      try{ if(window.showTab) window.showTab("communaute"); }catch(_){}
-      const chn=e.data.channel; if(chn && CHANS[chn]){ chatTopic=chn; try{ localStorage.setItem("lf.comm.topic",chatTopic); }catch(_){} updateChanUI(); renderChat(); recomputeBadges(); }
+      const tb=document.querySelector('.tab[data-tab="communaute"]'); if(tb) tb.click();   // bascule réelle via le handler d'onglet
+      const chn=e.data.channel; if(chn && CHANS[chn]){ const cbtn=document.querySelector('#chatChannels button[data-tp="'+chn+'"]'); if(cbtn) cbtn.click(); }
     }
   });
   $("chatBack").addEventListener("click", closeDM);
