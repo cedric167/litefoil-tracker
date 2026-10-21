@@ -205,6 +205,16 @@
   .comm-flaglink a{ color:var(--muted); font-size:12.5px; text-decoration:underline; cursor:pointer; }
   .comm-blocked{ font-size:12.5px; color:var(--muted); margin-top:10px; }
   .comm-blocked a{ color:var(--accent-ink); font-weight:600; cursor:pointer; }
+  .onb{ position:fixed; inset:0; z-index:1100; background:rgba(5,10,14,.62); display:flex; align-items:center; justify-content:center; padding:20px; }
+  .onb-card{ background:#fff; border-radius:22px; max-width:400px; width:100%; padding:26px 22px 20px; text-align:center; box-shadow:0 24px 70px rgba(0,0,0,.42); }
+  .onb-ic{ width:66px; height:66px; border-radius:50%; margin:0 auto 14px; display:grid; place-items:center; background:rgba(91,216,220,.16); border:1.5px solid rgba(91,216,220,.5); }
+  .onb-ic svg{ width:34px; height:34px; stroke:var(--accent-ink); fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .onb-card h3{ font-family:"Instrument Serif",Georgia,serif; font-weight:400; font-size:25px; margin:0 0 8px; }
+  .onb-card p{ color:var(--muted); font-size:14.5px; line-height:1.5; margin:0 0 18px; }
+  .onb-card .primary{ width:100%; }
+  .onb-later{ display:block; width:100%; margin-top:10px; background:none; border:0; color:var(--muted); font-size:14px; text-decoration:underline; cursor:pointer; padding:8px; }
+  .onb-legal{ font-size:11.5px; color:var(--muted-2); margin-top:12px; line-height:1.4; }
+  .onb-legal a{ color:var(--accent-ink); cursor:pointer; text-decoration:underline; }
   .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:flex-end; justify-content:center; padding:14px; }
   .sheet-card{ background:#fff; border-radius:20px; width:100%; max-width:420px; padding:10px; box-shadow:0 20px 60px rgba(0,0,0,.35); }
   .sheet-title{ text-align:center; font-weight:700; font-size:14px; color:var(--muted); padding:12px 10px 8px; }
@@ -409,6 +419,17 @@
       <b>Charte de la communauté</b>
       <p class="note">En participant, tu t'engages à respecter les autres riders. <b>Tolérance zéro</b> pour le harcèlement, les propos haineux, les contenus choquants, illégaux ou le spam. Tu peux signaler ou bloquer un rider à tout moment ; les comptes abusifs sont exclus.</p>
       <button class="primary" id="charterAccept">J'accepte la charte</button>
+    </div>
+
+    <div class="onb" id="commOnboard" hidden>
+      <div class="onb-card">
+        <div class="onb-ic"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <h3>Rejoins la carte des riders</h3>
+        <p>Active ta position pour voir les riders connectés près de toi et apparaître sur la carte. Seule une <b>zone approximative</b> (~1&nbsp;km) est partagée — jamais ton adresse exacte, et tu peux te rendre invisible quand tu veux.</p>
+        <button class="primary" id="onbActivate">Activer ma position</button>
+        <button class="onb-later" id="onbLater">Plus tard</button>
+        <p class="onb-legal">En activant, tu acceptes la <a id="onbCharter">charte de la communauté</a>.</p>
+      </div>
     </div>
 
     <div class="card" style="padding:12px">
@@ -2266,8 +2287,25 @@
   $("chatSend").addEventListener("click", doSend);
   $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
   $("commRecenter").addEventListener("click", commRecenter);
+  // sortir les overlays du panneau (l'animation du .tabpane casse le position:fixed) → au <body>
+  ["commOnboard","commSheet"].forEach(idv=>{ const el=$(idv); if(el && el.parentElement!==document.body) document.body.appendChild(el); });
 
-  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); };
+  // ---------- onboarding géolocalisation ----------
+  function maybeOnboard(){
+    let done=false; try{ done = localStorage.getItem("lf.comm.onboard")==="1"; }catch(e){}
+    if(!done && !sharing) $("commOnboard").hidden=false;
+  }
+  function onbClose(){ $("commOnboard").hidden=true; try{ localStorage.setItem("lf.comm.onboard","1"); }catch(e){} }
+  $("onbActivate").addEventListener("click", ()=>{
+    acceptCharter();
+    if(!me.pseudo){ me.pseudo="Rider"+(Math.floor(Math.random()*90)+10); $("commPseudo").value=me.pseudo; savePseudo(); }
+    $("commShare").checked=true; startSharing(); updateChatGate();
+    onbClose();
+  });
+  $("onbLater").addEventListener("click", onbClose);
+  $("onbCharter").addEventListener("click", ()=>{ onbClose(); showCharter(); });
+
+  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); };
 
   // ---------- démarrage ----------
   (async function(){
