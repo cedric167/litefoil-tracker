@@ -2169,6 +2169,12 @@
     messagingSenderId: "698343293796",
     appId: "1:698343293796:web:1224a9819fbcc6cee4f071"
   };
+  /* Notifications « appli fermée » (Firebase Cloud Messaging).
+     Colle ici la CLÉ WEB PUSH (certificat VAPID) : Firebase > Paramètres du projet >
+     Cloud Messaging > Configuration Web > « Générer une paire de clés ». La clé publique
+     commence par « B… ». Tant que ce champ reste vide, seules les notifs « appli ouverte/
+     en arrière-plan » fonctionnent (le push serveur est simplement désactivé). */
+  window.LF_FCM_VAPID = "";
 </script>
 <script type="module">
   const $ = id => document.getElementById(id);
@@ -2229,7 +2235,9 @@
     const presRef = db.ref(d, "presence/"+uid);
     db.onDisconnect(presRef).remove();
     return {
-      uid,
+      uid, app,
+      savePushToken(token){ const key=String(token).replace(/[.#$\[\]\/]/g,"_");
+        return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,t:db.serverTimestamp()}); },
       publishPresence(o){ return o ? db.set(presRef,{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:db.serverTimestamp()}) : db.remove(presRef); },
       watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
         for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
@@ -2447,9 +2455,31 @@
     if(notifOn && Notification.permission==="granted"){ notifOn=false; saveNotif(); updateNotifBtn(); return; }
     let perm=Notification.permission;
     if(perm!=="granted"){ try{ perm=await Notification.requestPermission(); }catch(e){ perm=Notification.permission; } }
-    if(perm==="granted"){ notifOn=true; saveNotif(); updateNotifBtn();
+    if(perm==="granted"){ notifOn=true; saveNotif(); updateNotifBtn(); registerPush();
       try{ const reg=navigator.serviceWorker && await navigator.serviceWorker.ready; if(reg && reg.showNotification) reg.showNotification("Notifications activées 🔔",{body:"Tu seras prévenu des nouveaux messages du chat.",tag:"lf-test",icon:"./icon-192.png"}); else new Notification("Notifications activées 🔔"); }catch(e){}
     } else { notifOn=false; saveNotif(); updateNotifBtn(); alert("Notifications refusées. Pour les activer, autorise les notifications pour ce site dans les réglages de ton navigateur."); }
+  }
+  // Push « appli fermée » via Firebase Cloud Messaging : on enregistre le jeton de
+  // l'appareil dans la base ; une Cloud Function envoie la notif à chaque nouveau message.
+  // Sans clé VAPID (window.LF_FCM_VAPID) ou en mode démo, on ne fait rien.
+  let pushReady=false;
+  async function registerPush(){
+    if(pushReady) return;
+    const vapid = window.LF_FCM_VAPID || "";
+    if(!vapid || !backend || !backend.app) return;
+    if(!("serviceWorker" in navigator) || !("Notification" in window) || Notification.permission!=="granted") return;
+    try{
+      const reg = await navigator.serviceWorker.ready;
+      const msgMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging.js");
+      if(!(await msgMod.isSupported().catch(()=>false))) return;
+      const messaging = msgMod.getMessaging(backend.app);
+      const token = await msgMod.getToken(messaging, { vapidKey: vapid, serviceWorkerRegistration: reg });
+      if(token){ await backend.savePushToken(token); pushReady=true;
+        // Appli au 1er plan : le flux temps réel (onChildAdded → processNotif) gère déjà
+        // l'affichage ; on ne ré-affiche pas ici pour éviter les doublons.
+        msgMod.onMessage(messaging, ()=>{});
+      }
+    }catch(e){ console.warn("Push FCM indisponible :", e); }
   }
   function notify(m){
     const ch=CHANS[m.topic||"general"]||"Chat", title=(m.pseudo||"Rider")+" · "+ch;
@@ -2608,6 +2638,7 @@
     updateChatGate();
     updateEnableBtn();
     updateRadiusUI(); updateChatFilterVis(); updateChanUI(); recomputeBadges(); updateTransBtn(); updateNotifBtn();
+    if(notifOn) registerPush();
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
   })();
 </script>

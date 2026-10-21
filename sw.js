@@ -1,7 +1,36 @@
 // Service worker for the Lite Foil Tracker page: makes it installable ("add to home
 // screen") and keeps it usable without network — the Bluetooth link to the tracker
 // needs none. Bump CACHE when the page changes so installed copies refresh.
-const CACHE = "lf-tracker-v55";
+const CACHE = "lf-tracker-v56";
+
+// Firebase Cloud Messaging : notifications « appli fermée ». Le worker reçoit le push
+// envoyé par la Cloud Function et affiche la notification même quand l'appli n'est pas
+// ouverte. Message « data-only » → c'est onBackgroundMessage qui crée la notif (routage
+// par canal via notificationclick plus bas). Enveloppé dans try : si gstatic est
+// injoignable à l'install, le reste du worker (cache hors-ligne) continue de fonctionner.
+try {
+  importScripts(
+    "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
+    "https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"
+  );
+  firebase.initializeApp({
+    apiKey: "AIzaSyDy4jhamkjtl3_QDZwBNzU-5byGLX4oyho",
+    projectId: "litefoil-communaute-222fd",
+    messagingSenderId: "698343293796",
+    appId: "1:698343293796:web:1224a9819fbcc6cee4f071"
+  });
+  firebase.messaging().onBackgroundMessage((payload) => {
+    const d = (payload && payload.data) || {};
+    const channel = d.channel || "general";
+    self.registration.showNotification(d.title || "Nouveau message", {
+      body: d.body || "",
+      tag: "lf-" + channel,
+      icon: "./icon-192.png",
+      badge: "./icon-192.png",
+      data: { channel }
+    });
+  });
+} catch (e) { /* FCM indisponible : les notifs « appli ouverte » restent assurées par la page */ }
 const ASSETS = ["./", "./index.html", "./i18n/i18n.js", "./i18n/en.json", "./i18n/es.json", "./manifest.json", "./icon-192.png", "./icon-512.png", "./litefoil-logo.png", "./confidentialite.html",
   "./vesc/", "./vesc/index.html", "./vesc/css/app.css", "./vesc/js/app.js", "./vesc/js/vesc.js", "./vesc/js/protocol.js",
   "./vesc/js/config.js", "./vesc/js/transport.js", "./vesc/js/sim.js",
