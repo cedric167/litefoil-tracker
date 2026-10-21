@@ -2224,7 +2224,15 @@
       sendMessage(ch,text){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
         return db.push(db.ref(d,path),{uid,pseudo:me.pseudo,text,t:db.serverTimestamp(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); },
       watchMessages(ch,cb){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
-        return db.onValue(db.query(db.ref(d,path), db.limitToLast(ch==="salon"?200:120)), snap=>{ const a=[]; snap.forEach(c=>a.push(c.val())); cb(a); }); },
+        // onChildAdded (et non onValue) : RTDB livre un instantané incomplet avec onValue+limitToLast
+        // sur certaines régions ; onChildAdded énumère chaque message de façon fiable.
+        const q = db.query(db.ref(d,path), db.limitToLast(ch==="salon"?200:120));
+        const order=[], map={}; let timer=null;
+        const flush=()=>{ if(timer) return; timer=setTimeout(()=>{ timer=null; cb(order.map(k=>map[k])); },60); };
+        const u1=db.onChildAdded(q, s=>{ if(!(s.key in map)) order.push(s.key); map[s.key]=s.val(); flush(); });
+        const u2=db.onChildChanged(q, s=>{ map[s.key]=s.val(); flush(); });
+        const u3=db.onChildRemoved(q, s=>{ if(s.key in map){ delete map[s.key]; const i=order.indexOf(s.key); if(i>=0) order.splice(i,1); flush(); } });
+        return ()=>{ try{u1&&u1();u2&&u2();u3&&u3();}catch(e){} }; },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); }
     };
   }
@@ -2367,8 +2375,7 @@
     else { renderChat(); } }
   // abonnement permanent au salon (toutes disciplines) : alimente l'affichage ET les pastilles non-lus
   function subscribeSalon(){ if(!backend || salonUnsub) return;
-    salonUnsub = backend.watchMessages("salon", m=>{ try{ salonMsgs=m; window.__salonN=m.length; recomputeBadges(); if(chatMode!=="dm") renderChat(); }catch(e){ window.__salonErr=String((e&&e.stack)||e); } }); }
-  window.__diag=()=>({salon:salonMsgs.length, topic:chatTopic, mode:chatMode, blocked:[...blocked], lastN:window.__salonN||0, err:window.__salonErr||null});
+    salonUnsub = backend.watchMessages("salon", m=>{ salonMsgs=m; recomputeBadges(); if(chatMode!=="dm") renderChat(); }); }
   function latestTs(topic){ let mx=0; for(const m of salonMsgs){ if((m.topic||"general")===topic){ const t=+m.t||0; if(t>mx) mx=t; } } return mx; }
   function recomputeBadges(){
     const commVisible = (()=>{ const t=$("tab-communaute"); return t && !t.hidden; })();
