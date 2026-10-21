@@ -267,6 +267,10 @@
   .mto-arrow{ display:inline-block; font-weight:900; color:var(--accent-ink); }
   .mto-map{ position:relative; width:100%; aspect-ratio:16/12; border-radius:14px; overflow:hidden; background:var(--tile); }
   .mto-map iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .wg-sel,.wg-custom{ width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; font-size:14px; background:var(--card); color:var(--text); }
+  .wg-custom{ margin-top:8px; }
+  .wg-box{ width:100%; margin-top:10px; border-radius:14px; overflow:hidden; background:#fff; }
+  .wg-box iframe{ width:100%; height:430px; border:0; display:block; }
   @keyframes lampPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(26,156,85,.35);} 50%{ box-shadow:0 0 0 5px rgba(26,156,85,0);} }
   @keyframes busyPulse { 0%,100%{ opacity:.35;} 50%{ opacity:1;} }
 
@@ -576,6 +580,23 @@
     <div class="card" style="padding:8px">
       <div class="mto-map"><iframe id="mtoWindy" title="Carte météo Windy" loading="lazy"></iframe></div>
       <div class="note" style="margin-top:8px">Carte interactive <b>Windy</b> — glisse pour explorer, touche la légende pour changer la couche (vagues, houle, vent).</div>
+    </div>
+
+    <div class="m-label" style="margin:16px 6px 8px">Prévisions détaillées (Windguru)</div>
+    <div class="card" style="padding:12px">
+      <select id="wgSpot" class="wg-sel">
+        <option value="48582">Leucate — Le Goulet</option>
+        <option value="48584">Leucate — La Mine</option>
+        <option value="500998">La Franqui — Les Coussoules</option>
+        <option value="500975">Gruissan — Plage des Chalets</option>
+        <option value="500974">Gruissan — Plage Mateille</option>
+        <option value="501010">L'Almanarre, Hyères</option>
+        <option value="48617">Marseille — Pointe Rouge</option>
+        <option value="custom">Autre spot…</option>
+      </select>
+      <input id="wgCustom" class="wg-custom" placeholder="Colle un lien ou un n° de spot Windguru" hidden>
+      <div class="wg-box"><iframe id="wgFrame" title="Prévisions Windguru" loading="lazy"></iframe></div>
+      <div class="note" style="margin-top:8px">Prévisions <b>Windguru</b> : vent, rafales, direction et note. Choisis ton spot ci-dessus.</div>
     </div>
 
     <a class="wa" id="mtoIfremer" href="https://marc.ifremer.fr/resultats/vagues/modeles_mediterranee" target="_blank" rel="noopener" style="margin-top:12px;background:linear-gradient(135deg,#3aa0e0 0%,#1b6fb0 55%,#0f5a93 100%)">
@@ -2578,7 +2599,28 @@
         ()=>apply(pos||DEFAULT,(pos&&pos.name)||DEFAULT.name),
         {enableHighAccuracy:false,maximumAge:600000,timeout:8000});
     }
-    window.meteoOnShow=function(){ if(loaded) return; loaded=true; if(pos) apply(pos,pos.name); else locate(); };
+    // ---- Windguru (widget officiel par spot) ----
+    const WG_PARAMS="&wj=knots&tj=c&vt=forecasts&fhours=72&p=WINDSPD,GUST,SMER,TMP,RATING";
+    const WG_PRESETS=["48582","48584","500998","500975","500974","501010","48617"];
+    let wgSpot="48582"; try{ const s=localStorage.getItem("lf.meteo.wgspot"); if(s) wgSpot=s; }catch(e){}
+    const wgParseId=v=>{ const m=String(v||"").match(/(\d{3,})/); return m?m[1]:""; };
+    function wgLoad(id){ const f=$m("wgFrame"); if(!f||!id) return; f.src="https://www.windguru.cz/widget-fcst-iframe.php?s="+encodeURIComponent(id)+"&uid=wg_"+encodeURIComponent(id)+WG_PARAMS; }
+    function wgInitUI(){
+      const sel=$m("wgSpot"), cust=$m("wgCustom"); if(!sel) return;
+      if(WG_PRESETS.indexOf(wgSpot)>=0){ sel.value=wgSpot; if(cust){ cust.hidden=true; } }
+      else { sel.value="custom"; if(cust){ cust.hidden=false; cust.value=wgSpot; } }
+      wgLoad(wgSpot);
+    }
+    (function(){ const sel=$m("wgSpot"), cust=$m("wgCustom"); if(!sel) return;
+      sel.addEventListener("change",()=>{ if(sel.value==="custom"){ if(cust){ cust.hidden=false; cust.focus(); } return; }
+        wgSpot=sel.value; try{ localStorage.setItem("lf.meteo.wgspot",wgSpot); }catch(e){} wgLoad(wgSpot); });
+      if(cust) cust.addEventListener("change",()=>{ const id=wgParseId(cust.value); if(id){ wgSpot=id; try{ localStorage.setItem("lf.meteo.wgspot",wgSpot); }catch(e){} wgLoad(wgSpot); } });
+    })();
+
+    window.meteoOnShow=function(){ if(loaded) return; loaded=true;
+      const start = pos || DEFAULT; apply(start, start.name);   // affichage instantané (position connue ou Méditerranée)
+      if(!pos) locate();                                        // puis on affine avec la vraie position si possible
+      wgInitUI(); };
     const lb=$m("mtoLocate"); if(lb) lb.addEventListener("click",locate);
   })();
 </script>
