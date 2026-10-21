@@ -186,12 +186,12 @@
   .chat-filter input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--accent-ink); box-shadow:0 2px 6px rgba(0,0,0,.2); cursor:pointer; }
   .chat-filter input[type=range]::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:#fff; border:3px solid var(--accent-ink); box-shadow:0 2px 6px rgba(0,0,0,.2); cursor:pointer; }
   .chat-filter .cf-val{ flex:0 0 auto; min-width:66px; text-align:right; font-weight:700; font-size:13.5px; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
-  .chan{ display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 0 10px; padding-bottom:2px; }
+  .chan{ display:flex; gap:7px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 -2px 12px; padding:2px 2px 4px; scroll-snap-type:x proximity; }
   .chan::-webkit-scrollbar{ display:none; }
-  .chan button{ flex:0 0 auto; border:1.5px solid var(--line); background:var(--card); color:var(--muted); padding:7px 13px; border-radius:100px; font-size:13px; font-weight:600; white-space:nowrap; display:inline-flex; align-items:center; gap:7px; cursor:pointer; }
-  .chan button .cd{ width:8px; height:8px; border-radius:50%; background:var(--cd,#5acdd1); }
-  .chan button.on{ background:var(--accent-ink); border-color:var(--accent-ink); color:#fff; }
-  .chan button.on .cd{ background:#fff; }
+  .chan button{ scroll-snap-align:center; flex:0 0 auto; border:1.5px solid var(--line); background:var(--card); color:var(--text); padding:8px 14px 8px 11px; border-radius:100px; font-size:13.5px; font-weight:600; white-space:nowrap; display:inline-flex; align-items:center; gap:7px; cursor:pointer; transition:background .15s, border-color .15s, color .15s, box-shadow .15s; }
+  .chan button .ce{ font-size:16px; line-height:1; }
+  .chan button:active{ transform:scale(.96); }
+  .chan button.on{ background:var(--accent-ink); border-color:var(--accent-ink); color:#fff; box-shadow:0 4px 12px rgba(20,138,144,.3); }
   .chan button .cb{ min-width:18px; height:18px; padding:0 5px; border-radius:100px; background:var(--bad); color:#fff; font-size:11px; font-weight:800; line-height:18px; text-align:center; font-variant-numeric:tabular-nums; }
   .chan button.on .cb{ background:#fff; color:var(--accent-ink); }
   .chat-back{ border:0; background:var(--tile); padding:9px 13px; font-size:14px; line-height:1; }
@@ -525,10 +525,16 @@
     <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
     <div class="card">
       <div class="chan" id="chatChannels">
-        <button data-tp="general"><span class="cd" style="--cd:#8aa0ab"></span>Général<span class="cb" hidden></span></button>
-        <button data-tp="efoil" class="on"><span class="cd" style="--cd:#148a90"></span>eFoil<span class="cb" hidden></span></button>
-        <button data-tp="wing"><span class="cd" style="--cd:#2e8bd6"></span>Wing Foil<span class="cb" hidden></span></button>
-        <button data-tp="kite"><span class="cd" style="--cd:#e0953a"></span>Kitesurf<span class="cb" hidden></span></button>
+        <button data-tp="general"><span class="ce">💬</span>Général<span class="cb" hidden></span></button>
+        <button data-tp="efoil" class="on"><span class="ce">⚡</span>eFoil<span class="cb" hidden></span></button>
+        <button data-tp="wing"><span class="ce">🪂</span>Wing Foil<span class="cb" hidden></span></button>
+        <button data-tp="kite"><span class="ce">🪁</span>Kitesurf<span class="cb" hidden></span></button>
+        <button data-tp="surf"><span class="ce">🏄</span>Surf<span class="cb" hidden></span></button>
+        <button data-tp="sup"><span class="ce">🛶</span>Paddle<span class="cb" hidden></span></button>
+        <button data-tp="windsurf"><span class="ce">⛵</span>Windsurf<span class="cb" hidden></span></button>
+        <button data-tp="bodyboard"><span class="ce">🌊</span>Bodyboard<span class="cb" hidden></span></button>
+        <button data-tp="skim"><span class="ce">🛹</span>Skimboard<span class="cb" hidden></span></button>
+        <button data-tp="kayak"><span class="ce">🚣</span>Kayak<span class="cb" hidden></span></button>
       </div>
       <div class="chat-head">
         <button class="chat-back" id="chatBack" hidden>←</button>
@@ -2184,7 +2190,7 @@
   let riders = {}, curMsgs = [];
   let chatMode = "salon", dmPeer = null;
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
-  const CHANS = { general:"Général", efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf" };
+  const CHANS = { general:"Général", efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf", surf:"Surf", sup:"Paddle", windsurf:"Windsurf", bodyboard:"Bodyboard", skim:"Skimboard", kayak:"Kayak" };
   let chatTopic = "efoil"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
   let salonMsgs = [], salonUnsub = null;
   let seen = {}; try{ seen = JSON.parse(localStorage.getItem("lf.comm.seen")||"{}")||{}; }catch(e){ seen={}; }
@@ -2526,6 +2532,7 @@
   $("chatChannels").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
     if(!CHANS[b.dataset.tp]) return; chatTopic=b.dataset.tp;
     try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){}
+    try{ b.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"}); }catch(e){}
     updateChanUI(); renderChat(); recomputeBadges(); updateChatGate();
   }));
   $("chatTransBtn").addEventListener("click", ()=>{ autoTrans=!autoTrans; try{ localStorage.setItem("lf.comm.autotrans", autoTrans?"1":"0"); }catch(e){} updateTransBtn(); renderChat(); });
