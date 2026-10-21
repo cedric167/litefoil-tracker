@@ -2457,11 +2457,12 @@
     try{ if(navigator.serviceWorker){ navigator.serviceWorker.ready.then(reg=>{ if(reg&&reg.showNotification) reg.showNotification(title,opts); else new Notification(title,opts); }).catch(()=>{ try{ new Notification(title,opts); }catch(e){} }); } else new Notification(title,opts); }catch(e){}
   }
   function processNotif(arr){
-    if(!notifInit){ notifInit=true; for(const m of arr){ const t=+m.t||0; if(t>notifMaxT) notifMaxT=t; } return; }
+    if(!notifInit){ notifInit=true; for(const m of arr){ const t=+m.t||0; if(t>notifMaxT) notifMaxT=t; } window.__pn={init:true,max:notifMaxT,n:arr.length}; return; }
     const can=notifOn && ("Notification" in window) && Notification.permission==="granted";
     const alertNow=can && (document.hidden || ($("tab-communaute") && $("tab-communaute").hidden));
-    let mx=notifMaxT;
-    for(const m of arr){ const t=+m.t||0; if(t>notifMaxT && m.uid!==me.uid && !blocked.has(m.uid) && alertNow) notify(m); if(t>mx) mx=t; }
+    let mx=notifMaxT, newones=0, fired=0;
+    for(const m of arr){ const t=+m.t||0; if(t>notifMaxT && m.uid!==me.uid && !blocked.has(m.uid)){ newones++; if(alertNow){ notify(m); fired++; } } if(t>mx) mx=t; }
+    window.__pn={can:can,alertNow:alertNow,notifOn:notifOn,perm:(("Notification" in window)?Notification.permission:"na"),hidden:document.hidden,tabHidden:(($("tab-communaute")||{}).hidden),max:notifMaxT,newmax:mx,newones:newones,fired:fired,n:arr.length};
     notifMaxT=mx;
   }
   function renderChat(){
