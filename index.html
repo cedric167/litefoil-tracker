@@ -2367,7 +2367,8 @@
     else { renderChat(); } }
   // abonnement permanent au salon (toutes disciplines) : alimente l'affichage ET les pastilles non-lus
   function subscribeSalon(){ if(!backend || salonUnsub) return;
-    salonUnsub = backend.watchMessages("salon", m=>{ salonMsgs=m; recomputeBadges(); if(chatMode!=="dm") renderChat(); }); }
+    salonUnsub = backend.watchMessages("salon", m=>{ try{ salonMsgs=m; window.__salonN=m.length; recomputeBadges(); if(chatMode!=="dm") renderChat(); }catch(e){ window.__salonErr=String((e&&e.stack)||e); } }); }
+  window.__diag=()=>({salon:salonMsgs.length, topic:chatTopic, mode:chatMode, blocked:[...blocked], lastN:window.__salonN||0, err:window.__salonErr||null});
   function latestTs(topic){ let mx=0; for(const m of salonMsgs){ if((m.topic||"general")===topic){ const t=+m.t||0; if(t>mx) mx=t; } } return mx; }
   function recomputeBadges(){
     const commVisible = (()=>{ const t=$("tab-communaute"); return t && !t.hidden; })();
