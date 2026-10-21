@@ -191,6 +191,8 @@
   .chan button .cd{ width:8px; height:8px; border-radius:50%; background:var(--cd,#5acdd1); }
   .chan button.on{ background:var(--accent-ink); border-color:var(--accent-ink); color:#fff; }
   .chan button.on .cd{ background:#fff; }
+  .chan button .cb{ min-width:18px; height:18px; padding:0 5px; border-radius:100px; background:var(--bad); color:#fff; font-size:11px; font-weight:800; line-height:18px; text-align:center; font-variant-numeric:tabular-nums; }
+  .chan button.on .cb{ background:#fff; color:var(--accent-ink); }
   .chat-back{ border:0; background:var(--tile); padding:9px 13px; font-size:14px; line-height:1; }
   .chat-title{ flex:1; min-width:0; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .chat-box{ height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; }
@@ -497,10 +499,10 @@
     <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
     <div class="card">
       <div class="chan" id="chatChannels">
-        <button data-tp="general" class="on"><span class="cd" style="--cd:#8aa0ab"></span>Général</button>
-        <button data-tp="efoil"><span class="cd" style="--cd:#148a90"></span>eFoil</button>
-        <button data-tp="wing"><span class="cd" style="--cd:#2e8bd6"></span>Wing Foil</button>
-        <button data-tp="kite"><span class="cd" style="--cd:#e0953a"></span>Kitesurf</button>
+        <button data-tp="general"><span class="cd" style="--cd:#8aa0ab"></span>Général<span class="cb" hidden></span></button>
+        <button data-tp="efoil" class="on"><span class="cd" style="--cd:#148a90"></span>eFoil<span class="cb" hidden></span></button>
+        <button data-tp="wing"><span class="cd" style="--cd:#2e8bd6"></span>Wing Foil<span class="cb" hidden></span></button>
+        <button data-tp="kite"><span class="cd" style="--cd:#e0953a"></span>Kitesurf<span class="cb" hidden></span></button>
       </div>
       <div class="chat-head">
         <button class="chat-back" id="chatBack" hidden>←</button>
@@ -2114,7 +2116,10 @@
   let chatMode = "salon", dmPeer = null;
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
   const CHANS = { general:"Général", efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf" };
-  let chatTopic = "general"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
+  let chatTopic = "efoil"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
+  let salonMsgs = [], salonUnsub = null;
+  let seen = {}; try{ seen = JSON.parse(localStorage.getItem("lf.comm.seen")||"{}")||{}; }catch(e){ seen={}; }
+  const saveSeen = () => { try{ localStorage.setItem("lf.comm.seen", JSON.stringify(seen)); }catch(e){} };
   let sharing = false, geoWatch = null, presenceTimer = null;
   let backend = null, presenceUnsub = null, chatUnsub = null;
   let commMap=null, commLayers=null, commReady=false, commCentered=false;
@@ -2285,7 +2290,24 @@
   // ---------- chat ----------
   function currentChannel(){ return (chatMode==="dm" && dmPeer) ? "dm:"+pairKey(me.uid,dmPeer.uid) : "salon"; }
   function subscribeChat(){ if(chatUnsub){ chatUnsub(); chatUnsub=null; } if(!backend) return;
-    chatUnsub = backend.watchMessages(currentChannel(), m=>{ curMsgs=m; renderChat(); }); }
+    if(chatMode==="dm" && dmPeer){ chatUnsub = backend.watchMessages(currentChannel(), m=>{ curMsgs=m; renderChat(); }); }
+    else { renderChat(); } }
+  // abonnement permanent au salon (toutes disciplines) : alimente l'affichage ET les pastilles non-lus
+  function subscribeSalon(){ if(!backend || salonUnsub) return;
+    salonUnsub = backend.watchMessages("salon", m=>{ salonMsgs=m; recomputeBadges(); if(chatMode!=="dm") renderChat(); }); }
+  function latestTs(topic){ let mx=0; for(const m of salonMsgs){ if((m.topic||"general")===topic){ const t=+m.t||0; if(t>mx) mx=t; } } return mx; }
+  function recomputeBadges(){
+    const commVisible = (()=>{ const t=$("tab-communaute"); return t && !t.hidden; })();
+    const active = (commVisible && chatMode!=="dm") ? chatTopic : null;
+    for(const tp in CHANS){
+      let n=0;
+      if(tp===active){ const mx=latestTs(tp); if(mx>(seen[tp]||0)){ seen[tp]=mx; saveSeen(); } }
+      else { const s=seen[tp]||0;
+        for(const m of salonMsgs){ if((m.topic||"general")===tp && m.uid!==me.uid && !blocked.has(m.uid) && (+m.t||0)>s) n++; } }
+      const btn=document.querySelector('#chatChannels button[data-tp="'+tp+'"]'); if(!btn) continue;
+      const cb=btn.querySelector(".cb"); if(cb){ if(n>0){ cb.textContent = n>9?"9+":String(n); cb.hidden=false; } else cb.hidden=true; }
+    }
+  }
   function radiusLabel(v){ return v>=1000 ? "Partout" : v+" km"; }
   function updateRadiusUI(){
     const r=$("chatRadius"), v=$("chatRadiusVal"); if(!r) return;
@@ -2299,7 +2321,7 @@
     const inp=$("chatInput"); if(inp) inp.placeholder = (chatMode==="dm") ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
   }
   function renderChat(){
-    const box=$("chatBox"); let arr=curMsgs.filter(m=> !blocked.has(m.uid));
+    const box=$("chatBox"); let arr=(chatMode==="dm"?curMsgs:salonMsgs).filter(m=> !blocked.has(m.uid));
     if(chatMode!=="dm") arr = arr.filter(m=> (m.topic||"general")===chatTopic);
     if(chatMode==="near" && chatRadius<1000) arr = arr.filter(m=> m.lat!=null && me.pos && hdist(me.pos,m)<=chatRadius);
     if(!arr.length){
@@ -2315,13 +2337,13 @@
   }
   function openDM(uid,ps){ dmPeer={uid,pseudo:ps}; chatMode="dm";
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").textContent=ps;
-    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate();
+    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
   function closeDM(){ dmPeer=null; chatMode="salon";
     $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true;
     $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="salon"));
-    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate();
+    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
   }
   function updateChatGate(){
     const ok = !!me.pseudo && charterOk; $("chatSend").disabled=!ok; $("chatInput").disabled=!ok;
@@ -2345,14 +2367,14 @@
     const ps=sheetTarget.ps; closeSheet(); alert("Merci, ton signalement sur « "+ps+" » a bien été envoyé. Tu peux aussi le bloquer."); }
   function doBlock(){ if(!sheetTarget) return; blocked.add(sheetTarget.uid); saveBlocked();
     if(dmPeer && dmPeer.uid===sheetTarget.uid) closeDM();
-    closeSheet(); onPresence2(); renderChat(); }
+    closeSheet(); onPresence2(); renderChat(); recomputeBadges(); }
   function reportMessage(m){ if(!m) return; if(!confirm("Signaler ce message de « "+(m.pseudo||"Rider")+" » ?")) return;
     if(backend) backend.sendReport({type:"message",targetUid:m.uid,targetPseudo:m.pseudo,text:m.text});
     alert("Merci, le message a été signalé."); }
   function renderBlocked(){ const el=$("commBlocked"); if(!el) return;
     if(!blocked.size){ el.hidden=true; el.innerHTML=""; return; }
     el.hidden=false; el.innerHTML = blocked.size+" rider"+(blocked.size>1?"s":"")+" bloqué"+(blocked.size>1?"s":"")+" · <a id=\"unblockAll\">tout débloquer</a>";
-    const u=$("unblockAll"); if(u) u.addEventListener("click", ()=>{ blocked.clear(); saveBlocked(); renderBlocked(); onPresence2(); renderChat(); }); }
+    const u=$("unblockAll"); if(u) u.addEventListener("click", ()=>{ blocked.clear(); saveBlocked(); renderBlocked(); onPresence2(); renderChat(); recomputeBadges(); }); }
   // re-filtre le dernier instantané de présence (après blocage/déblocage)
   function onPresence2(){ onPresence(lastPresenceRaw); }
 
@@ -2385,7 +2407,7 @@
   $("chatChannels").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
     if(!CHANS[b.dataset.tp]) return; chatTopic=b.dataset.tp;
     try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){}
-    updateChanUI(); renderChat(); updateChatGate();
+    updateChanUI(); renderChat(); recomputeBadges(); updateChatGate();
   }));
   $("chatBack").addEventListener("click", closeDM);
   $("chatSend").addEventListener("click", doSend);
@@ -2404,7 +2426,7 @@
   $("onbLater").addEventListener("click", onbClose);
   $("onbCharter").addEventListener("click", ()=>{ onbClose(); showCharter(); });
 
-  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); };
+  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); recomputeBadges(); };
 
   // ---------- démarrage ----------
   (async function(){
@@ -2413,13 +2435,14 @@
     me.uid = backend.uid;
     presenceUnsub = backend.watchPresence(onPresence);
     subscribeChat();
+    subscribeSalon();
     let want=false; try{ want = localStorage.getItem("lf.comm.share")==="1"; }catch(e){}
     if(want && me.pseudo && charterOk){ $("commShare").checked=true; startSharing(); }
     if(!charterOk) $("commCharter").hidden=false;
     renderBlocked();
     updateChatGate();
     updateEnableBtn();
-    updateRadiusUI(); updateChatFilterVis(); updateChanUI();
+    updateRadiusUI(); updateChatFilterVis(); updateChanUI(); recomputeBadges();
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
   })();
 </script>
