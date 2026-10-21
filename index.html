@@ -140,6 +140,7 @@
   .tab { flex:0 0 auto; background:none; border:none; border-radius:100px; color:var(--muted); padding:9px 16px;
          font-weight:600; font-size:14px; white-space:nowrap; transition:color .2s, background .2s; }
   .tab.active { background:var(--text); color:#fff; }
+  .tab .tbadge{ display:inline-block; min-width:16px; height:16px; line-height:16px; padding:0 4px; margin-left:6px; border-radius:100px; background:var(--bad); color:#fff; font-size:10.5px; font-weight:800; vertical-align:top; font-variant-numeric:tabular-nums; }
   .links { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
   .linkbtn { display:block; padding:13px 10px; }
   .linkbtn.primary { grid-column:1 / -1; }
@@ -355,7 +356,7 @@
   </div>
   <div class="tabs">
     <button class="tab active" data-tab="dash">Accueil</button>
-    <button class="tab" data-tab="communaute">Communauté</button>
+    <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
     <button class="tab" data-tab="tracker">Tracker</button>
     <button class="tab" data-tab="batterie">Batterie</button>
     <button class="tab" data-tab="moteur">VESC</button>
@@ -2299,14 +2300,17 @@
   function recomputeBadges(){
     const commVisible = (()=>{ const t=$("tab-communaute"); return t && !t.hidden; })();
     const active = (commVisible && chatMode!=="dm") ? chatTopic : null;
+    let total=0;
     for(const tp in CHANS){
       let n=0;
       if(tp===active){ const mx=latestTs(tp); if(mx>(seen[tp]||0)){ seen[tp]=mx; saveSeen(); } }
       else { const s=seen[tp]||0;
         for(const m of salonMsgs){ if((m.topic||"general")===tp && m.uid!==me.uid && !blocked.has(m.uid) && (+m.t||0)>s) n++; } }
+      total += n;
       const btn=document.querySelector('#chatChannels button[data-tp="'+tp+'"]'); if(!btn) continue;
       const cb=btn.querySelector(".cb"); if(cb){ if(n>0){ cb.textContent = n>9?"9+":String(n); cb.hidden=false; } else cb.hidden=true; }
     }
+    const tb=$("tabCommBadge"); if(tb){ if(total>0){ tb.textContent = total>9?"9+":String(total); tb.hidden=false; } else tb.hidden=true; }
   }
   function radiusLabel(v){ return v>=1000 ? "Partout" : v+" km"; }
   function updateRadiusUI(){
