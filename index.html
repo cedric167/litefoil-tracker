@@ -215,6 +215,12 @@
   .onb-later{ display:block; width:100%; margin-top:10px; background:none; border:0; color:var(--muted); font-size:14px; text-decoration:underline; cursor:pointer; padding:8px; }
   .onb-legal{ font-size:11.5px; color:var(--muted-2); margin-top:12px; line-height:1.4; }
   .onb-legal a{ color:var(--accent-ink); cursor:pointer; text-decoration:underline; }
+  .onb-steps{ text-align:left; margin:2px 0 18px; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .onb-steps li{ display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.45; color:var(--muted); }
+  .onb-steps li b{ color:var(--ink); }
+  .onb-steps .n{ flex:0 0 22px; width:22px; height:22px; border-radius:50%; background:rgba(91,216,220,.18); color:var(--accent-ink); font-weight:700; font-size:12.5px; display:grid; place-items:center; margin-top:1px; }
+  .comm-enable{ width:100%; margin-top:12px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+  .comm-enable svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:flex-end; justify-content:center; padding:14px; }
   .sheet-card{ background:#fff; border-radius:20px; width:100%; max-width:420px; padding:10px; box-shadow:0 20px 60px rgba(0,0,0,.35); }
   .sheet-title{ text-align:center; font-weight:700; font-size:14px; color:var(--muted); padding:12px 10px 8px; }
@@ -432,6 +438,20 @@
       </div>
     </div>
 
+    <div class="onb" id="geoHelp" hidden>
+      <div class="onb-card">
+        <div class="onb-ic"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <h3>Autorise la localisation</h3>
+        <p>La position est bloquée sur ton téléphone. Pour apparaître sur la carte et voir les riders près de toi, active-la en 2 étapes&nbsp;:</p>
+        <ul class="onb-steps">
+          <li><span class="n">1</span><span>Vérifie que la <b>localisation du téléphone est allumée</b> (Réglages &rsaquo; Localisation, ou le volet rapide en haut de l'écran).</span></li>
+          <li><span class="n">2</span><span>Autorise ce site&nbsp;: <b>Android / Chrome</b> → touche le cadenas 🔒 à gauche de l'adresse → <b>Autorisations</b> → <b>Localisation</b> → Autoriser. <b>iPhone / Safari</b> → Réglages &rsaquo; Safari &rsaquo; Localisation → <b>Autoriser</b>.</span></li>
+        </ul>
+        <button class="primary" id="geoRetry">J'ai activé, réessayer</button>
+        <button class="onb-later" id="geoClose">Fermer</button>
+      </div>
+    </div>
+
     <div class="card" style="padding:12px">
       <div class="comm-wrap" id="commWrap">
         <div id="commMap"></div>
@@ -451,6 +471,7 @@
       <label for="commPseudo" style="margin-top:14px">Ton pseudo (visible par les autres)</label>
       <input id="commPseudo" maxlength="24" placeholder="Rider66" autocomplete="off">
       <div class="comm-stat"><span class="d" id="commDot"></span><span id="commStatTxt">Visibilité désactivée</span></div>
+      <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
       <div class="comm-priv">
         <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
         <span>Ta position exacte ne quitte jamais ton téléphone : seule une zone arrondie est partagée. Tu peux te rendre invisible à tout moment.</span>
@@ -2160,25 +2181,51 @@
 
   // ---------- présence / partage ----------
   function publishMe(){ if(sharing && me.pos && me.pseudo && backend) backend.publishPresence({pseudo:me.pseudo,lat:me.pos.lat,lng:me.pos.lng}); }
+  function updateEnableBtn(){ const b=$("commEnable"); if(b) b.hidden = sharing; }
   function startSharing(){
-    sharing=true; $("commDot").classList.add("on"); $("commStatTxt").textContent="Visible — recherche de ta position…";
+    sharing=true; $("commShare").checked=true; $("commDot").classList.add("on"); $("commStatTxt").textContent="Visible — recherche de ta position…"; updateEnableBtn();
     try{ localStorage.setItem("lf.comm.share","1"); }catch(e){}
     if(navigator.geolocation){
       geoWatch = navigator.geolocation.watchPosition(p=>{
         me.pos={lat:roundZone(p.coords.latitude),lng:roundZone(p.coords.longitude)};
         $("commStatTxt").textContent="Tu es visible dans ta zone"; publishMe(); renderMap();
         if(!commCentered){ commCentered=true; commRecenter(); } updateChatGate();
-      }, ()=>{ $("commStatTxt").textContent="Position indisponible — autorise la localisation"; },
-      {enableHighAccuracy:false, maximumAge:30000, timeout:20000});
+      }, err=>{
+        if(err && err.code===1){ // PERMISSION_DENIED
+          sharing=false; $("commDot").classList.remove("on"); $("commShare").checked=false; updateEnableBtn();
+          try{ localStorage.setItem("lf.comm.share","0"); }catch(e){}
+          $("commStatTxt").textContent="Localisation refusée — voir les instructions"; showGeoHelp();
+        } else if(err && err.code===3){ // TIMEOUT
+          $("commStatTxt").textContent="Position trop longue à trouver — réessaie en extérieur.";
+        } else { // POSITION_UNAVAILABLE
+          $("commStatTxt").textContent="Position indisponible — allume la localisation du téléphone.";
+        }
+      },
+      {enableHighAccuracy:true, maximumAge:30000, timeout:25000});
     } else { $("commStatTxt").textContent="Géolocalisation non supportée sur cet appareil"; }
     clearInterval(presenceTimer); presenceTimer=setInterval(publishMe,30000); publishMe();
   }
   function stopSharing(){
-    sharing=false; $("commDot").classList.remove("on"); $("commStatTxt").textContent="Visibilité désactivée";
+    sharing=false; $("commDot").classList.remove("on"); $("commStatTxt").textContent="Visibilité désactivée"; updateEnableBtn();
     try{ localStorage.setItem("lf.comm.share","0"); }catch(e){}
     if(geoWatch!=null && navigator.geolocation){ navigator.geolocation.clearWatch(geoWatch); } geoWatch=null;
     clearInterval(presenceTimer); presenceTimer=null;
     if(backend) backend.publishPresence(null); renderMap();
+  }
+  // demande de position robuste : vérifie l'état réel de la permission avant d'appeler le GPS
+  function showGeoHelp(){ const h=$("geoHelp"); if(h) h.hidden=false; }
+  function requestGeo(){
+    if(!navigator.geolocation){ $("commStatTxt").textContent="Géolocalisation non supportée sur cet appareil"; return; }
+    if(!charterOk) acceptCharter();
+    if(!me.pseudo){ me.pseudo="Rider"+(Math.floor(Math.random()*90)+10); $("commPseudo").value=me.pseudo; savePseudo(); }
+    updateChatGate();
+    const go=()=>startSharing();
+    if(navigator.permissions && navigator.permissions.query){
+      navigator.permissions.query({name:"geolocation"}).then(s=>{
+        if(s.state==="denied"){ $("commStatTxt").textContent="Localisation bloquée — voir les instructions"; showGeoHelp(); }
+        else go(); // "granted" ou "prompt" → le navigateur affiche la demande
+      }).catch(go);
+    } else go();
   }
 
   // ---------- liste ----------
@@ -2267,11 +2314,14 @@
   $("commShare").addEventListener("change", e=>{
     if(e.target.checked){
       if(!charterOk){ e.target.checked=false; showCharter(); return; }
-      if(!me.pseudo){ me.pseudo="Rider"+(Math.floor(Math.random()*90)+10); $("commPseudo").value=me.pseudo; savePseudo(); }
-      startSharing();
+      requestGeo();
     } else stopSharing();
     updateChatGate();
   });
+  $("commEnable").addEventListener("click", requestGeo);
+  $("geoRetry").addEventListener("click", ()=>{ $("geoHelp").hidden=true; requestGeo(); });
+  $("geoClose").addEventListener("click", ()=>{ $("geoHelp").hidden=true; });
+  $("geoHelp").addEventListener("click", e=>{ if(e.target===$("geoHelp")) $("geoHelp").hidden=true; });
   $("charterAccept").addEventListener("click", acceptCharter);
   $("charterLink").addEventListener("click", showCharter);
   $("sheetReport").addEventListener("click", doReportUser);
@@ -2288,7 +2338,7 @@
   $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
   $("commRecenter").addEventListener("click", commRecenter);
   // sortir les overlays du panneau (l'animation du .tabpane casse le position:fixed) → au <body>
-  ["commOnboard","commSheet"].forEach(idv=>{ const el=$(idv); if(el && el.parentElement!==document.body) document.body.appendChild(el); });
+  ["commOnboard","commSheet","geoHelp"].forEach(idv=>{ const el=$(idv); if(el && el.parentElement!==document.body) document.body.appendChild(el); });
 
   // ---------- onboarding géolocalisation ----------
   function maybeOnboard(){
@@ -2296,12 +2346,7 @@
     if(!done && !sharing) $("commOnboard").hidden=false;
   }
   function onbClose(){ $("commOnboard").hidden=true; try{ localStorage.setItem("lf.comm.onboard","1"); }catch(e){} }
-  $("onbActivate").addEventListener("click", ()=>{
-    acceptCharter();
-    if(!me.pseudo){ me.pseudo="Rider"+(Math.floor(Math.random()*90)+10); $("commPseudo").value=me.pseudo; savePseudo(); }
-    $("commShare").checked=true; startSharing(); updateChatGate();
-    onbClose();
-  });
+  $("onbActivate").addEventListener("click", ()=>{ requestGeo(); onbClose(); });
   $("onbLater").addEventListener("click", onbClose);
   $("onbCharter").addEventListener("click", ()=>{ onbClose(); showCharter(); });
 
@@ -2319,6 +2364,7 @@
     if(!charterOk) $("commCharter").hidden=false;
     renderBlocked();
     updateChatGate();
+    updateEnableBtn();
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
   })();
 </script>
