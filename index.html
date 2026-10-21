@@ -185,6 +185,12 @@
   .chat-filter input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--accent-ink); box-shadow:0 2px 6px rgba(0,0,0,.2); cursor:pointer; }
   .chat-filter input[type=range]::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:#fff; border:3px solid var(--accent-ink); box-shadow:0 2px 6px rgba(0,0,0,.2); cursor:pointer; }
   .chat-filter .cf-val{ flex:0 0 auto; min-width:66px; text-align:right; font-weight:700; font-size:13.5px; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
+  .chan{ display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 0 10px; padding-bottom:2px; }
+  .chan::-webkit-scrollbar{ display:none; }
+  .chan button{ flex:0 0 auto; border:1.5px solid var(--line); background:var(--card); color:var(--muted); padding:7px 13px; border-radius:100px; font-size:13px; font-weight:600; white-space:nowrap; display:inline-flex; align-items:center; gap:7px; cursor:pointer; }
+  .chan button .cd{ width:8px; height:8px; border-radius:50%; background:var(--cd,#5acdd1); }
+  .chan button.on{ background:var(--accent-ink); border-color:var(--accent-ink); color:#fff; }
+  .chan button.on .cd{ background:#fff; }
   .chat-back{ border:0; background:var(--tile); padding:9px 13px; font-size:14px; line-height:1; }
   .chat-title{ flex:1; min-width:0; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .chat-box{ height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; }
@@ -490,6 +496,12 @@
 
     <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
     <div class="card">
+      <div class="chan" id="chatChannels">
+        <button data-tp="general" class="on"><span class="cd" style="--cd:#8aa0ab"></span>Général</button>
+        <button data-tp="efoil"><span class="cd" style="--cd:#148a90"></span>eFoil</button>
+        <button data-tp="wing"><span class="cd" style="--cd:#2e8bd6"></span>Wing Foil</button>
+        <button data-tp="kite"><span class="cd" style="--cd:#e0953a"></span>Kitesurf</button>
+      </div>
       <div class="chat-head">
         <button class="chat-back" id="chatBack" hidden>←</button>
         <div class="seg" id="chatSeg">
@@ -2101,6 +2113,8 @@
   let riders = {}, curMsgs = [];
   let chatMode = "salon", dmPeer = null;
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
+  const CHANS = { general:"Général", efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf" };
+  let chatTopic = "general"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
   let sharing = false, geoWatch = null, presenceTimer = null;
   let backend = null, presenceUnsub = null, chatUnsub = null;
   let commMap=null, commLayers=null, commReady=false, commCentered=false;
@@ -2130,9 +2144,9 @@
       watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
         for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
       sendMessage(ch,text){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
-        return db.push(db.ref(d,path),{uid,pseudo:me.pseudo,text,t:db.serverTimestamp(),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); },
+        return db.push(db.ref(d,path),{uid,pseudo:me.pseudo,text,t:db.serverTimestamp(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); },
       watchMessages(ch,cb){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
-        return db.onValue(db.query(db.ref(d,path), db.limitToLast(120)), snap=>{ const a=[]; snap.forEach(c=>a.push(c.val())); cb(a); }); },
+        return db.onValue(db.query(db.ref(d,path), db.limitToLast(ch==="salon"?200:120)), snap=>{ const a=[]; snap.forEach(c=>a.push(c.val())); cb(a); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); }
     };
   }
@@ -2148,8 +2162,11 @@
     };
     let mine=null, presCb=null;
     const msgs={ salon:[
-      {uid:"demo-aurel",pseudo:"Aurel66",text:"Session demain 9h à la plage sud, qui vient ?",t:Date.now()-3600000,lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
-      {uid:"demo-marine",pseudo:"Marine",text:"Partant si le vent est calme 🤙",t:Date.now()-1800000,lat:demo["demo-marine"].lat,lng:demo["demo-marine"].lng}
+      {uid:"demo-aurel",pseudo:"Aurel66",text:"Salut la communauté 👋",t:Date.now()-5400000,topic:"general",lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
+      {uid:"demo-aurel",pseudo:"Aurel66",text:"Session eFoil demain 9h à la plage sud, qui vient ?",t:Date.now()-3600000,topic:"efoil",lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
+      {uid:"demo-marine",pseudo:"Marine",text:"Partant en eFoil si le vent est calme 🤙",t:Date.now()-1800000,topic:"efoil",lat:demo["demo-marine"].lat,lng:demo["demo-marine"].lng},
+      {uid:"demo-leo",pseudo:"Léo.Foil",text:"15 nœuds cet aprèm, parfait pour le wing 💨",t:Date.now()-1200000,topic:"wing",lat:demo["demo-leo"].lat,lng:demo["demo-leo"].lng},
+      {uid:"demo-marine",pseudo:"Marine",text:"Qui ride en kite ce week-end ? 🪁",t:Date.now()-600000,topic:"kite",lat:demo["demo-marine"].lat,lng:demo["demo-marine"].lng}
     ]};
     const cbs={}; const fire = ch => { if(cbs[ch]) cbs[ch]([...(msgs[ch]||[])]); };
     const emit = () => { if(presCb){ const o={...demo}; if(mine) o[uid]=mine; presCb(o); } };
@@ -2157,7 +2174,7 @@
       uid,
       publishPresence(o){ mine = o?{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:Date.now()}:null; emit(); return Promise.resolve(); },
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
-      sendMessage(ch,text){ (msgs[ch]=msgs[ch]||[]).push({uid,pseudo:me.pseudo,text,t:Date.now(),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); fire(ch);
+      sendMessage(ch,text){ (msgs[ch]=msgs[ch]||[]).push({uid,pseudo:me.pseudo,text,t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}); fire(ch);
         if(ch.startsWith("dm:")) setTimeout(()=>{ msgs[ch].push({uid:dmPeer?dmPeer.uid:"demo",pseudo:dmPeer?dmPeer.pseudo:"Rider",text:"(démo) Salut ! On se capte sur l'eau 👋",t:Date.now()}); fire(ch); },1200);
         return Promise.resolve(); },
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
@@ -2276,11 +2293,19 @@
     const pct = Math.round((chatRadius-5)/(1000-5)*100); r.style.setProperty("--pct", pct+"%");
   }
   function updateChatFilterVis(){ const f=$("chatFilter"); if(f) f.hidden = (chatMode!=="near"); }
+  function updateChanUI(){
+    const row=$("chatChannels");
+    if(row){ row.hidden = (chatMode==="dm"); row.querySelectorAll("button").forEach(b=> b.classList.toggle("on", b.dataset.tp===chatTopic)); }
+    const inp=$("chatInput"); if(inp) inp.placeholder = (chatMode==="dm") ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
+  }
   function renderChat(){
     const box=$("chatBox"); let arr=curMsgs.filter(m=> !blocked.has(m.uid));
+    if(chatMode!=="dm") arr = arr.filter(m=> (m.topic||"general")===chatTopic);
     if(chatMode==="near" && chatRadius<1000) arr = arr.filter(m=> m.lat!=null && me.pos && hdist(me.pos,m)<=chatRadius);
-    if(!arr.length){ const emptyNear = chatRadius>=1000 ? "Aucun message pour l'instant." : "Aucun message dans un rayon de "+chatRadius+" km. Élargis le rayon avec le curseur.";
-      box.innerHTML='<div class="comm-empty">'+(chatMode==="near"?emptyNear:(chatMode==="dm"?"Démarre la conversation 👋":"Sois le premier à dire bonjour 👋"))+'</div>'; return; }
+    if(!arr.length){
+      const emptyNear = chatRadius>=1000 ? ("Aucun message dans "+CHANS[chatTopic]+" pour l'instant.") : ("Aucun message "+CHANS[chatTopic]+" dans un rayon de "+chatRadius+" km. Élargis le rayon avec le curseur.");
+      const emptySalon = "Sois le premier à écrire dans "+CHANS[chatTopic]+" 👋";
+      box.innerHTML='<div class="comm-empty">'+(chatMode==="near"?emptyNear:(chatMode==="dm"?"Démarre la conversation 👋":emptySalon))+'</div>'; return; }
     arr = arr.slice(-120);
     box.innerHTML = arr.map((m,i)=>{ const mine=m.uid===me.uid, who=(mine||chatMode==="dm")?"":'<div class="who">'+esc(m.pseudo||"Rider")+'</div>';
       const flag = mine?"":`<button class="flag" data-i="${i}" title="Signaler ce message" aria-label="Signaler ce message">⚑</button>`;
@@ -2290,13 +2315,13 @@
   }
   function openDM(uid,ps){ dmPeer={uid,pseudo:ps}; chatMode="dm";
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").textContent=ps;
-    updateChatFilterVis(); subscribeChat(); renderChat(); updateChatGate();
+    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
   function closeDM(){ dmPeer=null; chatMode="salon";
     $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true;
     $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="salon"));
-    updateChatFilterVis(); subscribeChat(); renderChat(); updateChatGate();
+    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate();
   }
   function updateChatGate(){
     const ok = !!me.pseudo && charterOk; $("chatSend").disabled=!ok; $("chatInput").disabled=!ok;
@@ -2357,6 +2382,11 @@
   $("chatRadius").addEventListener("input", e=>{ const v=parseInt(e.target.value,10); chatRadius=(v>=5&&v<=1000)?v:50;
     try{ localStorage.setItem("lf.comm.radius", chatRadius); }catch(_){}
     updateRadiusUI(); renderChat(); });
+  $("chatChannels").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
+    if(!CHANS[b.dataset.tp]) return; chatTopic=b.dataset.tp;
+    try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){}
+    updateChanUI(); renderChat(); updateChatGate();
+  }));
   $("chatBack").addEventListener("click", closeDM);
   $("chatSend").addEventListener("click", doSend);
   $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
@@ -2389,7 +2419,7 @@
     renderBlocked();
     updateChatGate();
     updateEnableBtn();
-    updateRadiusUI(); updateChatFilterVis();
+    updateRadiusUI(); updateChatFilterVis(); updateChanUI();
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
   })();
 </script>
