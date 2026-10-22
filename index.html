@@ -540,7 +540,7 @@
     <p class="tagline">Les riders connectés près de toi.</p>
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
     <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
-    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><span id="commOnlineN">0</span> rider en ligne</div>
+    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span></div>
 
     <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
 
@@ -2321,7 +2321,7 @@
   let chatTopic = "efoil"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
   if(!CHANS[chatTopic]) chatTopic="efoil";
   let salonMsgs = [], salonUnsub = null;
-  let typers = {}, typingUnsub = null;
+  let typers = {}, typingUnsub = null, membersUnsub = null, profileMap = {};
   let seen = {}; try{ seen = JSON.parse(localStorage.getItem("lf.comm.seen")||"{}")||{}; }catch(e){ seen={}; }
   const saveSeen = () => { try{ localStorage.setItem("lf.comm.seen", JSON.stringify(seen)); }catch(e){} };
   let autoTrans = true; try{ if(localStorage.getItem("lf.comm.autotrans")==="0") autoTrans=false; }catch(e){}
@@ -2382,6 +2382,8 @@
       deleteMessage(ch,msgId){ if(!msgId) return Promise.resolve(); const base = ch==="salon" ? "chat" : "dm/"+ch.slice(3); return db.remove(db.ref(d,base+"/"+msgId)); },
       setTyping(ch){ return db.set(db.ref(d,"typing/"+uid),{ch:ch,pseudo:me.pseudo,t:db.serverTimestamp()}); },
       clearTyping(){ return db.remove(db.ref(d,"typing/"+uid)); },
+      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var o={pseudo:p.pseudo,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; return db.set(db.ref(d,"profiles/"+uid),o); },
+      watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
       watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); }
     };
@@ -2418,6 +2420,8 @@
       deleteMessage(ch,msgId){ if(msgs[ch]){ msgs[ch]=msgs[ch].filter(function(x){return x.id!==msgId;}); fire(ch); } return Promise.resolve(); },
       setTyping(){ return Promise.resolve(); },
       clearTyping(){ return Promise.resolve(); },
+      saveProfile(){ return Promise.resolve(); },
+      watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; cb(o); return function(){}; },
       watchTyping(){ return function(){}; },
       sendReport(){ return Promise.resolve(); }
     };
@@ -2504,7 +2508,8 @@
     lastPresenceRaw = map || {};
     riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
     $("commCount").textContent = Object.keys(riders).length;
-    var _o=$("commOnlineTop"); if(_o){ var _n=Object.keys(riders).length; _o.innerHTML='<span class="dot-on"></span>'+_n+' rider'+(_n>1?"s":"")+' en ligne'; }
+    var _on=$("commOnlineN"); if(_on) _on.textContent=String(Object.keys(riders).length);
+    recomputeMembers();
     renderList(); renderMap();
   }
   function renderList(){
@@ -2531,7 +2536,7 @@
     else { renderChat(); } }
   // abonnement permanent au salon (toutes disciplines) : alimente l'affichage ET les pastilles non-lus
   function subscribeSalon(){ if(!backend || salonUnsub) return;
-    salonUnsub = backend.watchMessages("salon", m=>{ salonMsgs=m; recomputeBadges(); processNotif(salonMsgs); if(chatMode!=="dm") renderChat(); }); }
+    salonUnsub = backend.watchMessages("salon", m=>{ salonMsgs=m; recomputeMembers(); recomputeBadges(); processNotif(salonMsgs); if(chatMode!=="dm") renderChat(); }); }
   function latestTs(topic){ let mx=0; for(const m of salonMsgs){ if((m.topic||"general")===topic){ const t=+m.t||0; if(t>mx) mx=t; } } return mx; }
   function recomputeBadges(){
     const commVisible = (()=>{ const t=$("tab-communaute"); return t && !t.hidden; })();
@@ -2727,6 +2732,8 @@
   // re-filtre le dernier instantané de présence (après blocage/déblocage)
   function onPresence2(){ onPresence(lastPresenceRaw); }
   function onTyping(map){ typers=map||{}; renderTyping(); }
+  function onProfiles(map){ profileMap = map||{}; recomputeMembers(); }
+  function recomputeMembers(){ var set={}; for(var k in profileMap){ if(!blocked.has(k)) set[k]=1; } for(var i=0;i<salonMsgs.length;i++){ var u=salonMsgs[i].uid; if(u && !blocked.has(u)) set[u]=1; } for(var rk in riders){ if(!blocked.has(rk)) set[rk]=1; } var n=Object.keys(set).length; var e=$("commMembers"); if(e) e.textContent = n+" membre"+(n>1?"s":""); }
   function renderTyping(){ var el=$("chatTyping"); if(!el) return; var ch=currentChannel(); var names=[]; for(var k in typers){ if(blocked.has(k)) continue; var r=typers[k]; if(!r||r.ch!==ch) continue; names.push(r.pseudo||"Rider"); } if(!names.length){ el.hidden=true; el.textContent=""; return; } var txt = names.length===1 ? (names[0]+" écrit…") : (names.length===2 ? (names[0]+" et "+names[1]+" écrivent…") : (names.length+" riders écrivent…")); el.textContent=txt; el.hidden=false; }
 
   // ---------- câblage UI ----------
@@ -2751,7 +2758,7 @@
   $("commPseudo").addEventListener("input", ()=>{ me.pseudo=$("commPseudo").value.trim().slice(0,24); savePseudo(); updateChatGate(); publishMe(); });
   var _bio=$("commBio"); if(_bio){ _bio.value=me.bio||""; _bio.addEventListener("input", function(){ me.bio=_bio.value.trim().slice(0,200); try{ localStorage.setItem("lf.comm.bio", me.bio); }catch(e){} }); }
   var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=false; });
-  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; updateChatGate(); });
+  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; updateChatGate(); if(me.pseudo && backend && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio}); });
   var _pes=$("profEditSheet"); if(_pes) _pes.addEventListener("click", function(e){ if(e.target.id==="profEditSheet") e.target.hidden=true; });
   ["profEditSheet","commSheet"].forEach(function(idp){ var s=document.getElementById(idp); if(s && s.parentNode!==document.body) document.body.appendChild(s); });
   $("chatSeg").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
@@ -2828,6 +2835,8 @@
     me.uid = backend.uid;
     presenceUnsub = backend.watchPresence(onPresence);
     if(backend.watchTyping) typingUnsub = backend.watchTyping(onTyping);
+    if(backend.watchProfiles) membersUnsub = backend.watchProfiles(onProfiles);
+    if(me.pseudo && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio});
     subscribeChat();
     subscribeSalon();
     let want=false; try{ want = localStorage.getItem("lf.comm.share")==="1"; }catch(e){}
