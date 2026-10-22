@@ -584,13 +584,15 @@
     .mto-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .mto-chips button{border:1px solid var(--line);background:var(--paper);border-radius:100px;padding:7px 13px;font-size:13px;cursor:pointer;color:inherit;font-family:inherit}
     .mto-chips button:active,.mto-chips button:hover{background:var(--mist)}
+.mto-geo{display:block;width:100%;margin-top:10px;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;color:inherit;font-family:inherit}
+.mto-geo:active,.mto-geo:hover{background:var(--mist)}
     </style>
     <div class="m-label" style="margin:2px 6px 10px">Rechercher un spot</div>
     <div class="card" style="padding:12px">
       <input id="mtoSearch" class="wg-custom" style="width:100%" placeholder="Nom d un lieu / spot (ex. Leucate, Hyeres...)" autocomplete="off">
       <div id="mtoResults" hidden></div>
-      <div id="mtoChips" class="mto-chips"></div>
-      <div class="note" style="margin-top:8px">Cherche n importe quel spot : conditions en direct + carte. Tes spots connus sont en raccourci.</div>
+      <button id="mtoGeo" class="mto-geo" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Utiliser ma position actuelle</button>
+      <div class="note" style="margin-top:8px">Cherche n importe quel spot, ou utilise ta position actuelle : conditions en direct, carte et prévisions.</div>
     </div>
     
         <div class="m-label" style="margin:2px 6px 10px">Conditions en direct</div>
@@ -611,13 +613,16 @@
 
     <style>
     .mto-fc{overflow-x:auto;-webkit-overflow-scrolling:touch}
-    .mto-fc-t{border-collapse:collapse;font-size:12px;white-space:nowrap}
+    .mto-fc-t{border-collapse:separate;border-spacing:0;font-size:12px;white-space:nowrap}
     .mto-fc-t th,.mto-fc-t td{padding:5px 7px;text-align:center}
     .mto-fc-t .rl{position:sticky;left:0;background:var(--paper);text-align:left;font-weight:600;color:var(--muted);z-index:1;box-shadow:1px 0 0 var(--line)}
     .mto-fc-t .day td{font-weight:700;padding-top:9px}
     .mto-fc-t .hr td{color:var(--muted);font-variant-numeric:tabular-nums}
     .mto-fc-t .wind td{font-weight:700;border-radius:4px}
     .mto-fc-t .mto-arrow{font-size:14px}
+    .mto-fc-t th,.mto-fc-t td{min-width:40px}
+    .mto-fc-t .rl{min-width:94px;z-index:3}
+    .mto-fc-t .day td{font-size:11px}
     </style>
     <div class="m-label" style="margin:16px 6px 8px">Prévisions (3 jours)</div>
     <div class="card" style="padding:12px">
@@ -625,22 +630,7 @@
       <div class="note" style="margin-top:8px">Vent, rafales, direction, température et vagues — <b>Open-Meteo</b>, pour le spot choisi (fais glisser le tableau).</div>
     </div>
     
-        <div class="m-label" style="margin:16px 6px 8px">Prévisions détaillées (Windguru)</div>
-    <div class="card" style="padding:12px">
-      <select id="wgSpot" class="wg-sel">
-        <option value="48582">Leucate — Le Goulet</option>
-        <option value="48584">Leucate — La Mine</option>
-        <option value="500998">La Franqui — Les Coussoules</option>
-        <option value="500975">Gruissan — Plage des Chalets</option>
-        <option value="500974">Gruissan — Plage Mateille</option>
-        <option value="501010">L'Almanarre, Hyères</option>
-        <option value="48617">Marseille — Pointe Rouge</option>
-        <option value="custom">Autre spot…</option>
-      </select>
-      <input id="wgCustom" class="wg-custom" placeholder="Colle un lien ou un n° de spot Windguru" hidden>
-      <div class="wg-box"><iframe id="wgFrame" title="Prévisions Windguru" loading="lazy"></iframe></div>
-      <div class="note" style="margin-top:8px">Prévisions <b>Windguru</b> : vent, rafales, direction et note. Choisis ton spot ci-dessus.</div>
-    </div>
+
 
     <a class="wa" id="mtoIfremer" href="https://marc.ifremer.fr/resultats/vagues/modeles_mediterranee" target="_blank" rel="noopener" style="margin-top:12px;background:linear-gradient(135deg,#3aa0e0 0%,#1b6fb0 55%,#0f5a93 100%)">
       <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M2 17c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/></svg></span>
@@ -2727,15 +2717,16 @@
         var days=["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
         var dayRow="",hrRow="",windRow="",gustRow="",dirRow="",tmpRow="",waveRow="",last="";
         slots.forEach(function(i){
-          var dt=new Date(H.time[i]); var dk=dt.toDateString();
-          dayRow+='<td>'+(dk!==last?(days[dt.getDay()]+" "+dt.getDate()):"")+'</td>'; last=dk;
-          hrRow+='<td>'+dt.getHours()+'h</td>';
+          var dt=new Date(H.time[i]);
+          var sh=(Math.floor(dt.getTime()/86400000)%2===0)?' style="background:#f3f6f8"':'';
+          dayRow+='<td'+sh+'>'+days[dt.getDay()]+' '+dt.getDate()+'</td>';
+          hrRow+='<td'+sh+'>'+dt.getHours()+'h</td>';
           var ws=H.wind_speed_10m[i],gu=H.wind_gusts_10m[i],di=H.wind_direction_10m[i],tp=H.temperature_2m[i];
           var cw=colW(ws); windRow+='<td style="background:'+cw[0]+';color:'+cw[1]+'">'+(ws==null?"—":Math.round(ws))+'</td>';
-          var cg=colW(gu); gustRow+='<td style="color:'+cg[1]+'">'+(gu==null?"—":Math.round(gu))+'</td>';
-          dirRow+='<td>'+(di==null?"—":arrow(di))+'</td>';
-          tmpRow+='<td>'+(tp==null?"—":Math.round(tp)+"°")+'</td>';
-          var wv=waveMap[H.time[i]]; waveRow+='<td>'+(wv==null?"—":Number(wv).toFixed(1))+'</td>';
+          var cg=colW(gu); gustRow+='<td style="background:'+cg[0]+';color:'+cg[1]+'">'+(gu==null?"—":Math.round(gu))+'</td>';
+          dirRow+='<td'+sh+'>'+(di==null?"—":arrow(di))+'</td>';
+          tmpRow+='<td'+sh+'>'+(tp==null?"—":Math.round(tp)+"°")+'</td>';
+          var wv=waveMap[H.time[i]]; waveRow+='<td'+sh+'>'+(wv==null?"—":Number(wv).toFixed(1))+'</td>';
         });
         box.innerHTML='<div class="mto-fc"><table class="mto-fc-t">'
           +'<tr class="day"><th class="rl"></th>'+dayRow+'</tr>'
@@ -2808,6 +2799,7 @@
       if(!pos) locate();                                        // puis on affine avec la vraie position si possible
       wgInitUI(); };
     const lb=$m("mtoLocate"); if(lb) lb.addEventListener("click",locate);
+    var gb=document.getElementById("mtoGeo"); if(gb) gb.addEventListener("click",function(){ locate(); window.scrollTo({top:0,behavior:"smooth"}); });
   })();
 </script>
 </body>
