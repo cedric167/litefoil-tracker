@@ -575,7 +575,25 @@
   </section>
 
   <section id="tab-meteo" class="tabpane" hidden>
-    <div class="m-label" style="margin:2px 6px 10px">Conditions en direct</div>
+    <style>
+    #mtoResults{border:1px solid var(--line);border-radius:12px;margin-top:8px;overflow:hidden}
+    #mtoResults .r{padding:11px 12px;cursor:pointer;border-top:1px solid var(--line);font-size:15px}
+    #mtoResults .r:first-child{border-top:0}
+    #mtoResults .r:active,#mtoResults .r:hover{background:var(--mist)}
+    #mtoResults .r small{color:var(--muted);display:block;font-size:12px;margin-top:2px}
+    .mto-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .mto-chips button{border:1px solid var(--line);background:var(--paper);border-radius:100px;padding:7px 13px;font-size:13px;cursor:pointer;color:inherit;font-family:inherit}
+    .mto-chips button:active,.mto-chips button:hover{background:var(--mist)}
+    </style>
+    <div class="m-label" style="margin:2px 6px 10px">Rechercher un spot</div>
+    <div class="card" style="padding:12px">
+      <input id="mtoSearch" class="wg-custom" style="width:100%" placeholder="Nom d un lieu / spot (ex. Leucate, Hyeres...)" autocomplete="off">
+      <div id="mtoResults" hidden></div>
+      <div id="mtoChips" class="mto-chips"></div>
+      <div class="note" style="margin-top:8px">Cherche n importe quel spot : conditions en direct + carte. Tes spots connus sont en raccourci.</div>
+    </div>
+    
+        <div class="m-label" style="margin:2px 6px 10px">Conditions en direct</div>
     <div class="card" style="padding:14px">
       <div class="mto-loc">
         <span id="mtoSpot">📍 Chargement…</span>
@@ -2696,8 +2714,36 @@
     }
     (function(){ const sel=$m("wgSpot"), cust=$m("wgCustom"); if(!sel) return;
       sel.addEventListener("change",()=>{ if(sel.value==="custom"){ if(cust){ cust.hidden=false; cust.focus(); } return; }
-        wgSpot=sel.value; try{ localStorage.setItem("lf.meteo.wgspot",wgSpot); }catch(e){} wgLoad(wgSpot); });
+        wgSpot=sel.value; try{ localStorage.setItem("lf.meteo.wgspot",wgSpot); }catch(e){} wgLoad(wgSpot); var _sp=SPOTS.find(function(s){return s.wg===wgSpot;}); if(_sp) apply({lat:_sp.lat,lng:_sp.lon},_sp.name); });
       if(cust) cust.addEventListener("change",()=>{ const id=wgParseId(cust.value); if(id){ wgSpot=id; try{ localStorage.setItem("lf.meteo.wgspot",wgSpot); }catch(e){} wgLoad(wgSpot); } });
+    })();
+
+    
+    // ---- Spots connus + recherche de spot ----
+    const SPOTS=[
+      {name:"Leucate — Le Goulet",lat:42.911,lon:3.030,wg:"48582"},
+      {name:"Leucate — La Mine",lat:42.888,lon:3.044,wg:"48584"},
+      {name:"La Franqui — Les Coussoules",lat:42.933,lon:3.031,wg:"500998"},
+      {name:"Gruissan — Plage des Chalets",lat:43.100,lon:3.108,wg:"500975"},
+      {name:"Gruissan — Plage Mateille",lat:43.085,lon:3.106,wg:"500974"},
+      {name:"L'Almanarre, Hyères",lat:43.080,lon:6.150,wg:"501010"},
+      {name:"Marseille — Pointe Rouge",lat:43.244,lon:5.366,wg:"48617"}
+    ];
+    function escH(s){return String(s==null?"":s).replace(/[&<>"]/g,function(ch){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch];});}
+    function selectWg(id){ wgSpot=id; try{localStorage.setItem("lf.meteo.wgspot",id);}catch(e){} var sel=document.getElementById("wgSpot"); if(sel){ if(WG_PRESETS.indexOf(id)>=0){ sel.value=id; var c0=document.getElementById("wgCustom"); if(c0) c0.hidden=true; } } wgLoad(id); }
+    function wgMatch(lat,lon){ var best=null,bd=1e9; for(var i=0;i<SPOTS.length;i++){ var s=SPOTS[i]; var d=Math.hypot((s.lat-lat)*111,(s.lon-lon)*85); if(d<bd){bd=d;best=s;} } if(best&&bd<10){ selectWg(best.wg); return best; } return null; }
+    function pickSpot(p){ apply({lat:p.lat,lng:p.lon},p.name); if(p.wg){ selectWg(p.wg); } else if(!wgMatch(p.lat,p.lon)){ var c1=document.getElementById("wgCustom"); if(c1) c1.hidden=false; } }
+    (function(){ var box=document.getElementById("mtoChips"); if(!box) return; box.innerHTML=""; SPOTS.forEach(function(s){ var b=document.createElement("button"); b.type="button"; b.textContent=s.name; b.addEventListener("click",function(){ pickSpot(s); window.scrollTo({top:0,behavior:"smooth"}); }); box.appendChild(b); }); })();
+    (function(){ var inp=document.getElementById("mtoSearch"), res=document.getElementById("mtoResults"); if(!inp||!res) return; var t=null, ctrl=null;
+      function hide(){ res.hidden=true; res.innerHTML=""; }
+      inp.addEventListener("input",function(){ var q=inp.value.trim(); if(t) clearTimeout(t); if(q.length<2){ hide(); return; }
+        t=setTimeout(function(){ (async function(){ try{ if(ctrl) ctrl.abort(); ctrl=new AbortController();
+          var r=await fetch("https://geocoding-api.open-meteo.com/v1/search?count=6&language=fr&name="+encodeURIComponent(q),{signal:ctrl.signal});
+          var j=await r.json(); var list=(j&&j.results)||[];
+          if(!list.length){ res.innerHTML='<div class="r">Aucun résultat</div>'; res.hidden=false; return; }
+          res.innerHTML=""; list.forEach(function(it){ var d=document.createElement("div"); d.className="r"; var sub=[it.admin2,it.admin1,it.country].filter(Boolean).join(", "); d.innerHTML="<b>"+escH(it.name)+"</b><small>"+escH(sub)+"</small>"; d.addEventListener("click",function(){ inp.value=it.name; hide(); pickSpot({name:it.name,lat:it.latitude,lon:it.longitude}); }); res.appendChild(d); }); res.hidden=false;
+        }catch(e){} })(); },320); });
+      document.addEventListener("click",function(e){ if(!res.contains(e.target)&&e.target!==inp) hide(); });
     })();
 
     window.meteoOnShow=function(){ if(loaded) return; loaded=true;
