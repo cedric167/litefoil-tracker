@@ -251,6 +251,20 @@
   .prof-name{ font-size:18px; font-weight:700; }
   .prof-bio{ font-size:14px; color:var(--muted); text-align:center; line-height:1.4; max-width:92%; }
   #sheetMsg{ background:var(--accent-ink); color:#fff; }
+  .chat-emoji-btn{ font-size:20px; }
+  .chat-reply{ display:flex; align-items:center; gap:8px; background:var(--tile); border-left:3px solid var(--accent-ink); border-radius:8px; padding:7px 10px; margin:0 0 8px; font-size:13px; }
+  .chat-reply .rt{ min-width:0; flex:1; }
+  .chat-reply .rt b{ color:var(--accent-ink); display:block; font-size:12px; }
+  .chat-reply .rt span{ color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+  .chat-reply .rx{ border:0; background:none; font-size:18px; cursor:pointer; color:var(--muted); flex:none; }
+  .chat-emojis{ display:flex; flex-wrap:wrap; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px; margin:0 0 8px; }
+  .chat-emojis button{ border:0; background:none; font-size:22px; cursor:pointer; padding:3px 5px; border-radius:8px; }
+  .chat-emojis button:active{ background:var(--tile); }
+  .qreply{ border-left:3px solid currentColor; opacity:.9; padding:3px 8px; margin-bottom:5px; font-size:12.5px; border-radius:4px; background:rgba(0,0,0,.06); }
+  .bubble.me .qreply{ background:rgba(255,255,255,.18); }
+  .qreply b{ display:block; font-size:11.5px; }
+  .cday{ align-self:center; font-size:11px; color:var(--muted-2); background:var(--tile); padding:3px 12px; border-radius:100px; margin:4px 0; }
+  .ctime .msg-reply{ border:0; background:none; color:var(--muted-2); cursor:pointer; font-size:13px; padding:0; }
   .comm-priv{ font-size:12px; color:var(--muted-2); margin-top:10px; display:flex; gap:7px; align-items:flex-start; line-height:1.45; }
   .comm-priv svg{ width:15px; height:15px; flex:none; stroke:var(--muted-2); fill:none; stroke-width:1.8; margin-top:1px; }
   .comm-demo{ background:#fff8e6; border:1px solid #f3e2b0; color:#8a6d1b; border-radius:12px; padding:10px 13px; font-size:13px; margin-bottom:12px; }
@@ -598,7 +612,10 @@
         <span class="cf-val" id="chatRadiusVal">50 km</span>
       </div>
       <div class="chat-box" id="chatBox"><div class="comm-empty">Sois le premier à dire bonjour 👋</div></div>
+      <div id="chatReply" class="chat-reply" hidden></div>
+      <div id="chatEmojis" class="chat-emojis" hidden></div>
       <div class="chat-input">
+        <button class="chat-photo chat-emoji-btn" id="chatEmoji" type="button" title="Emoji" aria-label="Emoji">😀</button>
         <button class="chat-photo" id="chatPhoto" type="button" title="Envoyer une photo" aria-label="Envoyer une photo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg></button>
         <input id="chatInput" maxlength="400" placeholder="Écrire un message…" autocomplete="off">
         <button class="primary" id="chatSend">Envoyer</button>
@@ -2318,9 +2335,9 @@
       publishPresence(o){ return o ? db.set(presRef,{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:db.serverTimestamp()}) : db.remove(presRef); },
       watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
         for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
-      sendMessage(ch,text,img){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
+      sendMessage(ch,text,img,reply){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
         const o={uid,pseudo:me.pseudo,text:text||"",t:db.serverTimestamp(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null};
-        if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio;
+        if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
         return db.push(db.ref(d,path),o); },
       watchMessages(ch,cb){ const path = ch==="salon" ? "chat" : "dm/"+ch.slice(3);
         // onChildAdded (et non onValue) : RTDB livre un instantané incomplet avec onValue+limitToLast
@@ -2359,7 +2376,7 @@
       uid,
       publishPresence(o){ mine = o?{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:Date.now()}:null; emit(); return Promise.resolve(); },
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
-      sendMessage(ch,text,img){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch);
+      sendMessage(ch,text,img,reply){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch);
         if(ch.startsWith("dm:")) setTimeout(()=>{ msgs[ch].push({uid:dmPeer?dmPeer.uid:"demo",pseudo:dmPeer?dmPeer.pseudo:"Rider",text:"(démo) Salut ! On se capte sur l'eau 👋",t:Date.now()}); fire(ch); },1200);
         return Promise.resolve(); },
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
@@ -2584,9 +2601,13 @@
     arr = arr.slice(-120);
     const tl=targetLang();
     function _avatar(m,i){ if(m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+m.av+'" alt=""></div>'; var ini=(((m.pseudo||"R").trim()[0])||"R").toUpperCase(); return '<div class="cav tapp" data-i="'+i+'" style="background:'+avatarColor(m.uid||"x")+'">'+esc(ini)+'</div>'; }
+    let prevDay="";
+    function dayLabel(t){ var d=new Date(t||Date.now()), td=new Date(), yd=new Date(Date.now()-86400000); var k=x=>x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate(); if(k(d)===k(td)) return "Aujourd'hui"; if(k(d)===k(yd)) return "Hier"; return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }
     box.innerHTML = arr.map((m,i)=>{ const mine=m.uid===me.uid;
+      let sep=""; const dk=new Date(m.t||Date.now()).toDateString(); if(dk!==prevDay){ prevDay=dk; sep='<div class="cday">'+esc(dayLabel(m.t))+'</div>'; }
       const who=(mine||chatMode==="dm")?"":'<div class="who2 tapp" data-i="'+i+'">'+esc(m.pseudo||"Rider")+'</div>';
       const flag = mine?"":`<button class="flag" data-i="${i}" title="Signaler" aria-label="Signaler ce message">⚑</button>`;
+      const replyBtn = `<button class="msg-reply" data-i="${i}" title="Répondre" aria-label="Répondre">↩︎</button>`;
       let bodyText=m.text?esc(m.text):"", note="";
       if(!mine && autoTrans && m.text && translatable(m.text)){
         const c=tcache[tl+"|"+m.text];
@@ -2595,14 +2616,16 @@
           note=`<div class="tr-note"><svg viewBox="0 0 24 24"><path d="M4 5h10M9 3v2M11.5 5c0 5-3.5 8-7.5 9"/><path d="M14 20l3.5-9 3.5 9"/></svg>${TR_WORD[tl]||"Traduit"} (${esc((c.det||"").toUpperCase())}→${tl.toUpperCase()}) · <a class="tr-tog" data-h="${h}">${showOrig?(TR_TRAD[tl]||"voir la traduction"):(TR_ORIG[tl]||"voir l'original")}</a></div>`;
         }
       }
+      const q = m.rt?`<div class="qreply"><b>${esc(m.rt.p||"")}</b>${esc(m.rt.t||"")}</div>`:"";
       const imgHtml = m.img?`<img class="chat-img" src="${m.img}" data-full="${m.img}" alt="photo">`:"";
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
-      const onlyImg = (m.img && !bodyText && !note) ? " only-img" : "";
-      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}">${imgHtml}${txtHtml}${note}</div>`;
-      const time = `<div class="ctime">${timeLabel(m.t)}${mine?"":" "+flag}</div>`;
-      return `<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${time}</div></div>`;
+      const onlyImg = (m.img && !bodyText && !note && !m.rt) ? " only-img" : "";
+      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}">${q}${imgHtml}${txtHtml}${note}</div>`;
+      const time = `<div class="ctime">${timeLabel(m.t)} ${replyBtn}${mine?"":" "+flag}</div>`;
+      return `${sep}<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${time}</div></div>`;
     }).join("");
     box.querySelectorAll(".flag").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) reportMessage(m); }));
+    box.querySelectorAll(".msg-reply").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) setReply(m); }));
     box.querySelectorAll(".tr-tog").forEach(a=> a.addEventListener("click", ()=>{ const h=a.dataset.h; if(transShowOrig.has(h)) transShowOrig.delete(h); else transShowOrig.add(h); renderChat(); }));
     box.querySelectorAll(".chat-img").forEach(im=> im.addEventListener("click", ()=>{ const u=im.dataset.full; try{ const w=window.open("","_blank"); if(w){ w.document.write('<title>Photo</title><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="'+u+'" style="max-width:100%;max-height:100vh"></body>'); } else { location.href=u; } }catch(e){} }));
     box.querySelectorAll(".tapp").forEach(el=> el.addEventListener("click", ()=>{ const m=arr[+el.dataset.i]; if(m && m.uid!==me.uid) openSheet(m.uid,m.pseudo,m.av,m.bio); }));
@@ -2629,7 +2652,7 @@
   function doSend(){ const inp=$("chatInput"), text=inp.value.trim(); if(!text) return;
     if(!charterOk){ showCharter(); return; }
     if(!me.pseudo){ $("commPseudo").focus(); updateChatGate(); return; }
-    if(backend) backend.sendMessage(currentChannel(), text); inp.value="";
+    if(backend) backend.sendMessage(currentChannel(), text, null, replyTarget); inp.value=""; clearReply();
   }
 
   // ---------- modération ----------
@@ -2708,7 +2731,14 @@
   var _avBtn=$("commAvBtn"); if(_avBtn) _avBtn.addEventListener("click", function(){ var f=$("commAvFile"); if(f) f.click(); });
   var _avFile=$("commAvFile"); if(_avFile) _avFile.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,160,0.72).then(setAvatar).catch(function(){}); e.target.value=""; });
   var _ph=$("chatPhoto"); if(_ph) _ph.addEventListener("click", function(){ if(!me.pseudo||!charterOk){ if(!me.pseudo){ $("commPseudo").focus(); } updateChatGate(); return; } var f=$("chatFile"); if(f) f.click(); });
-  var _phf=$("chatFile"); if(_phf) _phf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,1000,0.6).then(function(d){ var cap=$("chatInput").value.trim(); if(backend) backend.sendMessage(currentChannel(), cap, d); $("chatInput").value=""; }).catch(function(){}); e.target.value=""; });
+  var _phf=$("chatFile"); if(_phf) _phf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,1000,0.6).then(function(d){ var cap=$("chatInput").value.trim(); if(backend) backend.sendMessage(currentChannel(), cap, d, replyTarget); $("chatInput").value=""; clearReply(); }).catch(function(){}); e.target.value=""; });
+  var replyTarget=null;
+  function showReply(){ var r=$("chatReply"); if(!r) return; if(replyTarget){ r.innerHTML='<div class="rt"><b>Réponse à '+esc(replyTarget.pseudo)+'</b><span>'+esc(replyTarget.text)+'</span></div><button class="rx" id="chatReplyX" aria-label="Annuler">×</button>'; r.hidden=false; var x=$("chatReplyX"); if(x) x.addEventListener("click", clearReply); } else { r.hidden=true; r.innerHTML=""; } }
+  function setReply(m){ if(!m) return; replyTarget={pseudo:(m.pseudo||"Rider"), text:(m.text||"📷 Photo").slice(0,120)}; showReply(); var i=$("chatInput"); if(i) i.focus(); }
+  function clearReply(){ replyTarget=null; showReply(); }
+  var EMOJIS=["👍","❤️","😂","🤙","🔥","🌊","🏄","💨","😎","🙏","👏","😮","😢","💪","⚡","🎉","☀️","🤩","👋","✅","🚀","🫶","🤝","🙌"];
+  (function(){ var box=$("chatEmojis"); if(!box) return; box.innerHTML=EMOJIS.map(function(e){return '<button type="button">'+e+'</button>';}).join(""); box.querySelectorAll("button").forEach(function(b){ b.addEventListener("click", function(){ var i=$("chatInput"); if(i){ i.value+=b.textContent; i.focus(); } }); }); })();
+  var _em=$("chatEmoji"); if(_em) _em.addEventListener("click", function(){ var p=$("chatEmojis"); if(p) p.hidden=!p.hidden; });
   $("chatSend").addEventListener("click", doSend);
   $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
   $("commRecenter").addEventListener("click", commRecenter);
