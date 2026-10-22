@@ -1,2 +1,7 @@
 cert/
 android/
+node_modules/
+ios/
+www/
+build/
+.DS_Store

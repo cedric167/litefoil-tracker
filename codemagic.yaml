@@ -1,0 +1,59 @@
+# Recette de build iOS pour Codemagic (serveur Mac dans le cloud).
+# PHASE 2 (à faire ensemble dans l'interface Codemagic) :
+#   - connecter ce dépôt GitHub,
+#   - ajouter l'intégration "App Store Connect" (clé API Apple) et la nommer "litefoil_appstore",
+#   - activer la signature automatique (distribution App Store).
+# Ensuite, chaque build génère l'app, la signe et l'envoie sur TestFlight.
+
+workflows:
+  ios-appstore:
+    name: Lite Foil - iOS (App Store / TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: litefoil_appstore        # <- nom de la cle API Apple dans Codemagic (Phase 2)
+    environment:
+      xcode: latest
+      cocoapods: default
+      node: 20
+      vars:
+        BUNDLE_ID: "fr.litefoil.tracker"
+        APP_NAME: "Lite Foil"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: fr.litefoil.tracker
+    scripts:
+      - name: Installer les dependances
+        script: npm install
+      - name: Assembler le dossier www (site + pont Bluetooth)
+        script: npm run build:www
+      - name: Generer / synchroniser le projet iOS
+        script: |
+          if [ ! -d "ios" ]; then npx cap add ios; fi
+          npx cap sync ios
+      - name: Ajouter les permissions iOS (Bluetooth + localisation)
+        script: |
+          PLIST="ios/App/App/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :NSBluetoothAlwaysUsageDescription string 'Lite Foil se connecte en Bluetooth a votre tracker, votre telecommande et votre batterie.'" "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :NSBluetoothAlwaysUsageDescription 'Lite Foil se connecte en Bluetooth a votre tracker, votre telecommande et votre batterie.'" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSBluetoothPeripheralUsageDescription string 'Lite Foil se connecte en Bluetooth a votre materiel Lite Foil.'" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Votre position sert a vous situer sur la carte et, si vous l activez, a apparaitre dans la communaute (zone approximative).'" "$PLIST" 2>/dev/null || true
+      - name: Signature automatique
+        script: |
+          xcode-project use-profiles
+      - name: Numero de build
+        script: |
+          cd ios/App
+          agvtool new-version -all $(($(date +%s) / 60)) || true
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "ios/App/App.xcworkspace" \
+            --scheme "App"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

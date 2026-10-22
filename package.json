@@ -1,0 +1,21 @@
+{
+  "name": "litefoil-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lite Foil — app native (Capacitor) iOS/Android, pont Bluetooth natif",
+  "scripts": {
+    "build:www": "node scripts/build-www.mjs",
+    "sync": "npm run build:www && cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "6.1.2",
+    "@capacitor/core": "6.1.2",
+    "@capacitor/geolocation": "6.0.1",
+    "@capacitor/ios": "6.1.2",
+    "@capacitor-community/bluetooth-le": "6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "6.1.2",
+    "esbuild": "0.23.1"
+  }
+}

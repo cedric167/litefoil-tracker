@@ -1,0 +1,22 @@
+{
+  "appId": "fr.litefoil.tracker",
+  "appName": "Lite Foil",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#0f1419"
+  },
+  "android": {
+    "backgroundColor": "#0f1419"
+  },
+  "plugins": {
+    "BluetoothLe": {
+      "displayStrings": {
+        "scanning": "Recherche d'appareils…",
+        "cancel": "Annuler",
+        "availableDevices": "Appareils Lite Foil",
+        "noDeviceFound": "Aucun appareil trouvé"
+      }
+    }
+  }
+}
