@@ -251,7 +251,16 @@
   .prof-name{ font-size:18px; font-weight:700; }
   .prof-bio{ font-size:14px; color:var(--muted); text-align:center; line-height:1.4; max-width:92%; }
   #sheetMsg{ background:var(--accent-ink); color:#fff; }
+  .prof-edit-btn{ display:inline-flex; align-items:center; gap:10px; border:1.5px solid var(--line); background:var(--card); color:var(--text); border-radius:100px; padding:6px 16px 6px 6px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:14px; }
+  .prof-edit-av{ width:34px; height:34px; border-radius:50%; background:var(--accent-ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden; flex:none; }
+  .prof-edit-av img{ width:100%; height:100%; object-fit:cover; }
+  #profEditSheet label{ display:block; margin-top:10px; font-size:13px; color:var(--muted); font-weight:600; }
+  #profEditSheet input, #profEditSheet textarea{ width:100%; box-sizing:border-box; }
+  #profEditSheet .av-btn{ margin-top:10px; }
   .chat-emoji-btn{ font-size:20px; }
+  .chan-sel-wrap{ display:flex; align-items:center; gap:8px; margin:0 0 12px; }
+  .chan-ic{ font-size:18px; flex:none; }
+  .chan-sel{ flex:1; min-width:0; font-family:inherit; font-size:15px; font-weight:600; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; background:var(--card); color:var(--text); }
   .chat-reply{ display:flex; align-items:center; gap:8px; background:var(--tile); border-left:3px solid var(--accent-ink); border-radius:8px; padding:7px 10px; margin:0 0 8px; font-size:13px; }
   .chat-reply .rt{ min-width:0; flex:1; }
   .chat-reply .rt b{ color:var(--accent-ink); display:block; font-size:12px; }
@@ -265,6 +274,14 @@
   .qreply b{ display:block; font-size:11.5px; }
   .cday{ align-self:center; font-size:11px; color:var(--muted-2); background:var(--tile); padding:3px 12px; border-radius:100px; margin:4px 0; }
   .ctime .msg-reply{ border:0; background:none; color:var(--muted-2); cursor:pointer; font-size:13px; padding:0; }
+  .ctime .msg-react, .ctime .msg-del{ border:0; background:none; color:var(--muted-2); cursor:pointer; font-size:13px; padding:0; }
+  .react-row{ display:flex; flex-wrap:wrap; gap:5px; margin:4px 0 0; }
+  .crow.me .react-row{ justify-content:flex-end; }
+  .react-chip{ border:1px solid var(--line); background:var(--card); border-radius:100px; padding:1px 9px; font-size:12.5px; cursor:pointer; line-height:1.7; }
+  .react-chip.on{ border-color:var(--accent-ink); background:rgba(20,138,144,.12); color:var(--accent-ink); font-weight:700; }
+  .react-pop{ position:fixed; z-index:9999; display:flex; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:100px; padding:5px 8px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+  .react-pop button{ border:0; background:none; font-size:22px; cursor:pointer; padding:2px 3px; border-radius:8px; }
+  .react-pop button:active{ background:var(--tile); }
   .comm-priv{ font-size:12px; color:var(--muted-2); margin-top:10px; display:flex; gap:7px; align-items:flex-start; line-height:1.45; }
   .comm-priv svg{ width:15px; height:15px; flex:none; stroke:var(--muted-2); fill:none; stroke-width:1.8; margin-top:1px; }
   .comm-demo{ background:#fff8e6; border:1px solid #f3e2b0; color:#8a6d1b; border-radius:12px; padding:10px 13px; font-size:13px; margin-bottom:12px; }
@@ -512,6 +529,7 @@
   <section id="tab-communaute" class="tabpane" hidden>
     <p class="tagline">Les riders connectés près de toi.</p>
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
+    <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
 
     <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
 
@@ -546,55 +564,11 @@
       </div>
     </div>
 
-    <div class="card" style="padding:12px">
-      <div class="comm-wrap" id="commWrap">
-        <div id="commMap"></div>
-        <button id="commRecenter" hidden>Me recentrer</button>
-      </div>
-      <div class="note" id="commMapNote" style="margin-top:10px">La carte affiche une <b>zone approximative</b> (~1 km), jamais l'adresse exacte.</div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="comm-share">
-        <div class="sw-txt">
-          <b>Me rendre visible sur la carte</b>
-          <div class="note" style="margin-top:2px">Partage ta zone approximative avec les autres riders.</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
-      </div>
-      <label for="commPseudo" style="margin-top:14px">Ton pseudo (visible par les autres)</label>
-      <input id="commPseudo" maxlength="24" placeholder="Rider66" autocomplete="off">
-      <div class="av-pick">
-        <div class="av-prev" id="commAvPrev">+</div>
-        <div><button type="button" class="av-btn" id="commAvBtn">Photo de profil</button><div class="note" style="margin:4px 0 0">Visible par les autres dans le chat.</div></div>
-        <input id="commAvFile" type="file" accept="image/*" hidden>
-      </div>
-      <label for="commBio" style="margin-top:12px">Présentation (optionnel)</label>
-      <textarea id="commBio" class="comm-bio" maxlength="200" rows="2" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
-      <div class="comm-stat"><span class="d" id="commDot"></span><span id="commStatTxt">Visibilité désactivée</span></div>
-      <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
-      <div class="comm-priv">
-        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        <span>Ta position exacte ne quitte jamais ton téléphone : seule une zone arrondie est partagée. Tu peux te rendre invisible à tout moment.</span>
-      </div>
-    </div>
-
-    <div class="m-label" style="margin:18px 6px 8px">Riders en ligne (<span id="commCount">0</span>)</div>
-    <div class="ioslist" id="commList"><div class="comm-empty">Personne pour l'instant. Active ta visibilité pour lancer le mouvement !</div></div>
-
     <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
     <div class="card">
-      <div class="chan" id="chatChannels">
-        <button data-tp="general"><span class="ce">💬</span>Général<span class="cb" hidden></span></button>
-        <button data-tp="efoil" class="on"><span class="ce">⚡</span>eFoil<span class="cb" hidden></span></button>
-        <button data-tp="wing"><span class="ce">🪂</span>Wing Foil<span class="cb" hidden></span></button>
-        <button data-tp="kite"><span class="ce">🪁</span>Kitesurf<span class="cb" hidden></span></button>
-        <button data-tp="surf"><span class="ce">🏄</span>Surf<span class="cb" hidden></span></button>
-        <button data-tp="sup"><span class="ce">🛶</span>Paddle<span class="cb" hidden></span></button>
-        <button data-tp="windsurf"><span class="ce">⛵</span>Windsurf<span class="cb" hidden></span></button>
-        <button data-tp="bodyboard"><span class="ce">🌊</span>Bodyboard<span class="cb" hidden></span></button>
-        <button data-tp="skim"><span class="ce">🛹</span>Skimboard<span class="cb" hidden></span></button>
-        <button data-tp="kayak"><span class="ce">🚣</span>Kayak<span class="cb" hidden></span></button>
+      <div class="chan-sel-wrap" id="chatChannels">
+        <span class="chan-ic">💬</span>
+        <select id="chatChannel" class="chan-sel" aria-label="Choisir le salon"></select>
       </div>
       <div class="chat-head">
         <button class="chat-back" id="chatBack" hidden>←</button>
@@ -624,9 +598,48 @@
       <div class="note" id="chatNote" style="margin-top:8px">Renseigne un pseudo et active ta visibilité pour discuter.</div>
     </div>
 
+    <div class="card" style="padding:12px">
+      <div class="comm-wrap" id="commWrap">
+        <div id="commMap"></div>
+        <button id="commRecenter" hidden>Me recentrer</button>
+      </div>
+      <div class="note" id="commMapNote" style="margin-top:10px">La carte affiche une <b>zone approximative</b> (~1 km), jamais l'adresse exacte.</div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="comm-share">
+        <div class="sw-txt">
+          <b>Me rendre visible sur la carte</b>
+          <div class="note" style="margin-top:2px">Partage ta zone approximative avec les autres riders.</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
+      </div>
+      <div class="comm-stat"><span class="d" id="commDot"></span><span id="commStatTxt">Visibilité désactivée</span></div>
+      <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
+      <div class="comm-priv">
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span>Ta position exacte ne quitte jamais ton téléphone : seule une zone arrondie est partagée. Tu peux te rendre invisible à tout moment.</span>
+      </div>
+    </div>
+
+    <div class="m-label" style="margin:18px 6px 8px">Riders en ligne (<span id="commCount">0</span>)</div>
+    <div class="ioslist" id="commList"><div class="comm-empty">Personne pour l'instant. Active ta visibilité pour lancer le mouvement !</div></div>
+
     <div class="comm-blocked" id="commBlocked" hidden></div>
     <div class="comm-flaglink"><a id="charterLink">Charte de la communauté · Signaler un problème</a></div>
 
+    <div class="sheet" id="profEditSheet" hidden>
+      <div class="sheet-card">
+        <div class="prof-head"><div class="prof-av" id="commAvPrev">+</div><div class="prof-name">Mon profil</div></div>
+        <label for="commPseudo">Pseudo (visible par les autres)</label>
+        <input id="commPseudo" maxlength="24" placeholder="Rider66" autocomplete="off">
+        <button type="button" class="av-btn" id="commAvBtn">Changer la photo</button>
+        <input id="commAvFile" type="file" accept="image/*" hidden>
+        <label for="commBio" style="margin-top:10px">Présentation</label>
+        <textarea id="commBio" class="comm-bio" maxlength="200" rows="3" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
+        <button class="primary" id="profEditSave">Enregistrer</button>
+      </div>
+    </div>
     <div class="sheet" id="commSheet" hidden>
       <div class="sheet-card">
         <div class="prof-head">
@@ -2291,8 +2304,10 @@
   let riders = {}, curMsgs = [];
   let chatMode = "salon", dmPeer = null;
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
-  const CHANS = { general:"Général", efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf", surf:"Surf", sup:"Paddle", windsurf:"Windsurf", bodyboard:"Bodyboard", skim:"Skimboard", kayak:"Kayak" };
+  const CHANS = { efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf", surf:"Surf", sup:"Paddle", windsurf:"Windsurf", bodyboard:"Bodyboard", skim:"Skimboard", kayak:"Kayak" };
+  const CHAN_ICON = { efoil:"⚡", wing:"🪂", kite:"🪁", surf:"🏄", sup:"🛶", windsurf:"⛵", bodyboard:"🌊", skim:"🛹", kayak:"🚣" };
   let chatTopic = "efoil"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
+  if(!CHANS[chatTopic]) chatTopic="efoil";
   let salonMsgs = [], salonUnsub = null;
   let seen = {}; try{ seen = JSON.parse(localStorage.getItem("lf.comm.seen")||"{}")||{}; }catch(e){ seen={}; }
   const saveSeen = () => { try{ localStorage.setItem("lf.comm.seen", JSON.stringify(seen)); }catch(e){} };
@@ -2345,10 +2360,12 @@
         const q = db.query(db.ref(d,path), db.limitToLast(ch==="salon"?200:120));
         const order=[], map={}; let timer=null;
         const flush=()=>{ if(timer) return; timer=setTimeout(()=>{ timer=null; cb(order.map(k=>map[k])); },60); };
-        const u1=db.onChildAdded(q, s=>{ if(!(s.key in map)) order.push(s.key); map[s.key]=s.val(); flush(); });
-        const u2=db.onChildChanged(q, s=>{ map[s.key]=s.val(); flush(); });
+        const u1=db.onChildAdded(q, s=>{ if(!(s.key in map)) order.push(s.key); var v=s.val()||{}; v.id=s.key; map[s.key]=v; flush(); });
+        const u2=db.onChildChanged(q, s=>{ var v=s.val()||{}; v.id=s.key; map[s.key]=v; flush(); });
         const u3=db.onChildRemoved(q, s=>{ if(s.key in map){ delete map[s.key]; const i=order.indexOf(s.key); if(i>=0) order.splice(i,1); flush(); } });
         return ()=>{ try{u1&&u1();u2&&u2();u3&&u3();}catch(e){} }; },
+      addReaction(ch,msgId,emoji){ if(!msgId) return Promise.resolve(); const base = ch==="salon" ? "chat" : "dm/"+ch.slice(3); const rpath = base+"/"+msgId+"/reactions/"+uid; return emoji ? db.set(db.ref(d,rpath),emoji) : db.remove(db.ref(d,rpath)); },
+      deleteMessage(ch,msgId){ if(!msgId) return Promise.resolve(); const base = ch==="salon" ? "chat" : "dm/"+ch.slice(3); return db.remove(db.ref(d,base+"/"+msgId)); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); }
     };
   }
@@ -2370,7 +2387,7 @@
       {uid:"demo-leo",pseudo:"Léo.Foil",text:"15 nœuds cet aprèm, parfait pour le wing 💨",t:Date.now()-1200000,topic:"wing",lat:demo["demo-leo"].lat,lng:demo["demo-leo"].lng},
       {uid:"demo-marine",pseudo:"Marine",text:"Qui ride en kite ce week-end ? 🪁",t:Date.now()-600000,topic:"kite",lat:demo["demo-marine"].lat,lng:demo["demo-marine"].lng}
     ]};
-    const cbs={}; const fire = ch => { if(cbs[ch]) cbs[ch]([...(msgs[ch]||[])]); };
+    const cbs={}; const fire = ch => { if(cbs[ch]){ (msgs[ch]||[]).forEach(function(m,ix){ if(!m.id) m.id="d"+ix+"_"+(m.t||0); }); cbs[ch]([...(msgs[ch]||[])]); } };
     const emit = () => { if(presCb){ const o={...demo}; if(mine) o[uid]=mine; presCb(o); } };
     return {
       uid,
@@ -2380,6 +2397,8 @@
         if(ch.startsWith("dm:")) setTimeout(()=>{ msgs[ch].push({uid:dmPeer?dmPeer.uid:"demo",pseudo:dmPeer?dmPeer.pseudo:"Rider",text:"(démo) Salut ! On se capte sur l'eau 👋",t:Date.now()}); fire(ch); },1200);
         return Promise.resolve(); },
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
+      addReaction(ch,msgId,emoji){ var a=(msgs[ch]||[]); var m=a.find(function(x){return x.id===msgId;}); if(m){ m.reactions=m.reactions||{}; if(emoji) m.reactions[uid]=emoji; else delete m.reactions[uid]; fire(ch); } return Promise.resolve(); },
+      deleteMessage(ch,msgId){ if(msgs[ch]){ msgs[ch]=msgs[ch].filter(function(x){return x.id!==msgId;}); fire(ch); } return Promise.resolve(); },
       sendReport(){ return Promise.resolve(); }
     };
   }
@@ -2516,8 +2535,8 @@
   }
   function updateChatFilterVis(){ const f=$("chatFilter"); if(f) f.hidden = (chatMode!=="near"); }
   function updateChanUI(){
-    const row=$("chatChannels");
-    if(row){ row.hidden = (chatMode==="dm"); row.querySelectorAll("button").forEach(b=> b.classList.toggle("on", b.dataset.tp===chatTopic)); }
+    const row=$("chatChannels"); if(row) row.hidden = (chatMode==="dm");
+    const sel=$("chatChannel"); if(sel && sel.value!==chatTopic) sel.value=chatTopic;
     const inp=$("chatInput"); if(inp) inp.placeholder = (chatMode==="dm") ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
   }
   // ---------- traduction automatique (MyMemory, gratuit, détection auto) ----------
@@ -2621,11 +2640,17 @@
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
       const onlyImg = (m.img && !bodyText && !note && !m.rt) ? " only-img" : "";
       const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}">${q}${imgHtml}${txtHtml}${note}</div>`;
-      const time = `<div class="ctime">${timeLabel(m.t)} ${replyBtn}${mine?"":" "+flag}</div>`;
-      return `${sep}<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${time}</div></div>`;
+      const reacts = (function(){ if(!m.reactions) return ""; var cnt={}, mineE=null; for(var k in m.reactions){ var e=m.reactions[k]; if(!e) continue; cnt[e]=(cnt[e]||0)+1; if(k===me.uid) mineE=e; } var keys=Object.keys(cnt); if(!keys.length) return ""; return '<div class="react-row">'+keys.map(function(e){ return '<button class="react-chip'+(mineE===e?" on":"")+'" data-i="'+i+'" data-e="'+e+'">'+e+' '+cnt[e]+'</button>'; }).join("")+'</div>'; })();
+      const reactBtn = `<button class="msg-react" data-i="${i}" title="Réagir" aria-label="Réagir">🙂﹢</button>`;
+      const delBtn = mine?`<button class="msg-del" data-i="${i}" title="Supprimer" aria-label="Supprimer">🗑</button>`:"";
+      const time = `<div class="ctime">${timeLabel(m.t)} ${replyBtn} ${reactBtn}${mine?" "+delBtn:" "+flag}</div>`;
+      return `${sep}<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${reacts}${time}</div></div>`;
     }).join("");
     box.querySelectorAll(".flag").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) reportMessage(m); }));
     box.querySelectorAll(".msg-reply").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) setReply(m); }));
+    box.querySelectorAll(".msg-react").forEach(b=> b.addEventListener("click", (e)=>{ e.stopPropagation(); const m=arr[+b.dataset.i]; if(m) window.__openReactPop(b,m); }));
+    box.querySelectorAll(".msg-del").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) window.__delMsg(m); }));
+    box.querySelectorAll(".react-chip").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) window.__toggleReact(m,b.dataset.e); }));
     box.querySelectorAll(".tr-tog").forEach(a=> a.addEventListener("click", ()=>{ const h=a.dataset.h; if(transShowOrig.has(h)) transShowOrig.delete(h); else transShowOrig.add(h); renderChat(); }));
     box.querySelectorAll(".chat-img").forEach(im=> im.addEventListener("click", ()=>{ const u=im.dataset.full; try{ const w=window.open("","_blank"); if(w){ w.document.write('<title>Photo</title><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="'+u+'" style="max-width:100%;max-height:100vh"></body>'); } else { location.href=u; } }catch(e){} }));
     box.querySelectorAll(".tapp").forEach(el=> el.addEventListener("click", ()=>{ const m=arr[+el.dataset.i]; if(m && m.uid!==me.uid) openSheet(m.uid,m.pseudo,m.av,m.bio); }));
@@ -2701,6 +2726,9 @@
   $("commSheet").addEventListener("click", e=>{ if(e.target===$("commSheet")) closeSheet(); });
   $("commPseudo").addEventListener("input", ()=>{ me.pseudo=$("commPseudo").value.trim().slice(0,24); savePseudo(); updateChatGate(); publishMe(); });
   var _bio=$("commBio"); if(_bio){ _bio.value=me.bio||""; _bio.addEventListener("input", function(){ me.bio=_bio.value.trim().slice(0,200); try{ localStorage.setItem("lf.comm.bio", me.bio); }catch(e){} }); }
+  var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=false; });
+  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; updateChatGate(); });
+  var _pes=$("profEditSheet"); if(_pes) _pes.addEventListener("click", function(e){ if(e.target.id==="profEditSheet") e.target.hidden=true; });
   $("chatSeg").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
     chatMode=b.dataset.ch; $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
     updateChatFilterVis(); subscribeChat(); renderChat(); updateChatGate();
@@ -2708,12 +2736,11 @@
   $("chatRadius").addEventListener("input", e=>{ const v=parseInt(e.target.value,10); chatRadius=(v>=5&&v<=1000)?v:50;
     try{ localStorage.setItem("lf.comm.radius", chatRadius); }catch(_){}
     updateRadiusUI(); renderChat(); });
-  $("chatChannels").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
-    if(!CHANS[b.dataset.tp]) return; chatTopic=b.dataset.tp;
-    try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){}
-    try{ b.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"}); }catch(e){}
-    updateChanUI(); renderChat(); recomputeBadges(); updateChatGate();
-  }));
+  (function(){ var sel=$("chatChannel"); if(!sel) return;
+    sel.innerHTML=Object.keys(CHANS).map(function(k){ return '<option value="'+k+'">'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }).join("");
+    sel.value=chatTopic;
+    sel.addEventListener("change", function(){ if(!CHANS[sel.value]) return; chatTopic=sel.value; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} updateChanUI(); renderChat(); recomputeBadges(); updateChatGate(); });
+  })();
   $("chatTransBtn").addEventListener("click", ()=>{ autoTrans=!autoTrans; try{ localStorage.setItem("lf.comm.autotrans", autoTrans?"1":"0"); }catch(e){} updateTransBtn(); renderChat(); });
   $("chatBellBtn").addEventListener("click", toggleNotif);
   if(window.LF_I18N && LF_I18N.onChange) LF_I18N.onChange(()=>{ renderChat(); });
@@ -2725,7 +2752,7 @@
   });
   $("chatBack").addEventListener("click", closeDM);
   function compressImage(file, maxDim, quality){ return new Promise(function(resolve,reject){ var fr=new FileReader(); fr.onload=function(){ var img=new Image(); img.onload=function(){ var w=img.width,h=img.height,s=Math.min(1, maxDim/Math.max(w,h)); var cw=Math.max(1,Math.round(w*s)), chh=Math.max(1,Math.round(h*s)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=chh; var ctx=cv.getContext("2d"); ctx.drawImage(img,0,0,cw,chh); try{ resolve(cv.toDataURL("image/jpeg", quality)); }catch(e){ reject(e); } }; img.onerror=reject; img.src=fr.result; }; fr.onerror=reject; fr.readAsDataURL(file); }); }
-  function renderAvatarPreview(){ var p=$("commAvPrev"); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }
+  function renderAvatarPreview(){ ["commAvPrev","profBtnAv"].forEach(function(idp){ var p=$(idp); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }); }
   function setAvatar(dataUrl){ me.av=dataUrl; try{ localStorage.setItem("lf.comm.avatar", dataUrl); }catch(e){} renderAvatarPreview(); }
   renderAvatarPreview();
   var _avBtn=$("commAvBtn"); if(_avBtn) _avBtn.addEventListener("click", function(){ var f=$("commAvFile"); if(f) f.click(); });
@@ -2733,6 +2760,16 @@
   var _ph=$("chatPhoto"); if(_ph) _ph.addEventListener("click", function(){ if(!me.pseudo||!charterOk){ if(!me.pseudo){ $("commPseudo").focus(); } updateChatGate(); return; } var f=$("chatFile"); if(f) f.click(); });
   var _phf=$("chatFile"); if(_phf) _phf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,1000,0.6).then(function(d){ var cap=$("chatInput").value.trim(); if(backend) backend.sendMessage(currentChannel(), cap, d, replyTarget); $("chatInput").value=""; clearReply(); }).catch(function(){}); e.target.value=""; });
   var replyTarget=null;
+  var REACT_EMOJIS=["👍","❤️","😂","🤙","🔥","🌊"];
+  var reactPop=document.createElement("div"); reactPop.className="react-pop"; reactPop.hidden=true;
+  reactPop.innerHTML=REACT_EMOJIS.map(function(e){return '<button type="button">'+e+'</button>';}).join("");
+  document.body.appendChild(reactPop);
+  var reactCtx=null;
+  reactPop.querySelectorAll("button").forEach(function(b){ b.addEventListener("click", function(ev){ ev.stopPropagation(); if(reactCtx&&backend){ var m=reactCtx; var mineE=(m.reactions&&m.reactions[me.uid]); backend.addReaction(currentChannel(), m.id, mineE===b.textContent?"":b.textContent); } reactPop.hidden=true; reactCtx=null; }); });
+  document.addEventListener("click", function(e){ if(!reactPop.hidden && !reactPop.contains(e.target) && !(e.target.classList&&e.target.classList.contains("msg-react"))){ reactPop.hidden=true; reactCtx=null; } });
+  window.__openReactPop=function(btn,m){ if(!me.pseudo||!charterOk){ updateChatGate(); return; } reactCtx=m; reactPop.hidden=false; var r=btn.getBoundingClientRect(); var pw=reactPop.offsetWidth||230; var left=Math.max(8, Math.min(r.left-90, window.innerWidth-pw-8)); reactPop.style.left=left+"px"; reactPop.style.top=Math.max(8,(r.top-48))+"px"; };
+  window.__toggleReact=function(m,emoji){ if(!me.pseudo||!charterOk){ updateChatGate(); return; } if(backend){ var mineE=(m.reactions&&m.reactions[me.uid]); backend.addReaction(currentChannel(), m.id, mineE===emoji?"":emoji); } };
+  window.__delMsg=function(m){ if(!m||!m.id) return; if(!confirm("Supprimer ton message ?")) return; if(backend) backend.deleteMessage(currentChannel(), m.id); };
   function showReply(){ var r=$("chatReply"); if(!r) return; if(replyTarget){ r.innerHTML='<div class="rt"><b>Réponse à '+esc(replyTarget.pseudo)+'</b><span>'+esc(replyTarget.text)+'</span></div><button class="rx" id="chatReplyX" aria-label="Annuler">×</button>'; r.hidden=false; var x=$("chatReplyX"); if(x) x.addEventListener("click", clearReply); } else { r.hidden=true; r.innerHTML=""; } }
   function setReply(m){ if(!m) return; replyTarget={pseudo:(m.pseudo||"Rider"), text:(m.text||"📷 Photo").slice(0,120)}; showReply(); var i=$("chatInput"); if(i) i.focus(); }
   function clearReply(){ replyTarget=null; showReply(); }
