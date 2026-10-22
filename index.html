@@ -627,7 +627,7 @@
     <div class="m-label" style="margin:16px 6px 8px">Prévisions (3 jours)</div>
     <div class="card" style="padding:12px">
       <div id="mtoFcst"><div class="comm-empty">Chargement des prévisions…</div></div>
-      <div class="note" style="margin-top:8px">Vent, rafales, direction, température et vagues — <b>Open-Meteo</b>, pour le spot choisi (fais glisser le tableau).</div>
+      <div class="note" style="margin-top:8px">Vent, rafales, direction, température et vagues — <b>Lite Foil météo</b>, pour le spot choisi (fais glisser le tableau).</div>
     </div>
     
 
@@ -2667,7 +2667,7 @@
   })();
 </script>
 <script>
-  // ---------------- Météo & vagues (Open-Meteo, gratuit sans clé + carte Windy) ----------------
+  // ---------------- Météo & vagues (Lite Foil météo, gratuit sans clé + carte Windy) ----------------
   (function(){
     const DEFAULT={lat:43.014,lng:3.055,name:"Méditerranée"};
     let pos=null; try{ pos=JSON.parse(localStorage.getItem("lf.meteo.pos")||"null"); }catch(e){}
@@ -2692,7 +2692,7 @@
           tile("Température","🌡️",num(w.temperature_2m),"°C",(c.sea_surface_temperature!=null?("mer "+Math.round(c.sea_surface_temperature)+"°C"):"air"))
         ];
         $m("mtoGrid").innerHTML=tiles.join("");
-        const u=$m("mtoUpdated"); if(u){ u.hidden=false; u.innerHTML="Mis à jour "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+" · données <b>Open-Meteo</b>"; }
+        const u=$m("mtoUpdated"); if(u){ u.hidden=false; u.innerHTML="Mis à jour "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+" · données <b>Lite Foil météo</b>"; }
       }catch(e){ $m("mtoGrid").innerHTML='<div class="comm-empty">Conditions indisponibles pour le moment. Vérifie ta connexion et réessaie.</div>'; }
     }
     function setWindy(p){ const f=$m("mtoWindy"); if(!f) return;
@@ -2740,13 +2740,31 @@
       }catch(e){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles pour ce spot.</div>'; }
     }
     function apply(p,label){ pos=p; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); load(p); setWindy(p); loadForecast(p); }
+    async function reverseName(lat,lon){
+      try{
+        var r=await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+lat+"&longitude="+lon+"&localityLanguage=fr");
+        var j=await r.json();
+        var city=j.city||j.locality||j.principalSubdivision||"";
+        var reg=(j.principalSubdivision&&j.principalSubdivision!==city)?j.principalSubdivision:(j.countryName||"");
+        return city?(reg?city+", "+reg:city):"";
+      }catch(e){ return ""; }
+    }
     function locate(){
       if(!navigator.geolocation){ apply(pos||DEFAULT,(pos&&pos.name)||DEFAULT.name); return; }
       $m("mtoSpot").textContent="📍 Localisation…";
       navigator.geolocation.getCurrentPosition(
-        g=>apply({lat:+g.coords.latitude.toFixed(3),lng:+g.coords.longitude.toFixed(3),name:"Ma position"},"Ma position"),
+        function(g){
+          var p={lat:+g.coords.latitude.toFixed(3),lng:+g.coords.longitude.toFixed(3),name:"Ma position"};
+          apply(p,"Ma position");
+          var el=$m("mtoSpot"); if(el) el.textContent="📍 Localisation du lieu…";
+          reverseName(p.lat,p.lng).then(function(nm){
+            if(nm){ p.name=nm; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){}
+              var e2=$m("mtoSpot"); if(e2) e2.textContent="📍 "+nm; }
+            else { var e3=$m("mtoSpot"); if(e3) e3.textContent="📍 Ma position"; }
+          });
+        },
         ()=>apply(pos||DEFAULT,(pos&&pos.name)||DEFAULT.name),
-        {enableHighAccuracy:false,maximumAge:600000,timeout:8000});
+        {enableHighAccuracy:true,maximumAge:300000,timeout:10000});
     }
     // ---- Windguru (widget officiel par spot) ----
     const WG_PARAMS="&wj=knots&tj=c&vt=forecasts&fhours=72&p=WINDSPD,GUST,SMER,TMP,RATING";
