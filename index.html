@@ -212,7 +212,12 @@
   .chat-bell.on{ background:var(--accent); border-color:var(--accent); color:#06282a; }
   .msg .t{ font-size:10.5px; opacity:.55; margin-top:3px; }
   .chat-input{ display:flex; gap:8px; margin-top:10px; }
-  .chat-input input{ flex:1; }
+  .chat-input input{ flex:1 1 auto; min-width:0; }
+  .chat-input button.chat-photo{ width:44px; min-width:44px; padding:0; }
+  .chat-send-btn{ flex:none; width:46px; height:46px; border-radius:50%; background:var(--accent-ink); display:flex; align-items:center; justify-content:center; border:0; cursor:pointer; padding:0; }
+  .chat-send-btn:disabled{ opacity:.5; }
+  .chat-send-btn:active{ transform:scale(.95); }
+  .chat-input{ gap:6px; }
   .chat-input button{ flex:none; padding:12px 18px; }
   .chat-photo{ flex:none; width:46px; padding:0; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--line); background:var(--card); color:var(--accent-ink); border-radius:12px; cursor:pointer; }
   .chat-photo:disabled{ opacity:.5; cursor:default; }
@@ -264,6 +269,7 @@
   .chan-ic{ font-size:18px; flex:none; }
   .chan-sel{ flex:1; min-width:0; font-family:inherit; font-size:15px; font-weight:600; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; background:var(--card); color:var(--text); }
   .chat-reply{ display:flex; align-items:center; gap:8px; background:var(--tile); border-left:3px solid var(--accent-ink); border-radius:8px; padding:7px 10px; margin:0 0 8px; font-size:13px; }
+  .chat-typing{ font-size:12.5px; color:var(--muted); padding:0 6px 6px; font-style:italic; }
   .chat-reply .rt{ min-width:0; flex:1; }
   .chat-reply .rt b{ color:var(--accent-ink); display:block; font-size:12px; }
   .chat-reply .rt span{ color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
@@ -316,9 +322,8 @@
   .onb-steps .n{ flex:0 0 22px; width:22px; height:22px; border-radius:50%; background:rgba(91,216,220,.18); color:var(--accent-ink); font-weight:700; font-size:12.5px; display:grid; place-items:center; margin-top:1px; }
   .comm-enable{ width:100%; margin-top:12px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
   .comm-enable svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:flex-end; justify-content:center; padding:14px; animation:sheetFade .22s ease; }
+  .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:center; justify-content:center; padding:14px; animation:sheetFade .22s ease; }
   .sheet-card{ background:#fff; border-radius:22px; width:100%; max-width:420px; padding:10px 14px 16px; box-shadow:0 20px 60px rgba(0,0,0,.35); max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; animation:sheetUp .3s cubic-bezier(.22,.61,.36,1); }
-  .sheet-card::before{ content:""; display:block; width:40px; height:4px; border-radius:100px; background:var(--line); margin:4px auto 10px; }
   @keyframes sheetFade{ from{opacity:0;} to{opacity:1;} }
   @keyframes sheetUp{ from{opacity:0; transform:translateY(44px);} to{opacity:1; transform:none;} }
   .sheet-title{ text-align:center; font-weight:700; font-size:14px; color:var(--muted); padding:12px 10px 8px; }
@@ -594,11 +599,12 @@
       <div class="chat-box" id="chatBox"><div class="comm-empty">Sois le premier à dire bonjour 👋</div></div>
       <div id="chatReply" class="chat-reply" hidden></div>
       <div id="chatEmojis" class="chat-emojis" hidden></div>
+      <div id="chatTyping" class="chat-typing" hidden></div>
       <div class="chat-input">
         <button class="chat-photo chat-emoji-btn" id="chatEmoji" type="button" title="Emoji" aria-label="Emoji">😀</button>
         <button class="chat-photo" id="chatPhoto" type="button" title="Envoyer une photo" aria-label="Envoyer une photo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg></button>
         <input id="chatInput" maxlength="400" placeholder="Écrire un message…" autocomplete="off">
-        <button class="primary" id="chatSend">Envoyer</button>
+        <button class="chat-send-btn" id="chatSend" type="button" aria-label="Envoyer" title="Envoyer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
         <input id="chatFile" type="file" accept="image/*" hidden>
       </div>
       <div class="note" id="chatNote" style="margin-top:8px">Renseigne un pseudo et active ta visibilité pour discuter.</div>
@@ -2315,6 +2321,7 @@
   let chatTopic = "efoil"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
   if(!CHANS[chatTopic]) chatTopic="efoil";
   let salonMsgs = [], salonUnsub = null;
+  let typers = {}, typingUnsub = null;
   let seen = {}; try{ seen = JSON.parse(localStorage.getItem("lf.comm.seen")||"{}")||{}; }catch(e){ seen={}; }
   const saveSeen = () => { try{ localStorage.setItem("lf.comm.seen", JSON.stringify(seen)); }catch(e){} };
   let autoTrans = true; try{ if(localStorage.getItem("lf.comm.autotrans")==="0") autoTrans=false; }catch(e){}
@@ -2349,6 +2356,7 @@
     const d = db.getDatabase(app);
     const presRef = db.ref(d, "presence/"+uid);
     db.onDisconnect(presRef).remove();
+    db.onDisconnect(db.ref(d,"typing/"+uid)).remove();
     return {
       uid, app,
       savePushToken(token){ const key=String(token).replace(/[.#$\[\]\/]/g,"_");
@@ -2372,6 +2380,9 @@
         return ()=>{ try{u1&&u1();u2&&u2();u3&&u3();}catch(e){} }; },
       addReaction(ch,msgId,emoji){ if(!msgId) return Promise.resolve(); const base = ch==="salon" ? "chat" : "dm/"+ch.slice(3); const rpath = base+"/"+msgId+"/reactions/"+uid; return emoji ? db.set(db.ref(d,rpath),emoji) : db.remove(db.ref(d,rpath)); },
       deleteMessage(ch,msgId){ if(!msgId) return Promise.resolve(); const base = ch==="salon" ? "chat" : "dm/"+ch.slice(3); return db.remove(db.ref(d,base+"/"+msgId)); },
+      setTyping(ch){ return db.set(db.ref(d,"typing/"+uid),{ch:ch,pseudo:me.pseudo,t:db.serverTimestamp()}); },
+      clearTyping(){ return db.remove(db.ref(d,"typing/"+uid)); },
+      watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); }
     };
   }
@@ -2405,6 +2416,9 @@
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
       addReaction(ch,msgId,emoji){ var a=(msgs[ch]||[]); var m=a.find(function(x){return x.id===msgId;}); if(m){ m.reactions=m.reactions||{}; if(emoji) m.reactions[uid]=emoji; else delete m.reactions[uid]; fire(ch); } return Promise.resolve(); },
       deleteMessage(ch,msgId){ if(msgs[ch]){ msgs[ch]=msgs[ch].filter(function(x){return x.id!==msgId;}); fire(ch); } return Promise.resolve(); },
+      setTyping(){ return Promise.resolve(); },
+      clearTyping(){ return Promise.resolve(); },
+      watchTyping(){ return function(){}; },
       sendReport(){ return Promise.resolve(); }
     };
   }
@@ -2545,6 +2559,7 @@
     const row=$("chatChannels"); if(row) row.hidden = (chatMode==="dm");
     const sel=$("chatChannel"); if(sel && sel.value!==chatTopic) sel.value=chatTopic;
     const inp=$("chatInput"); if(inp) inp.placeholder = (chatMode==="dm") ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
+    renderTyping();
   }
   // ---------- traduction automatique (MyMemory, gratuit, détection auto) ----------
   function targetLang(){ return (window.LF_I18N && LF_I18N.lang) || "fr"; }
@@ -2684,7 +2699,7 @@
   function doSend(){ const inp=$("chatInput"), text=inp.value.trim(); if(!text) return;
     if(!charterOk){ showCharter(); return; }
     if(!me.pseudo){ $("commPseudo").focus(); updateChatGate(); return; }
-    if(backend) backend.sendMessage(currentChannel(), text, null, replyTarget); inp.value=""; clearReply();
+    if(backend) backend.sendMessage(currentChannel(), text, null, replyTarget); inp.value=""; clearReply(); if(backend&&backend.clearTyping) backend.clearTyping();
   }
 
   // ---------- modération ----------
@@ -2711,6 +2726,8 @@
     const u=$("unblockAll"); if(u) u.addEventListener("click", ()=>{ blocked.clear(); saveBlocked(); renderBlocked(); onPresence2(); renderChat(); recomputeBadges(); }); }
   // re-filtre le dernier instantané de présence (après blocage/déblocage)
   function onPresence2(){ onPresence(lastPresenceRaw); }
+  function onTyping(map){ typers=map||{}; renderTyping(); }
+  function renderTyping(){ var el=$("chatTyping"); if(!el) return; var ch=currentChannel(); var names=[]; for(var k in typers){ if(blocked.has(k)) continue; var r=typers[k]; if(!r||r.ch!==ch) continue; names.push(r.pseudo||"Rider"); } if(!names.length){ el.hidden=true; el.textContent=""; return; } var txt = names.length===1 ? (names[0]+" écrit…") : (names.length===2 ? (names[0]+" et "+names[1]+" écrivent…") : (names.length+" riders écrivent…")); el.textContent=txt; el.hidden=false; }
 
   // ---------- câblage UI ----------
   $("commShare").addEventListener("change", e=>{
@@ -2736,6 +2753,7 @@
   var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=false; });
   var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; updateChatGate(); });
   var _pes=$("profEditSheet"); if(_pes) _pes.addEventListener("click", function(e){ if(e.target.id==="profEditSheet") e.target.hidden=true; });
+  ["profEditSheet","commSheet"].forEach(function(idp){ var s=document.getElementById(idp); if(s && s.parentNode!==document.body) document.body.appendChild(s); });
   $("chatSeg").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
     chatMode=b.dataset.ch; $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
     updateChatFilterVis(); subscribeChat(); renderChat(); updateChatGate();
@@ -2785,6 +2803,8 @@
   var _em=$("chatEmoji"); if(_em) _em.addEventListener("click", function(){ var p=$("chatEmojis"); if(p) p.hidden=!p.hidden; });
   $("chatSend").addEventListener("click", doSend);
   $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
+  var typingSentAt=0, typingIdle=null;
+  $("chatInput").addEventListener("input", function(){ if(!me.pseudo||!charterOk||!backend||!backend.setTyping) return; var now=Date.now(); if(now-typingSentAt>2500){ typingSentAt=now; backend.setTyping(currentChannel()); } if(typingIdle) clearTimeout(typingIdle); typingIdle=setTimeout(function(){ if(backend&&backend.clearTyping) backend.clearTyping(); typingSentAt=0; },3000); });
   $("commRecenter").addEventListener("click", commRecenter);
   // sortir les overlays du panneau (l'animation du .tabpane casse le position:fixed) → au <body>
   ["commOnboard","commSheet","geoHelp"].forEach(idv=>{ const el=$(idv); if(el && el.parentElement!==document.body) document.body.appendChild(el); });
@@ -2807,6 +2827,7 @@
     if(!backend){ backend = makeDemoBackend(); $("commDemo").hidden=false; }
     me.uid = backend.uid;
     presenceUnsub = backend.watchPresence(onPresence);
+    if(backend.watchTyping) typingUnsub = backend.watchTyping(onTyping);
     subscribeChat();
     subscribeSalon();
     let want=false; try{ want = localStorage.getItem("lf.comm.share")==="1"; }catch(e){}
