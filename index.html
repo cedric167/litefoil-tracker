@@ -609,7 +609,23 @@
       <div class="note" style="margin-top:8px">Carte interactive <b>Windy</b> — glisse pour explorer, touche la légende pour changer la couche (vagues, houle, vent).</div>
     </div>
 
-    <div class="m-label" style="margin:16px 6px 8px">Prévisions détaillées (Windguru)</div>
+    <style>
+    .mto-fc{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .mto-fc-t{border-collapse:collapse;font-size:12px;white-space:nowrap}
+    .mto-fc-t th,.mto-fc-t td{padding:5px 7px;text-align:center}
+    .mto-fc-t .rl{position:sticky;left:0;background:var(--paper);text-align:left;font-weight:600;color:var(--muted);z-index:1;box-shadow:1px 0 0 var(--line)}
+    .mto-fc-t .day td{font-weight:700;padding-top:9px}
+    .mto-fc-t .hr td{color:var(--muted);font-variant-numeric:tabular-nums}
+    .mto-fc-t .wind td{font-weight:700;border-radius:4px}
+    .mto-fc-t .mto-arrow{font-size:14px}
+    </style>
+    <div class="m-label" style="margin:16px 6px 8px">Prévisions (3 jours)</div>
+    <div class="card" style="padding:12px">
+      <div id="mtoFcst"><div class="comm-empty">Chargement des prévisions…</div></div>
+      <div class="note" style="margin-top:8px">Vent, rafales, direction, température et vagues — <b>Open-Meteo</b>, pour le spot choisi (fais glisser le tableau).</div>
+    </div>
+    
+        <div class="m-label" style="margin:16px 6px 8px">Prévisions détaillées (Windguru)</div>
     <div class="card" style="padding:12px">
       <select id="wgSpot" class="wg-sel">
         <option value="48582">Leucate — Le Goulet</option>
@@ -2691,7 +2707,48 @@
     }
     function setWindy(p){ const f=$m("mtoWindy"); if(!f) return;
       f.src="https://embed.windy.com/embed2.html?lat="+p.lat+"&lon="+p.lng+"&detailLat="+p.lat+"&detailLon="+p.lng+"&zoom=8&level=surface&overlay=waves&menu=&message=&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"; }
-    function apply(p,label){ pos=p; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); load(p); setWindy(p); }
+    function colW(kt){ if(kt==null) return ["transparent","inherit"];
+      if(kt<6) return ["#eef3f6","#5b6b73"]; if(kt<10) return ["#d7edc9","#2f6b2a"];
+      if(kt<14) return ["#b7e394","#2f6b2a"]; if(kt<18) return ["#ffe79a","#7a5a10"];
+      if(kt<22) return ["#ffc879","#7a4a10"]; if(kt<28) return ["#ff9f5c","#6b2f10"];
+      if(kt<34) return ["#ff7a66","#5a1410"]; return ["#e24444","#fff"]; }
+    async function loadForecast(p){
+      var box=$m("mtoFcst"); if(!box) return;
+      box.innerHTML='<div class="comm-empty">Chargement des prévisions…</div>';
+      try{
+        var fu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m&wind_speed_unit=kn&timezone=auto&forecast_days=3";
+        var mu="https://marine-api.open-meteo.com/v1/marine?latitude="+p.lat+"&longitude="+p.lng+"&hourly=wave_height&timezone=auto&forecast_days=3";
+        var fr=await fetch(fu).then(function(r){return r.json();});
+        var mr=await fetch(mu).then(function(r){return r.json();}).catch(function(){return null;});
+        var H=fr&&fr.hourly; if(!H||!H.time){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles.</div>'; return; }
+        var waveMap={}; if(mr&&mr.hourly&&mr.hourly.time){ for(var k=0;k<mr.hourly.time.length;k++){ waveMap[mr.hourly.time[k]]=mr.hourly.wave_height[k]; } }
+        var now=Date.now()-3600000; var slots=[];
+        for(var i=0;i<H.time.length;i++){ var dt=new Date(H.time[i]); if(dt.getTime()<now) continue; if(dt.getHours()%3!==0) continue; slots.push(i); if(slots.length>=24) break; }
+        var days=["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
+        var dayRow="",hrRow="",windRow="",gustRow="",dirRow="",tmpRow="",waveRow="",last="";
+        slots.forEach(function(i){
+          var dt=new Date(H.time[i]); var dk=dt.toDateString();
+          dayRow+='<td>'+(dk!==last?(days[dt.getDay()]+" "+dt.getDate()):"")+'</td>'; last=dk;
+          hrRow+='<td>'+dt.getHours()+'h</td>';
+          var ws=H.wind_speed_10m[i],gu=H.wind_gusts_10m[i],di=H.wind_direction_10m[i],tp=H.temperature_2m[i];
+          var cw=colW(ws); windRow+='<td style="background:'+cw[0]+';color:'+cw[1]+'">'+(ws==null?"—":Math.round(ws))+'</td>';
+          var cg=colW(gu); gustRow+='<td style="color:'+cg[1]+'">'+(gu==null?"—":Math.round(gu))+'</td>';
+          dirRow+='<td>'+(di==null?"—":arrow(di))+'</td>';
+          tmpRow+='<td>'+(tp==null?"—":Math.round(tp)+"°")+'</td>';
+          var wv=waveMap[H.time[i]]; waveRow+='<td>'+(wv==null?"—":Number(wv).toFixed(1))+'</td>';
+        });
+        box.innerHTML='<div class="mto-fc"><table class="mto-fc-t">'
+          +'<tr class="day"><th class="rl"></th>'+dayRow+'</tr>'
+          +'<tr class="hr"><th class="rl">Heure</th>'+hrRow+'</tr>'
+          +'<tr class="wind"><th class="rl">Vent (kt)</th>'+windRow+'</tr>'
+          +'<tr class="hr"><th class="rl">Rafales</th>'+gustRow+'</tr>'
+          +'<tr><th class="rl">Direction</th>'+dirRow+'</tr>'
+          +'<tr class="hr"><th class="rl">Temp.</th>'+tmpRow+'</tr>'
+          +'<tr class="hr"><th class="rl">Vagues (m)</th>'+waveRow+'</tr>'
+          +'</table></div>';
+      }catch(e){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles pour ce spot.</div>'; }
+    }
+    function apply(p,label){ pos=p; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); load(p); setWindy(p); loadForecast(p); }
     function locate(){
       if(!navigator.geolocation){ apply(pos||DEFAULT,(pos&&pos.name)||DEFAULT.name); return; }
       $m("mtoSpot").textContent="📍 Localisation…";
