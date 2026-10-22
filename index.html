@@ -254,6 +254,8 @@
   .prof-edit-btn{ display:inline-flex; align-items:center; gap:10px; border:1.5px solid var(--line); background:var(--card); color:var(--text); border-radius:100px; padding:6px 16px 6px 6px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:14px; }
   .prof-edit-av{ width:34px; height:34px; border-radius:50%; background:var(--accent-ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden; flex:none; }
   .prof-edit-av img{ width:100%; height:100%; object-fit:cover; }
+  .comm-online{ display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted); margin:-6px 2px 14px; font-weight:600; }
+  .comm-online .dot-on{ width:8px; height:8px; border-radius:50%; background:#1fbf5a; box-shadow:0 0 0 3px rgba(31,191,90,.18); flex:none; }
   #profEditSheet label{ display:block; margin-top:10px; font-size:13px; color:var(--muted); font-weight:600; }
   #profEditSheet input, #profEditSheet textarea{ width:100%; box-sizing:border-box; }
   #profEditSheet .av-btn{ margin-top:10px; }
@@ -314,8 +316,11 @@
   .onb-steps .n{ flex:0 0 22px; width:22px; height:22px; border-radius:50%; background:rgba(91,216,220,.18); color:var(--accent-ink); font-weight:700; font-size:12.5px; display:grid; place-items:center; margin-top:1px; }
   .comm-enable{ width:100%; margin-top:12px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
   .comm-enable svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:flex-end; justify-content:center; padding:14px; }
-  .sheet-card{ background:#fff; border-radius:20px; width:100%; max-width:420px; padding:10px; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+  .sheet{ position:fixed; inset:0; z-index:1000; background:rgba(8,12,14,.45); display:flex; align-items:flex-end; justify-content:center; padding:14px; animation:sheetFade .22s ease; }
+  .sheet-card{ background:#fff; border-radius:22px; width:100%; max-width:420px; padding:10px 14px 16px; box-shadow:0 20px 60px rgba(0,0,0,.35); max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; animation:sheetUp .3s cubic-bezier(.22,.61,.36,1); }
+  .sheet-card::before{ content:""; display:block; width:40px; height:4px; border-radius:100px; background:var(--line); margin:4px auto 10px; }
+  @keyframes sheetFade{ from{opacity:0;} to{opacity:1;} }
+  @keyframes sheetUp{ from{opacity:0; transform:translateY(44px);} to{opacity:1; transform:none;} }
   .sheet-title{ text-align:center; font-weight:700; font-size:14px; color:var(--muted); padding:12px 10px 8px; }
   .sheet-card button{ width:100%; margin:6px 0; border-radius:14px; }
   .sheet-card button.warn{ border-color:var(--bad); color:var(--bad); }
@@ -530,6 +535,7 @@
     <p class="tagline">Les riders connectés près de toi.</p>
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
     <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
+    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><span id="commOnlineN">0</span> rider en ligne</div>
 
     <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
 
@@ -2484,6 +2490,7 @@
     lastPresenceRaw = map || {};
     riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
     $("commCount").textContent = Object.keys(riders).length;
+    var _o=$("commOnlineTop"); if(_o){ var _n=Object.keys(riders).length; _o.innerHTML='<span class="dot-on"></span>'+_n+' rider'+(_n>1?"s":"")+' en ligne'; }
     renderList(); renderMap();
   }
   function renderList(){
