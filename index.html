@@ -345,6 +345,10 @@
   .prof-edit-av img{ width:100%; height:100%; object-fit:cover; }
   .comm-online{ display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted); margin:-6px 2px 14px; font-weight:600; }
   .comm-online .dot-on{ width:8px; height:8px; border-radius:50%; background:#1fbf5a; box-shadow:0 0 0 3px rgba(31,191,90,.18); flex:none; }
+  .mem-btn{ border:0; background:var(--tile); color:var(--accent-ink); font:inherit; font-weight:700; padding:3px 10px; border-radius:100px; cursor:pointer; display:inline-flex; align-items:center; }
+  .mem-btn:active{ transform:scale(.97); }
+  .gcard button.pick-row{ width:100%; border:0; background:none; font:inherit; cursor:pointer; }
+  .mp-go{ margin-left:auto; font-size:12px; font-weight:700; color:#fff; background:var(--accent-ink); padding:5px 12px; border-radius:100px; flex:none; }
   #profEditSheet label{ display:block; margin-top:10px; font-size:13px; color:var(--muted); font-weight:600; }
   #profEditSheet input, #profEditSheet textarea{ width:100%; box-sizing:border-box; }
   #profEditSheet .av-btn{ margin-top:10px; }
@@ -701,7 +705,7 @@
     <p class="tagline">Les riders connectés près de toi.</p>
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
     <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
-    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span></div>
+    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<button type="button" class="mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span>&nbsp;›</button></div>
 
     <div class="riders-strip-wrap" id="ridersStripWrap">
       <div class="m-label" style="margin:2px 6px 6px">Riders en ligne</div>
@@ -3100,6 +3104,35 @@
   function pickRowHtml(c,checked){ var av = c.av?'<span class="cav"><img src="'+c.av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(c.uid)+'">'+esc(((c.pseudo||"R").trim()[0]||"R").toUpperCase())+'</span>';
     return '<label class="pick-row" data-uid="'+c.uid+'">'+av+'<span class="pick-ps">'+esc(c.pseudo)+'</span><input type="checkbox" '+(checked?"checked":"")+'></label>'; }
 
+  /* ---- choisir un rider à qui écrire en privé ---- */
+  function membersForDM(q){ var seen={}, out=[];
+    function add(uid,pseudo,av){ if(!uid||uid===me.uid||blocked.has(uid)||seen[uid]) return; seen[uid]=1; out.push({uid:uid,pseudo:pseudo||"Rider",av:av}); }
+    for(var k in profileMap){ add(k, profileMap[k]&&profileMap[k].pseudo, profileMap[k]&&profileMap[k].av); }
+    for(var r in riders){ add(r, riders[r]&&riders[r].pseudo); }
+    for(var i=0;i<salonMsgs.length;i++){ add(salonMsgs[i].uid, salonMsgs[i].pseudo, salonMsgs[i].av); }
+    q=(q||"").trim().toLowerCase();
+    if(q) out=out.filter(function(c){ return (c.pseudo||"").toLowerCase().indexOf(q)>=0; });
+    out.sort(function(a,b){ return (a.pseudo||"").localeCompare(b.pseudo||""); });
+    return out;
+  }
+  function openMemberPicker(){
+    if(!me.pseudo){ $("commPseudo")&&$("commPseudo").focus(); updateChatGate(); alert("Choisis d'abord un pseudo pour écrire à un rider."); return; }
+    var o=gOverlay(); o.hidden=false;
+    o.innerHTML='<div class="gcard">'
+      +'<div class="gc-head"><button class="gc-x" id="mpClose">✕</button><b>Écrire à un rider</b><span></span></div>'
+      +'<div class="gc-body"><input id="mpSearch" class="gc-search" placeholder="Rechercher un rider…" autocomplete="off"><div class="pick-list" id="mpList"></div></div>'
+    +'</div>';
+    var listEl=$("mpList"), searchEl=$("mpSearch");
+    function refresh(){ var cs=membersForDM(searchEl.value);
+      if(!cs.length){ listEl.innerHTML='<div class="comm-empty">Aucun rider trouvé pour l\'instant.</div>'; return; }
+      listEl.innerHTML=cs.map(function(c){ var av=c.av?'<span class="cav"><img src="'+c.av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(c.uid)+'">'+esc(((c.pseudo||"R").trim()[0]||"R").toUpperCase())+'</span>'; return '<button type="button" class="pick-row" data-uid="'+esc(c.uid)+'" data-ps="'+esc(c.pseudo)+'">'+av+'<span class="pick-ps">'+esc(c.pseudo)+'</span><span class="mp-go">Message</span></button>'; }).join("");
+      listEl.querySelectorAll(".pick-row").forEach(function(b){ b.addEventListener("click", function(){ closeOverlay(); goToCommunaute(); openDM(b.dataset.uid, b.dataset.ps); }); });
+    }
+    searchEl.addEventListener("input", refresh);
+    $("mpClose").addEventListener("click", closeOverlay);
+    refresh();
+  }
+
   /* ---- création d'un groupe ---- */
   function openNewGroupModal(){
     if(!me.pseudo){ $("commPseudo")&&$("commPseudo").focus(); updateChatGate(); alert("Choisis d'abord un pseudo pour créer un groupe."); return; }
@@ -3290,6 +3323,7 @@
   });
   $("chatBack").addEventListener("click", function(){ if(chatMode==="group") showGroupsList(); else if(chatMode==="dm") showDMList(); else closeDM(); });
   var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="dm" && dmPeer) openSheet(dmPeer.uid,dmPeer.pseudo,dmPeer.av,dmPeer.bio); });
+  var _mb=$("memBtn"); if(_mb) _mb.addEventListener("click", openMemberPicker);
   function compressImage(file, maxDim, quality){ return new Promise(function(resolve,reject){ var fr=new FileReader(); fr.onload=function(){ var img=new Image(); img.onload=function(){ var w=img.width,h=img.height,s=Math.min(1, maxDim/Math.max(w,h)); var cw=Math.max(1,Math.round(w*s)), chh=Math.max(1,Math.round(h*s)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=chh; var ctx=cv.getContext("2d"); ctx.drawImage(img,0,0,cw,chh); try{ resolve(cv.toDataURL("image/jpeg", quality)); }catch(e){ reject(e); } }; img.onerror=reject; img.src=fr.result; }; fr.onerror=reject; fr.readAsDataURL(file); }); }
   function renderAvatarPreview(){ ["commAvPrev","profBtnAv"].forEach(function(idp){ var p=$(idp); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }); }
   function setAvatar(dataUrl){ me.av=dataUrl; try{ localStorage.setItem("lf.comm.avatar", dataUrl); }catch(e){} renderAvatarPreview(); }
