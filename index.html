@@ -2909,31 +2909,33 @@
       +'<div class="gc-body">'
         +'<div class="gc-id"><button class="gc-photo" id="gcPhoto" type="button" title="Photo du groupe">+<input id="gcPhotoFile" type="file" accept="image/*" hidden></button>'
         +'<input id="gcName" class="gc-name" maxlength="60" placeholder="Nom du groupe"></div>'
+        +'<div class="gi-mlabel" style="margin-top:2px">Ajouter des riders (optionnel)</div>'
         +'<input id="gcSearch" class="gc-search" placeholder="Rechercher un rider…" autocomplete="off">'
-        +'<div class="gc-count" id="gcCount">Aucun membre sélectionné</div>'
+        +'<div class="gc-count" id="gcCount">Aucun membre — tu pourras inviter des riders avec le lien ensuite</div>'
         +'<div class="pick-list" id="gcList"></div>'
       +'</div>'
       +'<div class="gc-foot"><button class="btn-ghost2" id="gcCancel">Annuler</button><button class="btn-main" id="gcCreate" disabled>Créer le groupe</button></div>'
     +'</div>';
     var listEl=$("gcList"), nameEl=$("gcName"), searchEl=$("gcSearch"), countEl=$("gcCount"), createBtn=$("gcCreate");
     function refresh(){ var q=(searchEl.value||"").toLowerCase(); var cands=candidateRiders(null).filter(function(c){ return !q || (c.pseudo||"").toLowerCase().indexOf(q)>=0; });
-      if(!cands.length){ listEl.innerHTML='<div class="comm-empty">Aucun rider trouvé. Les riders apparaissent ici dès qu\'ils ont rejoint la communauté.</div>'; }
+      if(!cands.length){ listEl.innerHTML='<div class="comm-empty">Personne à ajouter pour l\'instant.<br>Crée quand même le groupe, puis invite des riders avec le <b>lien d\'invitation</b>.</div>'; }
       else listEl.innerHTML=cands.map(function(c){ return pickRowHtml(c, !!selected[c.uid]); }).join("");
       listEl.querySelectorAll(".pick-row").forEach(function(row){ var cb=row.querySelector("input");
         cb.addEventListener("change", function(){ var u=row.dataset.uid; if(cb.checked){ var c=cands.filter(function(x){return x.uid===u;})[0]; selected[u]=c||{uid:u,pseudo:"Rider"}; } else delete selected[u]; updateCount(); }); });
     }
-    function updateCount(){ var n=Object.keys(selected).length; countEl.textContent = n? (n+" membre"+(n>1?"s":"")+" sélectionné"+(n>1?"s":"")) : "Aucun membre sélectionné"; createBtn.disabled = !(nameEl.value.trim() && n>=1); }
+    function updateCount(){ var n=Object.keys(selected).length; countEl.textContent = n? (n+" membre"+(n>1?"s":"")+" sélectionné"+(n>1?"s":"")) : "Aucun membre — tu pourras inviter des riders avec le lien ensuite"; createBtn.disabled = !nameEl.value.trim(); }
     nameEl.addEventListener("input", updateCount);
     searchEl.addEventListener("input", refresh);
     $("gcClose").addEventListener("click", closeOverlay); $("gcCancel").addEventListener("click", closeOverlay);
     $("gcPhoto").addEventListener("click", function(){ $("gcPhotoFile").click(); });
     $("gcPhotoFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,240,0.72).then(function(d){ newGroupPhoto=d; var b=$("gcPhoto"); if(b){ b.classList.add("has"); b.style.backgroundImage="url("+d+")"; } }).catch(function(){}); e.target.value=""; });
-    createBtn.addEventListener("click", function(){ var name=nameEl.value.trim(); var members=Object.keys(selected).map(function(u){return {uid:u,pseudo:selected[u].pseudo};}); if(!name||!members.length||!backend) return;
+    createBtn.addEventListener("click", function(){ var name=nameEl.value.trim(); var members=Object.keys(selected).map(function(u){return {uid:u,pseudo:selected[u].pseudo};}); if(!name||!backend) return;
       createBtn.disabled=true; createBtn.textContent="Création…";
       backend.createGroup({name:name,photo:newGroupPhoto,members:members}).then(function(gid){ closeOverlay();
         var g={id:gid,name:name,photo:newGroupPhoto,admins:{},members:{}}; g.admins[me.uid]=true; g.members[me.uid]={pseudo:me.pseudo}; members.forEach(function(m){ g.members[m.uid]={pseudo:m.pseudo}; });
         openGroup(g);
-      }).catch(function(){ createBtn.disabled=false; createBtn.textContent="Créer le groupe"; alert("Impossible de créer le groupe. Réessaie."); });
+        if(!members.length) setTimeout(openGroupInfo, 350); // seul : on montre direct le lien d'invitation
+      }).catch(function(err){ createBtn.disabled=false; createBtn.textContent="Créer le groupe"; alert("Impossible de créer le groupe : "+((err&&(err.code||err.message))||"erreur")+"\n(Si c'est un refus de permission, les règles Firebase doivent autoriser les groupes.)"); });
     });
     refresh(); updateCount();
   }
