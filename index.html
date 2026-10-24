@@ -325,6 +325,18 @@
   .prof-name{ font-size:18px; font-weight:700; }
   .prof-bio{ font-size:14px; color:var(--muted); text-align:center; line-height:1.4; max-width:92%; }
   #sheetMsg{ background:var(--accent-ink); color:#fff; }
+  /* fiche profil facon "Infos du contact" WhatsApp */
+  .sheet-card.wa-profile{ padding:0; max-width:460px; overflow:hidden; }
+  .wa-prof-top{ background:var(--accent-ink); color:#fff; display:flex; flex-direction:column; align-items:center; gap:12px; padding:28px 16px 24px; }
+  .wa-profile .prof-av{ width:112px; height:112px; font-size:44px; box-shadow:0 6px 18px rgba(0,0,0,.22); background:rgba(255,255,255,.18); }
+  .wa-profile .prof-name{ color:#fff; font-size:22px; font-weight:800; text-align:center; }
+  .wa-prof-act{ display:flex; justify-content:center; gap:14px; padding:16px; border-bottom:8px solid var(--bg2); }
+  .wa-prof-act button#sheetMsg{ width:auto; margin:0; display:flex; align-items:center; gap:9px; background:var(--accent-ink); color:#fff; border:0; border-radius:14px; padding:12px 26px; font-weight:700; font-size:15px; }
+  .wa-prof-act svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .wa-prof-about{ padding:16px 20px; text-align:left; border-bottom:8px solid var(--bg2); }
+  .wa-prof-about .wa-lbl{ display:block; font-size:12px; color:var(--accent-ink); font-weight:700; margin-bottom:6px; }
+  .wa-profile .prof-bio{ text-align:left; max-width:100%; color:var(--text); font-size:15px; }
+  .wa-prof-foot{ padding:12px 14px 14px; }
   .prof-edit-btn{ display:inline-flex; align-items:center; gap:10px; border:1.5px solid var(--line); background:var(--card); color:var(--text); border-radius:100px; padding:6px 16px 6px 6px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:14px; }
   .prof-edit-av{ width:34px; height:34px; border-radius:50%; background:var(--accent-ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden; flex:none; }
   .prof-edit-av img{ width:100%; height:100%; object-fit:cover; }
@@ -354,6 +366,43 @@
   .ctime .msg-react, .ctime .msg-del{ border:0; background:none; color:var(--muted-2); cursor:pointer; font-size:13px; padding:0; }
   .react-row{ display:flex; flex-wrap:wrap; gap:5px; margin:4px 0 0; }
   .crow.me .react-row{ justify-content:flex-end; }
+  /* ===== Skin WhatsApp (conversation privée + groupe) — turquoise Lite Foil ===== */
+  .card.wchat{ padding:0; overflow:hidden; }
+  .card.wchat .chan-sel-wrap{ display:none; }
+  .card.wchat .chat-head{ margin:0; padding:9px 12px; background:var(--accent-ink); color:#fff; align-items:center; gap:10px; }
+  .card.wchat .chat-back{ background:rgba(255,255,255,.18); color:#fff; border-radius:50%; width:34px; height:34px; padding:0; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .card.wchat .chat-title{ display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; flex:1; }
+  .card.wchat .cp-av{ width:38px; height:38px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:15px; flex:none; }
+  .card.wchat .cp-av img{ width:100%; height:100%; object-fit:cover; }
+  .card.wchat .cp-txt{ display:flex; flex-direction:column; min-width:0; line-height:1.15; }
+  .card.wchat .cp-name{ font-size:15.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card.wchat .cp-sub{ font-size:12px; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card.wchat .chat-trans, .card.wchat .chat-bell{ background:transparent!important; border:0; color:#fff; }
+  .card.wchat #chatTransLbl{ display:none; }
+  .card.wchat .chat-trans svg, .card.wchat .chat-bell svg{ stroke:#fff; }
+  .card.wchat .chat-box{ height:62vh; max-height:520px; gap:3px; padding:14px 9px 8px;
+    background-color:#e4f1f1;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke='%23148a90' stroke-width='2' stroke-linecap='round' opacity='0.05'%3E%3Cpath d='M15 35 q10 -10 20 0 t20 0'/%3E%3Cpath d='M90 80 q10 -10 20 0 t20 0'/%3E%3Ccircle cx='120' cy='30' r='6'/%3E%3Cpath d='M25 110 q10 -10 20 0 t20 0'/%3E%3Cpath d='M100 125 l6 -10 6 10z'/%3E%3C/g%3E%3C/svg%3E"); }
+  .card.wchat .cday{ background:#cfe9ea; color:#2b5c5e; box-shadow:0 1px .5px rgba(0,0,0,.08); }
+  .card.wchat .crow{ max-width:85%; }
+  .card.wchat.dm .crow .cav{ display:none; }
+  .card.wchat .bubble{ position:relative; border:0!important; box-shadow:0 1px .7px rgba(0,0,0,.16); border-radius:9px; padding:6px 9px 5px; }
+  .card.wchat .bubble.them{ background:#fff; border-top-left-radius:2px; }
+  .card.wchat .bubble.me{ background:#d4f3f3; color:#07312f; border-top-right-radius:2px; }
+  .card.wchat .crow.them .bubble:not(.only-img)::before{ content:""; position:absolute; top:0; left:-6px; border:6px solid transparent; border-top-color:#fff; border-right-width:2px; }
+  .card.wchat .crow.me .bubble:not(.only-img)::before{ content:""; position:absolute; top:0; right:-6px; border:6px solid transparent; border-top-color:#d4f3f3; border-left-width:2px; }
+  .card.wchat .bubble .btxt{ display:inline; }
+  .card.wchat .bmeta{ float:right; margin:0 0 0 10px; position:relative; top:5px; font-size:10.5px; color:#6a8788; line-height:1; white-space:nowrap; }
+  .card.wchat .bubble.me .bmeta{ color:#2e8078; }
+  .card.wchat .btick{ letter-spacing:-2px; margin-left:1px; }
+  .card.wchat .bubble.only-img .bmeta{ position:absolute; float:none; right:8px; bottom:7px; top:auto; margin:0; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.7); }
+  .card.wchat .who2{ margin:0 0 2px; font-size:12.5px; font-weight:700; color:var(--accent-ink); }
+  .card.wchat .ctime{ margin:1px 6px 2px; gap:14px; opacity:.6; }
+  .card.wchat .chat-reply, .card.wchat .chat-emojis, .card.wchat .chat-typing{ margin-left:10px; margin-right:10px; }
+  .card.wchat .chat-input{ margin:0; padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px)); background:#dfeced; gap:7px; }
+  .card.wchat .chat-input input{ background:#fff; border:0; border-radius:22px; padding:11px 16px; }
+  .card.wchat .chat-photo, .card.wchat #chatEmoji{ background:transparent; border:0; color:var(--accent-ink); }
+  .card.wchat #chatNote{ margin:0; padding:6px 12px; background:#dfeced; }
   .react-chip{ border:1px solid var(--line); background:var(--card); border-radius:100px; padding:1px 9px; font-size:12.5px; cursor:pointer; line-height:1.7; }
   .react-chip.on{ border-color:var(--accent-ink); background:rgba(20,138,144,.12); color:var(--accent-ink); font-weight:700; }
   .react-pop{ position:fixed; z-index:9999; display:flex; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:100px; padding:5px 8px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
@@ -659,7 +708,7 @@
       </button>
     </div>
     <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
-    <div class="card">
+    <div class="card" id="chatCard">
       <div class="chan-sel-wrap" id="chatChannels">
         <span class="chan-ic">💬</span>
         <select id="chatChannel" class="chan-sel" aria-label="Choisir le salon"></select>
@@ -732,16 +781,20 @@
       </div>
     </div>
     <div class="sheet" id="commSheet" hidden>
-      <div class="sheet-card">
-        <div class="prof-head">
+      <div class="sheet-card wa-profile">
+        <div class="wa-prof-top">
           <div class="prof-av" id="sheetAv">R</div>
-          <div class="prof-name sheet-title" id="sheetTitle"></div>
-          <div class="prof-bio" id="sheetBio" hidden></div>
+          <div class="prof-name" id="sheetTitle"></div>
         </div>
-        <button id="sheetMsg">Envoyer un message</button>
-        <button id="sheetReport">Signaler</button>
-        <button class="warn" id="sheetBlock">Bloquer ce rider</button>
-        <button class="ghost" id="sheetCancel">Fermer</button>
+        <div class="wa-prof-act">
+          <button id="sheetMsg"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><span>Message</span></button>
+        </div>
+        <div class="wa-prof-about"><span class="wa-lbl">À propos</span><div class="prof-bio" id="sheetBio"></div></div>
+        <div class="wa-prof-foot">
+          <button id="sheetReport">Signaler</button>
+          <button class="warn" id="sheetBlock">Bloquer ce rider</button>
+          <button class="ghost" id="sheetCancel">Fermer</button>
+        </div>
       </div>
     </div>
   </section>
@@ -2807,11 +2860,12 @@
       const imgHtml = m.img?`<img class="chat-img" src="${m.img}" data-full="${m.img}" alt="photo">`:"";
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
       const onlyImg = (m.img && !bodyText && !note && !m.rt) ? " only-img" : "";
-      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}">${q}${imgHtml}${txtHtml}${note}</div>`;
+      const metaB = isConvo ? `<span class="bmeta">${timeLabel(m.t)}${mine?' <span class="btick">✓✓</span>':''}</span>` : "";
+      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}">${q}${imgHtml}${txtHtml}${note}${metaB}</div>`;
       const reacts = (function(){ if(!m.reactions) return ""; var cnt={}, mineE=null; for(var k in m.reactions){ var e=m.reactions[k]; if(!e) continue; cnt[e]=(cnt[e]||0)+1; if(k===me.uid) mineE=e; } var keys=Object.keys(cnt); if(!keys.length) return ""; return '<div class="react-row">'+keys.map(function(e){ return '<button class="react-chip'+(mineE===e?" on":"")+'" data-i="'+i+'" data-e="'+e+'">'+e+' '+cnt[e]+'</button>'; }).join("")+'</div>'; })();
       const reactBtn = `<button class="msg-react" data-i="${i}" title="Réagir" aria-label="Réagir">🙂﹢</button>`;
       const delBtn = mine?`<button class="msg-del" data-i="${i}" title="Supprimer" aria-label="Supprimer">🗑</button>`:"";
-      const time = `<div class="ctime">${timeLabel(m.t)} ${replyBtn} ${reactBtn}${mine?" "+delBtn:" "+flag}</div>`;
+      const time = `<div class="ctime">${isConvo?"":timeLabel(m.t)+" "}${replyBtn} ${reactBtn}${mine?" "+delBtn:" "+flag}</div>`;
       return `${sep}<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${reacts}${time}</div></div>`;
     }).join("");
     box.querySelectorAll(".flag").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) reportMessage(m); }));
@@ -2825,13 +2879,21 @@
     if(autoTrans){ for(const m of arr){ if(m.uid!==me.uid && m.text && translatable(m.text) && tcache[tl+"|"+m.text]===undefined) translateText(m.text).then(r=>{ if(r!==undefined) scheduleChatRerender(); }); } }
     box.scrollTop = box.scrollHeight;
   }
-  function openDM(uid,ps){ dmPeer={uid,pseudo:ps}; chatMode="dm";
-    $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").textContent=ps;
+  function setConvoHeader(name, uidForColor, avUrl, sub){
+    var av = avUrl ? '<span class="cp-av"><img src="'+avUrl+'" alt=""></span>'
+                   : '<span class="cp-av" style="background:'+avatarColor(uidForColor||"x")+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
+    $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Rider")+'</span><span class="cp-sub">'+esc(sub||"")+'</span></span>';
+  }
+  function openDM(uid,ps){ var pr=profileMap[uid]||{}; dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
+    $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
+    setConvoHeader(ps, uid, pr.av, "en ligne");
+    $("chatCard").classList.add("wchat","dm"); $("chatCard").classList.remove("group");
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
   function closeDM(){ dmPeer=null; chatMode="salon";
     $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
+    $("chatCard").classList.remove("wchat","dm","group");
     $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="salon"));
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
   }
@@ -2846,13 +2908,14 @@
   function onMyGroups(list){
     myGroups=(list||[]).slice().sort(function(a,b){ var ta=a.last?(+a.last.t||0):(+a.t||0), tb=b.last?(+b.last.t||0):(+b.t||0); return tb-ta; });
     if(chatMode==="group" && curGroup){ var g=myGroups.filter(function(x){return x.id===curGroup.id;})[0];
-      if(!g){ showGroupsList(); } else { curGroup=g; var t=$("chatTitle"); if(t) t.textContent=g.name||"Groupe"; if(groupInfoOpen) renderGroupInfo(); } }
+      if(!g){ showGroupsList(); } else { curGroup=g; setConvoHeader(g.name||"Groupe", g.id, g.photo, memberCount(g)+" membre"+(memberCount(g)>1?"s":"")); if(groupInfoOpen) renderGroupInfo(); } }
     if(chatMode==="groups") renderGroupsList();
     recomputeBadges();
   }
 
   function showGroupsList(){ chatMode="groups"; curGroup=null; dmPeer=null;
     $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
+    $("chatCard").classList.remove("wchat","dm","group");
     $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="groups"));
     if(chatUnsub){ chatUnsub(); chatUnsub=null; }
     updateChatFilterVis(); updateChanUI(); renderGroupsList(); updateChatGate(); recomputeBadges();
@@ -2874,7 +2937,9 @@
   }
 
   function openGroup(g){ if(!g) return; curGroup=g; chatMode="group"; curMsgs=[];
-    $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").textContent=g.name||"Groupe"; $("chatTitle").classList.add("tap");
+    $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
+    setConvoHeader(g.name||"Groupe", g.id, g.photo, memberCount(g)+" membre"+(memberCount(g)>1?"s":""));
+    $("chatCard").classList.add("wchat","group"); $("chatCard").classList.remove("dm");
     gseen[g.id]=Date.now(); saveGseen();
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate(); recomputeBadges();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
@@ -3066,6 +3131,7 @@
     chatMode=b.dataset.ch; curGroup=null; dmPeer=null;
     $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
     $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
+    $("chatCard").classList.remove("wchat","dm","group");
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate(); recomputeBadges();
   }));
   $("chatRadius").addEventListener("input", e=>{ const v=parseInt(e.target.value,10); chatRadius=(v>=5&&v<=1000)?v:50;
@@ -3086,7 +3152,7 @@
     }
   });
   $("chatBack").addEventListener("click", function(){ if(chatMode==="group") showGroupsList(); else closeDM(); });
-  var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); });
+  var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="dm" && dmPeer) openSheet(dmPeer.uid,dmPeer.pseudo,dmPeer.av,dmPeer.bio); });
   function compressImage(file, maxDim, quality){ return new Promise(function(resolve,reject){ var fr=new FileReader(); fr.onload=function(){ var img=new Image(); img.onload=function(){ var w=img.width,h=img.height,s=Math.min(1, maxDim/Math.max(w,h)); var cw=Math.max(1,Math.round(w*s)), chh=Math.max(1,Math.round(h*s)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=chh; var ctx=cv.getContext("2d"); ctx.drawImage(img,0,0,cw,chh); try{ resolve(cv.toDataURL("image/jpeg", quality)); }catch(e){ reject(e); } }; img.onerror=reject; img.src=fr.result; }; fr.onerror=reject; fr.readAsDataURL(file); }); }
   function renderAvatarPreview(){ ["commAvPrev","profBtnAv"].forEach(function(idp){ var p=$(idp); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }); }
   function setAvatar(dataUrl){ me.av=dataUrl; try{ localStorage.setItem("lf.comm.avatar", dataUrl); }catch(e){} renderAvatarPreview(); }
