@@ -408,6 +408,33 @@
   .react-pop{ position:fixed; z-index:9999; display:flex; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:100px; padding:5px 8px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
   .react-pop button{ border:0; background:none; font-size:22px; cursor:pointer; padding:2px 3px; border-radius:8px; }
   .react-pop button:active{ background:var(--tile); }
+  .bubble{ cursor:pointer; }
+  /* menu d'options message (facon WhatsApp) */
+  .mm-ov{ position:fixed; inset:0; z-index:10001; background:rgba(8,12,14,.42); display:flex; align-items:flex-end; justify-content:center; animation:sheetFade .18s ease; }
+  @media(min-width:560px){ .mm-ov{ align-items:center; } }
+  .mm-card{ background:var(--card); width:100%; max-width:380px; border-radius:20px 20px 0 0; padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 30px rgba(0,0,0,.28); animation:sheetUp .24s cubic-bezier(.22,.61,.36,1); }
+  @media(min-width:560px){ .mm-card{ border-radius:18px; } }
+  .mm-react{ display:flex; justify-content:space-around; gap:2px; padding:8px 4px 10px; border-bottom:1px solid var(--line); }
+  .mm-emo{ border:0; background:none; font-size:27px; line-height:1; padding:6px; border-radius:50%; cursor:pointer; transition:transform .1s ease; }
+  .mm-emo:active{ transform:scale(1.3); }
+  .mm-emo.on{ background:var(--tile); }
+  .mm-acts{ display:flex; flex-direction:column; padding:6px 2px 2px; }
+  .mm-act{ display:flex; align-items:center; gap:15px; width:100%; border:0; background:none; text-align:left; padding:13px 16px; font-size:15px; font-weight:600; color:var(--text); border-radius:12px; cursor:pointer; }
+  .mm-act:active{ background:var(--tile); }
+  .mm-act.danger{ color:var(--bad); }
+  .mm-ic{ width:20px; text-align:center; font-size:16px; opacity:.85; flex:none; }
+  /* bande horizontale "riders en ligne" */
+  .riders-strip{ display:flex; gap:12px; overflow-x:auto; padding:4px 2px 8px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .riders-strip::-webkit-scrollbar{ display:none; }
+  .rs-item{ flex:none; width:68px; border:0; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px; padding:0; }
+  .rs-avwrap{ position:relative; }
+  .rs-av{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:21px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.12); border:2.5px solid #fff; }
+  .rs-av img{ width:100%; height:100%; object-fit:cover; }
+  .rs-dot{ position:absolute; right:1px; bottom:1px; width:14px; height:14px; border-radius:50%; background:#2ec36b; border:2.5px solid var(--card); }
+  .rs-nm{ font-size:11.5px; font-weight:600; color:var(--text); max-width:66px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rs-sub{ font-size:10px; color:var(--muted); margin-top:-3px; }
+  .rs-empty{ font-size:13px; color:var(--muted); padding:10px 4px; }
+  .riders-strip-wrap{ margin:10px 0 4px; }
   .comm-priv{ font-size:12px; color:var(--muted-2); margin-top:10px; display:flex; gap:7px; align-items:flex-start; line-height:1.45; }
   .comm-priv svg{ width:15px; height:15px; flex:none; stroke:var(--muted-2); fill:none; stroke-width:1.8; margin-top:1px; }
   .comm-demo{ background:#fff8e6; border:1px solid #f3e2b0; color:#8a6d1b; border-radius:12px; padding:10px 13px; font-size:13px; margin-bottom:12px; }
@@ -660,6 +687,11 @@
     <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
     <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span></div>
 
+    <div class="riders-strip-wrap" id="ridersStripWrap">
+      <div class="m-label" style="margin:2px 6px 6px">Riders en ligne</div>
+      <div class="riders-strip" id="ridersStrip"></div>
+    </div>
+
     <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
 
     <div class="card comm-charter" id="commCharter" hidden>
@@ -762,8 +794,6 @@
       </div>
     </div>
 
-    <div class="m-label" style="margin:18px 6px 8px">Riders en ligne (<span id="commCount">0</span>)</div>
-    <div class="ioslist" id="commList"><div class="comm-empty">Personne pour l'instant. Active ta visibilité pour lancer le mouvement !</div></div>
 
     <div class="comm-blocked" id="commBlocked" hidden></div>
     <div class="comm-flaglink"><a id="charterLink">Charte de la communauté · Signaler un problème</a></div>
@@ -2689,25 +2719,23 @@
   function onPresence(map){
     lastPresenceRaw = map || {};
     riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
-    $("commCount").textContent = Object.keys(riders).length;
+    var _cc=$("commCount"); if(_cc) _cc.textContent = Object.keys(riders).length;
     var _on=$("commOnlineN"); if(_on) _on.textContent=String(Object.keys(riders).length);
     recomputeMembers();
     renderList(); renderMap();
   }
   function renderList(){
-    const el=$("commList"), ks=Object.keys(riders);
-    if(!ks.length){ el.innerHTML='<div class="comm-empty">Personne en ligne pour l\'instant. Active ta visibilité pour lancer le mouvement&nbsp;!</div>'; return; }
-    ks.sort((a,b)=>{ const da=me.pos?hdist(me.pos,riders[a]):0, db=me.pos?hdist(me.pos,riders[b]):0; return da-db; });
-    el.innerHTML = ks.map(k=>{ const r=riders[k], d=me.pos?hdist(me.pos,r):null;
-      const sub = d==null?"En ligne":(d<1.2?"À proximité · en ligne":Math.round(d)+" km · en ligne");
+    const el=$("ridersStrip"); if(!el){ renderBlocked(); return; }
+    const ks=Object.keys(riders);
+    if(!ks.length){ el.innerHTML='<div class="rs-empty">Personne en ligne pour l\'instant. Active ta visibilité pour voir les riders ici&nbsp;!</div>'; renderBlocked(); return; }
+    ks.sort((a,b)=>{ const da=me.pos?hdist(me.pos,riders[a]):0, db2=me.pos?hdist(me.pos,riders[b]):0; return da-db2; });
+    el.innerHTML = ks.map(k=>{ const r=riders[k], pr=profileMap[k]||{}, d=me.pos?hdist(me.pos,r):null;
+      const sub = d==null?"" : (d<1.2?"à côté":Math.round(d)+" km");
       const ini=((r.pseudo||"?").trim().charAt(0)||"?").toUpperCase();
-      return `<div class="rider"><div class="av" style="background:${avatarColor(k)}">${esc(ini)}</div>`+
-        `<div class="nm"><b>${esc(r.pseudo||"Rider")}</b><span class="sub">${sub}</span></div>`+
-        `<button class="pm" data-uid="${esc(k)}" data-ps="${esc(r.pseudo||"Rider")}">Message</button>`+
-        `<button class="more" data-uid="${esc(k)}" data-ps="${esc(r.pseudo||"Rider")}" aria-label="Options">⋯</button></div>`;
+      const av = pr.av ? '<span class="rs-av"><img src="'+pr.av+'" alt=""></span>' : '<span class="rs-av" style="background:'+avatarColor(k)+'">'+esc(ini)+'</span>';
+      return '<button class="rs-item" data-uid="'+esc(k)+'" data-ps="'+esc(r.pseudo||"Rider")+'"><span class="rs-avwrap">'+av+'<span class="rs-dot"></span></span><span class="rs-nm">'+esc(r.pseudo||"Rider")+'</span>'+(sub?'<span class="rs-sub">'+esc(sub)+'</span>':'')+'</button>';
     }).join("");
-    el.querySelectorAll(".pm").forEach(b=> b.addEventListener("click", ()=> openDM(b.dataset.uid,b.dataset.ps)));
-    el.querySelectorAll(".more").forEach(b=> b.addEventListener("click", ()=> openSheet(b.dataset.uid,b.dataset.ps)));
+    el.querySelectorAll(".rs-item").forEach(b=> b.addEventListener("click", ()=> openDM(b.dataset.uid,b.dataset.ps)));
     renderBlocked();
   }
 
@@ -2861,11 +2889,11 @@
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
       const onlyImg = (m.img && !bodyText && !note && !m.rt) ? " only-img" : "";
       const metaB = isConvo ? `<span class="bmeta">${timeLabel(m.t)}${mine?' <span class="btick">✓✓</span>':''}</span>` : "";
-      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}">${q}${imgHtml}${txtHtml}${note}${metaB}</div>`;
+      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}" data-i="${i}">${q}${imgHtml}${txtHtml}${note}${metaB}</div>`;
       const reacts = (function(){ if(!m.reactions) return ""; var cnt={}, mineE=null; for(var k in m.reactions){ var e=m.reactions[k]; if(!e) continue; cnt[e]=(cnt[e]||0)+1; if(k===me.uid) mineE=e; } var keys=Object.keys(cnt); if(!keys.length) return ""; return '<div class="react-row">'+keys.map(function(e){ return '<button class="react-chip'+(mineE===e?" on":"")+'" data-i="'+i+'" data-e="'+e+'">'+e+' '+cnt[e]+'</button>'; }).join("")+'</div>'; })();
       const reactBtn = `<button class="msg-react" data-i="${i}" title="Réagir" aria-label="Réagir">🙂﹢</button>`;
       const delBtn = mine?`<button class="msg-del" data-i="${i}" title="Supprimer" aria-label="Supprimer">🗑</button>`:"";
-      const time = `<div class="ctime">${isConvo?"":timeLabel(m.t)+" "}${replyBtn} ${reactBtn}${mine?" "+delBtn:" "+flag}</div>`;
+      const time = isConvo ? "" : `<div class="ctime">${timeLabel(m.t)}</div>`;
       return `${sep}<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${reacts}${time}</div></div>`;
     }).join("");
     box.querySelectorAll(".flag").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) reportMessage(m); }));
@@ -2873,6 +2901,7 @@
     box.querySelectorAll(".msg-react").forEach(b=> b.addEventListener("click", (e)=>{ e.stopPropagation(); const m=arr[+b.dataset.i]; if(m) window.__openReactPop(b,m); }));
     box.querySelectorAll(".msg-del").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) window.__delMsg(m); }));
     box.querySelectorAll(".react-chip").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) window.__toggleReact(m,b.dataset.e); }));
+    box.querySelectorAll(".bubble[data-i]").forEach(b=> b.addEventListener("click", (ev)=>{ if(ev.target.closest("a,img,.tr-tog,.react-chip")) return; const m=arr[+b.dataset.i]; if(m) openMsgMenu(m); }));
     box.querySelectorAll(".tr-tog").forEach(a=> a.addEventListener("click", ()=>{ const h=a.dataset.h; if(transShowOrig.has(h)) transShowOrig.delete(h); else transShowOrig.add(h); renderChat(); }));
     box.querySelectorAll(".chat-img").forEach(im=> im.addEventListener("click", ()=>{ const u=im.dataset.full; try{ const w=window.open("","_blank"); if(w){ w.document.write('<title>Photo</title><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="'+u+'" style="max-width:100%;max-height:100vh"></body>'); } else { location.href=u; } }catch(e){} }));
     box.querySelectorAll(".tapp").forEach(el=> el.addEventListener("click", ()=>{ const m=arr[+el.dataset.i]; if(m && m.uid!==me.uid) openSheet(m.uid,m.pseudo,m.av,m.bio); }));
@@ -3172,6 +3201,28 @@
   window.__openReactPop=function(btn,m){ if(!me.pseudo||!charterOk){ updateChatGate(); return; } reactCtx=m; reactPop.hidden=false; var r=btn.getBoundingClientRect(); var pw=reactPop.offsetWidth||230; var left=Math.max(8, Math.min(r.left-90, window.innerWidth-pw-8)); reactPop.style.left=left+"px"; reactPop.style.top=Math.max(8,(r.top-48))+"px"; };
   window.__toggleReact=function(m,emoji){ if(!me.pseudo||!charterOk){ updateChatGate(); return; } if(backend){ var mineE=(m.reactions&&m.reactions[me.uid]); backend.addReaction(currentChannel(), m.id, mineE===emoji?"":emoji); } };
   window.__delMsg=function(m){ if(!m||!m.id) return; if(!confirm("Supprimer ton message ?")) return; if(backend) backend.deleteMessage(currentChannel(), m.id); };
+  // ---- menu d'options sur un message (facon WhatsApp) ----
+  var msgOv=document.createElement("div"); msgOv.className="mm-ov"; msgOv.hidden=true; document.body.appendChild(msgOv);
+  msgOv.addEventListener("click", function(e){ if(e.target===msgOv) closeMsgMenu(); });
+  function closeMsgMenu(){ msgOv.hidden=true; msgOv.innerHTML=""; }
+  function openMsgMenu(m){
+    if(!me.pseudo||!charterOk){ updateChatGate(); return; }
+    var mine=m.uid===me.uid;
+    var emojis=REACT_EMOJIS.map(function(e){ var on=(m.reactions&&m.reactions[me.uid]===e); return '<button class="mm-emo'+(on?' on':'')+'" data-e="'+e+'">'+e+'</button>'; }).join("");
+    var acts='<button class="mm-act" data-a="reply"><span class="mm-ic">↩︎</span>Répondre</button>';
+    if(m.text) acts+='<button class="mm-act" data-a="copy"><span class="mm-ic">⧉</span>Copier</button>';
+    if(mine) acts+='<button class="mm-act danger" data-a="del"><span class="mm-ic">🗑</span>Supprimer</button>';
+    else acts+='<button class="mm-act" data-a="report"><span class="mm-ic">⚑</span>Signaler</button>';
+    msgOv.innerHTML='<div class="mm-card"><div class="mm-react">'+emojis+'</div><div class="mm-acts">'+acts+'</div></div>';
+    msgOv.hidden=false;
+    msgOv.querySelectorAll(".mm-emo").forEach(function(b){ b.addEventListener("click", function(){ var mineE=(m.reactions&&m.reactions[me.uid]); if(backend) backend.addReaction(currentChannel(), m.id, mineE===b.dataset.e?"":b.dataset.e); closeMsgMenu(); }); });
+    msgOv.querySelectorAll(".mm-act").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.a; closeMsgMenu();
+      if(a==="reply"){ setReply(m); }
+      else if(a==="copy"){ try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(m.text||""); }catch(e){} }
+      else if(a==="del"){ window.__delMsg(m); }
+      else if(a==="report"){ reportMessage(m); }
+    }); });
+  }
   function showReply(){ var r=$("chatReply"); if(!r) return; if(replyTarget){ r.innerHTML='<div class="rt"><b>Réponse à '+esc(replyTarget.pseudo)+'</b><span>'+esc(replyTarget.text)+'</span></div><button class="rx" id="chatReplyX" aria-label="Annuler">×</button>'; r.hidden=false; var x=$("chatReplyX"); if(x) x.addEventListener("click", clearReply); } else { r.hidden=true; r.innerHTML=""; } }
   function setReply(m){ if(!m) return; replyTarget={pseudo:(m.pseudo||"Rider"), text:(m.text||"📷 Photo").slice(0,120)}; showReply(); var i=$("chatInput"); if(i) i.focus(); }
   function clearReply(){ replyTarget=null; showReply(); }
