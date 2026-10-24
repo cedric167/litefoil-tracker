@@ -175,10 +175,24 @@
   .rider .nm .sub{ font-size:12.5px; color:var(--muted); }
   .rider .pm{ flex:none; padding:8px 16px; font-size:13px; border-radius:100px; }
   .comm-empty{ padding:20px 14px; text-align:center; color:var(--muted); font-size:14px; }
-  /* ===== groupes privés ===== */
-  .chat-head .seg{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
-  .chat-head .seg::-webkit-scrollbar{ display:none; }
-  .seg button{ white-space:nowrap; }
+  /* ===== sélecteur de mode ludique (Salon / Près de moi / Groupes) ===== */
+  .chat-modes{ display:flex; gap:9px; margin:16px 2px 2px; }
+  .chat-modes button{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:7px; border:1.5px solid var(--line); background:var(--card); border-radius:18px; padding:12px 4px 10px; cursor:pointer; transition:transform .13s ease, box-shadow .13s ease, border-color .13s ease, background .13s ease; }
+  .chat-modes button:active{ transform:scale(.96); }
+  .chat-modes .cm-lbl{ font-size:12.5px; font-weight:700; color:var(--muted); white-space:nowrap; }
+  .chat-modes .cm-ic{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; transition:transform .13s ease, box-shadow .13s ease; }
+  .chat-modes .cm-ic svg{ width:23px; height:23px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .cm-salon{ background:linear-gradient(135deg,#3fd0ec,#148a90); }
+  .cm-near{ background:linear-gradient(135deg,#f9b65a,#ef7d2e); }
+  .cm-groups{ background:linear-gradient(135deg,#43d66a,#1a9c55); }
+  .cm-plus{ position:absolute; right:-4px; bottom:-4px; width:19px; height:19px; border-radius:50%; background:#13a04a; color:#fff; border:2.5px solid var(--card); font-size:14px; font-weight:900; line-height:1; display:flex; align-items:center; justify-content:center; font-style:normal; box-shadow:0 2px 5px rgba(0,0,0,.2); }
+  .chat-modes button.on{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.08); border-color:transparent; }
+  .chat-modes button.on .cm-lbl{ color:var(--text); }
+  .chat-modes button.on .cm-ic{ transform:scale(1.06); box-shadow:0 5px 14px rgba(0,0,0,.18); }
+  .chat-modes button.on[data-ch="salon"]{ background:#e7f8fb; }
+  .chat-modes button.on[data-ch="near"]{ background:#fef2e4; }
+  .chat-modes button.on[data-ch="groups"]{ background:#e6f8ec; }
+  .chat-head #chatTransBtn{ margin-left:auto; }
   .glist{ display:flex; flex-direction:column; gap:2px; }
   .gnew{ display:flex; align-items:center; gap:12px; width:100%; border:0; background:var(--tile); border-radius:14px; padding:11px 14px; font-weight:700; color:var(--accent-ink); cursor:pointer; margin-bottom:6px; }
   .gnew-ic{ width:38px; height:38px; display:flex; align-items:center; justify-content:center; background:var(--accent-ink); color:#fff; border-radius:50%; font-size:22px; font-weight:400; }
@@ -630,6 +644,20 @@
       </div>
     </div>
 
+    <div class="chat-modes" id="chatSeg">
+      <button data-ch="salon" class="on" aria-label="Salon public">
+        <span class="cm-ic cm-salon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></span>
+        <span class="cm-lbl">Salon</span>
+      </button>
+      <button data-ch="near" aria-label="Riders près de moi">
+        <span class="cm-ic cm-near"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+        <span class="cm-lbl">Près de moi</span>
+      </button>
+      <button data-ch="groups" aria-label="Groupes privés">
+        <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i></span>
+        <span class="cm-lbl">Groupes</span>
+      </button>
+    </div>
     <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
     <div class="card">
       <div class="chan-sel-wrap" id="chatChannels">
@@ -638,11 +666,6 @@
       </div>
       <div class="chat-head">
         <button class="chat-back" id="chatBack" hidden>←</button>
-        <div class="seg" id="chatSeg">
-          <button data-ch="salon" class="on">Salon</button>
-          <button data-ch="near">Près de moi</button>
-          <button data-ch="groups">Groupes</button>
-        </div>
         <div class="chat-title" id="chatTitle" hidden></div>
         <button class="chat-trans" id="chatTransBtn" aria-pressed="true" title="Traduction automatique des messages"><svg viewBox="0 0 24 24"><path d="M4 5h10M9 3v2M11.5 5c0 5-3.5 8-7.5 9M6 9c0 2.5 2.5 5 6 6"/><path d="M14 20l3.5-9 3.5 9M15.2 17h4.6"/></svg><span id="chatTransLbl">Traduire</span></button>
         <button class="chat-trans chat-bell" id="chatBellBtn" aria-pressed="false" title="Notifications des nouveaux messages"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
