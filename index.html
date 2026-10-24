@@ -2556,6 +2556,7 @@
     const cred = await authMod.signInAnonymously(auth);
     const uid = cred.user.uid;
     const d = db.getDatabase(app);
+    const inc = (typeof db.increment==="function") ? db.increment : null; // compteur atomique de non-lus (si dispo)
     const presRef = db.ref(d, "presence/"+uid);
     db.onDisconnect(presRef).remove();
     db.onDisconnect(db.ref(d,"typing/"+uid)).remove();
@@ -2572,9 +2573,19 @@
         const o={uid,pseudo:me.pseudo,text:text||"",t:db.serverTimestamp(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null};
         if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
         const p = db.push(db.ref(d,path),o);
-        if(ch.indexOf("group:")===0){ const gid=ch.slice(6); db.set(db.ref(d,"groups/"+gid+"/last"),{text:(img&&!text)?"📷 Photo":(text||""),pseudo:me.pseudo,by:uid,t:db.serverTimestamp()}).catch(function(){}); }
-        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer){ const prev=(img&&!text)?"📷 Photo":(text||""); db.set(db.ref(d,"userDM/"+peer+"/"+uid),{pseudo:me.pseudo,text:prev,by:uid,t:db.serverTimestamp()}).catch(function(){}); db.set(db.ref(d,"userDM/"+uid+"/"+peer),{text:prev,by:uid,t:db.serverTimestamp()}).catch(function(){}); } }
+        if(ch.indexOf("group:")===0){ const gid=ch.slice(6); const prev=(img&&!text)?"📷 Photo":(text||"");
+          const up={}; up["groups/"+gid+"/last"]={text:prev,pseudo:me.pseudo,by:uid,t:db.serverTimestamp()};
+          // compteur de non-lus par membre (sauf l'auteur)
+          try{ var mem=(inc&&curGroup&&curGroup.id===gid&&curGroup.members)?curGroup.members:null; if(mem){ for(var muid in mem){ if(muid!==uid) up["groups/"+gid+"/unread/"+muid]=inc(1); } } }catch(e){}
+          db.update(db.ref(d),up).catch(function(){}); }
+        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer){ const prev=(img&&!text)?"📷 Photo":(text||"");
+          // chez le destinataire : +1 non-lu ; ma copie : non-lu remis à 0
+          var rcpt={pseudo:me.pseudo,text:prev,by:uid,t:db.serverTimestamp()}; if(inc) rcpt.unread=inc(1);
+          db.update(db.ref(d,"userDM/"+peer+"/"+uid),rcpt).catch(function(){});
+          db.update(db.ref(d,"userDM/"+uid+"/"+peer),{text:prev,by:uid,t:db.serverTimestamp(),unread:0}).catch(function(){}); } }
         return p; },
+      markDMRead(peer){ if(!peer) return Promise.resolve(); return db.update(db.ref(d,"userDM/"+uid+"/"+peer),{unread:0}).catch(function(){}); },
+      markGroupRead(gid){ if(!gid) return Promise.resolve(); return db.set(db.ref(d,"groups/"+gid+"/unread/"+uid),0).catch(function(){}); },
       watchMessages(ch,cb){ const path = pathFor(ch);
         // onChildAdded (et non onValue) : RTDB livre un instantané incomplet avec onValue+limitToLast
         // sur certaines régions ; onChildAdded énumère chaque message de façon fiable.
@@ -2678,7 +2689,9 @@
       setGroupPhoto(gid,photo){ if(demoGroups[gid]){ demoGroups[gid].photo=photo||null; fireGroups(); } return Promise.resolve(); },
       getGroup(gid){ return Promise.resolve(demoGroups[gid]||null); },
       joinGroup(gid){ if(demoGroups[gid]){ demoGroups[gid].members[uid]={pseudo:me.pseudo}; fireGroups(); } return Promise.resolve(); },
-      watchMyDMs(cb){ demoDMcb=cb; cb(Object.assign({},demoDM)); return function(){demoDMcb=null;}; }
+      watchMyDMs(cb){ demoDMcb=cb; cb(Object.assign({},demoDM)); return function(){demoDMcb=null;}; },
+      markDMRead(peer){ if(peer&&demoDM[peer]){ demoDM[peer].unread=0; fireDM(); } return Promise.resolve(); },
+      markGroupRead(gid){ if(demoGroups[gid]&&demoGroups[gid].unread){ demoGroups[gid].unread[uid]=0; fireGroups(); } return Promise.resolve(); }
     };
   }
 
@@ -2808,7 +2821,8 @@
     let gtotal=0;
     for(const g of myGroups){ if(!g||!g.last) continue; const lt=+(g.last.t)||0; const open=(chatMode==="group"&&curGroup&&curGroup.id===g.id);
       if(open){ if(lt>(gseen[g.id]||0)){ gseen[g.id]=lt; saveGseen(); } continue; }
-      if(lt>(gseen[g.id]||0) && g.last.by!==me.uid) gtotal++; }
+      const gc=(g.unread&&+g.unread[me.uid])||0;
+      if(gc>0) gtotal+=gc; else if(lt>(gseen[g.id]||0) && g.last.by!==me.uid) gtotal++; }
     total += gtotal;
     // non-lus des messages privés
     var dmn=dmUnreadCount(); total += dmn;
@@ -3000,7 +3014,7 @@
     $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Rider")+'</span><span class="cp-sub" data-rest="'+esc(sub||"")+'">'+esc(sub||"")+'</span></span>';
   }
   function openDM(uid,ps){ var pr=profileMap[uid]||{}; dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
-    dmSeen[uid]=Date.now(); saveDmSeen(); dmNotif[uid]=dmSeen[uid]; clearDeliveredNotifs();
+    dmSeen[uid]=Date.now(); saveDmSeen(); dmNotif[uid]=dmSeen[uid]; clearDeliveredNotifs(); if(backend.markDMRead) backend.markDMRead(uid);
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
     setConvoHeader(ps, uid, pr.av, "en ligne");
     $("chatCard").classList.add("wchat","dm"); $("chatCard").classList.remove("group");
@@ -3029,6 +3043,7 @@
     if(!groupsNotifInit){ groupsNotifInit=true; for(var i=0;i<myGroups.length;i++){ if(myGroups[i].last) gnotif[myGroups[i].id]=+myGroups[i].last.t||0; } }
     else { for(var j=0;j<myGroups.length;j++){ var gg=myGroups[j]; if(!gg.last) continue; var lt=+gg.last.t||0;
       var viewing=(chatMode==="group"&&curGroup&&curGroup.id===gg.id);
+      if(viewing && gg.unread && (+gg.unread[me.uid]||0)>0 && backend.markGroupRead) backend.markGroupRead(gg.id);
       if(lt>(gnotif[gg.id]||0) && lt>(gseen[gg.id]||0) && gg.last.by!==me.uid && !blocked.has(gg.last.by) && !viewing){
         showMsgToast({ uid:gg.last.by, name:gg.last.pseudo, avUrl:gg.photo, sub:gg.name, text:gg.last.text, onTap:(function(g2){ return function(){ goToCommunaute(); openGroup(g2); }; })(gg) });
       }
@@ -3041,7 +3056,7 @@
     if(dmNotifInit){
       for(var peer in myDMs){ var e=myDMs[peer]; if(!e) continue; var t=+e.t||0;
         var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
-        if(viewing){ if(t>(dmSeen[peer]||0)){ dmSeen[peer]=t; saveDmSeen(); } }
+        if(viewing){ if(t>(dmSeen[peer]||0)){ dmSeen[peer]=t; saveDmSeen(); } if(e.by!==me.uid && (+e.unread||0)>0 && backend.markDMRead) backend.markDMRead(peer); }
         else if(t>(dmNotif[peer]||0) && t>(dmSeen[peer]||0) && e.by!==me.uid && !blocked.has(peer)){
           var prof=profileMap[peer]||{};
           showMsgToast({ uid:peer, name:e.pseudo||prof.pseudo||"Rider", avUrl:prof.av, sub:"Message privé", text:e.text, onTap:(function(p,ps){ return function(){ goToCommunaute(); openDM(p,ps); }; })(peer, e.pseudo||prof.pseudo||"Rider") });
@@ -3052,7 +3067,7 @@
     if(chatMode==="dms") renderDMList();
     recomputeBadges();
   }
-  function dmUnreadCount(){ var n=0; for(var p in myDMs){ var e=myDMs[p]; if(e && e.by!==me.uid && !blocked.has(p) && (+e.t||0)>(dmSeen[p]||0)) n++; } return n; }
+  function dmUnreadCount(){ var n=0; for(var p in myDMs){ var e=myDMs[p]; if(!e||blocked.has(p)) continue; var c=+(e.unread||0); if(c>0) n+=c; else if(e.by!==me.uid && (+e.t||0)>(dmSeen[p]||0)) n+=1; } return n; }
   function showDMList(){ chatMode="dms"; curGroup=null; dmPeer=null;
     $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
     $("chatCard").classList.remove("wchat","dm","group");
@@ -3067,12 +3082,14 @@
     if(!peers.length){ box.innerHTML='<div class="comm-empty" style="margin-top:8px">Aucun message privé pour l\'instant.<br>Touche un rider (en haut ou sur la carte) pour lui écrire en privé.</div>'; return; }
     box.innerHTML='<div class="glist">'+peers.map(function(p){ var e=myDMs[p]; var prof=profileMap[p]||{}; var name=e.pseudo||prof.pseudo||"Rider";
       var mine=(e.by===me.uid);
-      var unread=!mine && (+e.t||0)>(dmSeen[p]||0);
+      var cnt=+(e.unread||0);
+      var unread=!mine && (cnt>0 || (+e.t||0)>(dmSeen[p]||0));
+      var badge = cnt>0 ? '<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>' : (unread?'<span class="gunread"></span>':'');
       var tick=mine?'<span class="gtick">✓✓</span>':'';
       var prev=tick+esc((e.text||(e.img?"📷 Photo":"")).slice(0,90));
       var tm=e.t?timeLabel(e.t):"";
       var av = prof.av ? '<span class="gav" style="width:54px;height:54px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:54px;height:54px;background:'+avatarColor(p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
-      return '<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+(unread?'<span class="gunread"></span>':'')+'</span></button>';
+      return '<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+badge+'</span></button>';
     }).join("")+'</div>';
     box.querySelectorAll(".grow").forEach(function(b){ b.addEventListener("click", function(){ openDM(b.dataset.uid, b.dataset.ps); }); });
   }
@@ -3089,12 +3106,15 @@
     var html='<div class="glist">';
     html+='<button class="gnew" id="gNewBtn"><span class="gnew-ic">＋</span><span>Nouveau groupe</span></button>';
     if(!myGroups.length){ html+='<div class="comm-empty" style="margin-top:8px">Aucun groupe privé pour l\'instant.<br>Crée un groupe pour discuter à plusieurs, ou rejoins-en un via un lien d\'invitation.</div>'; }
-    else { html+=myGroups.map(function(g){ var n=memberCount(g); var last=g.last; var unread=last&&((+last.t||0)>(gseen[g.id]||0))&&last.by!==me.uid;
+    else { html+=myGroups.map(function(g){ var n=memberCount(g); var last=g.last;
+      var cnt=(g.unread&&+g.unread[me.uid])||0;
+      var unread=(cnt>0)||(last&&((+last.t||0)>(gseen[g.id]||0))&&last.by!==me.uid);
+      var badge = cnt>0 ? '<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>' : (unread?'<span class="gunread"></span>':'');
       var mine=last&&last.by===me.uid;
       var tick=mine?'<span class="gtick">✓✓</span>':'';
       var prev = last ? (tick+esc(((!mine&&last.pseudo?last.pseudo+": ":"")+(last.text||(last.img?"📷 Photo":""))).slice(0,90))) : (n+" membre"+(n>1?"s":""));
       var tm = (last&&last.t)?timeLabel(last.t):"";
-      return '<button class="grow'+(unread?' unread':'')+'" data-gid="'+g.id+'">'+groupAvatarHtml(g,54)+'<span class="grow-main"><span class="grow-top"><b>'+esc(g.name||"Groupe")+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+(unread?'<span class="gunread"></span>':'')+'</span></button>';
+      return '<button class="grow'+(unread?' unread':'')+'" data-gid="'+g.id+'">'+groupAvatarHtml(g,54)+'<span class="grow-main"><span class="grow-top"><b>'+esc(g.name||"Groupe")+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+badge+'</span></button>';
     }).join(""); }
     html+='</div>';
     box.innerHTML=html;
@@ -3106,7 +3126,7 @@
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
     setConvoHeader(g.name||"Groupe", g.id, g.photo, memberCount(g)+" membre"+(memberCount(g)>1?"s":""));
     $("chatCard").classList.add("wchat","group"); $("chatCard").classList.remove("dm");
-    gseen[g.id]=Date.now(); saveGseen(); gnotif[g.id]=gseen[g.id]; clearDeliveredNotifs();
+    gseen[g.id]=Date.now(); saveGseen(); gnotif[g.id]=gseen[g.id]; clearDeliveredNotifs(); if(backend.markGroupRead) backend.markGroupRead(g.id);
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate(); recomputeBadges();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
