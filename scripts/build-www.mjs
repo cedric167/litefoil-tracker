@@ -44,17 +44,22 @@ await build({
   logLevel: 'info',
 });
 
-// Injection du <script> en premier dans <head>
-const idxPath = path.join(www, 'index.html');
-let html = fs.readFileSync(idxPath, 'utf8');
-if (!html.includes('ble-bridge.js')) {
-  const tag = '\n  <script src="ble-bridge.js"></script>';
-  if (/<head[^>]*>/i.test(html)) {
-    html = html.replace(/<head[^>]*>/i, (m) => m + tag);
-  } else {
-    html = tag + '\n' + html;
-  }
-  fs.writeFileSync(idxPath, html);
+// Injection du <script src="…ble-bridge.js"> en tout premier dans <head>.
+// On le met dans la page principale ET dans les sous-applis Atelier batterie (bms/)
+// et Atelier VESC (vesc/), pour qu'elles passent aussi par le Bluetooth natif du
+// téléphone (le Web Bluetooth n'existe pas sur iOS). Le chemin relatif dépend de la
+// profondeur de la page (racine -> "ble-bridge.js", sous-dossier -> "../ble-bridge.js").
+function injectBridge(htmlPath, src) {
+  if (!fs.existsSync(htmlPath)) return;
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  if (html.includes('ble-bridge.js')) return;
+  const tag = '\n  <script src="' + src + '"></script>';
+  html = /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, (m) => m + tag) : (tag + '\n' + html);
+  fs.writeFileSync(htmlPath, html);
 }
 
-console.log('www/ assemblé :', fs.readdirSync(www).join(', '));
+injectBridge(path.join(www, 'index.html'), 'ble-bridge.js');
+injectBridge(path.join(www, 'bms', 'index.html'), '../ble-bridge.js');
+injectBridge(path.join(www, 'vesc', 'index.html'), '../ble-bridge.js');
+
+console.log('www/ assemblé (pont BLE: index + bms + vesc) :', fs.readdirSync(www).join(', '));

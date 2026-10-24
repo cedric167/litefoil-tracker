@@ -127,6 +127,14 @@ if (isNative && !window.__LF_NATIVE_BLE__) {
     }
   }
 
+  // --- mémoire des appareils déjà appairés (pour getDevices / reconnexion auto) ---
+  const DEVS_KEY = '__lf_native_ble_devs';
+  const loadDevs = () => { try { return JSON.parse(localStorage.getItem(DEVS_KEY) || '[]') || []; } catch (e) { return []; } };
+  const rememberDevice = (id, name) => {
+    try { const l = loadDevs().filter((x) => x.id !== id); l.push({ id, name: name || '' });
+      localStorage.setItem(DEVS_KEY, JSON.stringify(l.slice(-10))); } catch (e) {}
+  };
+
   // --- navigator.bluetooth.requestDevice ---
   async function requestDevice(options = {}) {
     await BleClient.initialize({ androidNeverForLocation: true });
@@ -143,12 +151,15 @@ if (isNative && !window.__LF_NATIVE_BLE__) {
     if (services.size) opt.services = [...services];
     if (optional.size) opt.optionalServices = [...optional];
     const d = await BleClient.requestDevice(opt);
+    rememberDevice(d.deviceId, d.name);
     return new LFDevice(d.deviceId, d.name);
   }
 
   if (!navigator.bluetooth) navigator.bluetooth = {};
   navigator.bluetooth.requestDevice = requestDevice;
   navigator.bluetooth.getAvailability = async () => true;
+  // reconnexion auto : renvoie les appareils déjà appairés sur cette app (connexion par id, sans re-scan)
+  navigator.bluetooth.getDevices = async () => loadDevs().map((x) => new LFDevice(x.id, x.name));
 
   console.log('[Lite Foil] Pont Bluetooth natif actif.');
 }
