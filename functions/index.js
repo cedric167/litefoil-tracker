@@ -93,3 +93,21 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
     body: String(m.text).slice(0, 140)
   });
 });
+
+exports.groupPush = onValueCreated({ ref: "/groupMessages/{gid}/{id}", instance: DB_INSTANCE }, async (event) => {
+  const m = event.data.val() || {};
+  if (!m.text && !m.img) return;
+  const gid = event.params.gid;
+  const db = getDatabase();
+  const gsnap = await db.ref("groups/" + gid).get();
+  const g = gsnap.val() || {};
+  const members = g.members ? Object.keys(g.members) : [];
+  const uids = members.filter((u) => u !== m.uid);
+  if (!uids.length) return;
+  await sendToUids(uids, {
+    type: "group",
+    channel: "group:" + gid,
+    title: (g.name || "Groupe") + " · " + (m.pseudo || "Rider"),
+    body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
+  });
+});
