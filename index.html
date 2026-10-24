@@ -423,6 +423,19 @@
   .mm-act:active{ background:var(--tile); }
   .mm-act.danger{ color:var(--bad); }
   .mm-ic{ width:20px; text-align:center; font-size:16px; opacity:.85; flex:none; }
+  /* bulle de notification in-app */
+  #lfToast{ position:fixed; top:0; left:0; right:0; z-index:10002; display:flex; flex-direction:column; align-items:center; gap:8px; padding:calc(8px + env(safe-area-inset-top,0px)) 10px 0; pointer-events:none; }
+  .lf-toast{ pointer-events:auto; width:100%; max-width:440px; display:flex; align-items:center; gap:11px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:10px 12px; box-shadow:0 12px 32px rgba(8,16,20,.24); cursor:pointer; text-align:left; transform:translateY(-135%); opacity:0; transition:transform .28s cubic-bezier(.22,.61,.36,1), opacity .25s; }
+  .lf-toast.in{ transform:translateY(0); opacity:1; }
+  .lf-toast.out{ transform:translateY(-135%); opacity:0; }
+  .lf-toast .lt-av{ flex:none; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:16px; overflow:hidden; }
+  .lf-toast .lt-av img{ width:100%; height:100%; object-fit:cover; }
+  .lf-toast .lt-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+  .lf-toast .lt-name{ font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lf-toast .lt-sub{ font-weight:600; color:var(--muted); font-size:12.5px; }
+  .lf-toast .lt-msg{ font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lf-toast .lt-ic{ flex:none; width:30px; height:30px; border-radius:50%; background:var(--accent-ink); display:flex; align-items:center; justify-content:center; }
+  .lf-toast .lt-ic svg{ width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   /* bande horizontale "riders en ligne" */
   .riders-strip{ display:flex; gap:12px; overflow-x:auto; padding:4px 2px 8px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .riders-strip::-webkit-scrollbar{ display:none; }
@@ -2478,6 +2491,8 @@
   let riders = {}, curMsgs = [];
   let chatMode = "salon", dmPeer = null;
   let curGroup = null, myGroups = [], groupsUnsub = null, prevChatMode = "salon";
+  let gnotif = {}, groupsNotifInit = false;
+  let dmNotif = {}, dmNotifInit = false, dmUnsub = null;
   let gseen = {}; try{ gseen = JSON.parse(localStorage.getItem("lf.comm.gseen")||"{}")||{}; }catch(e){ gseen={}; }
   const saveGseen = () => { try{ localStorage.setItem("lf.comm.gseen", JSON.stringify(gseen)); }catch(e){} };
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
@@ -2536,6 +2551,7 @@
         if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
         const p = db.push(db.ref(d,path),o);
         if(ch.indexOf("group:")===0){ const gid=ch.slice(6); db.set(db.ref(d,"groups/"+gid+"/last"),{text:(img&&!text)?"📷 Photo":(text||""),pseudo:me.pseudo,by:uid,t:db.serverTimestamp()}).catch(function(){}); }
+        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer) db.set(db.ref(d,"userDM/"+peer+"/"+uid),{pseudo:me.pseudo,text:(img&&!text)?"📷 Photo":(text||""),by:uid,t:db.serverTimestamp()}).catch(function(){}); }
         return p; },
       watchMessages(ch,cb){ const path = pathFor(ch);
         // onChildAdded (et non onValue) : RTDB livre un instantané incomplet avec onValue+limitToLast
@@ -2580,7 +2596,8 @@
       renameGroup(gid,name){ return db.set(db.ref(d,"groups/"+gid+"/name"),(name||"Groupe").slice(0,60)); },
       setGroupPhoto(gid,photo){ return db.set(db.ref(d,"groups/"+gid+"/photo"),photo||null); },
       getGroup(gid){ return db.get(db.ref(d,"groups/"+gid)).then(function(s){ const v=s.val(); if(v) v.id=gid; return v; }); },
-      joinGroup(gid){ const up={}; up["groups/"+gid+"/members/"+uid]={pseudo:me.pseudo||"Rider",t:db.serverTimestamp()}; up["userGroups/"+uid+"/"+gid]=true; return db.update(db.ref(d),up); }
+      joinGroup(gid){ const up={}; up["groups/"+gid+"/members/"+uid]={pseudo:me.pseudo||"Rider",t:db.serverTimestamp()}; up["userGroups/"+uid+"/"+gid]=true; return db.update(db.ref(d),up); },
+      watchMyDMs(cb){ return db.onValue(db.ref(d,"userDM/"+uid), function(snap){ cb(snap.val()||{}); }); }
     };
   }
 
@@ -2596,6 +2613,8 @@
     let mine=null, presCb=null;
     const demoGroups={}; let demoGroupsCb=null;
     const fireGroups=()=>{ if(demoGroupsCb) demoGroupsCb(Object.keys(demoGroups).map(function(k){return demoGroups[k];})); };
+    const demoDM={}; let demoDMcb=null;
+    const fireDM=()=>{ if(demoDMcb) demoDMcb(Object.assign({},demoDM)); };
     const msgs={ salon:[
       {uid:"demo-aurel",pseudo:"Aurel66",text:"Salut la communauté 👋",t:Date.now()-5400000,topic:"general",lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
       {uid:"demo-aurel",pseudo:"Aurel66",text:"Session eFoil demain 9h à la plage sud, qui vient ?",t:Date.now()-3600000,topic:"efoil",lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
@@ -2611,7 +2630,7 @@
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
       sendMessage(ch,text,img,reply){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch);
         if(ch.indexOf("group:")===0){ var gid=ch.slice(6); if(demoGroups[gid]){ demoGroups[gid].last={text:(img&&!text)?"📷 Photo":(text||""),pseudo:me.pseudo,by:uid,t:Date.now()}; fireGroups(); } }
-        if(ch.startsWith("dm:")) setTimeout(()=>{ msgs[ch].push({uid:dmPeer?dmPeer.uid:"demo",pseudo:dmPeer?dmPeer.pseudo:"Rider",text:"(démo) Salut ! On se capte sur l'eau 👋",t:Date.now()}); fire(ch); },1200);
+        if(ch.startsWith("dm:")) setTimeout(()=>{ var rp=dmPeer?dmPeer.uid:"demo", rn=dmPeer?dmPeer.pseudo:"Rider", rt="(démo) Salut ! On se capte sur l'eau 👋"; msgs[ch].push({uid:rp,pseudo:rn,text:rt,t:Date.now()}); fire(ch); demoDM[rp]={pseudo:rn,text:rt,by:rp,t:Date.now()}; fireDM(); },1200);
         return Promise.resolve(); },
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
       addReaction(ch,msgId,emoji){ var a=(msgs[ch]||[]); var m=a.find(function(x){return x.id===msgId;}); if(m){ m.reactions=m.reactions||{}; if(emoji) m.reactions[uid]=emoji; else delete m.reactions[uid]; fire(ch); } return Promise.resolve(); },
@@ -2635,7 +2654,8 @@
       renameGroup(gid,name){ if(demoGroups[gid]){ demoGroups[gid].name=name||"Groupe"; fireGroups(); } return Promise.resolve(); },
       setGroupPhoto(gid,photo){ if(demoGroups[gid]){ demoGroups[gid].photo=photo||null; fireGroups(); } return Promise.resolve(); },
       getGroup(gid){ return Promise.resolve(demoGroups[gid]||null); },
-      joinGroup(gid){ if(demoGroups[gid]){ demoGroups[gid].members[uid]={pseudo:me.pseudo}; fireGroups(); } return Promise.resolve(); }
+      joinGroup(gid){ if(demoGroups[gid]){ demoGroups[gid].members[uid]={pseudo:me.pseudo}; fireGroups(); } return Promise.resolve(); },
+      watchMyDMs(cb){ demoDMcb=cb; cb(Object.assign({},demoDM)); return function(){demoDMcb=null;}; }
     };
   }
 
@@ -2848,14 +2868,41 @@
     const opts={ body:(m.text||"").slice(0,140), tag:"lf-"+(m.topic||"general"), icon:"./icon-192.png", badge:"./icon-192.png", data:{channel:m.topic||"general"} };
     try{ if(navigator.serviceWorker){ navigator.serviceWorker.ready.then(reg=>{ if(reg&&reg.showNotification) reg.showNotification(title,opts); else new Notification(title,opts); }).catch(()=>{ try{ new Notification(title,opts); }catch(e){} }); } else new Notification(title,opts); }catch(e){}
   }
+  // ---- bulle de notification IN-APP (visible dans l'appli, sans permission système) ----
+  function goToCommunaute(){ var tb=document.querySelector('.tab[data-tab="communaute"]'); if(tb) tb.click(); try{ var c=$("tab-communaute"); if(c) c.scrollIntoView({block:"start"}); }catch(e){} }
+  function showMsgToast(o){
+    if(!o) return;
+    var host=document.getElementById("lfToast");
+    if(!host){ host=document.createElement("div"); host.id="lfToast"; document.body.appendChild(host); }
+    var el=document.createElement("button"); el.type="button"; el.className="lf-toast";
+    var av = o.avUrl ? '<span class="lt-av"><img src="'+o.avUrl+'" alt=""></span>'
+                     : '<span class="lt-av" style="background:'+avatarColor(o.uid||"x")+'">'+esc(((o.name||"R").trim()[0]||"R").toUpperCase())+'</span>';
+    el.innerHTML = av+'<span class="lt-txt"><span class="lt-name">'+esc(o.name||"Rider")+(o.sub?'<span class="lt-sub"> · '+esc(o.sub)+'</span>':'')+'</span><span class="lt-msg">'+esc((o.text||"").slice(0,90))+'</span></span><span class="lt-ic"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></span>';
+    while(host.children.length>=3) host.removeChild(host.firstChild);
+    host.appendChild(el);
+    requestAnimationFrame(function(){ el.classList.add("in"); });
+    var killed=false, timer=null;
+    function kill(){ if(killed) return; killed=true; clearTimeout(timer); el.classList.remove("in"); el.classList.add("out"); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },260); }
+    el.addEventListener("click", function(){ kill(); try{ o.onTap&&o.onTap(); }catch(e){} });
+    timer=setTimeout(kill, 5200);
+    try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
+  }
   function processNotif(arr){
     if(!notifInit){ notifInit=true; for(const m of arr){ const t=+m.t||0; if(t>notifMaxT) notifMaxT=t; } return; }
     const can=notifOn && ("Notification" in window) && Notification.permission==="granted";
     const alertNow=can && (document.hidden || ($("tab-communaute") && $("tab-communaute").hidden));
+    const commHidden = !($("tab-communaute") && !$("tab-communaute").hidden);
     let mx=notifMaxT;
-    for(const m of arr){ const t=+m.t||0; if(t>notifMaxT && m.uid!==me.uid && !blocked.has(m.uid) && alertNow) notify(m); if(t>mx) mx=t; }
+    for(const m of arr){ const t=+m.t||0;
+      if(t>notifMaxT && m.uid!==me.uid && !blocked.has(m.uid)){
+        if(alertNow) notify(m);
+        if(commHidden) showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:m.av, sub:(CHANS[m.topic||"general"]||"Salon"), text:m.text||(m.img?"📷 Photo":""), onTap:(function(tp){ return function(){ openSalonFromToast(tp); }; })(m.topic) });
+      }
+      if(t>mx) mx=t;
+    }
     notifMaxT=mx;
   }
+  function openSalonFromToast(topic){ goToCommunaute(); if(CHANS[topic]){ chatTopic=topic; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} } var b=$("chatSeg")&&$("chatSeg").querySelector('button[data-ch="salon"]'); if(b){ b.click(); } }
   function renderChat(){
     if(chatMode==="groups"){ renderGroupsList(); return; }
     const box=$("chatBox"); const isConvo=(chatMode==="dm"||chatMode==="group");
@@ -2938,8 +2985,28 @@
     myGroups=(list||[]).slice().sort(function(a,b){ var ta=a.last?(+a.last.t||0):(+a.t||0), tb=b.last?(+b.last.t||0):(+b.t||0); return tb-ta; });
     if(chatMode==="group" && curGroup){ var g=myGroups.filter(function(x){return x.id===curGroup.id;})[0];
       if(!g){ showGroupsList(); } else { curGroup=g; setConvoHeader(g.name||"Groupe", g.id, g.photo, memberCount(g)+" membre"+(memberCount(g)>1?"s":"")); if(groupInfoOpen) renderGroupInfo(); } }
+    // bulle in-app pour les nouveaux messages de groupe
+    if(!groupsNotifInit){ groupsNotifInit=true; for(var i=0;i<myGroups.length;i++){ if(myGroups[i].last) gnotif[myGroups[i].id]=+myGroups[i].last.t||0; } }
+    else { for(var j=0;j<myGroups.length;j++){ var gg=myGroups[j]; if(!gg.last) continue; var lt=+gg.last.t||0;
+      var viewing=(chatMode==="group"&&curGroup&&curGroup.id===gg.id);
+      if(lt>(gnotif[gg.id]||0) && gg.last.by!==me.uid && !blocked.has(gg.last.by) && !viewing){
+        showMsgToast({ uid:gg.last.by, name:gg.last.pseudo, avUrl:gg.photo, sub:gg.name, text:gg.last.text, onTap:(function(g2){ return function(){ goToCommunaute(); openGroup(g2); }; })(gg) });
+      }
+      if(lt>(gnotif[gg.id]||0)) gnotif[gg.id]=lt;
+    } }
     if(chatMode==="groups") renderGroupsList();
     recomputeBadges();
+  }
+  function onMyDMs(map){ map=map||{};
+    if(!dmNotifInit){ dmNotifInit=true; for(var k in map){ if(map[k]) dmNotif[k]=+map[k].t||0; } return; }
+    for(var peer in map){ var e=map[peer]; if(!e) continue; var t=+e.t||0;
+      var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
+      if(t>(dmNotif[peer]||0) && e.by!==me.uid && !blocked.has(peer) && !viewing){
+        var prof=profileMap[peer]||{};
+        showMsgToast({ uid:peer, name:e.pseudo||prof.pseudo||"Rider", avUrl:prof.av, sub:"Message privé", text:e.text, onTap:(function(p,ps){ return function(){ goToCommunaute(); openDM(p,ps); }; })(peer, e.pseudo||prof.pseudo||"Rider") });
+      }
+      if(t>(dmNotif[peer]||0)) dmNotif[peer]=t;
+    }
   }
 
   function showGroupsList(){ chatMode="groups"; curGroup=null; dmPeer=null;
@@ -3258,6 +3325,7 @@
     if(backend.watchTyping) typingUnsub = backend.watchTyping(onTyping);
     if(backend.watchProfiles) membersUnsub = backend.watchProfiles(onProfiles);
     if(backend.watchMyGroups) groupsUnsub = backend.watchMyGroups(onMyGroups);
+    if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(me.pseudo && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio});
     // lien d'invitation à un groupe privé : ?join=<gid>&k=<code>
     try{ var usp=new URLSearchParams(location.search); var jg=usp.get("join"); if(jg){ pendingJoin={gid:jg,k:usp.get("k")||""}; } }catch(e){}
