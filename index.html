@@ -447,6 +447,41 @@
   .mm-act:active{ background:var(--tile); }
   .mm-act.danger{ color:var(--bad); }
   .mm-ic{ width:20px; text-align:center; font-size:16px; opacity:.85; flex:none; }
+  /* carte "Partager ma sortie eFoil" (façon Strava) */
+  .ride-card{ width:248px; max-width:72vw; border-radius:14px; overflow:hidden; background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.14); border:1px solid var(--line-soft); }
+  .bubble .ride-card{ margin:-2px -3px 2px; }
+  .ride-card .rc-map{ position:relative; height:112px; background:#dfe6ea; }
+  .ride-card .rc-map img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ride-card .rc-pin{ position:absolute; width:16px; height:16px; margin:-16px 0 0 -8px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); background:var(--accent-ink); border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .ride-card .rc-body{ padding:10px 12px 11px; }
+  .ride-card .rc-head{ display:flex; align-items:center; gap:9px; }
+  .ride-card .rc-logo{ width:30px; height:30px; border-radius:9px; background:var(--accent-ink); display:flex; align-items:center; justify-content:center; flex:none; }
+  .ride-card .rc-logo svg{ width:19px; height:19px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .ride-card .rc-ttl{ flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.2; }
+  .ride-card .rc-ttl b{ font-size:14.5px; color:var(--text); }
+  .ride-card .rc-ttl span{ font-size:11.5px; color:var(--muted); }
+  .ride-card .rc-brand{ font-family:"Instrument Serif",Georgia,serif; font-size:13px; color:var(--accent-ink); flex:none; }
+  .ride-card .rc-stats{ display:flex; gap:8px; margin-top:10px; }
+  .ride-card .rc-stat{ flex:1; background:var(--tile); border-radius:10px; padding:7px 6px; text-align:center; display:flex; flex-direction:column; gap:1px; }
+  .ride-card .rc-v{ font-size:17px; font-weight:800; color:var(--accent-ink); font-variant-numeric:tabular-nums; line-height:1; }
+  .ride-card .rc-u{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
+  .card.wchat .bubble.has-ride{ background:#fff!important; }
+  .card.wchat .bubble.me.has-ride{ background:#d4f3f3!important; }
+  /* feuille de partage de sortie + sélecteur de GIF */
+  .ride-sheet, .gif-sheet{ max-width:400px; }
+  .rs-h{ font-size:16px; font-weight:800; text-align:center; padding:10px 0 8px; }
+  .rs-prev{ display:flex; justify-content:center; padding:4px 0 10px; }
+  .rs-note{ font-size:12.5px; color:var(--muted); background:var(--tile); border-radius:10px; padding:8px 11px; margin:0 6px 8px; line-height:1.4; }
+  .rs-cap{ width:calc(100% - 12px); margin:0 6px 10px; box-sizing:border-box; }
+  .rs-btns{ display:flex; gap:10px; align-items:center; padding:0 6px 4px; }
+  .rs-btns .mm-act{ flex:1; justify-content:center; background:var(--tile); border-radius:12px; }
+  .rs-btns .primary{ flex:1; }
+  .gif-sheet .rs-cap{ margin-top:8px; }
+  .gif-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; max-height:44vh; overflow-y:auto; padding:2px 6px 8px; }
+  .gif-it{ border:0; background:var(--tile); border-radius:8px; overflow:hidden; padding:0; cursor:pointer; aspect-ratio:1; }
+  .gif-it img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gif-credit{ font-size:11px; color:var(--muted-2); margin-left:auto; }
+  .chat-img.chat-gif{ max-width:200px; border-radius:10px; }
   /* bulle de notification in-app */
   #lfToast{ position:fixed; top:0; left:0; right:0; z-index:10002; display:flex; flex-direction:column; align-items:center; gap:8px; padding:calc(8px + env(safe-area-inset-top,0px)) 10px 0; pointer-events:none; }
   .lf-toast{ pointer-events:auto; width:100%; max-width:440px; display:flex; align-items:center; gap:11px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:10px 12px; box-shadow:0 12px 32px rgba(8,16,20,.24); cursor:pointer; text-align:left; transform:translateY(-135%); opacity:0; transition:transform .28s cubic-bezier(.22,.61,.36,1), opacity .25s; }
@@ -800,7 +835,7 @@
       <div id="chatTyping" class="chat-typing" hidden></div>
       <div class="chat-input">
         <button class="chat-photo chat-emoji-btn" id="chatEmoji" type="button" title="Emoji" aria-label="Emoji">😀</button>
-        <button class="chat-photo" id="chatPhoto" type="button" title="Envoyer une photo" aria-label="Envoyer une photo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg></button>
+        <button class="chat-photo" id="chatAttach" type="button" title="Joindre" aria-label="Joindre"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
         <input id="chatInput" maxlength="400" placeholder="Écrire un message…" autocomplete="off">
         <button class="chat-send-btn" id="chatSend" type="button" aria-label="Envoyer" title="Envoyer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
         <input id="chatFile" type="file" accept="image/*" hidden>
@@ -845,6 +880,8 @@
         <input id="commAvFile" type="file" accept="image/*" hidden>
         <label for="commBio" style="margin-top:10px">Présentation</label>
         <textarea id="commBio" class="comm-bio" maxlength="200" rows="3" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
+        <label for="commDmPref" style="margin-top:10px">Qui peut m'écrire en privé</label>
+        <select id="commDmPref"><option value="all">Tout le monde</option><option value="none">Personne</option></select>
         <button class="primary" id="profEditSave">Enregistrer</button>
       </div>
     </div>
@@ -859,6 +896,7 @@
         </div>
         <div class="wa-prof-about"><span class="wa-lbl">À propos</span><div class="prof-bio" id="sheetBio"></div></div>
         <div class="wa-prof-foot">
+          <button id="sheetMute">🔕 Couper les notifications</button>
           <button id="sheetReport">Signaler</button>
           <button class="warn" id="sheetBlock">Bloquer ce rider</button>
           <button class="ghost" id="sheetCancel">Fermer</button>
@@ -1527,7 +1565,7 @@
   const HIST = { spd: [], pow: [] };
   function pushH(k, v){ if (v == null || isNaN(v)) return; const a = HIST[k]; a.push(v); if (a.length > 48) a.shift(); }
   const DASH = { spd:null, spdmax:null, sats:null, fix:false, net:false, track:false, batt:null,
-                 soc:null, batPow:null, vescPow:null, conn:{ tracker:false, bat:false, vesc:false, remote:false } };
+                 soc:null, batPow:null, vescPow:null, sessionStart:null, conn:{ tracker:false, bat:false, vesc:false, remote:false } };
 
   function sparkSVG(a, color){
     if (!a || a.length < 2) return "";
@@ -1554,6 +1592,10 @@
   function setDev(id, on){ const e = $(id); if (!e) return; e.classList.toggle("on", !!on); const st = e.querySelector(".dev-st"); if (st) st.textContent = on ? "Connecté" : "Connecter"; }
   function renderDash(){
     if (!$("dSpd")) return;
+    // Suivi de session : démarre au 1er appareil connecté, se remet à zéro une fois tout déconnecté.
+    { const anyConn = DASH.conn.tracker||DASH.conn.vesc||DASH.conn.bat;
+      if(anyConn && !DASH.sessionStart){ DASH.sessionStart=Date.now(); }
+      else if(!anyConn){ DASH.sessionStart=null; } }
     $("dSpd").textContent = DASH.spd == null ? "—" : DASH.spd.toFixed(1);
     $("dSpdMax").textContent = DASH.spdmax == null ? "max —" : "max " + DASH.spdmax.toFixed(1);
     $("dSpdSpark").innerHTML = sparkSVG(HIST.spd, "#148a90");
@@ -2487,6 +2529,9 @@
      commence par « B… ». Tant que ce champ reste vide, seules les notifs « appli ouverte/
      en arrière-plan » fonctionnent (le push serveur est simplement désactivé). */
   window.LF_FCM_VAPID = "";
+  // Clé GIPHY (gratuite) pour l'envoi de GIFs dans le chat — à créer sur developers.giphy.com.
+  // Tant qu'elle est vide, le bouton GIF explique que la fonction arrive bientôt.
+  window.LF_GIPHY_KEY = "";
 </script>
 <script type="module">
   const $ = id => document.getElementById(id);
@@ -2540,12 +2585,22 @@
   let blocked = new Set(); try{ blocked = new Set(JSON.parse(localStorage.getItem("lf.comm.blocked")||"[]")); }catch(e){}
   let charterOk = false; try{ charterOk = localStorage.getItem("lf.comm.charter")==="1"; }catch(e){}
   const saveBlocked = () => { try{ localStorage.setItem("lf.comm.blocked", JSON.stringify([...blocked])); }catch(e){} };
+  // conversations en sourdine (Muet) : ids = uid (DM) ou "g:"+gid (groupe)
+  let muted = new Set(); try{ muted = new Set(JSON.parse(localStorage.getItem("lf.comm.muted")||"[]")); }catch(e){}
+  const saveMuted = () => { try{ localStorage.setItem("lf.comm.muted", JSON.stringify([...muted])); }catch(e){} };
+  function isMuted(id){ return !!id && muted.has(id); }
+  function toggleMute(id){ if(!id) return; if(muted.has(id)) muted.delete(id); else muted.add(id); saveMuted(); }
+  // confidentialité : qui peut m'envoyer un message privé ("all" | "none")
+  let dmPref = "all"; try{ var _dp=localStorage.getItem("lf.comm.dmpref"); if(_dp==="none"||_dp==="all") dmPref=_dp; }catch(e){}
+  const saveDmPref = () => { try{ localStorage.setItem("lf.comm.dmpref", dmPref); }catch(e){} };
 
   try{ me.pseudo = localStorage.getItem("lf.comm.pseudo") || ""; }catch(e){}
   try{ me.av = localStorage.getItem("lf.comm.avatar") || ""; }catch(e){}
   try{ me.bio = localStorage.getItem("lf.comm.bio") || ""; }catch(e){}
   $("commPseudo").value = me.pseudo;
 
+  // texte d'aperçu d'un message (listes de discussions + dernier message)
+  function previewText(o){ if(!o) return ""; if(o.ride) return "🏄 Sortie eFoil"; if(o.gif) return "GIF"; if(o.img && !o.text) return "📷 Photo"; return o.text||""; }
   // ---------- backend Firebase (temps réel) ----------
   async function makeFirebaseBackend(){
     const appMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
@@ -2569,16 +2624,18 @@
       publishPresence(o){ return o ? db.set(presRef,{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:db.serverTimestamp()}) : db.remove(presRef); },
       watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
         for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
-      sendMessage(ch,text,img,reply){ const path = pathFor(ch);
+      sendMessage(ch,text,img,reply,extra){ const path = pathFor(ch);
         const o={uid,pseudo:me.pseudo,text:text||"",t:db.serverTimestamp(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null};
         if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
+        if(extra){ if(extra.ride) o.ride=extra.ride; if(extra.gif){ o.gif=extra.gif; } }
+        const prev = previewText(o);
         const p = db.push(db.ref(d,path),o);
-        if(ch.indexOf("group:")===0){ const gid=ch.slice(6); const prev=(img&&!text)?"📷 Photo":(text||"");
+        if(ch.indexOf("group:")===0){ const gid=ch.slice(6);
           const up={}; up["groups/"+gid+"/last"]={text:prev,pseudo:me.pseudo,by:uid,t:db.serverTimestamp()};
           // compteur de non-lus par membre (sauf l'auteur)
           try{ var mem=(inc&&curGroup&&curGroup.id===gid&&curGroup.members)?curGroup.members:null; if(mem){ for(var muid in mem){ if(muid!==uid) up["groups/"+gid+"/unread/"+muid]=inc(1); } } }catch(e){}
           db.update(db.ref(d),up).catch(function(){}); }
-        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer){ const prev=(img&&!text)?"📷 Photo":(text||"");
+        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer){
           // chez le destinataire : +1 non-lu ; ma copie : non-lu remis à 0
           var rcpt={pseudo:me.pseudo,text:prev,by:uid,t:db.serverTimestamp()}; if(inc) rcpt.unread=inc(1);
           db.update(db.ref(d,"userDM/"+peer+"/"+uid),rcpt).catch(function(){});
@@ -2600,7 +2657,7 @@
       deleteMessage(ch,msgId){ if(!msgId) return Promise.resolve(); const base = pathFor(ch); return db.remove(db.ref(d,base+"/"+msgId)); },
       setTyping(ch){ return db.set(db.ref(d,"typing/"+uid),{ch:ch,pseudo:me.pseudo,t:db.serverTimestamp()}); },
       clearTyping(){ return db.remove(db.ref(d,"typing/"+uid)); },
-      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var o={pseudo:p.pseudo,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; return db.set(db.ref(d,"profiles/"+uid),o); },
+      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var o={pseudo:p.pseudo,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; return db.set(db.ref(d,"profiles/"+uid),o); },
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
       watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); },
@@ -2661,9 +2718,9 @@
       uid,
       publishPresence(o){ mine = o?{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:Date.now()}:null; emit(); return Promise.resolve(); },
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
-      sendMessage(ch,text,img,reply){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch);
-        if(ch.indexOf("group:")===0){ var gid=ch.slice(6); if(demoGroups[gid]){ demoGroups[gid].last={text:(img&&!text)?"📷 Photo":(text||""),pseudo:me.pseudo,by:uid,t:Date.now()}; fireGroups(); } }
-        if(ch.startsWith("dm:") && dmPeer){ demoDM[dmPeer.uid]={pseudo:dmPeer.pseudo,text:(img&&!text)?"📷 Photo":(text||""),by:uid,t:Date.now()}; fireDM(); }
+      sendMessage(ch,text,img,reply,extra){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; if(extra){ if(extra.ride) mo.ride=extra.ride; if(extra.gif) mo.gif=extra.gif; } (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch); var prev=previewText(mo);
+        if(ch.indexOf("group:")===0){ var gid=ch.slice(6); if(demoGroups[gid]){ demoGroups[gid].last={text:prev,pseudo:me.pseudo,by:uid,t:Date.now()}; fireGroups(); } }
+        if(ch.startsWith("dm:") && dmPeer){ demoDM[dmPeer.uid]={pseudo:dmPeer.pseudo,text:prev,by:uid,t:Date.now()}; fireDM(); }
         if(ch.startsWith("dm:")) setTimeout(()=>{ var rp=dmPeer?dmPeer.uid:"demo", rn=dmPeer?dmPeer.pseudo:"Rider", rt="(démo) Salut ! On se capte sur l'eau 👋"; msgs[ch].push({uid:rp,pseudo:rn,text:rt,t:Date.now()}); fire(ch); demoDM[rp]={pseudo:rn,text:rt,by:rp,t:Date.now()}; fireDM(); },1200);
         return Promise.resolve(); },
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
@@ -2955,6 +3012,77 @@
     notifMaxT=mx;
   }
   function openSalonFromToast(topic){ goToCommunaute(); if(CHANS[topic]){ chatTopic=topic; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} } var b=$("chatSeg")&&$("chatSeg").querySelector('button[data-ch="salon"]'); if(b){ b.click(); } }
+  // ---- carte "Partager ma sortie eFoil" (façon Strava, stats live + mini-carte du spot) ----
+  function fmtDur(ms){ var s=Math.round((+ms||0)/1000); if(s<60) return s+" s"; var h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return h>0 ? (h+"h"+String(m).padStart(2,"0")) : (m+" min"); }
+  function tileThumbHtml(lat,lng){
+    // image satellite Esri (même fournisseur que la carte communauté : autorise le lien direct)
+    var z=14, n=Math.pow(2,z);
+    var xf=(lng+180)/360*n, latRad=lat*Math.PI/180;
+    var yf=(1-Math.log(Math.tan(latRad)+1/Math.cos(latRad))/Math.PI)/2*n;
+    var xt=Math.floor(xf), yt=Math.floor(yf);
+    var px=Math.max(6,Math.min(94,Math.round((xf-xt)*100))), py=Math.max(6,Math.min(94,Math.round((yf-yt)*100)));
+    var url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/"+z+"/"+yt+"/"+xt;
+    return '<div class="rc-map"><img src="'+url+'" alt="spot" loading="lazy"><span class="rc-pin" style="left:'+px+'%;top:'+py+'%"></span></div>';
+  }
+  function rideCardHtml(r){
+    if(!r) return "";
+    var dstr = r.date ? (new Date(r.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" · "+timeLabel(r.date)) : "";
+    var stats=[];
+    if(r.spdmax!=null) stats.push('<div class="rc-stat"><span class="rc-v">'+(+r.spdmax).toFixed(1)+'</span><span class="rc-u">km/h max</span></div>');
+    if(r.dur) stats.push('<div class="rc-stat"><span class="rc-v">'+fmtDur(r.dur)+'</span><span class="rc-u">durée</span></div>');
+    if(r.soc!=null) stats.push('<div class="rc-stat"><span class="rc-v">'+Math.round(r.soc)+'%</span><span class="rc-u">batterie</span></div>');
+    if(!stats.length) stats.push('<div class="rc-stat"><span class="rc-v">🏄</span><span class="rc-u">session eFoil</span></div>');
+    var map = (r.lat!=null&&r.lng!=null) ? tileThumbHtml(r.lat,r.lng) : "";
+    return '<div class="ride-card">'+map+'<div class="rc-body"><div class="rc-head"><span class="rc-logo"><svg viewBox="0 0 24 24"><path d="M3 17c3 1 5 1 9-1s6-2 9-1"/><path d="M14 7a2 2 0 1 0 0-.01"/><path d="M5 14l4-5 3 2 3-4"/></svg></span><div class="rc-ttl"><b>Sortie eFoil</b><span>'+esc(dstr)+'</span></div><span class="rc-brand">Lite Foil</span></div><div class="rc-stats">'+stats.join("")+'</div></div></div>';
+  }
+  function currentRide(){
+    var r={ date:Date.now() };
+    try{ if(typeof DASH!=="undefined"){ if(DASH.spdmax!=null) r.spdmax=DASH.spdmax; var soc=(DASH.soc!=null?DASH.soc:DASH.batt); if(soc!=null) r.soc=soc; if(DASH.sessionStart) r.dur=Date.now()-DASH.sessionStart; } }catch(e){}
+    if(me.pos){ r.lat=me.pos.lat; r.lng=me.pos.lng; }
+    return r;
+  }
+  // ---- menu "Joindre" : Photo / Sortie eFoil / GIF (façon Strava) ----
+  function closeAttach(){ var o=$("attachOv"); if(o&&o.parentNode) o.parentNode.removeChild(o); }
+  function openAttachMenu(){ closeAttach();
+    var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="attachOv";
+    ov.innerHTML='<div class="mm-card"><div class="mm-acts">'
+      +'<button class="mm-act" data-a="ride"><span class="mm-ic">🏄</span>Partager ma sortie eFoil</button>'
+      +'<button class="mm-act" data-a="photo"><span class="mm-ic">📷</span>Photo</button>'
+      +'<button class="mm-act" data-a="gif"><span class="mm-ic">🎞️</span>GIF</button>'
+      +'</div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(e){ if(e.target===ov) closeAttach(); });
+    ov.querySelectorAll(".mm-act").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.a; closeAttach();
+      if(a==="photo"){ var f=$("chatFile"); if(f) f.click(); } else if(a==="ride"){ openRideSheet(); } else if(a==="gif"){ openGifPicker(); } }); });
+  }
+  function openRideSheet(){ var r=currentRide();
+    var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="rideOv";
+    ov.innerHTML='<div class="mm-card ride-sheet"><div class="rs-h">Partager ma sortie</div>'
+      +'<div class="rs-prev">'+rideCardHtml(r)+'</div>'
+      +((r.spdmax==null&&!r.dur)?'<div class="rs-note">Connecte ton tracker ou ton VESC pour ajouter la vitesse max, la durée et la batterie. Tu peux déjà partager ton spot.</div>':'')
+      +'<input id="rideCap" class="rs-cap" maxlength="200" placeholder="Ajouter un mot (optionnel)…">'
+      +'<div class="rs-btns"><button class="mm-act rs-cancel">Annuler</button><button class="primary rs-share">Partager</button></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(e){ if(e.target===ov) ov.remove(); });
+    ov.querySelector(".rs-cancel").addEventListener("click", function(){ ov.remove(); });
+    ov.querySelector(".rs-share").addEventListener("click", function(){ var cap=(($("rideCap")&&$("rideCap").value)||"").trim(); ov.remove(); if(backend) backend.sendMessage(currentChannel(), cap, null, replyTarget, {ride:r}); clearReply(); });
+  }
+  // ---- sélecteur de GIF (GIPHY) : actif dès qu'une clé gratuite est configurée (window.LF_GIPHY_KEY) ----
+  var GIPHY_KEY = (window.LF_GIPHY_KEY||"").trim();
+  function openGifPicker(){
+    if(!GIPHY_KEY){ alert("Les GIFs seront activés très bientôt (clé GIPHY gratuite à configurer)."); return; }
+    var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="gifOv";
+    ov.innerHTML='<div class="mm-card gif-sheet"><input id="gifQ" class="rs-cap" placeholder="Rechercher un GIF…"><div id="gifGrid" class="gif-grid"></div><div class="rs-btns"><button class="mm-act gif-cancel">Fermer</button><span class="gif-credit">via GIPHY</span></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(e){ if(e.target===ov) ov.remove(); });
+    ov.querySelector(".gif-cancel").addEventListener("click", function(){ ov.remove(); });
+    var q=$("gifQ"), grid=$("gifGrid"), tmr=null;
+    function load(url){ grid.innerHTML='<div class="rs-note">…</div>'; fetch(url).then(function(r){return r.json();}).then(function(j){ var items=(j.data||[]); grid.innerHTML=items.map(function(g){ var sm=(g.images&&g.images.fixed_height_small&&g.images.fixed_height_small.url)||""; var full=(g.images&&g.images.downsized_medium&&g.images.downsized_medium.url)||sm; return sm?'<button class="gif-it" data-u="'+full+'"><img src="'+sm+'" loading="lazy" alt=""></button>':''; }).join("")||'<div class="rs-note">Aucun GIF.</div>'; grid.querySelectorAll(".gif-it").forEach(function(b){ b.addEventListener("click", function(){ var gu=b.dataset.u; ov.remove(); if(backend) backend.sendMessage(currentChannel(), "", null, replyTarget, {gif:gu}); clearReply(); }); }); }).catch(function(){ grid.innerHTML='<div class="rs-note">GIFs indisponibles.</div>'; }); }
+    function trending(){ load("https://api.giphy.com/v1/gifs/trending?api_key="+GIPHY_KEY+"&limit=24&rating=pg-13"); }
+    function search(s){ load("https://api.giphy.com/v1/gifs/search?api_key="+GIPHY_KEY+"&q="+encodeURIComponent(s)+"&limit=24&rating=pg-13"); }
+    q.addEventListener("input", function(){ clearTimeout(tmr); var s=q.value.trim(); tmr=setTimeout(function(){ s?search(s):trending(); },320); });
+    trending(); setTimeout(function(){ q.focus(); },60);
+  }
   function renderChat(){
     if(chatMode==="groups"){ renderGroupsList(); return; }
     if(chatMode==="dms"){ renderDMList(); return; }
@@ -2986,10 +3114,12 @@
       }
       const q = m.rt?`<div class="qreply"><b>${esc(m.rt.p||"")}</b>${esc(m.rt.t||"")}</div>`:"";
       const imgHtml = m.img?`<img class="chat-img" src="${m.img}" data-full="${m.img}" alt="photo">`:"";
+      const gifHtml = m.gif?`<img class="chat-img chat-gif" src="${m.gif}" data-full="${m.gif}" alt="gif">`:"";
+      const rideHtml = m.ride?rideCardHtml(m.ride):"";
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
-      const onlyImg = (m.img && !bodyText && !note && !m.rt) ? " only-img" : "";
+      const onlyImg = ((m.img||m.gif) && !bodyText && !note && !m.rt && !m.ride) ? " only-img" : "";
       const metaB = isConvo ? `<span class="bmeta">${timeLabel(m.t)}${mine?' <span class="btick">✓✓</span>':''}</span>` : "";
-      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}" data-i="${i}">${q}${imgHtml}${txtHtml}${note}${metaB}</div>`;
+      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}${m.ride?" has-ride":""}" data-i="${i}">${q}${rideHtml}${imgHtml}${gifHtml}${txtHtml}${note}${metaB}</div>`;
       const reacts = (function(){ if(!m.reactions) return ""; var cnt={}, mineE=null; for(var k in m.reactions){ var e=m.reactions[k]; if(!e) continue; cnt[e]=(cnt[e]||0)+1; if(k===me.uid) mineE=e; } var keys=Object.keys(cnt); if(!keys.length) return ""; return '<div class="react-row">'+keys.map(function(e){ return '<button class="react-chip'+(mineE===e?" on":"")+'" data-i="'+i+'" data-e="'+e+'">'+e+' '+cnt[e]+'</button>'; }).join("")+'</div>'; })();
       const reactBtn = `<button class="msg-react" data-i="${i}" title="Réagir" aria-label="Réagir">🙂﹢</button>`;
       const delBtn = mine?`<button class="msg-del" data-i="${i}" title="Supprimer" aria-label="Supprimer">🗑</button>`:"";
@@ -3013,7 +3143,9 @@
                    : '<span class="cp-av" style="background:'+avatarColor(uidForColor||"x")+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
     $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Rider")+'</span><span class="cp-sub" data-rest="'+esc(sub||"")+'">'+esc(sub||"")+'</span></span>';
   }
-  function openDM(uid,ps){ var pr=profileMap[uid]||{}; dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
+  function openDM(uid,ps){ var pr=profileMap[uid]||{};
+    if(uid!==me.uid && pr.dm==="none"){ alert((ps||"Ce rider")+" n'accepte pas les messages privés."); return; }
+    dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
     dmSeen[uid]=Date.now(); saveDmSeen(); dmNotif[uid]=dmSeen[uid]; clearDeliveredNotifs(); if(backend.markDMRead) backend.markDMRead(uid);
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
     setConvoHeader(ps, uid, pr.av, "en ligne");
@@ -3044,7 +3176,7 @@
     else { for(var j=0;j<myGroups.length;j++){ var gg=myGroups[j]; if(!gg.last) continue; var lt=+gg.last.t||0;
       var viewing=(chatMode==="group"&&curGroup&&curGroup.id===gg.id);
       if(viewing && gg.unread && (+gg.unread[me.uid]||0)>0 && backend.markGroupRead) backend.markGroupRead(gg.id);
-      if(lt>(gnotif[gg.id]||0) && lt>(gseen[gg.id]||0) && gg.last.by!==me.uid && !blocked.has(gg.last.by) && !viewing){
+      if(lt>(gnotif[gg.id]||0) && lt>(gseen[gg.id]||0) && gg.last.by!==me.uid && !blocked.has(gg.last.by) && !viewing && !isMuted("g:"+gg.id)){
         showMsgToast({ uid:gg.last.by, name:gg.last.pseudo, avUrl:gg.photo, sub:gg.name, text:gg.last.text, onTap:(function(g2){ return function(){ goToCommunaute(); openGroup(g2); }; })(gg) });
       }
       if(lt>(gnotif[gg.id]||0)) gnotif[gg.id]=lt;
@@ -3057,7 +3189,7 @@
       for(var peer in myDMs){ var e=myDMs[peer]; if(!e) continue; var t=+e.t||0;
         var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
         if(viewing){ if(t>(dmSeen[peer]||0)){ dmSeen[peer]=t; saveDmSeen(); } if(e.by!==me.uid && (+e.unread||0)>0 && backend.markDMRead) backend.markDMRead(peer); }
-        else if(t>(dmNotif[peer]||0) && t>(dmSeen[peer]||0) && e.by!==me.uid && !blocked.has(peer)){
+        else if(t>(dmNotif[peer]||0) && t>(dmSeen[peer]||0) && e.by!==me.uid && !blocked.has(peer) && !isMuted(peer)){
           var prof=profileMap[peer]||{};
           showMsgToast({ uid:peer, name:e.pseudo||prof.pseudo||"Rider", avUrl:prof.av, sub:"Message privé", text:e.text, onTap:(function(p,ps){ return function(){ goToCommunaute(); openDM(p,ps); }; })(peer, e.pseudo||prof.pseudo||"Rider") });
         }
@@ -3235,12 +3367,14 @@
         +'<div class="gi-top">'+groupAvatarHtml(g,72)+'<div class="gi-name">'+esc(g.name||"Groupe")+(admin?' <button class="gi-edit" id="giRename" title="Renommer">✎</button>':'')+'</div><div class="gi-sub">'+memberCount(g)+' membre'+(memberCount(g)>1?"s":"")+'</div></div>'
         +(admin?'<button class="gi-act" id="giAdd">＋ Ajouter des membres</button>':'')
         +'<button class="gi-act" id="giInvite">🔗 Copier le lien d\'invitation</button>'
+        +'<button class="gi-act" id="giMute">'+(isMuted("g:"+g.id)?"🔔 Réactiver les notifications":"🔕 Couper les notifications")+'</button>'
         +'<div class="gi-mlabel">Membres</div><div class="mem-list">'+rows+'</div>'
         +'<button class="gi-leave" id="giLeave">Quitter le groupe</button>'
       +'</div>'
     +'</div>';
     $("giClose").addEventListener("click", closeOverlay);
     var inv=$("giInvite"); if(inv) inv.addEventListener("click", function(){ var link=inviteLink(g); if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(link).then(function(){ inv.textContent="✅ Lien copié !"; setTimeout(function(){ inv.textContent="🔗 Copier le lien d'invitation"; },1800); }).catch(function(){ prompt("Copie ce lien d'invitation :", link); }); } else prompt("Copie ce lien d'invitation :", link); });
+    var gmu=$("giMute"); if(gmu) gmu.addEventListener("click", function(){ toggleMute("g:"+g.id); gmu.textContent = isMuted("g:"+g.id)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; });
     var add=$("giAdd"); if(add) add.addEventListener("click", function(){ openAddMembers(g); });
     var ren=$("giRename"); if(ren) ren.addEventListener("click", function(){ var nn=prompt("Nouveau nom du groupe :", g.name||"Groupe"); if(nn==null) return; nn=nn.trim().slice(0,60); if(nn && backend) backend.renameGroup(g.id,nn); });
     o.querySelectorAll(".mem-rm").forEach(function(b){ b.addEventListener("click", function(){ var u=b.dataset.uid; if(confirm("Retirer ce membre du groupe ?") && backend) backend.removeGroupMember(g.id,u); }); });
@@ -3276,7 +3410,7 @@
     }).catch(function(){ pendingJoin=null; });
   }
   function updateChatGate(){
-    const ok = !!me.pseudo && charterOk; $("chatSend").disabled=!ok; $("chatInput").disabled=!ok; var _cp=$("chatPhoto"); if(_cp) _cp.disabled=!ok;
+    const ok = !!me.pseudo && charterOk; $("chatSend").disabled=!ok; $("chatInput").disabled=!ok; var _cp=$("chatAttach"); if(_cp) _cp.disabled=!ok;
     let n = !charterOk ? "Accepte la charte de la communauté pour participer."
           : (!me.pseudo ? "Choisis un pseudo (ci-dessus) pour discuter."
           : (chatMode==="near"&&chatRadius<1000&&!me.pos ? "Active ta visibilité pour filtrer les messages par distance." : ""));
@@ -3295,7 +3429,9 @@
     $("sheetTitle").textContent=ps||"Rider";
     var a=$("sheetAv"); if(a){ if(av){ a.innerHTML='<img src="'+av+'" alt="">'; a.style.background="transparent"; } else { a.textContent=(((ps||"R").trim()[0])||"R").toUpperCase(); a.style.background=avatarColor(uid||"x"); } }
     var b=$("sheetBio"); if(b){ b.textContent = bio || "Pas encore de présentation."; b.hidden=false; }
-    var mb=$("sheetMsg"); if(mb) mb.hidden = (!uid || uid===me.uid);
+    var pref=(uid&&profileMap[uid]&&profileMap[uid].dm)||"all";
+    var mb=$("sheetMsg"); if(mb) mb.hidden = (!uid || uid===me.uid || pref==="none");
+    var mu=$("sheetMute"); if(mu){ mu.hidden=(!uid||uid===me.uid); mu.textContent = isMuted(uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; }
     $("commSheet").hidden=false; }
   function closeSheet(){ sheetTarget=null; $("commSheet").hidden=true; }
   function doReportUser(){ if(!sheetTarget) return; if(backend) backend.sendReport({type:"user",targetUid:sheetTarget.uid,targetPseudo:sheetTarget.ps});
@@ -3351,8 +3487,9 @@
   $("commSheet").addEventListener("click", e=>{ if(e.target===$("commSheet")) closeSheet(); });
   $("commPseudo").addEventListener("input", ()=>{ me.pseudo=$("commPseudo").value.trim().slice(0,24); savePseudo(); updateChatGate(); publishMe(); if(pendingJoin && me.pseudo) tryPendingJoin(); });
   var _bio=$("commBio"); if(_bio){ _bio.value=me.bio||""; _bio.addEventListener("input", function(){ me.bio=_bio.value.trim().slice(0,200); try{ localStorage.setItem("lf.comm.bio", me.bio); }catch(e){} }); }
-  var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=false; });
-  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; updateChatGate(); if(me.pseudo && backend && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio}); });
+  var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s){ var dp=$("commDmPref"); if(dp) dp.value=dmPref; s.hidden=false; } });
+  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; var dp=$("commDmPref"); if(dp && (dp.value==="all"||dp.value==="none")){ dmPref=dp.value; saveDmPref(); } updateChatGate(); if(me.pseudo && backend && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref}); });
+  var _smu=$("sheetMute"); if(_smu) _smu.addEventListener("click", function(){ if(sheetTarget&&sheetTarget.uid){ toggleMute(sheetTarget.uid); _smu.textContent = isMuted(sheetTarget.uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; } });
   var _pes=$("profEditSheet"); if(_pes) _pes.addEventListener("click", function(e){ if(e.target.id==="profEditSheet") e.target.hidden=true; });
   ["profEditSheet","commSheet"].forEach(function(idp){ var s=document.getElementById(idp); if(s && s.parentNode!==document.body) document.body.appendChild(s); });
   $("chatSeg").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
@@ -3388,7 +3525,7 @@
   renderAvatarPreview();
   var _avBtn=$("commAvBtn"); if(_avBtn) _avBtn.addEventListener("click", function(){ var f=$("commAvFile"); if(f) f.click(); });
   var _avFile=$("commAvFile"); if(_avFile) _avFile.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,160,0.72).then(setAvatar).catch(function(){}); e.target.value=""; });
-  var _ph=$("chatPhoto"); if(_ph) _ph.addEventListener("click", function(){ if(!me.pseudo||!charterOk){ if(!me.pseudo){ $("commPseudo").focus(); } updateChatGate(); return; } var f=$("chatFile"); if(f) f.click(); });
+  var _ph=$("chatAttach"); if(_ph) _ph.addEventListener("click", function(){ if(!me.pseudo||!charterOk){ if(!me.pseudo){ $("commPseudo").focus(); } updateChatGate(); return; } openAttachMenu(); });
   var _phf=$("chatFile"); if(_phf) _phf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,1000,0.6).then(function(d){ var cap=$("chatInput").value.trim(); if(backend) backend.sendMessage(currentChannel(), cap, d, replyTarget); $("chatInput").value=""; clearReply(); }).catch(function(){}); e.target.value=""; });
   var replyTarget=null;
   var REACT_EMOJIS=["👍","❤️","😂","🤙","🔥","🌊"];
@@ -3459,7 +3596,7 @@
     if(backend.watchProfiles) membersUnsub = backend.watchProfiles(onProfiles);
     if(backend.watchMyGroups) groupsUnsub = backend.watchMyGroups(onMyGroups);
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
-    if(me.pseudo && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio});
+    if(me.pseudo && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref});
     // lien d'invitation à un groupe privé : ?join=<gid>&k=<code>
     try{ var usp=new URLSearchParams(location.search); var jg=usp.get("join"); if(jg){ pendingJoin={gid:jg,k:usp.get("k")||""}; } }catch(e){}
     subscribeChat();
