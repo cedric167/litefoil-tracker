@@ -185,6 +185,9 @@
   .cm-salon{ background:linear-gradient(135deg,#3fd0ec,#148a90); }
   .cm-near{ background:linear-gradient(135deg,#f9b65a,#ef7d2e); }
   .cm-groups{ background:linear-gradient(135deg,#43d66a,#1a9c55); }
+  .cm-dms{ background:linear-gradient(135deg,#6ea8ff,#3f6fe0); }
+  .cm-badge{ position:absolute; right:-5px; top:-5px; min-width:19px; height:19px; padding:0 5px; border-radius:100px; background:#e8384f; color:#fff; border:2.5px solid var(--card); font-size:11px; font-weight:800; line-height:15px; font-style:normal; display:flex; align-items:center; justify-content:center; }
+  .chat-modes button.on[data-ch="dms"]{ background:#e9f0ff; }
   .cm-plus{ position:absolute; right:-4px; bottom:-4px; width:19px; height:19px; border-radius:50%; background:#13a04a; color:#fff; border:2.5px solid var(--card); font-size:14px; font-weight:900; line-height:1; display:flex; align-items:center; justify-content:center; font-style:normal; box-shadow:0 2px 5px rgba(0,0,0,.2); }
   .chat-modes button.on{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.08); border-color:transparent; }
   .chat-modes button.on .cm-lbl{ color:var(--text); }
@@ -746,6 +749,10 @@
       <button data-ch="near" aria-label="Riders près de moi">
         <span class="cm-ic cm-near"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
         <span class="cm-lbl">Près de moi</span>
+      </button>
+      <button data-ch="dms" aria-label="Messages privés">
+        <span class="cm-ic cm-dms"><svg viewBox="0 0 24 24"><path d="M8 10h8M8 14h5"/><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><i class="cm-badge" id="dmChipBadge" hidden></i></span>
+        <span class="cm-lbl">Messages</span>
       </button>
       <button data-ch="groups" aria-label="Groupes privés">
         <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i></span>
@@ -2492,7 +2499,9 @@
   let chatMode = "salon", dmPeer = null;
   let curGroup = null, myGroups = [], groupsUnsub = null, prevChatMode = "salon";
   let gnotif = {}, groupsNotifInit = false;
-  let dmNotif = {}, dmNotifInit = false, dmUnsub = null;
+  let dmNotif = {}, dmNotifInit = false, dmUnsub = null, myDMs = {};
+  let dmSeen = {}; try{ dmSeen = JSON.parse(localStorage.getItem("lf.comm.dmseen")||"{}")||{}; }catch(e){ dmSeen={}; }
+  const saveDmSeen = () => { try{ localStorage.setItem("lf.comm.dmseen", JSON.stringify(dmSeen)); }catch(e){} };
   let gseen = {}; try{ gseen = JSON.parse(localStorage.getItem("lf.comm.gseen")||"{}")||{}; }catch(e){ gseen={}; }
   const saveGseen = () => { try{ localStorage.setItem("lf.comm.gseen", JSON.stringify(gseen)); }catch(e){} };
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
@@ -2551,7 +2560,7 @@
         if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
         const p = db.push(db.ref(d,path),o);
         if(ch.indexOf("group:")===0){ const gid=ch.slice(6); db.set(db.ref(d,"groups/"+gid+"/last"),{text:(img&&!text)?"📷 Photo":(text||""),pseudo:me.pseudo,by:uid,t:db.serverTimestamp()}).catch(function(){}); }
-        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer) db.set(db.ref(d,"userDM/"+peer+"/"+uid),{pseudo:me.pseudo,text:(img&&!text)?"📷 Photo":(text||""),by:uid,t:db.serverTimestamp()}).catch(function(){}); }
+        if(ch.indexOf("dm:")===0){ const peer=ch.slice(3).split("__").filter(function(u){return u!==uid;})[0]; if(peer){ const prev=(img&&!text)?"📷 Photo":(text||""); db.set(db.ref(d,"userDM/"+peer+"/"+uid),{pseudo:me.pseudo,text:prev,by:uid,t:db.serverTimestamp()}).catch(function(){}); db.set(db.ref(d,"userDM/"+uid+"/"+peer),{text:prev,by:uid,t:db.serverTimestamp()}).catch(function(){}); } }
         return p; },
       watchMessages(ch,cb){ const path = pathFor(ch);
         // onChildAdded (et non onValue) : RTDB livre un instantané incomplet avec onValue+limitToLast
@@ -2630,6 +2639,7 @@
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
       sendMessage(ch,text,img,reply){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?chatTopic:null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch);
         if(ch.indexOf("group:")===0){ var gid=ch.slice(6); if(demoGroups[gid]){ demoGroups[gid].last={text:(img&&!text)?"📷 Photo":(text||""),pseudo:me.pseudo,by:uid,t:Date.now()}; fireGroups(); } }
+        if(ch.startsWith("dm:") && dmPeer){ demoDM[dmPeer.uid]={pseudo:dmPeer.pseudo,text:(img&&!text)?"📷 Photo":(text||""),by:uid,t:Date.now()}; fireDM(); }
         if(ch.startsWith("dm:")) setTimeout(()=>{ var rp=dmPeer?dmPeer.uid:"demo", rn=dmPeer?dmPeer.pseudo:"Rider", rt="(démo) Salut ! On se capte sur l'eau 👋"; msgs[ch].push({uid:rp,pseudo:rn,text:rt,t:Date.now()}); fire(ch); demoDM[rp]={pseudo:rn,text:rt,by:rp,t:Date.now()}; fireDM(); },1200);
         return Promise.resolve(); },
       watchMessages(ch,cb){ cbs[ch]=cb; fire(ch); return ()=>{delete cbs[ch];}; },
@@ -2787,6 +2797,9 @@
       if(open){ if(lt>(gseen[g.id]||0)){ gseen[g.id]=lt; saveGseen(); } continue; }
       if(lt>(gseen[g.id]||0) && g.last.by!==me.uid) gtotal++; }
     total += gtotal;
+    // non-lus des messages privés
+    var dmn=dmUnreadCount(); total += dmn;
+    var dcb=$("dmChipBadge"); if(dcb){ if(dmn>0){ dcb.textContent = dmn>9?"9+":String(dmn); dcb.hidden=false; } else dcb.hidden=true; }
     const tb=$("tabCommBadge"); if(tb){ if(total>0){ tb.textContent = total>9?"9+":String(total); tb.hidden=false; } else tb.hidden=true; }
   }
   function radiusLabel(v){ return v>=1000 ? "Partout" : v+" km"; }
@@ -2797,7 +2810,7 @@
   }
   function updateChatFilterVis(){ const f=$("chatFilter"); if(f) f.hidden = (chatMode!=="near"); }
   function updateChanUI(){
-    const isConvo=(chatMode==="dm"||chatMode==="group"), isList=(chatMode==="groups");
+    const isConvo=(chatMode==="dm"||chatMode==="group"), isList=(chatMode==="groups"||chatMode==="dms");
     const row=$("chatChannels"); if(row) row.hidden = (isConvo||isList);
     const sel=$("chatChannel"); if(sel && sel.value!==chatTopic) sel.value=chatTopic;
     const inp=$("chatInput"); if(inp) inp.placeholder = isConvo ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
@@ -2905,6 +2918,7 @@
   function openSalonFromToast(topic){ goToCommunaute(); if(CHANS[topic]){ chatTopic=topic; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} } var b=$("chatSeg")&&$("chatSeg").querySelector('button[data-ch="salon"]'); if(b){ b.click(); } }
   function renderChat(){
     if(chatMode==="groups"){ renderGroupsList(); return; }
+    if(chatMode==="dms"){ renderDMList(); return; }
     const box=$("chatBox"); const isConvo=(chatMode==="dm"||chatMode==="group");
     let arr=(isConvo?curMsgs:salonMsgs).filter(m=> !blocked.has(m.uid));
     if(!isConvo) arr = arr.filter(m=> (m.topic||"general")===chatTopic);
@@ -2961,6 +2975,7 @@
     $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Rider")+'</span><span class="cp-sub">'+esc(sub||"")+'</span></span>';
   }
   function openDM(uid,ps){ var pr=profileMap[uid]||{}; dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
+    dmSeen[uid]=Date.now(); saveDmSeen();
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
     setConvoHeader(ps, uid, pr.av, "en ligne");
     $("chatCard").classList.add("wchat","dm"); $("chatCard").classList.remove("group");
@@ -2997,16 +3012,42 @@
     if(chatMode==="groups") renderGroupsList();
     recomputeBadges();
   }
-  function onMyDMs(map){ map=map||{};
-    if(!dmNotifInit){ dmNotifInit=true; for(var k in map){ if(map[k]) dmNotif[k]=+map[k].t||0; } return; }
-    for(var peer in map){ var e=map[peer]; if(!e) continue; var t=+e.t||0;
-      var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
-      if(t>(dmNotif[peer]||0) && e.by!==me.uid && !blocked.has(peer) && !viewing){
-        var prof=profileMap[peer]||{};
-        showMsgToast({ uid:peer, name:e.pseudo||prof.pseudo||"Rider", avUrl:prof.av, sub:"Message privé", text:e.text, onTap:(function(p,ps){ return function(){ goToCommunaute(); openDM(p,ps); }; })(peer, e.pseudo||prof.pseudo||"Rider") });
+  function onMyDMs(map){ myDMs=map||{};
+    if(dmNotifInit){
+      for(var peer in myDMs){ var e=myDMs[peer]; if(!e) continue; var t=+e.t||0;
+        var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
+        if(viewing){ if(t>(dmSeen[peer]||0)){ dmSeen[peer]=t; saveDmSeen(); } }
+        else if(t>(dmNotif[peer]||0) && e.by!==me.uid && !blocked.has(peer)){
+          var prof=profileMap[peer]||{};
+          showMsgToast({ uid:peer, name:e.pseudo||prof.pseudo||"Rider", avUrl:prof.av, sub:"Message privé", text:e.text, onTap:(function(p,ps){ return function(){ goToCommunaute(); openDM(p,ps); }; })(peer, e.pseudo||prof.pseudo||"Rider") });
+        }
+        if(t>(dmNotif[peer]||0)) dmNotif[peer]=t;
       }
-      if(t>(dmNotif[peer]||0)) dmNotif[peer]=t;
-    }
+    } else { dmNotifInit=true; for(var k in myDMs){ if(myDMs[k]) dmNotif[k]=+myDMs[k].t||0; } }
+    if(chatMode==="dms") renderDMList();
+    recomputeBadges();
+  }
+  function dmUnreadCount(){ var n=0; for(var p in myDMs){ var e=myDMs[p]; if(e && e.by!==me.uid && !blocked.has(p) && (+e.t||0)>(dmSeen[p]||0)) n++; } return n; }
+  function showDMList(){ chatMode="dms"; curGroup=null; dmPeer=null;
+    $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
+    $("chatCard").classList.remove("wchat","dm","group");
+    $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="dms"));
+    if(chatUnsub){ chatUnsub(); chatUnsub=null; }
+    updateChatFilterVis(); updateChanUI(); renderDMList(); updateChatGate(); recomputeBadges();
+  }
+  function renderDMList(){
+    var box=$("chatBox"); if(!box) return;
+    var peers=Object.keys(myDMs).filter(function(p){ return myDMs[p] && !blocked.has(p); });
+    peers.sort(function(a,b){ return (+myDMs[b].t||0)-(+myDMs[a].t||0); });
+    if(!peers.length){ box.innerHTML='<div class="comm-empty" style="margin-top:8px">Aucun message privé pour l\'instant.<br>Touche un rider (en haut ou sur la carte) pour lui écrire en privé.</div>'; return; }
+    box.innerHTML='<div class="glist">'+peers.map(function(p){ var e=myDMs[p]; var prof=profileMap[p]||{}; var name=e.pseudo||prof.pseudo||"Rider";
+      var unread=e.by!==me.uid && (+e.t||0)>(dmSeen[p]||0);
+      var prev=esc(((e.by===me.uid?"Toi : ":"")+(e.text||"")).slice(0,90));
+      var tm=e.t?timeLabel(e.t):"";
+      var av = prof.av ? '<span class="gav" style="width:46px;height:46px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:46px;height:46px;background:'+avatarColor(p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
+      return '<button class="grow" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b><span class="grow-tm">'+tm+'</span></span><span class="grow-sub">'+prev+'</span></span>'+(unread?'<span class="gunread"></span>':'')+'</button>';
+    }).join("")+'</div>';
+    box.querySelectorAll(".grow").forEach(function(b){ b.addEventListener("click", function(){ openDM(b.dataset.uid, b.dataset.ps); }); });
   }
 
   function showGroupsList(){ chatMode="groups"; curGroup=null; dmPeer=null;
@@ -3247,7 +3288,7 @@
       const chn=e.data.channel; if(chn && CHANS[chn]){ const cbtn=document.querySelector('#chatChannels button[data-tp="'+chn+'"]'); if(cbtn) cbtn.click(); }
     }
   });
-  $("chatBack").addEventListener("click", function(){ if(chatMode==="group") showGroupsList(); else closeDM(); });
+  $("chatBack").addEventListener("click", function(){ if(chatMode==="group") showGroupsList(); else if(chatMode==="dm") showDMList(); else closeDM(); });
   var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="dm" && dmPeer) openSheet(dmPeer.uid,dmPeer.pseudo,dmPeer.av,dmPeer.bio); });
   function compressImage(file, maxDim, quality){ return new Promise(function(resolve,reject){ var fr=new FileReader(); fr.onload=function(){ var img=new Image(); img.onload=function(){ var w=img.width,h=img.height,s=Math.min(1, maxDim/Math.max(w,h)); var cw=Math.max(1,Math.round(w*s)), chh=Math.max(1,Math.round(h*s)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=chh; var ctx=cv.getContext("2d"); ctx.drawImage(img,0,0,cw,chh); try{ resolve(cv.toDataURL("image/jpeg", quality)); }catch(e){ reject(e); } }; img.onerror=reject; img.src=fr.result; }; fr.onerror=reject; fr.readAsDataURL(file); }); }
   function renderAvatarPreview(){ ["commAvPrev","profBtnAv"].forEach(function(idp){ var p=$(idp); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }); }
