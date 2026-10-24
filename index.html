@@ -87,6 +87,13 @@
   .wa.ig { background:linear-gradient(135deg,#f9a03f 0%,#e1306c 50%,#8134af 100%); box-shadow:0 10px 26px rgba(225,48,108,.26), inset 0 1px 0 rgba(255,255,255,.28); }
   .wa.ig:active { box-shadow:0 6px 16px rgba(225,48,108,.22); }
   .wa.ig .wa-ic svg { fill:none; }
+  /* version compacte des réseaux (Accueil) : plus petits, empilés dans la même colonne */
+  .social-col { display:flex; flex-direction:column; gap:9px; margin-bottom:12px; }
+  .wa.sm { gap:11px; padding:10px 13px; border-radius:16px; }
+  .wa.sm .wa-ic { width:36px; height:36px; }
+  .wa.sm .wa-ic svg { width:21px; height:21px; }
+  .wa.sm .wa-t b { font-size:14.5px; }
+  .wa.sm .wa-t span { font-size:12px; }
   .ioslist { margin-top:10px; background:#fff; border:1px solid var(--line-soft); border-radius:18px; overflow:hidden; box-shadow:var(--sh-sm); }
   .ioslist a { display:flex; align-items:center; gap:12px; padding:12px 14px; color:var(--text); text-decoration:none; border-top:1px solid var(--line-soft); }
   .ioslist a:first-child { border-top:0; }
@@ -384,6 +391,7 @@
   .card.wchat .cp-txt{ display:flex; flex-direction:column; min-width:0; line-height:1.15; }
   .card.wchat .cp-name{ font-size:15.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .card.wchat .cp-sub{ font-size:12px; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card.wchat .cp-sub.typing{ opacity:1; font-style:italic; color:#d8fff6; }
   .card.wchat .chat-trans, .card.wchat .chat-bell{ background:transparent!important; border:0; color:#fff; }
   .card.wchat #chatTransLbl{ display:none; }
   .card.wchat .chat-trans svg, .card.wchat .chat-bell svg{ stroke:#fff; }
@@ -635,21 +643,18 @@
   </div>
 
   <section id="tab-dash" class="tabpane">
-    <a class="wa" style="margin-bottom:12px" id="lnkWhatsapp" href="#" target="_blank" rel="noopener">
-      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
-      <span class="wa-t"><b>Riders Lite Foil</b><span id="waSub">Rejoindre le groupe WhatsApp</span></span>
-      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-    <a class="wa fb" id="lnkFacebook" style="margin-bottom:12px" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener">
+    <div class="social-col">
+    <a class="wa fb sm" id="lnkFacebook" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener">
       <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
       <span class="wa-t"><b>Lite Foil sur Facebook</b><span>Actus, photos et vidéos de la communauté</span></span>
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </a>
-    <a class="wa ig" id="lnkInstagram" style="margin-bottom:12px" href="#" target="_blank" rel="noopener" hidden>
+    <a class="wa ig sm" id="lnkInstagram" href="#" target="_blank" rel="noopener" hidden>
       <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="#fff" stroke="none"/></svg></span>
       <span class="wa-t"><b>Lite Foil sur Instagram</b><span>Les plus belles sessions en images</span></span>
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </a>
+    </div>
     <div class="card hero-metric">
       <div class="hm-top"><span class="hm-label">Vitesse</span><span class="hm-max" id="dSpdMax">max —</span></div>
       <div class="hm-value"><span id="dSpd">—</span><span class="hm-unit">km/h</span></div>
@@ -1322,14 +1327,9 @@
 <script>
 (() => {
   "use strict";
-  // Groupe WhatsApp des riders : lien d'invitation du groupe (WhatsApp > groupe > Inviter via un lien).
-  // Vide tant que le groupe n'est pas créé : le bouton le dit et ne fait rien.
-  const WHATSAPP_GROUP = "https://chat.whatsapp.com/HqeJGzKuC0b4rZV3OksGec";
   // Page Instagram Lite Foil : vide tant que le lien n'est pas donne (le bouton reste cache).
   const INSTAGRAM_PAGE = "https://www.instagram.com/lite_foil_official";
   { const ig = document.getElementById("lnkInstagram"); if (ig && INSTAGRAM_PAGE) { ig.href = INSTAGRAM_PAGE; ig.hidden = false; } }
-  { const a = document.getElementById("lnkWhatsapp");
-    if (a) { if (WHATSAPP_GROUP) a.href = WHATSAPP_GROUP; else { a.classList.add("soon"); const sub = document.getElementById("waSub"); if (sub) sub.textContent = "Groupe WhatsApp : ouverture très bientôt"; a.addEventListener("click", (e) => e.preventDefault()); } } }
 
   // ---------------- mise à jour de firmware par Bluetooth (télécommande et tracker) ----------------
   // Le firmware publié est décrit par firmware/<produit>.json (version, taille, md5).
@@ -2904,6 +2904,16 @@
     timer=setTimeout(kill, 5200);
     try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
   }
+  // Efface les notifications SYSTÈME déjà affichées (bandeau/centre de notifications).
+  // Appelé dès qu'on lit : une fois lu, la notif ne doit plus traîner ni revenir.
+  function clearDeliveredNotifs(){
+    try{ if(!("serviceWorker" in navigator)) return;
+      navigator.serviceWorker.ready.then(function(reg){
+        if(!reg || !reg.getNotifications) return;
+        reg.getNotifications().then(function(list){ (list||[]).forEach(function(n){ try{ n.close(); }catch(e){} }); }).catch(function(){});
+      }).catch(function(){});
+    }catch(e){}
+  }
   function processNotif(arr){
     if(!notifInit){ notifInit=true; for(const m of arr){ const t=+m.t||0; if(t>notifMaxT) notifMaxT=t; } return; }
     const can=notifOn && ("Notification" in window) && Notification.permission==="granted";
@@ -2911,7 +2921,9 @@
     const commHidden = !($("tab-communaute") && !$("tab-communaute").hidden);
     let mx=notifMaxT;
     for(const m of arr){ const t=+m.t||0;
-      if(t>notifMaxT && m.uid!==me.uid && !blocked.has(m.uid)){
+      // "non lu" = plus récent que le dernier message vu dans ce salon : une fois lu, on ne (re)notifie plus.
+      const unread = t > (seen[m.topic||"general"]||0);
+      if(t>notifMaxT && unread && m.uid!==me.uid && !blocked.has(m.uid)){
         if(alertNow) notify(m);
         if(commHidden) showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:m.av, sub:(CHANS[m.topic||"general"]||"Salon"), text:m.text||(m.img?"📷 Photo":""), onTap:(function(tp){ return function(){ openSalonFromToast(tp); }; })(m.topic) });
       }
@@ -2976,10 +2988,10 @@
   function setConvoHeader(name, uidForColor, avUrl, sub){
     var av = avUrl ? '<span class="cp-av"><img src="'+avUrl+'" alt=""></span>'
                    : '<span class="cp-av" style="background:'+avatarColor(uidForColor||"x")+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
-    $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Rider")+'</span><span class="cp-sub">'+esc(sub||"")+'</span></span>';
+    $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Rider")+'</span><span class="cp-sub" data-rest="'+esc(sub||"")+'">'+esc(sub||"")+'</span></span>';
   }
   function openDM(uid,ps){ var pr=profileMap[uid]||{}; dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
-    dmSeen[uid]=Date.now(); saveDmSeen();
+    dmSeen[uid]=Date.now(); saveDmSeen(); dmNotif[uid]=dmSeen[uid]; clearDeliveredNotifs();
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
     setConvoHeader(ps, uid, pr.av, "en ligne");
     $("chatCard").classList.add("wchat","dm"); $("chatCard").classList.remove("group");
@@ -3008,7 +3020,7 @@
     if(!groupsNotifInit){ groupsNotifInit=true; for(var i=0;i<myGroups.length;i++){ if(myGroups[i].last) gnotif[myGroups[i].id]=+myGroups[i].last.t||0; } }
     else { for(var j=0;j<myGroups.length;j++){ var gg=myGroups[j]; if(!gg.last) continue; var lt=+gg.last.t||0;
       var viewing=(chatMode==="group"&&curGroup&&curGroup.id===gg.id);
-      if(lt>(gnotif[gg.id]||0) && gg.last.by!==me.uid && !blocked.has(gg.last.by) && !viewing){
+      if(lt>(gnotif[gg.id]||0) && lt>(gseen[gg.id]||0) && gg.last.by!==me.uid && !blocked.has(gg.last.by) && !viewing){
         showMsgToast({ uid:gg.last.by, name:gg.last.pseudo, avUrl:gg.photo, sub:gg.name, text:gg.last.text, onTap:(function(g2){ return function(){ goToCommunaute(); openGroup(g2); }; })(gg) });
       }
       if(lt>(gnotif[gg.id]||0)) gnotif[gg.id]=lt;
@@ -3021,7 +3033,7 @@
       for(var peer in myDMs){ var e=myDMs[peer]; if(!e) continue; var t=+e.t||0;
         var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
         if(viewing){ if(t>(dmSeen[peer]||0)){ dmSeen[peer]=t; saveDmSeen(); } }
-        else if(t>(dmNotif[peer]||0) && e.by!==me.uid && !blocked.has(peer)){
+        else if(t>(dmNotif[peer]||0) && t>(dmSeen[peer]||0) && e.by!==me.uid && !blocked.has(peer)){
           var prof=profileMap[peer]||{};
           showMsgToast({ uid:peer, name:e.pseudo||prof.pseudo||"Rider", avUrl:prof.av, sub:"Message privé", text:e.text, onTap:(function(p,ps){ return function(){ goToCommunaute(); openDM(p,ps); }; })(peer, e.pseudo||prof.pseudo||"Rider") });
         }
@@ -3081,7 +3093,7 @@
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
     setConvoHeader(g.name||"Groupe", g.id, g.photo, memberCount(g)+" membre"+(memberCount(g)>1?"s":""));
     $("chatCard").classList.add("wchat","group"); $("chatCard").classList.remove("dm");
-    gseen[g.id]=Date.now(); saveGseen();
+    gseen[g.id]=Date.now(); saveGseen(); gnotif[g.id]=gseen[g.id]; clearDeliveredNotifs();
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate(); recomputeBadges();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
@@ -3270,7 +3282,20 @@
   function onTyping(map){ typers=map||{}; renderTyping(); }
   function onProfiles(map){ profileMap = map||{}; recomputeMembers(); }
   function recomputeMembers(){ var set={}; for(var k in profileMap){ if(!blocked.has(k)) set[k]=1; } for(var i=0;i<salonMsgs.length;i++){ var u=salonMsgs[i].uid; if(u && !blocked.has(u)) set[u]=1; } for(var rk in riders){ if(!blocked.has(rk)) set[rk]=1; } var n=Object.keys(set).length; var e=$("commMembers"); if(e) e.textContent = n+" membre"+(n>1?"s":""); }
-  function renderTyping(){ var el=$("chatTyping"); if(!el) return; var ch=currentChannel(); var names=[]; for(var k in typers){ if(blocked.has(k)) continue; var r=typers[k]; if(!r||r.ch!==ch) continue; names.push(r.pseudo||"Rider"); } if(!names.length){ el.hidden=true; el.textContent=""; return; } var txt = names.length===1 ? (names[0]+" écrit…") : (names.length===2 ? (names[0]+" et "+names[1]+" écrivent…") : (names.length+" riders écrivent…")); el.textContent=txt; el.hidden=false; }
+  function renderTyping(){ var el=$("chatTyping"); if(!el) return; var ch=currentChannel(); var names=[]; for(var k in typers){ if(blocked.has(k)) continue; var r=typers[k]; if(!r||r.ch!==ch) continue; names.push(r.pseudo||"Rider"); }
+    var txt = !names.length ? "" : (names.length===1 ? (names[0]+" écrit…") : (names.length===2 ? (names[0]+" et "+names[1]+" écrivent…") : (names.length+" riders écrivent…")));
+    // En conversation privée / groupe (skin WhatsApp) : on affiche le statut d'écriture
+    // dans l'en-tête, sous le nom (comme WhatsApp), au lieu de la ligne séparée.
+    var isConvo=(chatMode==="dm"||chatMode==="group");
+    if(isConvo){ el.hidden=true; el.textContent="";
+      var sub=document.querySelector("#chatTitle .cp-sub"); if(sub){
+        if(names.length){ sub.textContent = chatMode==="dm" ? "en train d'écrire…" : txt; sub.classList.add("typing"); }
+        else { sub.textContent = sub.dataset.rest||sub.textContent; sub.classList.remove("typing"); }
+      }
+      return;
+    }
+    if(!names.length){ el.hidden=true; el.textContent=""; return; }
+    el.textContent=txt; el.hidden=false; }
 
   // ---------- câblage UI ----------
   $("commShare").addEventListener("change", e=>{
@@ -3389,7 +3414,7 @@
   $("onbLater").addEventListener("click", onbClose);
   $("onbCharter").addEventListener("click", ()=>{ onbClose(); showCharter(); });
 
-  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); recomputeBadges(); };
+  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); recomputeBadges(); clearDeliveredNotifs(); };
 
   // ---------- démarrage ----------
   (async function(){
@@ -3416,6 +3441,8 @@
     updateRadiusUI(); updateChatFilterVis(); updateChanUI(); recomputeBadges(); updateTransBtn(); updateNotifBtn();
     if(notifOn) registerPush();
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
+    // Retour de l'appli au 1er plan alors qu'on est sur Communauté : on est en train de lire → on efface les notifs système.
+    document.addEventListener("visibilitychange", function(){ if(!document.hidden && $("tab-communaute") && !$("tab-communaute").hidden) clearDeliveredNotifs(); });
   })();
 </script>
 <script>
