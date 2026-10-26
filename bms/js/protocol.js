@@ -411,8 +411,13 @@ export class BleBms {
   }
 
   async open(device = null) {
+    // On accepte TOUS les appareils Bluetooth : beaucoup de BMS Daly ne diffusent
+    // pas le service fff0 dans leur annonce, et surtout dès qu'on renomme le
+    // Bluetooth de la batterie les filtres par nom (DL…/BMS…) ne correspondent plus,
+    // donc la batterie n'apparaissait pas. optionalServices garde l'accès au service
+    // fff0 une fois l'appareil choisi. (L'utilisateur choisit sa batterie dans la liste.)
     this.device = device || await navigator.bluetooth.requestDevice({
-      filters: [{ services: [0xfff0] }, { namePrefix: 'DL' }, { namePrefix: 'BMS' }],
+      acceptAllDevices: true,
       optionalServices: [SVC],
     });
     this.name = this.device.name || 'BMS';
