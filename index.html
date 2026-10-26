@@ -1503,6 +1503,7 @@
     $(ids.cancel).addEventListener("click", () => { cancel = true; });
     load();
     return {
+      refresh,
       setChannel(c){ ch = c; refresh(); },
       setInstalled(v){ v = v || null; if (v !== installed){ installed = v; refresh(); } },
       message,
