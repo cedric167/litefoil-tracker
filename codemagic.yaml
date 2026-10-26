@@ -57,3 +57,57 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+
+  # ----------------------------------------------------------------------------
+  # ANDROID NATIF (Capacitor -> Bluetooth natif du telephone), paquet .aab signe.
+  # A FAIRE DANS L'INTERFACE CODEMAGIC (une seule fois) :
+  #   - connecter ce depot GitHub,
+  #   - "Code signing identities" > Android keystores : televerser cert/signing.keystore
+  #       * reference name : litefoil_keystore
+  #       * keystore password / key password : voir cert/signing-key-info.txt
+  #       * key alias : litefoil
+  # Le build produit un .aab signe (artefact "Lite-Foil-natif.aab") a televerser
+  # a la main dans la Play Console (Production > Creer une version).
+  # Plus tard, pour publier automatiquement, ajouter une integration Google Play
+  # (compte de service) et un bloc publishing: google_play.
+  android-play:
+    name: Lite Foil - Android (Play Store)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      android_signing:
+        - litefoil_keystore          # <- nom de reference du keystore dans Codemagic
+      node: 20
+      vars:
+        PACKAGE_NAME: "fr.litefoil.tracker"
+    scripts:
+      - name: Installer les dependances
+        script: npm install
+      - name: Assembler le dossier www (site + pont Bluetooth)
+        script: npm run build:www
+      - name: Generer / synchroniser le projet Android
+        script: |
+          if [ ! -d "android" ]; then npx cap add android; fi
+          npx cap sync android
+      - name: Numero de version (toujours superieur a l'app actuelle)
+        script: |
+          VC=$(date +%s)
+          sed -i.bak "s/versionCode 1/versionCode $VC/" android/app/build.gradle
+          sed -i.bak 's/versionName "1.0"/versionName "1.1.0"/' android/app/build.gradle
+          echo "versionCode applique : $VC"
+      - name: Build de l'app (AAB release)
+        script: |
+          cd android
+          ./gradlew bundleRelease
+      - name: Signer l'AAB avec la cle Lite Foil
+        script: |
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore "$CM_KEYSTORE_PATH" \
+            -storepass "$CM_KEYSTORE_PASSWORD" \
+            -keypass "$CM_KEY_PASSWORD" \
+            "$AAB" "$CM_KEY_ALIAS"
+          cp "$AAB" "$CM_BUILD_DIR/Lite-Foil-natif.aab"
+    artifacts:
+      - Lite-Foil-natif.aab
+      - android/app/build/outputs/bundle/release/*.aab
