@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.11.1",
-  "file": "telecommande-1.11.1.bin",
-  "size": 1601440,
-  "md5": "14cc0389f0b8df62218c82198d01b8dc",
+  "version": "1.13.0",
+  "file": "telecommande-1.13.0.bin",
+  "size": 1653184,
+  "md5": "cbbbab450204fb1d8a0708cab552a083",
   "date": "2026-10-26",
-  "notes": "Version de test (bissection appairage) : chronos façon iOS, horloge, journal."
+  "notes": "Version de test (bissection appairage) : police ronde Nunito sur toutes les écritures."
 }
