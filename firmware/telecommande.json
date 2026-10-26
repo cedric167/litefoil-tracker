@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.15.2",
-  "file": "telecommande-1.15.2.bin",
-  "size": 1663248,
-  "md5": "b5508c005a46187d1e94108e95e33bc5",
+  "version": "1.15.3",
+  "file": "telecommande-1.15.3.bin",
+  "size": 1663488,
+  "md5": "71127a8e79e30de7536f2fb79407f7e9",
   "date": "2026-10-26",
-  "notes": "DIAGNOSTIC appairage : pendant le Pairing, l'écran affiche pk (paquets reçus) p (paquets d'appairage) of (offres) r (puissance dBm). Version de test."
+  "notes": "DIAGNOSTIC appairage 2 : deux lignes à l'écran pendant le Pairing (pk/p/of/r puis ok/ph/bd/eu/eb). Version de test."
 }
