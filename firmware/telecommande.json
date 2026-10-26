@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.13.0",
-  "file": "telecommande-1.13.0.bin",
-  "size": 1653184,
-  "md5": "cbbbab450204fb1d8a0708cab552a083",
+  "version": "1.13.3",
+  "file": "telecommande-1.13.3.bin",
+  "size": 1660400,
+  "md5": "bf54de4b361e2a31be653fbaa21a3c03",
   "date": "2026-10-26",
-  "notes": "Version de test (bissection appairage) : police ronde Nunito sur toutes les écritures."
+  "notes": "Version de test (bissection appairage) : Bonjour / À très vite en grand, accents, mesure de largeur corrigée."
 }
