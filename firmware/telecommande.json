@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.9.2",
-  "file": "telecommande-1.9.2.bin",
-  "size": 1534320,
-  "md5": "541a232257fabbdde04243a64760c395",
+  "version": "1.11.1",
+  "file": "telecommande-1.11.1.bin",
+  "size": 1601440,
+  "md5": "14cc0389f0b8df62218c82198d01b8dc",
   "date": "2026-10-26",
-  "notes": "Version de test : vérification de l'appairage (calibration façon iOS, boussole, retour plage)."
+  "notes": "Version de test (bissection appairage) : chronos façon iOS, horloge, journal."
 }
