@@ -917,6 +917,13 @@
     .mto-chips button:active,.mto-chips button:hover{background:var(--mist)}
 .mto-geo{display:block;width:100%;margin-top:10px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;color:inherit;font-family:inherit}
 .mto-geo:active,.mto-geo:hover{background:var(--mist)}
+.mto-hero{display:flex;align-items:center;gap:14px;padding:2px 4px 14px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.mto-hero .ic{font-size:60px;line-height:1}
+.mto-hero .mid{flex:1;min-width:0}
+.mto-hero .mid .t{font-size:54px;font-weight:800;line-height:1;letter-spacing:-1.5px}
+.mto-hero .mid .t small{font-size:24px;font-weight:700;vertical-align:top}
+.mto-hero .mid .d{font-size:14px;color:var(--muted);font-weight:600;margin-top:5px}
+.mto-hero .hl{text-align:right;font-size:15px;font-weight:700;color:var(--muted);line-height:1.4;white-space:nowrap}
     </style>
     <div class="m-label" style="margin:2px 6px 10px">Rechercher un spot</div>
     <div class="card" style="padding:12px">
@@ -3626,22 +3633,39 @@
     const CARD=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
     const cardinal=d=>CARD[Math.round(((d%360)/22.5))%16];
     const arrow=d=>'<span class="mto-arrow" style="display:inline-block;transform:rotate('+(((d||0)+180)%360)+'deg)">↑</span>';
+    function wcode(c,day){ c=+c; day=(day==null?1:day);
+      if(c===0) return [day?"☀️":"🌙","Ciel dégagé"];
+      if(c===1) return [day?"🌤️":"🌙","Plutôt dégagé"];
+      if(c===2) return ["⛅","Partiellement nuageux"];
+      if(c===3) return ["☁️","Couvert"];
+      if(c===45||c===48) return ["🌫️","Brouillard"];
+      if(c>=51&&c<=57) return ["🌦️","Bruine"];
+      if(c>=61&&c<=67) return ["🌧️","Pluie"];
+      if(c>=71&&c<=77) return ["🌨️","Neige"];
+      if(c>=80&&c<=82) return ["🌧️","Averses"];
+      if(c>=85&&c<=86) return ["🌨️","Averses de neige"];
+      if(c>=95) return ["⛈️","Orage"];
+      return ["🌡️","—"]; }
     function tile(lbl,icon,val,unit,sub){ return '<div class="mto-tile"><div class="lbl">'+icon+' '+lbl+'</div><div class="val">'+val+(unit?'<small> '+unit+'</small>':'')+'</div>'+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>'; }
     async function load(p){
       $m("mtoGrid").innerHTML='<div class="comm-empty">Chargement des conditions…</div>';
       try{
         const mu="https://marine-api.open-meteo.com/v1/marine?latitude="+p.lat+"&longitude="+p.lng+"&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,sea_surface_temperature&timezone=auto";
-        const wu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&wind_speed_unit=kn&timezone=auto";
+        const wu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,is_day,precipitation&daily=temperature_2m_max,temperature_2m_min&wind_speed_unit=kn&timezone=auto";
         const [mr,wr]=await Promise.all([fetch(mu).then(r=>r.json()),fetch(wu).then(r=>r.json())]);
-        const c=(mr&&mr.current)||{}, w=(wr&&wr.current)||{};
+        const c=(mr&&mr.current)||{}, w=(wr&&wr.current)||{}, wd=(wr&&wr.daily)||{};
         const num=(v,d)=>v==null?"—":(d!=null?v.toFixed(d):Math.round(v));
+        const wc=wcode(w.weather_code,w.is_day);
+        const hiLo=(wd.temperature_2m_max&&wd.temperature_2m_max[0]!=null)?('<div>↑ '+Math.round(wd.temperature_2m_max[0])+'°</div><div style="opacity:.65">↓ '+Math.round(wd.temperature_2m_min[0])+'°</div>'):'';
+        const sub=[wc[1],(w.apparent_temperature!=null?("ressenti "+Math.round(w.apparent_temperature)+"°"):""),(w.relative_humidity_2m!=null?("humidité "+Math.round(w.relative_humidity_2m)+"%"):"")].filter(Boolean).join(" · ");
+        const hero='<div class="mto-hero"><div class="ic">'+wc[0]+'</div><div class="mid"><div class="t">'+num(w.temperature_2m)+'<small>°C</small></div><div class="d">'+sub+'</div></div><div class="hl">'+hiLo+'</div></div>';
         const tiles=[
           tile("Vagues","🌊",num(c.wave_height,1),"m",(c.wave_period!=null?("période "+Math.round(c.wave_period)+" s"):"")+(c.wave_direction!=null?" · "+arrow(c.wave_direction)+" "+cardinal(c.wave_direction):"")),
           tile("Houle","🌀",num(c.swell_wave_height,1),"m",(c.swell_wave_period!=null?("période "+Math.round(c.swell_wave_period)+" s"):"houle longue")),
           tile("Vent","💨",num(w.wind_speed_10m),"nds",(w.wind_gusts_10m!=null?("rafales "+Math.round(w.wind_gusts_10m)+" nds"):"")+(w.wind_direction_10m!=null?" · "+arrow(w.wind_direction_10m)+" "+cardinal(w.wind_direction_10m):"")),
           tile("Température","🌡️",num(w.temperature_2m),"°C",(c.sea_surface_temperature!=null?("mer "+Math.round(c.sea_surface_temperature)+"°C"):"air"))
         ];
-        $m("mtoGrid").innerHTML=tiles.join("");
+        $m("mtoGrid").innerHTML=hero+tiles.join("");
         const u=$m("mtoUpdated"); if(u){ u.hidden=false; u.innerHTML="Mis à jour "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+" · données <b>Lite Foil météo</b>"; }
       }catch(e){ $m("mtoGrid").innerHTML='<div class="comm-empty">Conditions indisponibles pour le moment. Vérifie ta connexion et réessaie.</div>'; }
     }
@@ -3763,8 +3787,8 @@
     })();
 
     window.meteoOnShow=function(){ if(loaded) return; loaded=true;
-      const start = pos || DEFAULT; apply(start, start.name);   // affichage instantané (position connue ou Méditerranée)
-      if(!pos) locate();                                        // puis on affine avec la vraie position si possible
+      if(pos){ apply(pos, pos.name); }   // affichage instantané si on a déjà une position connue
+      locate();                          // auto-localisation en direct à chaque ouverture (façon Google)
       wgInitUI(); };
     const lb=$m("mtoLocate"); if(lb) lb.addEventListener("click",locate);
     var gb=document.getElementById("mtoGeo"); if(gb) gb.addEventListener("click",function(){ locate(); window.scrollTo({top:0,behavior:"smooth"}); });
