@@ -917,13 +917,20 @@
     .mto-chips button:active,.mto-chips button:hover{background:var(--mist)}
 .mto-geo{display:block;width:100%;margin-top:10px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;color:inherit;font-family:inherit}
 .mto-geo:active,.mto-geo:hover{background:var(--mist)}
-.mto-hero{display:flex;align-items:center;gap:14px;padding:2px 4px 14px;margin-bottom:12px;border-bottom:1px solid var(--line)}
-.mto-hero .ic{font-size:60px;line-height:1}
-.mto-hero .mid{flex:1;min-width:0}
-.mto-hero .mid .t{font-size:54px;font-weight:800;line-height:1;letter-spacing:-1.5px}
-.mto-hero .mid .t small{font-size:24px;font-weight:700;vertical-align:top}
-.mto-hero .mid .d{font-size:14px;color:var(--muted);font-weight:600;margin-top:5px}
-.mto-hero .hl{text-align:right;font-size:15px;font-weight:700;color:var(--muted);line-height:1.4;white-space:nowrap}
+.gw-cur{display:flex;align-items:center;gap:14px;padding:2px 2px 14px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.gw-cur .big{font-size:58px;font-weight:800;line-height:1;letter-spacing:-2px}
+.gw-cur .big small{font-size:24px;font-weight:700;vertical-align:top}
+.gw-cur .ic{font-size:50px;line-height:1}
+.gw-cur .tx{flex:1;min-width:0}
+.gw-cur .tx b{display:block;font-size:17px;font-weight:700;line-height:1.2}
+.gw-cur .tx span{font-size:14px;color:var(--muted)}
+.gw-sect{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:12px 2px 8px}
+.gw-strip{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.gw-h,.gw-d{flex:0 0 auto;min-width:64px;text-align:center;padding:9px 6px;border-radius:14px;background:var(--mist)}
+.gw-h>span,.gw-d>span{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.gw-h .i,.gw-d .i{font-size:26px;margin:5px 0}
+.gw-h b,.gw-d b{font-size:16px;font-weight:700}
+.gw-d small{font-size:13px;color:var(--muted);margin-left:3px}
     </style>
     <div class="m-label" style="margin:2px 6px 10px">Rechercher un spot</div>
     <div class="card" style="padding:12px">
@@ -932,8 +939,13 @@
       <button id="mtoGeo" class="mto-geo" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Utiliser ma position actuelle</button>
       <div class="note" style="margin-top:8px">Cherche n importe quel spot, ou utilise ta position actuelle : conditions en direct, carte et prévisions.</div>
     </div>
-    
-        <div class="m-label" style="margin:2px 6px 10px">Conditions en direct</div>
+
+    <div class="m-label" style="margin:16px 6px 10px">Météo</div>
+    <div class="card" style="padding:14px">
+      <div id="mtoNow"><div class="comm-empty">Chargement…</div></div>
+    </div>
+
+        <div class="m-label" style="margin:16px 6px 10px">Conditions en direct</div>
     <div class="card" style="padding:14px">
       <div class="mto-loc">
         <span id="mtoSpot">📍 Chargement…</span>
@@ -3651,21 +3663,17 @@
       $m("mtoGrid").innerHTML='<div class="comm-empty">Chargement des conditions…</div>';
       try{
         const mu="https://marine-api.open-meteo.com/v1/marine?latitude="+p.lat+"&longitude="+p.lng+"&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,sea_surface_temperature&timezone=auto";
-        const wu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,is_day,precipitation&daily=temperature_2m_max,temperature_2m_min&wind_speed_unit=kn&timezone=auto";
+        const wu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&wind_speed_unit=kn&timezone=auto";
         const [mr,wr]=await Promise.all([fetch(mu).then(r=>r.json()),fetch(wu).then(r=>r.json())]);
-        const c=(mr&&mr.current)||{}, w=(wr&&wr.current)||{}, wd=(wr&&wr.daily)||{};
+        const c=(mr&&mr.current)||{}, w=(wr&&wr.current)||{};
         const num=(v,d)=>v==null?"—":(d!=null?v.toFixed(d):Math.round(v));
-        const wc=wcode(w.weather_code,w.is_day);
-        const hiLo=(wd.temperature_2m_max&&wd.temperature_2m_max[0]!=null)?('<div>↑ '+Math.round(wd.temperature_2m_max[0])+'°</div><div style="opacity:.65">↓ '+Math.round(wd.temperature_2m_min[0])+'°</div>'):'';
-        const sub=[wc[1],(w.apparent_temperature!=null?("ressenti "+Math.round(w.apparent_temperature)+"°"):""),(w.relative_humidity_2m!=null?("humidité "+Math.round(w.relative_humidity_2m)+"%"):"")].filter(Boolean).join(" · ");
-        const hero='<div class="mto-hero"><div class="ic">'+wc[0]+'</div><div class="mid"><div class="t">'+num(w.temperature_2m)+'<small>°C</small></div><div class="d">'+sub+'</div></div><div class="hl">'+hiLo+'</div></div>';
         const tiles=[
           tile("Vagues","🌊",num(c.wave_height,1),"m",(c.wave_period!=null?("période "+Math.round(c.wave_period)+" s"):"")+(c.wave_direction!=null?" · "+arrow(c.wave_direction)+" "+cardinal(c.wave_direction):"")),
           tile("Houle","🌀",num(c.swell_wave_height,1),"m",(c.swell_wave_period!=null?("période "+Math.round(c.swell_wave_period)+" s"):"houle longue")),
           tile("Vent","💨",num(w.wind_speed_10m),"nds",(w.wind_gusts_10m!=null?("rafales "+Math.round(w.wind_gusts_10m)+" nds"):"")+(w.wind_direction_10m!=null?" · "+arrow(w.wind_direction_10m)+" "+cardinal(w.wind_direction_10m):"")),
           tile("Température","🌡️",num(w.temperature_2m),"°C",(c.sea_surface_temperature!=null?("mer "+Math.round(c.sea_surface_temperature)+"°C"):"air"))
         ];
-        $m("mtoGrid").innerHTML=hero+tiles.join("");
+        $m("mtoGrid").innerHTML=tiles.join("");
         const u=$m("mtoUpdated"); if(u){ u.hidden=false; u.innerHTML="Mis à jour "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+" · données <b>Lite Foil météo</b>"; }
       }catch(e){ $m("mtoGrid").innerHTML='<div class="comm-empty">Conditions indisponibles pour le moment. Vérifie ta connexion et réessaie.</div>'; }
     }
@@ -3713,7 +3721,23 @@
           +'</table></div>';
       }catch(e){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles pour ce spot.</div>'; }
     }
-    function apply(p,label){ pos=p; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); load(p); setWindy(p); loadForecast(p); }
+    async function loadNow(p){
+      var box=$m("mtoNow"); if(!box) return;
+      box.innerHTML='<div class="comm-empty">Chargement…</div>';
+      try{
+        var u="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=temperature_2m,weather_code,apparent_temperature,is_day&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=6";
+        var d=await fetch(u).then(function(r){return r.json();});
+        var cur=d.current||{}, H=d.hourly||{}, D=d.daily||{};
+        var wc=wcode(cur.weather_code,cur.is_day);
+        var curHtml='<div class="gw-cur"><div class="big">'+(cur.temperature_2m!=null?Math.round(cur.temperature_2m):"—")+'<small>°</small></div><div class="ic">'+wc[0]+'</div><div class="tx"><b>'+wc[1]+'</b><span>'+(cur.apparent_temperature!=null?("ressenti "+Math.round(cur.apparent_temperature)+"°"):"")+'</span></div></div>';
+        var hours=""; if(H.time){ var now=Date.now(), cnt=0;
+          for(var i=0;i<H.time.length;i++){ var dt=new Date(H.time[i]); if(dt.getTime()<now-3600000) continue; var dh=dt.getHours(); var hw=wcode(H.weather_code[i],(dh>=7&&dh<=20)?1:0); var lbl=(cnt===0)?"Maint.":(dh+"h"); hours+='<div class="gw-h"><span>'+lbl+'</span><span class="i">'+hw[0]+'</span><b>'+Math.round(H.temperature_2m[i])+'°</b></div>'; cnt++; if(cnt>=9) break; } }
+        var dn=["dim.","lun.","mar.","mer.","jeu.","ven.","sam."], dd="";
+        if(D.time){ for(var k=0;k<D.time.length;k++){ var dt2=new Date(D.time[k]+"T12:00"); var dw=wcode(D.weather_code[k],1); var lbl2=(k===0)?"Auj.":dn[dt2.getDay()]; dd+='<div class="gw-d"><span>'+lbl2+'</span><span class="i">'+dw[0]+'</span><b>'+Math.round(D.temperature_2m_max[k])+'°</b><small>'+Math.round(D.temperature_2m_min[k])+'°</small></div>'; } }
+        box.innerHTML=curHtml+'<div class="gw-sect">Par heure</div><div class="gw-strip">'+hours+'</div><div class="gw-sect">Prochains jours</div><div class="gw-strip">'+dd+'</div>';
+      }catch(e){ box.innerHTML='<div class="comm-empty">Météo indisponible pour le moment.</div>'; }
+    }
+    function apply(p,label){ pos=p; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
     async function reverseName(lat,lon){
       try{
         var r=await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+lat+"&longitude="+lon+"&localityLanguage=fr");
