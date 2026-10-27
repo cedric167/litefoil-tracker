@@ -237,6 +237,16 @@ export class Bms extends EventTarget {
   }
 
   _onData(chunk) {
+    // --- Diagnostic : affiche les octets bruts recus (bandeau #bmsRawDbg) ---
+    try {
+      const g = (typeof window !== 'undefined') ? window : globalThis;
+      g.__bmsRaw = g.__bmsRaw || [];
+      const hx = Array.from(chunk).map((x) => x.toString(16).padStart(2, '0')).join(' ');
+      g.__bmsRaw.push(new Date().toLocaleTimeString('fr-FR', { hour12: false }) + ' RX ' + hx);
+      if (g.__bmsRaw.length > 30) g.__bmsRaw.shift();
+      const e = (typeof document !== 'undefined') && document.getElementById('bmsRawDbg');
+      if (e) { e.hidden = false; e.textContent = g.__bmsRaw.join('\n'); e.scrollTop = e.scrollHeight; }
+    } catch (_) {}
     for (const b of chunk) this.rx.push(b);
     for (let guard = 0; guard < 40 && this.rx.length; guard++) {
       const rx = this.rx;
