@@ -1172,6 +1172,7 @@
     </div>
     <div class="note" id="batFirst">Allume la batterie puis appuie sur « Connecter » et choisis le module Bluetooth de ta batterie (le BMS).
       L'appli reconnaît automatiquement les protocoles courants.</div>
+    <div class="note" id="batDbg" hidden style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;white-space:pre-wrap;word-break:break-all;line-height:1.55;color:#5a5a5a;background:#f3f4f6;border-radius:10px;padding:10px;margin-top:8px;max-height:230px;overflow:auto"></div>
 
     <h2>Batterie</h2>
     <div class="card">
@@ -2038,6 +2039,13 @@
     const st = {};
     const dlog = (m, k) => log("[BMS] " + m, k);
     const setS = (t, c) => { $("batState").textContent = t; $("batLamp").className = "lamp" + (c ? " " + c : ""); };
+    // --- Diagnostic visible sur l'onglet Batterie (affiche les trames brutes) ---
+    let dbgLines = [], dbgRx = 0;
+    const hex = (arr) => [...arr].map(x => x.toString(16).padStart(2, "0")).join(" ");
+    const dbg = (s) => { const e = $("batDbg"); if (!e) return; e.hidden = false;
+      dbgLines.push(new Date().toLocaleTimeString("fr-FR", { hour12: false }) + " " + s);
+      if (dbgLines.length > 40) dbgLines = dbgLines.slice(-40);
+      e.textContent = dbgLines.join("\n"); e.scrollTop = e.scrollHeight; };
 
     function modbusCrc(b){ let c = 0xFFFF; for (const x of b){ c ^= x; for (let i=0;i<8;i++) c = (c & 1) ? (c>>1)^0xA001 : c>>1; } return c & 0xFFFF; }
     function d2Req(reg, count){ const f=[0xD2,0x03,(reg>>8)&255,reg&255,(count>>8)&255,count&255]; const c=modbusCrc(f); f.push(c&255,(c>>8)&255); return new Uint8Array(f); }
@@ -2057,6 +2065,7 @@
 
     function onNotify(ev){
       const v = new Uint8Array(ev.target.value.buffer);
+      if (++dbgRx <= 20) dbg("RX " + hex(v));
       for (const b of v) rx.push(b);
       while (rx.length && rx[0] !== 0xD2 && rx[0] !== 0xA5) rx.shift();
       let guard = 0;
@@ -2078,13 +2087,14 @@
     function handleD2(f){
       const L = f.length;
       const crc = modbusCrc(f.slice(0, L - 2));
-      if ((crc & 255) !== f[L - 2] || ((crc >> 8) & 255) !== f[L - 1]) return false; // trame invalide
-      if (f[1] !== 0x03) return false; // on n'exploite que la réponse de lecture
+      if ((crc & 255) !== f[L - 2] || ((crc >> 8) & 255) !== f[L - 1]) { dbg("D2 CRC KO (" + L + "o)"); return false; } // trame invalide
+      if (f[1] !== 0x03) { dbg("D2 fonction " + f[1].toString(16) + " (pas une lecture)"); return false; }
       const n = (f[2] >> 1); const r = [];
       for (let i=0;i<n;i++) r.push((f[3+2*i] << 8) | f[4+2*i]);
-      if (!proto){ proto = "d2"; stopDetect(); dlog("Protocole Modbus détecté", "g"); startPoll(); }
-      if (r.length < 0x37) return true;
+      if (!proto){ proto = "d2"; stopDetect(); dlog("Protocole Modbus détecté", "g"); dbg("=> MODBUS (D2) détecté, " + n + " registres"); startPoll(); }
+      if (r.length < 0x37) { dbg("D2 court : " + r.length + " registres"); return true; }
       st.v = r[0x28] / 10; st.a = (r[0x29] - 30000) / 10; st.soc = r[0x2a] / 10;
+      dbg("D2 V=" + st.v + " A=" + st.a + " SOC=" + st.soc);
       st.cap = r[0x30] / 10; st.cyc = r[0x33];
       const nc = Math.min(32, r[0x31] || 0);
       st.cells = nc ? r.slice(0, nc) : [];
@@ -2096,10 +2106,10 @@
 
     function handleA5(f){
       let sum = 0; for (let i=0;i<12;i++) sum = (sum + f[i]) & 255;
-      if (sum !== f[12]) return false; // checksum faux -> octet 0xA5 parasite, on resynchronise
-      if (!proto){ proto = "a5"; stopDetect(); dlog("Protocole Daly A5 détecté", "g"); startPoll(); }
+      if (sum !== f[12]) { dbg("A5 checksum KO cmd=" + f[2].toString(16)); return false; } // checksum faux -> octet 0xA5 parasite, on resynchronise
+      if (!proto){ proto = "a5"; stopDetect(); dlog("Protocole Daly A5 détecté", "g"); dbg("=> DALY A5 détecté"); startPoll(); }
       const c = f[2], d = f.slice(4, 12), u16 = i => (d[i] << 8) | d[i+1];
-      if (c === 0x90){ st.v = u16(0)/10; st.a = (u16(4)-30000)/10; st.soc = u16(6)/10; }
+      if (c === 0x90){ st.v = u16(0)/10; st.a = (u16(4)-30000)/10; st.soc = u16(6)/10; dbg("A5 90 V=" + st.v + " A=" + st.a + " SOC=" + st.soc); }
       else if (c === 0x92){ st.temps = [d[2]-40, d[0]-40]; }
       else if (c === 0x93){ st.mosC = d[1] !== 0; st.mosD = d[2] !== 0; st.cap = ((d[4]<<24)|(d[5]<<16)|(d[6]<<8)|d[7]) / 1000; }
       else if (c === 0x94){ st.cellCount = d[0]; }
@@ -2181,6 +2191,7 @@
         await chN.startNotifications();
         chN.addEventListener("characteristicvaluechanged", onNotify);
         proto = null; rx = []; for (const k in st) delete st[k];
+        dbgLines = []; dbgRx = 0; dbg("Connecté à « " + (dev.name || "?") + " ». Détection…");
         setS("Connecté à la batterie", "on"); DASH.conn.bat = true; renderDash();
         $("btnBatConnect").textContent = "Déconnecter";
         dlog("Connecté. Détection du protocole…", "g");
