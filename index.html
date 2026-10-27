@@ -87,6 +87,11 @@
   .wa.ig { background:linear-gradient(135deg,#f9a03f 0%,#e1306c 50%,#8134af 100%); box-shadow:0 10px 26px rgba(225,48,108,.26), inset 0 1px 0 rgba(255,255,255,.28); }
   .wa.ig:active { box-shadow:0 6px 16px rgba(225,48,108,.22); }
   .wa.ig .wa-ic svg { fill:none; }
+  .wa.yt { background:linear-gradient(135deg,#ff5a4d 0%,#ff0000 45%,#cc0000 100%); box-shadow:0 10px 26px rgba(255,0,0,.26), inset 0 1px 0 rgba(255,255,255,.28); }
+  .wa.yt:active { box-shadow:0 6px 16px rgba(255,0,0,.22); }
+  .wa.stl { background:linear-gradient(135deg,#34c759 0%,#0a9d4f 50%,#07823f 100%); box-shadow:0 10px 26px rgba(10,157,79,.26), inset 0 1px 0 rgba(255,255,255,.28); }
+  .wa.stl:active { box-shadow:0 6px 16px rgba(10,157,79,.22); }
+  .wa.stl .wa-ic svg { fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
   /* version compacte des réseaux (Accueil) : plus petits, empilés dans la même colonne */
   .social-col { display:flex; flex-direction:column; gap:9px; margin-bottom:12px; }
   .wa.sm { gap:11px; padding:10px 13px; border-radius:16px; }
@@ -695,12 +700,12 @@
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </a>
     </div>
-    <div class="card hero-metric">
+    <div class="card hero-metric" style="display:none">
       <div class="hm-top"><span class="hm-label">Vitesse</span><span class="hm-max" id="dSpdMax">max —</span></div>
       <div class="hm-value"><span id="dSpd">—</span><span class="hm-unit">km/h</span></div>
       <div class="spark" id="dSpdSpark"></div>
     </div>
-    <div class="dash-grid">
+    <div class="dash-grid" style="display:none">
       <div class="card ring-card">
         <div class="m-label">Batterie</div>
         <div class="ring" id="dSocRing"></div>
@@ -753,10 +758,18 @@
         <a class="linkbtn" href="https://litefoil.fr/pages/guide-utilisateur" target="_blank" rel="noopener">Guide utilisateur</a>
         <a class="linkbtn" href="https://litefoil.fr/pages/contact" target="_blank" rel="noopener">Contact</a>
         <a class="linkbtn" href="https://litefoil.fr/account" target="_blank" rel="noopener">Mon compte Lite Foil</a>
-        <a class="linkbtn" href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener">Vidéos (YouTube)</a>
-        <a class="linkbtn" href="https://www.sportstracklive.com/" target="_blank" rel="noopener">Mes sorties (SportsTrackLive)</a>
       </div>
     </div>
+    <a class="wa yt sm" href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener" style="margin-top:12px">
+      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <span class="wa-t"><b>Lite Foil sur YouTube</b><span>Toutes nos vidéos et tutos</span></span>
+      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <a class="wa stl sm" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">
+      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></span>
+      <span class="wa-t"><b>Mes sorties — SportsTrackLive</b><span>Vitesse, distance et trace GPS de tes sessions</span></span>
+      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
   </section>
 
   <section id="tab-communaute" class="tabpane" hidden>
