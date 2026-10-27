@@ -138,17 +138,33 @@ if (isNative && !window.__LF_NATIVE_BLE__) {
   // --- navigator.bluetooth.requestDevice ---
   async function requestDevice(options = {}) {
     await BleClient.initialize({ androidNeverForLocation: true });
-    const opt = {};
     const optional = new Set((options.optionalServices || []).map(norm));
     const services = new Set();
+    const names = new Set();
+    const prefixes = new Set();
     if (Array.isArray(options.filters)) {
       for (const f of options.filters) {
         if (f.services) f.services.forEach((s) => { services.add(norm(s)); optional.add(norm(s)); });
-        if (f.namePrefix) opt.namePrefix = f.namePrefix;
-        if (f.name) opt.name = f.name;
+        if (f.name) names.add(f.name);
+        if (f.namePrefix) prefixes.add(f.namePrefix);
       }
     }
-    if (services.size) opt.services = [...services];
+    // Web Bluetooth : `filters` est un OU d'éléments (chaque élément = ET de ses
+    // conditions). Le plugin natif ne sait exprimer qu'UN seul jeu : des services
+    // (en OU entre eux) ET un `name` ET un `namePrefix`. On ne pose donc un filtre
+    // que lorsqu'il est NON AMBIGU ; dès qu'on a un vrai OU (mélange services +
+    // noms/préfixes, ou plusieurs noms/préfixes), on ne filtre pas et on laisse le
+    // plugin scanner tous les appareils (l'utilisateur choisit dans la liste), afin
+    // de ne JAMAIS exclure un appareil qui aurait matché sur le web (batterie, VESC).
+    const opt = {};
+    if (services.size && !names.size && !prefixes.size) {
+      opt.services = [...services];            // uniquement des services -> OU natif
+    } else if (!services.size && names.size === 1 && !prefixes.size) {
+      opt.name = [...names][0];                // un seul nom exact (tracker, télécommande)
+    } else if (!services.size && !names.size && prefixes.size === 1) {
+      opt.namePrefix = [...prefixes][0];       // un seul préfixe
+    }
+    // sinon : aucun filtre -> scan de tous les appareils (cas OU : batterie, VESC)
     if (optional.size) opt.optionalServices = [...optional];
     const d = await BleClient.requestDevice(opt);
     rememberDevice(d.deviceId, d.name);
