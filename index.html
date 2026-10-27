@@ -1213,7 +1213,7 @@
       </div>
     </div>
 
-    <a class="wa vesc-atelier" href="bms/" style="margin-top:14px">
+    <a class="wa vesc-atelier" href="bms/index.html" style="margin-top:14px">
       <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="12" height="16" rx="2.5"/><path d="M10 2.5h4"/><path d="M9 14h6M9 17.5h6"/></svg></span>
       <span class="wa-t"><b>Atelier batterie</b><span>Cellules, alarmes, protections, commandes du BMS</span></span>
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
@@ -1253,7 +1253,7 @@
       <div class="note" id="vNote">Connecte le contrôleur pour voir la télémétrie.</div>
     </div>
 
-    <a class="wa vesc-atelier" href="vesc/" style="margin-top:14px">
+    <a class="wa vesc-atelier" href="vesc/index.html" style="margin-top:14px">
       <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg></span>
       <span class="wa-t"><b>Atelier VESC</b><span>Réglages moteur, détection, graphiques, firmware</span></span>
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
@@ -2045,8 +2045,14 @@
 
     async function writeReq(bytes){
       if (!chW) return;
-      try { if (chW.writeValueWithoutResponse) await chW.writeValueWithoutResponse(bytes); else await chW.writeValue(bytes); }
-      catch (e) { dlog("écriture échouée : " + errText(e), "e"); }
+      // Certains modules Daly n'acceptent QUE l'écriture avec réponse : on essaie
+      // d'abord sans réponse (plus rapide) puis on bascule avec réponse si ça casse,
+      // au lieu de perdre la requête en silence (cause des « faut relancer »).
+      try { await chW.writeValueWithoutResponse(bytes); }
+      catch (e1) {
+        try { await chW.writeValue(bytes); }
+        catch (e2) { dlog("écriture échouée : " + errText(e2), "e"); }
+      }
     }
 
     function onNotify(ev){
@@ -2054,18 +2060,30 @@
       for (const b of v) rx.push(b);
       while (rx.length && rx[0] !== 0xD2 && rx[0] !== 0xA5) rx.shift();
       let guard = 0;
-      while (rx.length >= 4 && guard++ < 12){
-        if (rx[0] === 0xA5){ if (rx.length < 13) break; handleA5(rx.slice(0,13)); rx = rx.slice(13); }
-        else if (rx[0] === 0xD2){ const total = 3 + rx[2] + 2; if (rx.length < total) break; handleD2(rx.slice(0,total)); rx = rx.slice(total); }
-        else rx.shift();
+      while (rx.length >= 4 && guard++ < 16){
+        if (rx[0] === 0xA5){
+          if (rx.length < 13) break;
+          if (handleA5(rx.slice(0,13))) rx = rx.slice(13); else rx.shift();
+        } else if (rx[0] === 0xD2){
+          const len = rx[2];
+          if (len < 1 || len > 250){ rx.shift(); continue; } // octet 0xD2 parasite dans des données
+          const total = 3 + len + 2;
+          if (rx.length < total) break;
+          if (handleD2(rx.slice(0,total))) rx = rx.slice(total); else rx.shift();
+        } else rx.shift();
       }
+      if (rx.length > 512) rx = []; // garde-fou anti-emballement
     }
 
     function handleD2(f){
+      const L = f.length;
+      const crc = modbusCrc(f.slice(0, L - 2));
+      if ((crc & 255) !== f[L - 2] || ((crc >> 8) & 255) !== f[L - 1]) return false; // trame invalide
+      if (f[1] !== 0x03) return false; // on n'exploite que la réponse de lecture
       const n = (f[2] >> 1); const r = [];
       for (let i=0;i<n;i++) r.push((f[3+2*i] << 8) | f[4+2*i]);
-      if (!proto){ proto = "d2"; clearTimeout(probe); dlog("Protocole Modbus détecté", "g"); startPoll(); }
-      if (r.length < 0x37) return;
+      if (!proto){ proto = "d2"; stopDetect(); dlog("Protocole Modbus détecté", "g"); startPoll(); }
+      if (r.length < 0x37) return true;
       st.v = r[0x28] / 10; st.a = (r[0x29] - 30000) / 10; st.soc = r[0x2a] / 10;
       st.cap = r[0x30] / 10; st.cyc = r[0x33];
       const nc = Math.min(32, r[0x31] || 0);
@@ -2073,10 +2091,13 @@
       st.temps = r.slice(0x20, 0x28).map(x => x - 40).filter(t => t > -40 && t < 120);
       st.bal = r[0x34] !== 0; st.mosC = r[0x35] !== 0; st.mosD = r[0x36] !== 0;
       render();
+      return true;
     }
 
     function handleA5(f){
-      if (!proto){ proto = "a5"; clearTimeout(probe); dlog("Protocole A5 détecté", "g"); startPoll(); }
+      let sum = 0; for (let i=0;i<12;i++) sum = (sum + f[i]) & 255;
+      if (sum !== f[12]) return false; // checksum faux -> octet 0xA5 parasite, on resynchronise
+      if (!proto){ proto = "a5"; stopDetect(); dlog("Protocole Daly A5 détecté", "g"); startPoll(); }
       const c = f[2], d = f.slice(4, 12), u16 = i => (d[i] << 8) | d[i+1];
       if (c === 0x90){ st.v = u16(0)/10; st.a = (u16(4)-30000)/10; st.soc = u16(6)/10; }
       else if (c === 0x92){ st.temps = [d[2]-40, d[0]-40]; }
@@ -2084,6 +2105,26 @@
       else if (c === 0x94){ st.cellCount = d[0]; }
       else if (c === 0x95){ const fr = d[0]; if (fr >= 1){ const base=(fr-1)*3; st.cellsA = st.cellsA || []; st.cellsA[base]=u16(1); st.cellsA[base+1]=u16(3); st.cellsA[base+2]=u16(5); if (st.cellCount) st.cells = st.cellsA.slice(0, st.cellCount); } }
       render();
+      return true;
+    }
+
+    // Détection ROBUSTE du protocole : tant qu'aucune trame valide n'a répondu, on
+    // interroge EN ALTERNANCE le Modbus (D2) ET l'ancien Daly (A5), en boucle. Dès
+    // qu'une réponse valide arrive, handleD2/handleA5 appellent stopDetect()+startPoll().
+    // Fini le verrou qui bloquait sur A5 quand la 1re requête Modbus se perdait.
+    function stopDetect(){ if (probe) { clearInterval(probe); probe = null; } }
+    function startDetect(){
+      stopDetect(); if (poll){ clearInterval(poll); poll = null; }
+      let tries = 0;
+      const beat = async () => {
+        if (!chW || proto) { stopDetect(); return; }
+        tries++;
+        await writeReq(d2Req(0x00, 0x3e));
+        for (const c of [0x90,0x92,0x93,0x94,0x95]){ if (proto) return; await sleep(60); await writeReq(a5Req(c)); }
+        if (tries === 5) dlog("Pas encore de réponse — batterie bien allumée et pas connectée à une autre appli ? J'insiste…", "e");
+      };
+      beat();
+      probe = setInterval(() => { if (proto) { stopDetect(); return; } beat(); }, 1000);
     }
 
     function startPoll(){
@@ -2143,14 +2184,14 @@
         setS("Connecté à la batterie", "on"); DASH.conn.bat = true; renderDash();
         $("btnBatConnect").textContent = "Déconnecter";
         dlog("Connecté. Détection du protocole…", "g");
-        await writeReq(d2Req(0x00, 0x3e));
-        probe = setTimeout(async () => { if (!proto){ dlog("Pas de réponse Modbus, essai A5…"); proto = "a5"; startPoll(); } }, 1800);
+        await sleep(300); // laisse le module Daly s'initialiser après l'abonnement (sinon la 1re requête se perd)
+        startDetect();
       } catch (e) {
         if (e && e.name === "NotFoundError"){ setS("Non connecté"); dlog("Aucune batterie sélectionnée. Vérifie qu'elle est allumée et pas déjà connectée à une autre appli."); }
         else { setS("Échec de la connexion", "err"); dlog("Connexion impossible : " + errText(e), "e"); }
       }
     }
-    function onDisc(){ setS("Batterie déconnectée"); $("btnBatConnect").textContent = "Connecter"; chW = null; proto = null; if (poll) clearInterval(poll); clearTimeout(probe); DASH.conn.bat = false; DASH.soc = null; DASH.batPow = null; renderDash(); dlog("Batterie déconnectée.", "e"); }
+    function onDisc(){ setS("Batterie déconnectée"); $("btnBatConnect").textContent = "Connecter"; chW = null; proto = null; if (poll){ clearInterval(poll); poll = null; } stopDetect(); DASH.conn.bat = false; DASH.soc = null; DASH.batPow = null; renderDash(); dlog("Batterie déconnectée.", "e"); }
 
     $("btnBatConnect").addEventListener("click", () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } connect(); });
   })();
