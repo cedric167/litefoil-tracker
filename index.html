@@ -679,10 +679,7 @@
     <button class="tab active" data-tab="dash">Accueil</button>
     <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
     <button class="tab" data-tab="meteo">Météo</button>
-    <button class="tab" data-tab="tracker">Tracker</button>
-    <button class="tab" data-tab="batterie">Batterie</button>
-    <button class="tab" data-tab="moteur">VESC</button>
-    <button class="tab" data-tab="remote">Télécommande</button>
+    <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <button class="tab" data-tab="litefoil">Lite Foil</button>
   </div>
 
@@ -1010,6 +1007,26 @@
         <a class="linkbtn" href="https://www.sportstracklive.com/" target="_blank" rel="noopener">Ouvrir SportsTrackLive</a>
       </div>
     </div>
+  </section>
+
+  <section id="tab-ultra" class="tabpane" hidden>
+    <style>
+    .ultra-item{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;cursor:pointer;color:inherit;font-family:inherit;transition:background .15s,transform .1s}
+    .ultra-item:active{transform:scale(.99)}
+    .ultra-item:hover{background:var(--mist)}
+    .ultra-item .ui-ic{flex:0 0 auto;width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(145deg,#1fd3c3,#14b8ab)}
+    .ultra-item .ui-tx{flex:1;min-width:0}
+    .ultra-item .ui-tx b{display:block;font-size:17px;font-weight:700;line-height:1.2}
+    .ultra-item .ui-tx span{font-size:13px;color:var(--muted)}
+    .ultra-item .ui-ch{flex:0 0 auto;color:var(--muted)}
+    .ultra-back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--cyan-ink,#0e7c74);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;padding:8px 4px}
+    </style>
+    <div class="m-label" style="margin:2px 6px 4px">Lite Foil Ultra</div>
+    <p class="note" style="margin:0 6px 2px">Tout le contrôle de ton Lite Foil Ultra au même endroit.</p>
+    <button class="ultra-item" data-goto="tracker"><span class="ui-ic">📍</span><span class="ui-tx"><b>Tracker GPS</b><span>Sessions live, carte et suivi en temps réel</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="ultra-item" data-goto="batterie"><span class="ui-ic">🔋</span><span class="ui-tx"><b>Batterie</b><span>État des cellules, charge et protections (BMS)</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="ultra-item" data-goto="moteur"><span class="ui-ic">⚙️</span><span class="ui-tx"><b>Moteur (VESC)</b><span>Réglages moteur, puissance et diagnostic</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="ultra-item" data-goto="remote"><span class="ui-ic">🎮</span><span class="ui-tx"><b>Télécommande</b><span>État, réglages et mises à jour de la télécommande</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   </section>
 
   <section id="tab-tracker" class="tabpane" hidden>
@@ -1921,9 +1938,13 @@
 
   // Two tabs: the tracker, and the Lite Foil site (which refuses to be embedded —
   // X-Frame-Options: DENY — so its pages open in the browser).
+  // Sous-écrans regroupés dans l'onglet « Lite Foil Ultra »
+  const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote"];
   function showTab(name) {
-    const tab = document.querySelector(".tab[data-tab=\"" + name + "\"]");
-    if (!tab) return;
+    const isSub = ULTRA_SUB.indexOf(name) >= 0;
+    const tabName = isSub ? "ultra" : name;
+    const tab = document.querySelector(".tab[data-tab=\"" + tabName + "\"]");
+    if (!tab && !isSub) return;
     for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
     for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
     if (name === "tracker") mapOnShow();
@@ -1937,6 +1958,17 @@
     });
   }
   for (const b of document.querySelectorAll("[data-goto]")) b.addEventListener("click", () => { showTab(b.dataset.goto); try { localStorage.setItem("lf.tab", b.dataset.goto); } catch (err) {} });
+  // Bouton « retour » au menu Lite Foil Ultra en haut de chaque sous-écran
+  for (const sub of ULTRA_SUB) {
+    const pane = document.getElementById("tab-" + sub);
+    if (!pane) continue;
+    const back = document.createElement("button");
+    back.className = "ultra-back";
+    back.type = "button";
+    back.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M15 6l-6 6 6 6"/></svg> Lite Foil Ultra';
+    back.addEventListener("click", () => { showTab("ultra"); try { localStorage.setItem("lf.tab", "ultra"); } catch (e) {} });
+    pane.insertBefore(back, pane.firstChild);
+  }
   renderDash();
 
   // Open on the tab asked in the URL (?tab=litefoil), else always on the home tab.
