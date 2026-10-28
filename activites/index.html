@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Lite Foil · Activités</title>
+<meta name="description" content="Toutes tes activités Terre & Mer : parcours, kilomètres, survol 3D. Montres connectées via SportsTrackLive.">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<!-- MapLibre GL : carte 2D + globe 3D avec relief (survol façon Strava). Pas de clé. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
+<style>
+:root{
+  --bg:#f4f6f7; --card:#ffffff; --fg:#0e1417; --muted:#6a7a80; --line:#e6ecee;
+  --cyan:#148a90; --cyan-bright:#19e3ff; --mer:#1198c9; --terre:#e07a3a;
+  --shadow:0 6px 22px rgba(13,40,45,.08); --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:"Instrument Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+.serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+h1,h2,h3{margin:0}
+button{font-family:inherit;cursor:pointer}
+.muted{color:var(--muted)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- Header ---------- */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(244,246,247,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;height:58px}
+.back{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;text-decoration:none;color:var(--fg);flex:0 0 auto}
+.back svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.top .title{flex:1;display:flex;flex-direction:column;line-height:1.05}
+.top .title b{font-size:19px;font-weight:600}
+.top .title span{font-size:12px;color:var(--muted)}
+.top img.logo{height:26px}
+
+/* ---------- Segmented Terre/Mer ---------- */
+.seg{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px;margin:16px 0 14px;box-shadow:var(--shadow)}
+.seg button{flex:1;border:0;background:transparent;border-radius:999px;padding:10px 6px;font-size:15px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:7px;transition:.18s}
+.seg button .ic{font-size:17px}
+.seg button[aria-selected="true"]{color:#fff}
+.seg button[data-k="mer"][aria-selected="true"]{background:linear-gradient(135deg,#1aa6d8,#0e6f8f)}
+.seg button[data-k="terre"][aria-selected="true"]{background:linear-gradient(135deg,#ef8a46,#c75f24)}
+.seg button[data-k="tout"][aria-selected="true"]{background:linear-gradient(135deg,#2b3a40,#141c1f)}
+
+/* ---------- Connexion / import ---------- */
+.conn{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.conn .pill{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);text-decoration:none;color:var(--fg)}
+.conn .pill .dot{width:9px;height:9px;border-radius:50%;background:#28c76f;flex:0 0 auto;box-shadow:0 0 0 4px rgba(40,199,111,.15)}
+.conn .pill small{display:block;color:var(--muted);font-size:11.5px}
+.conn .pill b{font-size:13.5px;font-weight:600}
+.conn .pill.action{justify-content:center;font-weight:600;color:var(--cyan);border-style:dashed}
+.conn .pill.action svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Résumé milieu ---------- */
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.summary .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.summary .box .v{font-size:22px;font-weight:700}
+.summary .box .u{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+
+/* ---------- Liste activités ---------- */
+.section-label{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:4px 2px 10px;font-weight:600}
+.list{display:flex;flex-direction:column;gap:12px}
+.act{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;border-left:4px solid var(--line);transition:.15s}
+.act:active{transform:scale(.99)}
+.act .spark{width:92px;height:62px;flex:0 0 auto;border-radius:12px;background:#eef3f4;overflow:hidden}
+.act .spark svg{width:100%;height:100%}
+.act .mid{flex:1;min-width:0}
+.act .mid .nm{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act .mid .sub{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
+.act .mid .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;margin-top:8px}
+.act .right{text-align:right;flex:0 0 auto}
+.act .right .km{font-size:19px;font-weight:700}
+.act .right .km small{font-size:11px;font-weight:600;color:var(--muted)}
+.act .right .dur{font-size:12px;color:var(--muted);margin-top:2px}
+.badge-mer{background:rgba(17,152,201,.12);color:#0e6f8f}
+.badge-terre{background:rgba(224,122,58,.14);color:#c05e22}
+
+/* ---------- Fiche détail (overlay) ---------- */
+.sheet{position:fixed;inset:0;z-index:40;background:var(--bg);transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);overflow-y:auto;overscroll-behavior:contain}
+.sheet.open{transform:none}
+.sheet .hero{height:300px;position:relative;background:#0e1417}
+.sheet .hero #detMap{position:absolute;inset:0}
+.sheet .hero .closex{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:12px;z-index:5;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);display:grid;place-items:center}
+.sheet .hero .closex svg{width:22px;height:22px;fill:none;stroke:#0e1417;stroke-width:2.2;stroke-linecap:round}
+.sheet .body{padding:18px 16px 60px}
+.sheet .ttl{font-size:26px;font-weight:600;line-height:1.1}
+.sheet .meta{color:var(--muted);font-size:13.5px;margin-top:6px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.statgrid .s{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;box-shadow:var(--shadow)}
+.statgrid .s .u{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.statgrid .s .v{font-size:23px;font-weight:700;margin-top:3px}
+.statgrid .s .v small{font-size:12px;color:var(--muted);font-weight:600}
+.fly{width:100%;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(135deg,#0e1417,#223);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:var(--shadow)}
+.fly svg{width:22px;height:22px;fill:currentColor}
+
+/* ---------- Survol 3D (flyover) ---------- */
+.flyover{position:fixed;inset:0;z-index:60;background:#05070a;display:none}
+.flyover.open{display:block}
+.flyover #flyMap{position:absolute;inset:0}
+.flyover .topband{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 26px) 20px 60px;background:linear-gradient(180deg,rgba(5,8,12,.92) 0%,rgba(5,8,12,.75) 45%,rgba(5,8,12,0) 100%);pointer-events:none;z-index:5;text-align:center;color:#fff}
+.flyover .brand{font-weight:700;letter-spacing:.22em;font-size:16px;opacity:.95}
+.flyover .brand b{color:var(--cyan-bright)}
+.flyover .aname{font-size:13px;opacity:.8;margin-top:4px}
+.flyover .stats{display:flex;justify-content:space-around;margin-top:20px}
+.flyover .stats .st .u{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.05em}
+.flyover .stats .st .v{font-size:34px;font-weight:700;line-height:1}
+.flyover .stats .st .v small{font-size:13px;font-weight:600;opacity:.75}
+.flyover .ctrl{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6}
+.flyover .ctrl button{border:0;background:rgba(255,255,255,.14);color:#fff;backdrop-filter:blur(8px);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.flyover .ctrl button.primary{background:var(--cyan)}
+.flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px)}
+.flyover .closef svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+
+.empty{text-align:center;color:var(--muted);padding:50px 20px}
+.empty .big{font-size:40px;margin-bottom:10px}
+input[type=file]{display:none}
+.demo-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;color:#b26a00;background:#fff3d6;border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="../" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <div class="title"><b>Activités <span class="demo-tag" id="demoTag">DÉMO</span></b><span id="subCount">—</span></div>
+    <img class="logo" src="../litefoil-logo.png" alt="Lite Foil" onerror="this.style.display='none'">
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="seg" role="tablist">
+    <button data-k="mer" role="tab" aria-selected="true"><span class="ic">🌊</span>Mer</button>
+    <button data-k="terre" role="tab" aria-selected="false"><span class="ic">⛰️</span>Terre</button>
+    <button data-k="tout" role="tab" aria-selected="false"><span class="ic">✦</span>Tout</button>
+  </div>
+
+  <div class="conn">
+    <a class="pill" id="stlPill" href="https://www.sportstracklive.com" target="_blank" rel="noopener">
+      <span class="dot"></span>
+      <span><b>SportsTrackLive</b><small id="stlState">Montres Garmin &amp; Suunto connectées</small></span>
+    </a>
+    <button class="pill action" id="btnImport">
+      <svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+      Importer GPX / FIT
+    </button>
+    <input type="file" id="fileInput" accept=".gpx,.GPX">
+  </div>
+
+  <div class="summary">
+    <div class="box"><div class="v tnum" id="sumCount">0</div><div class="u">activités</div></div>
+    <div class="box"><div class="v tnum" id="sumKm">0</div><div class="u">km cumulés</div></div>
+    <div class="box"><div class="v tnum" id="sumTime">0h</div><div class="u">temps</div></div>
+  </div>
+
+  <div class="section-label" id="listLabel">Mes sorties</div>
+  <div class="list" id="list"></div>
+  <div class="empty" id="empty" hidden><div class="big">🌊</div>Aucune activité dans cette catégorie.<br>Connecte une montre ou importe un fichier.</div>
+</main>
+
+<!-- ============ Fiche détail ============ -->
+<section class="sheet" id="sheet">
+  <div class="hero">
+    <button class="closex" id="closeSheet" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div id="detMap"></div>
+  </div>
+  <div class="body">
+    <h2 class="ttl" id="detName">—</h2>
+    <div class="meta" id="detMeta">—</div>
+    <div class="statgrid" id="detStats"></div>
+    <button class="fly" id="btnFly"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Survol 3D du parcours</button>
+  </div>
+</section>
+
+<!-- ============ Survol 3D ============ -->
+<div class="flyover" id="flyover">
+  <div id="flyMap"></div>
+  <div class="topband">
+    <div class="brand">LITE <b>FOIL</b></div>
+    <div class="aname" id="flyName">—</div>
+    <div class="stats">
+      <div class="st"><div class="u">Vitesse</div><div class="v tnum"><span id="flySpeed">0</span><small> km/h</small></div></div>
+      <div class="st"><div class="u" id="flyAltU">Altitude</div><div class="v tnum"><span id="flyAlt">0</span><small> m</small></div></div>
+      <div class="st"><div class="u">Distance</div><div class="v tnum"><span id="flyDist">0</span><small> km</small></div></div>
+    </div>
+  </div>
+  <button class="closef" id="closeFly" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="ctrl">
+    <button id="flyReplay">↺ Rejouer</button>
+    <button class="primary" id="flyClose2">Terminer</button>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   Lite Foil — Activités (prototype)
+   Façade "maison" ; moteur de données = SportsTrackLive (STL).
+   Terre/Mer déduit de la catégorie. Survol 3D = MapLibre + relief.
+   Mode DÉMO actif tant que l'API STL n'est pas branchée (voir STL.*).
+   ===================================================================== */
+
+/* ---------- Mapping Terre / Mer ----------
+   STL activity_type_id connus : free_flight, boating, cycling, running,
+   electric (= eFoil), skiing, scientific, other. On classe par famille,
+   avec surcharge par mots-clés du nom de catégorie (surf, natation…). */
+const MER_TYPES = new Set(["boating","electric"]);
+const MER_WORDS = /(mer|nage|natation|swim|surf|kite|wing|foil|sup|paddle|voile|bateau|plong|dive|rame|kayak|canoe|aviron)/i;
+const TERRE_WORDS = /(course|run|rando|hike|marche|walk|vélo|velo|bike|cycl|trail|ski|escalade|climb)/i;
+function milieuOf(activityTypeId, categoryName){
+  const n = categoryName || "";
+  if (MER_WORDS.test(n)) return "mer";
+  if (TERRE_WORDS.test(n)) return "terre";
+  if (MER_TYPES.has(activityTypeId)) return "mer";
+  return "terre"; // free_flight / running / cycling / skiing / other …
+}
+function sportIcon(m, type){
+  if (type==="electric") return "🏄"; // eFoil
+  return m==="mer" ? "🌊" : "⛰️";
+}
+
+/* ---------- Adaptateur SportsTrackLive (à brancher) ----------
+   Les chemins/filtres seront finalisés au 1er appel réel (token + user_id).
+   Header d'auth : X-STL-Token (64 hex). Lecture publique possible avec un
+   token anonyme ; privé = login via POST /v1/auth.                        */
+const STL = {
+  base: "https://api.sportstracklive.com",
+  token: null,          // X-STL-Token
+  userId: null,         // id utilisateur STL (compte cedric@litefoil.fr)
+  get enabled(){ return !!(this.token && this.userId); },
+  _h(){ return this.token ? { "X-STL-Token": this.token } : {}; },
+  async categories(){
+    const r = await fetch(`${this.base}/v1/users/${this.userId}/categories`, { headers:this._h() });
+    return (await r.json()).categories || [];
+  },
+  async tracks(opts={}){
+    // liste paginée des activités de l'utilisateur
+    const qs = new URLSearchParams({ last_30:"1", limit:"50", offset:"0", ...opts });
+    const r = await fetch(`${this.base}/v1/users/${this.userId}/tracks?${qs}`, { headers:this._h() });
+    const j = await r.json();
+    return (j.tracks||[]).map(mapStlTrack);
+  },
+  async points(trackId){
+    // points GPS d'une activité : /v1/track/points_data?track_ids=
+    const r = await fetch(`${this.base}/v1/track/points_data?track_ids=${trackId}`, { headers:this._h() });
+    const j = await r.json();
+    const entry = Array.isArray(j) ? j[0] : (j.entries ? j.entries[0] : j);
+    return decodePoints(entry);
+  }
+};
+// UserTrackItem -> modèle interne
+function mapStlTrack(t){
+  const cat = t.category||{};
+  const bm = Object.fromEntries((t.basic_metrics||[]).map(m=>[m.key||m.name, m.value]));
+  const type = cat.activity_type_id;
+  const m = milieuOf(type, cat.name);
+  const start = t.started_at ? new Date(t.started_at) : null;
+  const end = t.finished_at ? new Date(t.finished_at) : null;
+  return {
+    id: t.id, name: t.name || cat.name || "Sortie", categoryName: cat.name||"", activityType:type,
+    milieu: m, startedAt:start, durationSec: (start&&end)? (end-start)/1000 : (bm.duration||0),
+    distanceM: +bm.distance||0, avgSpeedKmh:+bm.avg_speed||0, maxSpeedKmh:+bm.max_speed||0, maxAltM:+bm.max_alt||0,
+    firstLat:+t.first_latitude, firstLon:+t.first_longitude, thumbnailUrl:t.thumbnail_url, points:null
+  };
+}
+// ApiPointsDataEntry (points_header + lignes positionnelles) -> [{lat,lon,speed,alt,dist,bearing,t}]
+function decodePoints(entry){
+  if(!entry || !entry.points_header) return [];
+  const H = entry.points_header, idx = k=>H.indexOf(k);
+  const iLa=idx("latitude"), iLo=idx("longitude"), iSp=idx("speed"), iAl=idx("computed_altitude")>=0?idx("computed_altitude"):idx("altitude"), iDi=idx("distance"), iBe=idx("bearing"), iDa=idx("date");
+  return entry.points.map(r=>({
+    lat:+r[iLa], lon:+r[iLo], speed:+r[iSp]||0, alt:+r[iAl]||0, dist:+r[iDi]||0, bearing:+r[iBe]||0, t:+r[iDa]||0
+  }));
+}
+
+/* ====================== MODE DÉMO ======================
+   Génère des parcours réalistes par navigation à l'estime
+   (point de départ + segments cap/vitesse/durée).            */
+function destPoint(lat, lon, bearingDeg, distM){
+  const R=6371000, br=bearingDeg*Math.PI/180, la=lat*Math.PI/180, lo=lon*Math.PI/180, d=distM/R;
+  const la2=Math.asin(Math.sin(la)*Math.cos(d)+Math.cos(la)*Math.sin(d)*Math.cos(br));
+  const lo2=lo+Math.atan2(Math.sin(br)*Math.sin(d)*Math.cos(la), Math.cos(d)-Math.sin(la)*Math.sin(la2));
+  return [la2*180/Math.PI, ((lo2*180/Math.PI)+540)%360-180];
+}
+function genTrack(startLat, startLon, legs, stepSec, altFn){
+  const pts=[]; let lat=startLat, lon=startLon, dist=0, t=0;
+  pts.push({lat,lon,speed:legs[0].spd,alt:altFn(0,0),dist:0,bearing:legs[0].hdg,t:0});
+  for(const leg of legs){
+    const n=Math.max(1,Math.round(leg.dur/stepSec));
+    for(let i=0;i<n;i++){
+      const jitter=(Math.sin(t*0.7)*0.4+((Math.random()-.5)*0.3));
+      const spd=Math.max(0,leg.spd+jitter*leg.spd*0.12);
+      const seg=spd/3.6*stepSec;
+      const hdg=leg.hdg+Math.sin(t*0.9)*(leg.wob||2);
+      [lat,lon]=destPoint(lat,lon,hdg,seg); dist+=seg; t+=stepSec;
+      pts.push({lat,lon,speed:+spd.toFixed(1),alt:altFn(t,dist),dist:+dist.toFixed(0),bearing:+((hdg+360)%360).toFixed(0),t});
+    }
+  }
+  return pts;
+}
+function trackStats(pts){
+  const n=pts.length; let max=0; for(const p of pts) if(p.speed>max) max=p.speed;
+  const maxAlt=Math.max(...pts.map(p=>p.alt));
+  const dur=pts[n-1].t, dist=pts[n-1].dist;
+  const avg = dur>0 ? (dist/dur*3.6) : 0;
+  return {durationSec:dur, distanceM:dist, avgSpeedKmh:+avg.toFixed(1), maxSpeedKmh:+max.toFixed(1), maxAltM:Math.round(maxAlt)};
+}
+function buildDemo(){
+  const list=[];
+  // 1) eFoil — Baie d'Agay (Mer)
+  let pts=genTrack(43.4335,6.8520,[
+    {hdg:200,spd:24,dur:140,wob:4},{hdg:250,spd:28,dur:120,wob:3},{hdg:300,spd:26,dur:110},
+    {hdg:20,spd:30,dur:130,wob:5},{hdg:90,spd:22,dur:90},{hdg:140,spd:27,dur:160,wob:6},{hdg:20,spd:18,dur:80}
+  ],2,()=>0);
+  list.push(mkDemo(901,"Session eFoil matin","electric","mer","Foil électrique",pts,"2026-10-27T09:12:00"));
+  // 2) Course à pied (Terre)
+  pts=genTrack(43.4260,6.8585,[
+    {hdg:300,spd:11,dur:260,wob:8},{hdg:20,spd:10.5,dur:300,wob:10},{hdg:120,spd:11.5,dur:280,wob:8},{hdg:210,spd:10,dur:260,wob:9}
+  ],3,(t)=>20+Math.sin(t/120)*35+Math.random()*4);
+  list.push(mkDemo(902,"Morning Run","running","terre","Course à pied",pts,"2026-10-26T07:30:00"));
+  // 3) Natation (Mer)
+  pts=genTrack(43.4318,6.8505,[
+    {hdg:210,spd:3.4,dur:300,wob:3},{hdg:30,spd:3.2,dur:300,wob:3}
+  ],3,()=>0);
+  list.push(mkDemo(903,"Nage en mer","swim","mer","Natation",pts,"2026-10-25T18:05:00"));
+  // 4) Rando (Terre)
+  pts=genTrack(43.4405,6.8360,[
+    {hdg:20,spd:4.5,dur:900,wob:12},{hdg:120,spd:4,dur:700,wob:14},{hdg:220,spd:5,dur:800,wob:12}
+  ],5,(t)=>80+t/22+Math.sin(t/200)*30);
+  list.push(mkDemo(904,"Rando Cap Dramont","hike","terre","Randonnée",pts,"2026-10-24T10:00:00"));
+  // 5) Wingfoil (Mer)
+  pts=genTrack(43.4300,6.8470,[
+    {hdg:250,spd:18,dur:180,wob:8},{hdg:70,spd:20,dur:180,wob:8},{hdg:250,spd:22,dur:200,wob:10},{hdg:70,spd:19,dur:160,wob:9}
+  ],2,()=>0);
+  list.push(mkDemo(905,"Wingfoil au large","boating","mer","Wingfoil",pts,"2026-10-23T16:20:00"));
+  return list;
+}
+function mkDemo(id,name,type,m,catName,pts,startIso){
+  const s=trackStats(pts); const start=new Date(startIso);
+  return {id,name,categoryName:catName,activityType:type,milieu:m,startedAt:start,
+    durationSec:s.durationSec,distanceM:s.distanceM,avgSpeedKmh:s.avgSpeedKmh,maxSpeedKmh:s.maxSpeedKmh,maxAltM:s.maxAltM,
+    firstLat:pts[0].lat,firstLon:pts[0].lon,thumbnailUrl:null,points:pts};
+}
+
+/* ====================== ÉTAT & RENDU ====================== */
+let ALL=[], filter="mer";
+async function load(){
+  if(STL.enabled){
+    try{ ALL=await STL.tracks(); document.getElementById("demoTag").hidden=true; }
+    catch(e){ console.warn("STL indispo, démo",e); ALL=buildDemo(); }
+  } else { ALL=buildDemo(); }
+  render();
+}
+function fmtDur(s){ s=Math.round(s); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h${String(m).padStart(2,"0")}`:`${m} min`; }
+function fmtDate(d){ return d? d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) : ""; }
+function sparkline(pts){
+  if(!pts||pts.length<2) return "";
+  const la=pts.map(p=>p.lat), lo=pts.map(p=>p.lon);
+  const laMin=Math.min(...la),laMax=Math.max(...la),loMin=Math.min(...lo),loMax=Math.max(...lo);
+  const w=92,h=62,pad=8, sx=(loMax-loMin)||1e-6, sy=(laMax-laMin)||1e-6;
+  const d=pts.map((p,i)=>{const x=pad+(p.lon-loMin)/sx*(w-2*pad); const y=h-pad-(p.lat-laMin)/sy*(h-2*pad); return (i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1);}).join(" ");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#ff5a1f" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+function render(){
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-selected", b.dataset.k===filter));
+  const items = ALL.filter(a=> filter==="tout" ? true : a.milieu===filter)
+                   .sort((a,b)=> (b.startedAt||0)-(a.startedAt||0));
+  const km = items.reduce((s,a)=>s+a.distanceM,0)/1000;
+  const time = items.reduce((s,a)=>s+a.durationSec,0);
+  document.getElementById("sumCount").textContent=items.length;
+  document.getElementById("sumKm").textContent=km.toFixed(1);
+  document.getElementById("sumTime").textContent=fmtDur(time);
+  document.getElementById("subCount").textContent=`${ALL.length} activités · Terre & Mer`;
+  const L=document.getElementById("list"); L.innerHTML="";
+  document.getElementById("empty").hidden = items.length>0;
+  for(const a of items){
+    const badge = a.milieu==="mer"?"badge-mer":"badge-terre";
+    const el=document.createElement("div"); el.className="act"; el.style.borderLeftColor = a.milieu==="mer"?"var(--mer)":"var(--terre)";
+    el.innerHTML=`
+      <div class="spark">${sparkline(a.points)||""}</div>
+      <div class="mid">
+        <div class="nm">${sportIcon(a.milieu,a.activityType)} ${a.name}</div>
+        <div class="sub">${fmtDate(a.startedAt)}</div>
+        <span class="chip ${badge}">${a.categoryName||(a.milieu==="mer"?"Mer":"Terre")}</span>
+      </div>
+      <div class="right">
+        <div class="km tnum">${(a.distanceM/1000).toFixed(2)}<small> km</small></div>
+        <div class="dur tnum">${fmtDur(a.durationSec)}</div>
+      </div>`;
+    el.onclick=()=>openDetail(a);
+    L.appendChild(el);
+  }
+}
+document.querySelectorAll(".seg button").forEach(b=> b.onclick=()=>{ filter=b.dataset.k; render(); });
+
+/* ====================== DÉTAIL + CARTE 2D ====================== */
+const mapStyle = {
+  version:8,
+  sources:{
+    esri:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,attribution:"Esri World Imagery"},
+    dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14}
+  },
+  layers:[{id:"sat",type:"raster",source:"esri"}]
+};
+let detMap=null, flyMap=null, current=null;
+function lineGeo(pts){ return {type:"Feature",geometry:{type:"LineString",coordinates:pts.map(p=>[p.lon,p.lat])}}; }
+function bounds(pts){ const b=new maplibregl.LngLatBounds(); pts.forEach(p=>b.extend([p.lon,p.lat])); return b; }
+
+async function ensurePoints(a){
+  if(a.points) return a.points;
+  try{ a.points=await STL.points(a.id); }catch(e){ a.points=[]; }
+  return a.points;
+}
+async function openDetail(a){
+  current=a; await ensurePoints(a);
+  document.getElementById("detName").textContent=`${sportIcon(a.milieu,a.activityType)} ${a.name}`;
+  document.getElementById("detMeta").innerHTML=`${fmtDate(a.startedAt)} &nbsp;·&nbsp; <b>${a.categoryName||""}</b>`;
+  const sea=a.milieu==="mer";
+  document.getElementById("detStats").innerHTML=`
+    <div class="s"><div class="u">Distance</div><div class="v tnum">${(a.distanceM/1000).toFixed(2)}<small> km</small></div></div>
+    <div class="s"><div class="u">Durée</div><div class="v tnum">${fmtDur(a.durationSec)}</div></div>
+    <div class="s"><div class="u">Vit. moy.</div><div class="v tnum">${a.avgSpeedKmh.toFixed(1)}<small> km/h</small></div></div>
+    <div class="s"><div class="u">Vit. max</div><div class="v tnum">${a.maxSpeedKmh.toFixed(1)}<small> km/h</small></div></div>
+    <div class="s"><div class="u">${sea?"Dén. +":"Alt. max"}</div><div class="v tnum">${a.maxAltM}<small> m</small></div></div>
+    <div class="s"><div class="u">Points GPS</div><div class="v tnum">${(a.points||[]).length}</div></div>`;
+  document.getElementById("sheet").classList.add("open");
+  setTimeout(()=>drawDetailMap(a),120);
+}
+function drawDetailMap(a){
+  const c=document.getElementById("detMap");
+  if(!detMap){ detMap=new maplibregl.Map({container:c,style:mapStyle,attributionControl:false,interactive:true}); }
+  const draw=()=>{
+    if(detMap.getLayer("trk")) detMap.removeLayer("trk");
+    if(detMap.getSource("trk")) detMap.removeSource("trk");
+    if(!a.points||!a.points.length) return;
+    detMap.addSource("trk",{type:"geojson",data:lineGeo(a.points)});
+    detMap.addLayer({id:"trk",type:"line",source:"trk",paint:{"line-color":"#ff5a1f","line-width":4,"line-opacity":.95},layout:{"line-join":"round","line-cap":"round"}});
+    detMap.fitBounds(bounds(a.points),{padding:40,duration:0});
+  };
+  if(detMap.isStyleLoaded()) draw(); else detMap.once("load",draw);
+  detMap.resize();
+}
+document.getElementById("closeSheet").onclick=()=>document.getElementById("sheet").classList.remove("open");
+
+/* ====================== SURVOL 3D ====================== */
+let flyRAF=null;
+document.getElementById("btnFly").onclick=()=>startFly(current);
+document.getElementById("closeFly").onclick=document.getElementById("flyClose2").onclick=stopFly;
+document.getElementById("flyReplay").onclick=()=>startFly(current);
+
+async function startFly(a){
+  if(!a) return; await ensurePoints(a);
+  const pts=a.points; if(!pts||pts.length<2) return;
+  const ov=document.getElementById("flyover"); ov.classList.add("open");
+  document.getElementById("flyName").textContent=a.name;
+  document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
+  if(!flyMap){
+    flyMap=new maplibregl.Map({container:"flyMap",style:mapStyle,attributionControl:false,interactive:false,pitch:68,bearing:pts[0].bearing,zoom:15.2,center:[pts[0].lon,pts[0].lat]});
+  }
+  const setup=()=>{
+    try{ flyMap.setTerrain({source:"dem",exaggeration:1.25}); }catch(e){}
+    if(flyMap.getLayer("flyFull")) flyMap.removeLayer("flyFull");
+    if(flyMap.getSource("flyFull")) flyMap.removeSource("flyFull");
+    if(flyMap.getLayer("flyHead")) flyMap.removeLayer("flyHead");
+    if(flyMap.getSource("flyHead")) flyMap.removeSource("flyHead");
+    flyMap.addSource("flyFull",{type:"geojson",data:lineGeo(pts)});
+    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",paint:{"line-color":"#ff5a1f","line-width":5,"line-opacity":.25},layout:{"line-join":"round","line-cap":"round"}});
+    flyMap.addSource("flyHead",{type:"geojson",data:lineGeo([pts[0]])});
+    flyMap.addLayer({id:"flyHead",type:"line",source:"flyHead",paint:{"line-color":"#ff5a1f","line-width":6,"line-opacity":1},layout:{"line-join":"round","line-cap":"round"}});
+    runFly(a,pts);
+  };
+  flyMap.resize();
+  if(flyMap.isStyleLoaded()) setup(); else flyMap.once("load",setup);
+}
+function runFly(a,pts){
+  cancelAnimationFrame(flyRAF);
+  const DURATION=18000; // ~18 s, comme Strava (compresse la sortie)
+  const start=performance.now();
+  const spd=document.getElementById("flySpeed"), alt=document.getElementById("flyAlt"), dist=document.getElementById("flyDist");
+  const maxSpeedDisplay=a.milieu==="mer";
+  let runningMax=0;
+  const step=(now)=>{
+    const prog=Math.min(1,(now-start)/DURATION);
+    const fi=prog*(pts.length-1); const i=Math.floor(fi); const p=pts[Math.min(i,pts.length-1)];
+    // révèle la portion parcourue
+    flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1)));
+    // caméra qui suit la tête
+    flyMap.jumpTo({center:[p.lon,p.lat],bearing:p.bearing,pitch:68,zoom:15.2});
+    runningMax=Math.max(runningMax,p.speed);
+    spd.textContent=Math.round(p.speed);
+    alt.textContent= maxSpeedDisplay ? Math.round(runningMax) : Math.round(p.alt);
+    dist.textContent=(p.dist/1000).toFixed(1);
+    if(prog<1) flyRAF=requestAnimationFrame(step);
+  };
+  flyRAF=requestAnimationFrame(step);
+}
+function stopFly(){ cancelAnimationFrame(flyRAF); document.getElementById("flyover").classList.remove("open"); }
+
+/* ====================== IMPORT GPX ====================== */
+document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
+document.getElementById("fileInput").onchange=async(e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  const txt=await f.text();
+  const pts=parseGPX(txt);
+  if(!pts.length){ alert("Fichier GPX illisible ou sans points."); return; }
+  const s=trackStats(pts);
+  const a={id:"gpx"+Date.now(),name:f.name.replace(/\.gpx$/i,""),categoryName:"Import GPX",activityType:"other",
+    milieu: guessMilieuFromAlt(pts), startedAt:new Date(), ...s, firstLat:pts[0].lat, firstLon:pts[0].lon, points:pts};
+  ALL.unshift(a); filter="tout"; render(); openDetail(a);
+};
+function guessMilieuFromAlt(pts){ const maxA=Math.max(...pts.map(p=>p.alt)); return maxA<5 ? "mer":"terre"; }
+function parseGPX(xml){
+  try{
+    const doc=new DOMParser().parseFromString(xml,"text/xml");
+    const tp=[...doc.getElementsByTagName("trkpt"),...doc.getElementsByTagName("rtept")];
+    let dist=0,prev=null,t0=null;
+    return tp.map(pt=>{
+      const lat=+pt.getAttribute("lat"), lon=+pt.getAttribute("lon");
+      const ele=+(pt.getElementsByTagName("ele")[0]?.textContent||0);
+      const timeEl=pt.getElementsByTagName("time")[0];
+      const t=timeEl? new Date(timeEl.textContent).getTime()/1000 : 0;
+      if(t0===null && t) t0=t;
+      if(prev){ dist+=haversine(prev.lat,prev.lon,lat,lon); }
+      const rel = t&&t0 ? t-t0 : 0;
+      const o={lat,lon,alt:Math.round(ele),dist:Math.round(dist),t:rel,bearing:prev?bearingTo(prev.lat,prev.lon,lat,lon):0,speed:0};
+      if(prev&&o.t>prev.t) o.speed=+((dist-prev.dist)/((o.t-prev.t))*3.6).toFixed(1);
+      prev=o; return o;
+    });
+  }catch(e){ return []; }
+}
+function haversine(la1,lo1,la2,lo2){const R=6371000,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180,a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(a));}
+function bearingTo(la1,lo1,la2,lo2){const y=Math.sin((lo2-lo1)*Math.PI/180)*Math.cos(la2*Math.PI/180);const x=Math.cos(la1*Math.PI/180)*Math.sin(la2*Math.PI/180)-Math.sin(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.cos((lo2-lo1)*Math.PI/180);return (Math.atan2(y,x)*180/Math.PI+360)%360;}
+
+load();
+</script>
+</body>
+</html>
