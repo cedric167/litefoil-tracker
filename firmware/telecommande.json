@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.15.4",
-  "file": "telecommande-1.15.4.bin",
-  "size": 1664224,
-  "md5": "a2466e27e58eb1ec1a27e87184b51572",
-  "date": "2026-10-26",
-  "notes": "Appairage : liaison radio remise à neuf avant chaque appairage (ne réussissait qu'une fois par allumage). Lignes de diagnostic encore affichées pendant le Pairing. Version de test."
+  "version": "1.15.5",
+  "file": "telecommande-1.15.5.bin",
+  "size": 1668368,
+  "md5": "07be9f97144a963fa70020ae8f949a18",
+  "date": "2026-10-28",
+  "notes": "Calibration gachette corrigee : plus de faux-gaz au repos ni de desarmement bloque (apprentissage du repos revu + marge de 4%). Version de test."
 }
