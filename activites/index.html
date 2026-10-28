@@ -349,12 +349,27 @@ function mkDemo(id,name,type,m,catName,pts,startIso){
 
 /* ====================== ÉTAT & RENDU ====================== */
 let ALL=[], filter="mer";
+function hydrate(a){ // JSON -> modèle (startedAt en Date)
+  return a.map(x=>({ ...x, startedAt: x.startedAt? new Date(x.startedAt): null }));
+}
 async function load(){
+  // 1) données réelles figées (snapshot STL) si présentes
+  try{
+    const r=await fetch("data.json?v="+Date.now(),{cache:"no-store"});
+    if(r.ok){
+      const j=await r.json();
+      ALL=hydrate(j.activities||[]);
+      const tag=document.getElementById("demoTag"); tag.textContent="RÉEL"; tag.style.background="#d8f5e3"; tag.style.color="#0a7a43";
+      render(); return;
+    }
+  }catch(e){ /* pas de snapshot -> suite */ }
+  // 2) API STL live (si token+user_id configurés)
   if(STL.enabled){
-    try{ ALL=await STL.tracks(); document.getElementById("demoTag").hidden=true; }
-    catch(e){ console.warn("STL indispo, démo",e); ALL=buildDemo(); }
-  } else { ALL=buildDemo(); }
-  render();
+    try{ ALL=await STL.tracks(); document.getElementById("demoTag").hidden=true; render(); return; }
+    catch(e){ console.warn("STL live indispo",e); }
+  }
+  // 3) démo
+  ALL=buildDemo(); render();
 }
 function fmtDur(s){ s=Math.round(s); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h${String(m).padStart(2,"0")}`:`${m} min`; }
 function fmtDate(d){ return d? d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) : ""; }
