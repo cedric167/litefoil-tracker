@@ -44,6 +44,7 @@ workflows:
       - name: Numero de build
         script: |
           cd ios/App
+          agvtool new-marketing-version 1.1.5 || true
           agvtool new-version -all $(($(date +%s) / 60)) || true
       - name: Build IPA
         script: |
