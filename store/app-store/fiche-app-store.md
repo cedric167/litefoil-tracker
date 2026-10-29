@@ -4,9 +4,12 @@
 Les longueurs respectent les limites d'Apple (nom 30, sous-titre 30, texte promotionnel 170,
 mots-clés 100, description 4 000). Les champs **[À REMPLIR]** ne peuvent être remplis que par toi.
 
-Captures iPhone 6,9" (1320 × 2868, format accepté pour tous les iPhone) dans ce dossier :
-`1-accueil.png`, `2-communaute.png`, `3-meteo.png`, `4-ultra.png`. À compléter par 2 ou 3 captures
-prises sur ton iPhone avec le matériel connecté (batterie, moteur, tracker), plus parlantes.
+Captures (PNG sans transparence : Apple refuse la transparence et l'extension `.jpg` dans la
+bibliothèque de ressources) : `1-accueil.png`, `2-communaute.png`, `3-meteo.png`, `4-ultra.png`.
+- `iphone-6.3/` : **1206 × 2622**, iPhone avec Dynamic Island moyen (18 Pro, 17 Pro…), **obligatoire**.
+- `iphone-6.9/` : 1320 × 2868, iPhone avec Dynamic Island grand (18 Pro Max, Air…), facultatif.
+À compléter par 2 ou 3 captures prises sur ton iPhone avec le matériel connecté (batterie, moteur,
+tracker), plus parlantes.
 
 ---
 
