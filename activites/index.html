@@ -228,6 +228,8 @@ input[type=file]{display:none}
   <div class="flyzoom">
     <button id="flyZin" aria-label="Zoom avant">+</button>
     <button id="flyZout" aria-label="Zoom arriere">−</button>
+    <button id="flyRotL" aria-label="Tourner a gauche">⟲</button>
+    <button id="flyRotR" aria-label="Tourner a droite">⟳</button>
   </div>
   <div class="ctrl">
     <button id="flyPlay" aria-label="Lecture/Pause">⏸</button>
@@ -558,6 +560,8 @@ document.getElementById("flyPlay").onclick=()=>{ if(flyProg>=1){ startFly(curren
 document.querySelectorAll("#flySpd button").forEach(b=>{ b.onclick=()=>{ flySpeedMul=parseFloat(b.dataset.s); document.querySelectorAll("#flySpd button").forEach(x=>x.classList.toggle("on",x===b)); }; });
 document.getElementById("flyZin").onclick=()=>{ if(flyMap) flyMap.zoomIn(); };
 document.getElementById("flyZout").onclick=()=>{ if(flyMap) flyMap.zoomOut(); };
+document.getElementById("flyRotL").onclick=()=>{ if(flyMap) flyMap.easeTo({bearing:flyMap.getBearing()-30,duration:300}); };
+document.getElementById("flyRotR").onclick=()=>{ if(flyMap) flyMap.easeTo({bearing:flyMap.getBearing()+30,duration:300}); };
 
 async function startFly(a){
   if(!a) return; await ensurePoints(a);
