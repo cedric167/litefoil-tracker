@@ -120,6 +120,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 
 /* ---------- Connexion (modale) ---------- */
 .modal{position:fixed;inset:0;z-index:70;background:rgba(10,15,18,.45);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
+.modal[hidden]{display:none}
 .modal-card{background:var(--card);width:100%;max-width:460px;border-radius:22px 22px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom,0px) + 26px);box-shadow:0 -10px 40px rgba(0,0,0,.25);position:relative;animation:slideUp .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 .modal-x{position:absolute;top:14px;right:16px;border:0;background:#eef3f4;width:32px;height:32px;border-radius:50%;font-size:14px;color:#555}

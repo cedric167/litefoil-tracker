@@ -10,13 +10,46 @@
  * Les jetons périmés sont supprimés automatiquement.
  */
 const { onValueCreated } = require("firebase-functions/v2/database");
+const { onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
+const { defineSecret } = require("firebase-functions/params");
 const { initializeApp } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { getMessaging } = require("firebase-admin/messaging");
 
 initializeApp();
 setGlobalOptions({ region: "europe-west1" });
+
+// Clé secrète d'application SportsTrackLive : gardée côté serveur (Secret Manager),
+// jamais exposée dans la page. Réglée par :
+//   firebase functions:secrets:set STL_SECRET_KEY --data-file -
+const STL_SECRET_KEY = defineSecret("STL_SECRET_KEY");
+
+/* Connexion SportsTrackLive (proxy).
+ * La page envoie {email, password} ; la fonction ajoute la clé secrète d'app et
+ * renvoie {token, user}. Le mot de passe transite en HTTPS et n'est jamais stocké. */
+exports.stlAuth = onRequest(
+  { region: "europe-west1", secrets: [STL_SECRET_KEY], cors: true },
+  async (req, res) => {
+    if (req.method !== "POST") { res.status(405).json({ error: "POST only" }); return; }
+    const body = req.body || {};
+    const email = body.email, password = body.password;
+    if (!email || !password) { res.status(400).json({ error: "email et mot de passe requis" }); return; }
+    try {
+      const r = await fetch("https://api.sportstracklive.com/v1/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-STL-Secret-Key": STL_SECRET_KEY.value() },
+        body: JSON.stringify({ email, password, origin: "external" })
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.token) { res.status(401).json({ error: "identifiants refusés" }); return; }
+      // user.id = user_id STL ; on ne renvoie que le strict nécessaire.
+      res.json({ token: j.token, user: j.user || null });
+    } catch (e) {
+      res.status(502).json({ error: "SportsTrackLive injoignable" });
+    }
+  }
+);
 
 const DB_INSTANCE = "litefoil-communaute-222fd-default-rtdb";
 const APP_URL = "https://cedric167.github.io/litefoil-tracker/?tab=communaute";

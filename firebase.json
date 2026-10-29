@@ -3,7 +3,28 @@
     {
       "source": "functions",
       "codebase": "default",
-      "ignore": ["node_modules", ".git", "*.log"]
+      "ignore": [
+        "node_modules",
+        ".git",
+        "*.log"
+      ]
     }
-  ]
+  ],
+  "hosting": {
+    "public": "hosting_proxy",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/stlAuth",
+        "function": {
+          "functionId": "stlAuth",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
 }
