@@ -134,6 +134,11 @@
          padding:10px; height:150px; overflow:auto; color:#3a4650; white-space:pre-wrap; }
   #log .g { color:var(--ok); } #log .e { color:var(--bad); }
   .note { font-size:13px; color:var(--muted); margin-top:6px; }
+  .phseg { display:flex; gap:8px; }
+  .phseg button { flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--muted); border-radius:13px; padding:11px; font-weight:700; font-size:14.5px; cursor:pointer; transition:background .15s, color .15s, border-color .15s; }
+  .phseg button[aria-selected="true"] { border-color:var(--accent-ink); color:#fff; background:var(--accent-ink); }
+  select.phsel { width:100%; border:1.5px solid var(--line); border-radius:13px; padding:12px; font:inherit; background:var(--card); color:var(--text); margin-top:8px; }
+  .phlab { font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:600; color:var(--muted); margin:2px 2px 6px; }
   code { background:#eef1f3; padding:1px 5px; border-radius:6px; font-size:.92em; }
   footer { color:var(--muted); font-size:12px; margin:28px 0 8px; text-align:center; }
 
@@ -1044,6 +1049,32 @@
     Puis renseigne ton compte SportsTrackLive ci-dessous : à chaque sortie lancée depuis la télécommande, le tracker
     s'y connecte seul et y enregistre ta session.</div>
 
+  <h2>Suivre avec mon téléphone</h2>
+  <div class="card" id="phoneCard">
+    <div class="note" style="margin-top:0"><b>Sans le boîtier Lite Foil.</b> Enregistre ta sortie avec le GPS de ce téléphone
+      (foil, surf, wing, nage, rando, vélo…). Garde l'écran allumé et le téléphone sur toi. À la fin, la sortie apparaît
+      dans <b>Activités — Terre &amp; Mer</b>, avec la carte, les stats et le survol 3D.</div>
+    <div class="phlab" style="margin-top:14px">Type d'activité</div>
+    <div class="phseg" id="phSeg">
+      <button type="button" data-m="mer" aria-selected="true">🌊 Mer</button>
+      <button type="button" data-m="terre" aria-selected="false">⛰️ Terre</button>
+    </div>
+    <select class="phsel" id="phAct" aria-label="Choix de l'activité"></select>
+    <div class="grid" style="margin-top:12px">
+      <div class="kv"><div class="k">Durée</div><div class="v" id="phDur">0:00</div></div>
+      <div class="kv"><div class="k">Distance</div><div class="v" id="phDist">0,00 km</div></div>
+      <div class="kv"><div class="k">Vitesse</div><div class="v" id="phSpd">— km/h</div></div>
+      <div class="kv"><div class="k">Vitesse max</div><div class="v" id="phSpdMax">— km/h</div></div>
+      <div class="kv"><div class="k">Points GPS</div><div class="v" id="phPts">0</div></div>
+      <div class="kv"><div class="k">Précision</div><div class="v" id="phAcc">—</div></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="primary" id="phStart">▶ Démarrer la sortie</button>
+      <button class="danger" id="phStop" hidden>⏹ Terminer</button>
+    </div>
+    <div class="note" id="phNote">Prêt. Appuie sur « Démarrer » et autorise la localisation.</div>
+  </div>
+
   <h2>Carte</h2>
   <div class="card">
     <div class="map-wrap" id="mapWrap">
@@ -1760,6 +1791,103 @@
   }
   document.addEventListener("fullscreenchange", function(){ if (lfMap) setTimeout(function(){ lfMap.invalidateSize(); }, 90); });
   window.addEventListener("load", mapInit);
+
+  // ---------------- Suivre avec mon téléphone (GPS du navigateur, sans boîtier) ----------------
+  // Enregistre une sortie avec le GPS du téléphone, l'affiche en direct sur la carte, puis
+  // la stocke en local (clé lf_phone_sessions) pour qu'elle apparaisse dans Activités.
+  var phWatch = null, phPts = [], phT0 = 0, phMax = 0, phTimer = null, phLast = null, phWake = null;
+  var phMilieu = "mer", phType = "efoil", phCat = "Foil électrique";
+  // Activités proposées par milieu : [clé interne, libellé affiché]
+  var PH_ACTS = {
+    mer: [["efoil","Foil électrique"],["wing","Wingfoil"],["surf","Surf"],["kite","Kitesurf"],["sup","SUP / Paddle"],["swim","Nage"],["windsurf","Windsurf"],["kayak","Kayak"],["boating","Bateau"],["other","Autre (eau)"]],
+    terre: [["running","Course à pied"],["hiking","Marche / Rando"],["cycling","Vélo"],["trail","Trail"],["skiing","Ski"],["free_flight","Parapente"],["other","Autre (terre)"]]
+  };
+  function phFillActs(){
+    var sel = $("phAct"); if(!sel) return;
+    sel.innerHTML = "";
+    PH_ACTS[phMilieu].forEach(function(a){ var o = document.createElement("option"); o.value = a[0]; o.textContent = a[1]; sel.appendChild(o); });
+    phType = sel.value; phCat = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
+  }
+  function phSetMilieu(m){
+    phMilieu = m;
+    var seg = $("phSeg"); if(seg) Array.prototype.forEach.call(seg.querySelectorAll("button"), function(b){ b.setAttribute("aria-selected", b.dataset.m===m ? "true" : "false"); });
+    phFillActs();
+  }
+  function phFmtDur(s){ s = Math.max(0, Math.round(s)); var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60; return (h ? h+":"+String(m).padStart(2,"0") : m)+":"+String(ss).padStart(2,"0"); }
+  function phHaversine(a,b){ var R=6371000, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lon-a.lon)*Math.PI/180, la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180; var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
+  function phDistTotal(){ var d=0; for(var i=1;i<phPts.length;i++) d+=phHaversine(phPts[i-1],phPts[i]); return d; }
+  function phNum(x){ return x.toFixed(1).replace(".",","); }
+  function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); }
+  function phStart(){
+    if(!navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
+    phPts = []; phMax = 0; phT0 = Date.now(); phLast = null;
+    $("phStart").hidden = true; $("phStop").hidden = false;
+    $("phNote").textContent = "Recherche du signal GPS… garde l'écran allumé.";
+    $("phPts").textContent = "0"; $("phDist").textContent = "0,00 km"; $("phSpd").textContent = "— km/h"; $("phSpdMax").textContent = "— km/h"; $("phAcc").textContent = "—"; $("phDur").textContent = "0:00";
+    phTimer = setInterval(phTick, 1000);
+    try { if(navigator.wakeLock && navigator.wakeLock.request) navigator.wakeLock.request("screen").then(function(w){ phWake = w; }).catch(function(){}); } catch(e){}
+    phWatch = navigator.geolocation.watchPosition(function(pos){
+      var c = pos.coords, t = Math.max(0,(pos.timestamp - phT0)/1000);
+      var spd = (c.speed!=null && isFinite(c.speed) && c.speed>=0) ? c.speed*3.6 : null;
+      // au tout début, on écarte un point trop imprécis (fix pas encore stable)
+      if(phPts.length===0 && c.accuracy!=null && c.accuracy>40){ $("phNote").textContent = "Signal GPS faible ("+Math.round(c.accuracy)+" m)… on attend un meilleur fix."; $("phAcc").textContent = Math.round(c.accuracy)+" m"; return; }
+      var p = { lat:c.latitude, lon:c.longitude, speed:(spd!=null?spd:0), bearing:(c.heading!=null&&isFinite(c.heading))?c.heading:0, alt:(c.altitude!=null&&isFinite(c.altitude))?c.altitude:0, t:t, acc:c.accuracy };
+      // si le GPS ne donne pas la vitesse, l'estimer sur la distance entre deux points
+      if(spd==null && phLast){ var dt=p.t-phLast.t; if(dt>0.2) spd = phHaversine(phLast,p)/dt*3.6; }
+      if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
+      phPts.push(p); phLast = p;
+      var dist = phDistTotal();
+      $("phPts").textContent = phPts.length;
+      $("phDist").textContent = (dist/1000).toFixed(2).replace(".",",")+" km";
+      $("phSpd").textContent = (spd!=null?phNum(spd):"0,0")+" km/h";
+      $("phSpdMax").textContent = phNum(phMax)+" km/h";
+      $("phAcc").textContent = (c.accuracy!=null?Math.round(c.accuracy)+" m":"—");
+      $("phNote").textContent = "Enregistrement en cours — "+phPts.length+" points GPS.";
+      try { mapUpdate(c.latitude, c.longitude, spd); } catch(e){}
+    }, function(err){
+      $("phNote").textContent = "GPS refusé ou indisponible"+(err&&err.message?" ("+err.message+")":"")+". Autorise la localisation puis réessaie.";
+      if(!phPts.length){ phStopCleanup(); $("phStart").hidden=false; $("phStop").hidden=true; }
+    }, { enableHighAccuracy:true, maximumAge:1000, timeout:20000 });
+  }
+  function phStopCleanup(){
+    if(phWatch!=null && navigator.geolocation) navigator.geolocation.clearWatch(phWatch); phWatch = null;
+    if(phTimer) clearInterval(phTimer); phTimer = null;
+    try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}
+  }
+  function phStop(){
+    phStopCleanup();
+    $("phStart").hidden = false; $("phStop").hidden = true;
+    if(phPts.length < 2){ $("phNote").textContent = "Sortie trop courte : pas assez de points GPS pour enregistrer."; return; }
+    var sess = phBuildSession();
+    phSaveLocal(sess);
+    $("phNote").innerHTML = "Sortie enregistrée ✔ "+(sess.distanceM/1000).toFixed(2).replace(".",",")+" km · "+phFmtDur(sess.durationSec)+" · max "+phNum(sess.maxSpeedKmh)+" km/h. <a href=\"activites/\" style=\"color:var(--accent-ink);font-weight:800\">Voir dans Activités →</a>";
+  }
+  function phBuildSession(){
+    var src = phPts.slice(), t0 = src[0].t, cum = 0, out = [];
+    for(var i=0;i<src.length;i++){ if(i>0) cum += phHaversine(src[i-1],src[i]); out.push({ lat:src[i].lat, lon:src[i].lon, speed:+(src[i].speed||0).toFixed(1), bearing:Math.round(src[i].bearing||0), dist:Math.round(cum), alt:Math.round(src[i].alt||0), t:Math.round(src[i].t-t0) }); }
+    var durationSec = out[out.length-1].t, distanceM = Math.round(cum);
+    var maxAltM = Math.round(Math.max.apply(null, out.map(function(p){return p.alt;})));
+    var milieu = phMilieu, cat = phCat || (milieu==="mer"?"Sortie eau":"Sortie terre"); // choisi par l'utilisateur
+    var avgSpeedKmh = durationSec>0 ? +(distanceM/durationSec*3.6).toFixed(1) : 0;
+    return {
+      id: "phone-"+phT0,
+      name: cat + " · téléphone",
+      categoryName: cat, activityType: phType || "phone", milieu: milieu,
+      startedAt: new Date(phT0).toISOString(), durationSec: durationSec, distanceM: distanceM,
+      avgSpeedKmh: avgSpeedKmh, maxSpeedKmh: +phMax.toFixed(1), maxAltM: maxAltM,
+      firstLat: out[0].lat, firstLon: out[0].lon, thumbnailUrl: null, source: "phone", points: out
+    };
+  }
+  function phSaveLocal(sess){
+    try { var arr = JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr.unshift(sess); if(arr.length>100) arr = arr.slice(0,100); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); } catch(e){}
+  }
+  function phBind(){
+    var a=$("phStart"), b=$("phStop"); if(a) a.addEventListener("click", phStart); if(b) b.addEventListener("click", phStop);
+    var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(btn) phSetMilieu(btn.dataset.m); });
+    var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; });
+    phSetMilieu("mer");
+  }
+  if(document.readyState!=="loading") phBind(); else window.addEventListener("DOMContentLoaded", phBind);
 
   // ---------------- Bluetooth ----------------
   async function connect() {

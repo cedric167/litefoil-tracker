@@ -447,20 +447,32 @@ function updateConn(){
   if(STL.enabled){ st.textContent="Connecté"+(STL.userName?(" · "+STL.userName):"")+" — appuie pour te déconnecter"; }
   else{ st.textContent="Connecte ton compte (Garmin & Suunto inclus)"; }
 }
+// Sessions enregistrées avec le GPS du téléphone (onglet Tracker → « Suivre avec mon téléphone »).
+// Même origine que l'app → le localStorage est partagé entre les pages.
+function localSessions(){ try{ return hydrate(JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")); }catch(e){ return []; } }
+function withLocal(list){
+  const loc=localSessions(); if(!loc.length) return list;
+  const seen={}; list.forEach(x=>{ seen[x.id]=1; });
+  const all=loc.filter(x=>!seen[x.id]).concat(list);
+  all.sort((a,b)=>(b.startedAt?b.startedAt.getTime():0)-(a.startedAt?a.startedAt.getTime():0));
+  return all;
+}
 async function load(){
   // 1) LIVE si déjà connecté
   if(STL.restore()){
     updateConn();
-    try{ setBadge("CHARGEMENT…","#e7f2ff","#0a5a8a"); ALL=await STL.buildAll(); setBadge("EN DIRECT","#d8f5e3","#0a7a43"); render(); return; }
+    try{ setBadge("CHARGEMENT…","#e7f2ff","#0a5a8a"); ALL=withLocal(await STL.buildAll()); setBadge("EN DIRECT","#d8f5e3","#0a7a43"); render(); return; }
     catch(e){ if(String(e.message)==="401"){ STL.logout(); updateConn(); } console.warn("live KO",e); }
   }
   updateConn();
   // 2) snapshot réel (fallback)
   try{
     const r=await fetch("data.json?v="+Date.now(),{cache:"no-store"});
-    if(r.ok){ const j=await r.json(); ALL=hydrate(j.activities||[]); setBadge("RÉEL","#d8f5e3","#0a7a43"); render(); return; }
+    if(r.ok){ const j=await r.json(); ALL=withLocal(hydrate(j.activities||[])); setBadge("RÉEL","#d8f5e3","#0a7a43"); render(); return; }
   }catch(e){}
-  // 3) démo
+  // 3) démo (+ éventuelles sorties téléphone)
+  const loc=localSessions();
+  if(loc.length){ ALL=withLocal(buildDemo()); setBadge("MES SORTIES","#d8f5e3","#0a7a43"); render(); return; }
   ALL=buildDemo(); setBadge("DÉMO","#fff3d6","#b26a00"); render();
 }
 
