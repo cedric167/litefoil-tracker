@@ -214,10 +214,11 @@ input[type=file]{display:none}
     <h3 class="serif" style="font-size:22px">Connecter ma montre</h3>
     <p class="muted" style="font-size:13px;margin:6px 0 14px">Garmin &amp; Suunto se synchronisent <b>automatiquement</b> via SportsTrackLive. Une seule autorisation à faire.</p>
     <ol class="steps">
-      <li><b>1.</b> Ouvre SportsTrackLive et connecte-toi (même compte que l'app).</li>
-      <li><b>2.</b> Va dans <b>Réglages → Intégrations</b>.</li>
-      <li><b>3.</b> Autorise <b>Garmin Connect</b> (ou Suunto). C'est tout : tes prochaines sorties arrivent ensuite toutes seules ici.</li>
+      <li><b>1.</b> Le bouton ci-dessous ouvre <b>directement l'onglet Garmin</b> de SportsTrackLive. Connecte-toi (même compte que l'app).</li>
+      <li><b>2.</b> Autorise <b>Garmin Connect</b> (ou Suunto) en un clic.</li>
+      <li><b>3.</b> C'est tout : tes prochaines sorties arrivent ensuite <b>toutes seules</b> ici.</li>
     </ol>
+    <p class="muted" style="font-size:11.5px;margin:0 0 12px">ℹ️ L'intégration Garmin / Suunto est une option <b>Premium</b> de SportsTrackLive.</p>
     <button class="btn-primary" id="watchGo">Connecter Garmin / Suunto</button>
     <a class="btn-ghost" id="watchGuide" href="https://docs.sportstracklive.com/devices/garmin-suunto" target="_blank" rel="noopener">Voir le guide pas à pas</a>
     <div class="sep"><span>ou</span></div>
@@ -655,7 +656,7 @@ function closeWatch(){ document.getElementById("watchModal").hidden=true; }
 document.getElementById("btnWatch").onclick=openWatch;
 document.getElementById("watchX").onclick=closeWatch;
 document.getElementById("watchModal").onclick=(e)=>{ if(e.target.id==="watchModal") closeWatch(); };
-document.getElementById("watchGo").onclick=()=>{ window.open("https://www.sportstracklive.com/","_blank","noopener"); };
+document.getElementById("watchGo").onclick=()=>{ window.open("https://www.sportstracklive.com/configuration?tab=garmin","_blank","noopener"); };
 document.getElementById("watchImport").onclick=()=>{ closeWatch(); document.getElementById("fileInput").click(); };
 document.getElementById("fileInput").onchange=async(e)=>{
   const f=e.target.files[0]; if(!f) return;
