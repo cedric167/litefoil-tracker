@@ -138,6 +138,12 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .btn-primary{width:100%;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1aa6d8,#0e6f8f)}
 .btn-primary:disabled{opacity:.6}
 .login-err{color:#c0392b;font-size:13px;margin:0 0 10px;font-weight:600}
+.steps{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:9px}
+.steps li{font-size:13.5px;color:var(--fg);line-height:1.4}
+.steps li b{color:var(--cyan)}
+.btn-ghost{display:block;width:100%;text-align:center;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:14px;padding:13px;font-size:15px;font-weight:600;margin-top:10px;text-decoration:none}
+.sep{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:14px 0 4px}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
 .empty{text-align:center;color:var(--muted);padding:50px 20px}
 .empty .big{font-size:40px;margin-bottom:10px}
 input[type=file]{display:none}
@@ -165,6 +171,10 @@ input[type=file]{display:none}
     <button class="pill" id="stlPill" type="button">
       <span class="dot"></span>
       <span style="text-align:left"><b>SportsTrackLive</b><small id="stlState">Connecte ton compte (Garmin &amp; Suunto inclus)</small></span>
+    </button>
+    <button class="pill action" id="btnWatch" type="button">
+      <svg viewBox="0 0 24 24"><rect x="7" y="6.5" width="10" height="11" rx="2.5"/><path d="M9 6.5V4h6v2.5M9 17.5V20h6v-2.5"/></svg>
+      Connecter ma montre
     </button>
     <button class="pill action" id="btnImport">
       <svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
@@ -195,6 +205,24 @@ input[type=file]{display:none}
     <p class="login-err" id="logErr" hidden></p>
     <button class="btn-primary" id="logGo">Se connecter</button>
     <p class="muted" style="font-size:11px;margin-top:12px">🔒 Ton mot de passe passe par notre serveur sécurisé et n'est jamais enregistré.</p>
+  </div>
+</div>
+
+<div class="modal" id="watchModal" hidden>
+  <div class="modal-card">
+    <button class="modal-x" id="watchX" aria-label="Fermer">✕</button>
+    <h3 class="serif" style="font-size:22px">Connecter ma montre</h3>
+    <p class="muted" style="font-size:13px;margin:6px 0 14px">Garmin &amp; Suunto se synchronisent <b>automatiquement</b> via SportsTrackLive. Une seule autorisation à faire.</p>
+    <ol class="steps">
+      <li><b>1.</b> Ouvre SportsTrackLive et connecte-toi (même compte que l'app).</li>
+      <li><b>2.</b> Va dans <b>Réglages → Intégrations</b>.</li>
+      <li><b>3.</b> Autorise <b>Garmin Connect</b> (ou Suunto). C'est tout : tes prochaines sorties arrivent ensuite toutes seules ici.</li>
+    </ol>
+    <button class="btn-primary" id="watchGo">Connecter Garmin / Suunto</button>
+    <a class="btn-ghost" id="watchGuide" href="https://docs.sportstracklive.com/devices/garmin-suunto" target="_blank" rel="noopener">Voir le guide pas à pas</a>
+    <div class="sep"><span>ou</span></div>
+    <button class="btn-ghost" id="watchImport">Importer un fichier (GPX / FIT)</button>
+    <p class="muted" style="font-size:11px;margin-top:12px">Autres montres (Polar, Coros…) : exporte un fichier GPX/FIT depuis leur appli et importe-le ici.</p>
   </div>
 </div>
 
@@ -622,6 +650,13 @@ function stopFly(){ cancelAnimationFrame(flyRAF); flyPaused=false; const pb=docu
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
+function openWatch(){ document.getElementById("watchModal").hidden=false; }
+function closeWatch(){ document.getElementById("watchModal").hidden=true; }
+document.getElementById("btnWatch").onclick=openWatch;
+document.getElementById("watchX").onclick=closeWatch;
+document.getElementById("watchModal").onclick=(e)=>{ if(e.target.id==="watchModal") closeWatch(); };
+document.getElementById("watchGo").onclick=()=>{ window.open("https://www.sportstracklive.com/","_blank","noopener"); };
+document.getElementById("watchImport").onclick=()=>{ closeWatch(); document.getElementById("fileInput").click(); };
 document.getElementById("fileInput").onchange=async(e)=>{
   const f=e.target.files[0]; if(!f) return;
   const txt=await f.text();
