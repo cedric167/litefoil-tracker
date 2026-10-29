@@ -15,7 +15,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const www = path.join(root, 'www');
 
 // Dossiers et fichiers du site à embarquer dans l'app
-const DIRS = ['bms', 'firmware', 'i18n', 'manuel', 'store', 'vesc'];
+const DIRS = ['activites', 'bms', 'firmware', 'i18n', 'manuel', 'store', 'vesc'];
 const FILES = [
   'index.html', 'sw.js', 'manifest.json', 'confidentialite.html',
   'icon-192.png', 'icon-512.png', 'litefoil-logo.png',
