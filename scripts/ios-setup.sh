@@ -64,4 +64,40 @@ for f in splash-2732x2732.png splash-2732x2732-1.png splash-2732x2732-2.png; do
   cp "$ROOT/ios-assets/splash-2732.png" "$ASSETS/Splash.imageset/$f"
 done
 
+# 5) Cycle de vie par scènes (UIScene) : sans lui, iOS 27 arrête l'app dès son lancement.
+#    Le délégué de scène est ajouté dans AppDelegate.swift (déjà compilé : rien à déclarer dans le projet).
+plutil -replace UIApplicationSceneManifest -json '{
+  "UIApplicationSupportsMultipleScenes": false,
+  "UISceneConfigurations": {
+    "UIWindowSceneSessionRoleApplication": [{
+      "UISceneConfigurationName": "Default Configuration",
+      "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+      "UISceneStoryboardFile": "Main"
+    }]
+  }
+}' "$PLIST"
+DELEGATE="$APP/App/AppDelegate.swift"
+if ! grep -q "class SceneDelegate" "$DELEGATE"; then
+  cat >> "$DELEGATE" <<'SWIFT'
+
+// Lite Foil : cycle de vie par scènes, exigé par iOS 27. La fenêtre vient du storyboard Main ;
+// les liens ouverts sont renvoyés à Capacitor comme le faisait AppDelegate.
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for context in URLContexts {
+            _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, open: context.url, options: [:])
+        }
+    }
+
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
+    }
+}
+SWIFT
+fi
+plutil -lint "$PLIST" >/dev/null
+
 echo "Réglages iOS Lite Foil appliqués (équipe $TEAM). Étape suivante : npx cap sync ios"
