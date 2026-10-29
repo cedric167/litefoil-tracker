@@ -5,7 +5,8 @@
   "description": "Lite Foil — app native (Capacitor) iOS/Android, pont Bluetooth natif",
   "scripts": {
     "build:www": "node scripts/build-www.mjs",
-    "sync": "npm run build:www && cap sync"
+    "sync": "npm run build:www && cap sync",
+    "ios:setup": "bash scripts/ios-setup.sh"
   },
   "dependencies": {
     "@capacitor/android": "6.1.2",

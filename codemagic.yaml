@@ -30,14 +30,9 @@ workflows:
       - name: Generer / synchroniser le projet iOS
         script: |
           if [ ! -d "ios" ]; then npx cap add ios; fi
+          # permissions, Bluetooth en arriere-plan, chiffrement, iOS 15, icone et ecran de demarrage
+          bash scripts/ios-setup.sh
           npx cap sync ios
-      - name: Ajouter les permissions iOS (Bluetooth + localisation)
-        script: |
-          PLIST="ios/App/App/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :NSBluetoothAlwaysUsageDescription string 'Lite Foil se connecte en Bluetooth a votre tracker, votre telecommande et votre batterie.'" "$PLIST" 2>/dev/null || \
-          /usr/libexec/PlistBuddy -c "Set :NSBluetoothAlwaysUsageDescription 'Lite Foil se connecte en Bluetooth a votre tracker, votre telecommande et votre batterie.'" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :NSBluetoothPeripheralUsageDescription string 'Lite Foil se connecte en Bluetooth a votre materiel Lite Foil.'" "$PLIST" 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Votre position sert a vous situer sur la carte et, si vous l activez, a apparaitre dans la communaute (zone approximative).'" "$PLIST" 2>/dev/null || true
       - name: Signature automatique
         script: |
           xcode-project use-profiles
