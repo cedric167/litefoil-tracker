@@ -1053,7 +1053,8 @@
   <h2>Suivre avec mon téléphone</h2>
   <div class="card" id="phoneCard">
     <div class="note" style="margin-top:0"><b>Sans le boîtier Lite Foil.</b> Enregistre ta sortie avec le GPS de ce téléphone
-      (foil, surf, wing, nage, rando, vélo…). Garde l'écran allumé et le téléphone sur toi. À la fin, la sortie apparaît
+      (foil, surf, wing, nage, rando, vélo…). Garde le téléphone sur toi — dans l'app, tu peux verrouiller l'écran,
+      l'enregistrement continue ; dans le navigateur, laisse l'écran allumé. À la fin, la sortie apparaît
       dans <b>Activités — Terre &amp; Mer</b>, avec la carte, les stats et le survol 3D.</div>
     <div class="phlab" style="margin-top:14px">Type d'activité</div>
     <div class="phseg" id="phSeg">
@@ -1796,7 +1797,16 @@
   // ---------------- Suivre avec mon téléphone (GPS du navigateur, sans boîtier) ----------------
   // Enregistre une sortie avec le GPS du téléphone, l'affiche en direct sur la carte, puis
   // la stocke en local (clé lf_phone_sessions) pour qu'elle apparaisse dans Activités.
-  var phWatch = null, phPts = [], phT0 = 0, phMax = 0, phTimer = null, phLast = null, phWake = null;
+  var phWatch = null, phBgId = null, phPts = [], phT0 = 0, phMax = 0, phTimer = null, phLast = null, phWake = null;
+  // Plugin natif de suivi en arrière-plan (présent seulement dans l'app installée Android/iOS).
+  function phBgPlugin(){
+    try {
+      var C = window.Capacitor; if(!C) return null;
+      if(C.Plugins && C.Plugins.BackgroundGeolocation) return C.Plugins.BackgroundGeolocation;
+      if(C.isNativePlatform && C.isNativePlatform() && C.registerPlugin) return C.registerPlugin("BackgroundGeolocation");
+      return null;
+    } catch(e){ return null; }
+  }
   var phMilieu = "mer", phType = "efoil", phCat = "Foil électrique";
   // Activités proposées par milieu : [clé interne, libellé affiché]
   var PH_ACTS = {
@@ -1819,38 +1829,69 @@
   function phDistTotal(){ var d=0; for(var i=1;i<phPts.length;i++) d+=phHaversine(phPts[i-1],phPts[i]); return d; }
   function phNum(x){ return x.toFixed(1).replace(".",","); }
   function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); }
+  // Traite une position normalisée (native OU web) : {lat, lon, acc, alt, speedMs, heading, tMs}
+  function phOnPos(o){
+    if(o.lat==null || o.lon==null || !isFinite(o.lat) || !isFinite(o.lon)) return;
+    var t = Math.max(0, ((o.tMs!=null?o.tMs:Date.now()) - phT0)/1000);
+    var spd = (o.speedMs!=null && isFinite(o.speedMs) && o.speedMs>=0) ? o.speedMs*3.6 : null;
+    var acc = (o.acc!=null && isFinite(o.acc)) ? o.acc : null;
+    // au tout début, on écarte un point trop imprécis (fix pas encore stable)
+    if(phPts.length===0 && acc!=null && acc>40){ $("phNote").textContent = "Signal GPS faible ("+Math.round(acc)+" m)… on attend un meilleur fix."; $("phAcc").textContent = Math.round(acc)+" m"; return; }
+    var p = { lat:o.lat, lon:o.lon, speed:(spd!=null?spd:0), bearing:(o.heading!=null&&isFinite(o.heading))?o.heading:0, alt:(o.alt!=null&&isFinite(o.alt))?o.alt:0, t:t, acc:acc };
+    // si le GPS ne donne pas la vitesse, l'estimer sur la distance entre deux points
+    if(spd==null && phLast){ var dt=p.t-phLast.t; if(dt>0.2) spd = phHaversine(phLast,p)/dt*3.6; }
+    if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
+    phPts.push(p); phLast = p;
+    var dist = phDistTotal();
+    $("phPts").textContent = phPts.length;
+    $("phDist").textContent = (dist/1000).toFixed(2).replace(".",",")+" km";
+    $("phSpd").textContent = (spd!=null?phNum(spd):"0,0")+" km/h";
+    $("phSpdMax").textContent = phNum(phMax)+" km/h";
+    $("phAcc").textContent = (acc!=null?Math.round(acc)+" m":"—");
+    $("phNote").textContent = (phBgId!=null ? "Enregistrement en cours (continue écran éteint) — " : "Enregistrement en cours — ")+phPts.length+" points GPS.";
+    try { mapUpdate(o.lat, o.lon, spd); } catch(e){}
+  }
   function phStart(){
-    if(!navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
-    phPts = []; phMax = 0; phT0 = Date.now(); phLast = null;
+    var bg = phBgPlugin();
+    if(!bg && !navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
+    phPts = []; phMax = 0; phT0 = Date.now(); phLast = null; phBgId = null;
     $("phStart").hidden = true; $("phStop").hidden = false;
-    $("phNote").textContent = "Recherche du signal GPS… garde l'écran allumé.";
     $("phPts").textContent = "0"; $("phDist").textContent = "0,00 km"; $("phSpd").textContent = "— km/h"; $("phSpdMax").textContent = "— km/h"; $("phAcc").textContent = "—"; $("phDur").textContent = "0:00";
     phTimer = setInterval(phTick, 1000);
+    if(bg){
+      // App native : service premier plan → l'enregistrement continue écran éteint / en poche. Arrêt manuel.
+      $("phNote").textContent = "Recherche du signal GPS… tu peux verrouiller l'écran, l'enregistrement continue.";
+      bg.addWatcher({
+        backgroundTitle: "Lite Foil — enregistrement",
+        backgroundMessage: "Ta sortie est en cours d'enregistrement.",
+        requestPermissions: true,
+        stale: false,
+        distanceFilter: 5
+      }, function(location, error){
+        if(error){
+          if(error.code === "NOT_AUTHORIZED"){
+            $("phNote").innerHTML = "Localisation refusée. <a href=\"#\" id=\"phOpenSet\" style=\"color:var(--accent-ink);font-weight:800\">Ouvrir les réglages</a> pour l'autoriser.";
+            var a=$("phOpenSet"); if(a) a.addEventListener("click", function(ev){ ev.preventDefault(); try{ bg.openSettings(); }catch(e){} });
+          } else { $("phNote").textContent = "GPS indisponible ("+(error.message||error.code||"erreur")+")."; }
+          return;
+        }
+        phOnPos({ lat:location.latitude, lon:location.longitude, acc:location.accuracy, alt:location.altitude, speedMs:location.speed, heading:location.bearing, tMs:location.time });
+      }).then(function(id){ phBgId = id; }).catch(function(e){ $("phNote").textContent = "Impossible de démarrer le suivi ("+(e&&e.message?e.message:e)+")."; phStopCleanup(); $("phStart").hidden=false; $("phStop").hidden=true; });
+      return;
+    }
+    // Web (navigateur) : pas de service premier plan → écran allumé requis.
+    $("phNote").textContent = "Recherche du signal GPS… garde l'écran allumé.";
     try { if(navigator.wakeLock && navigator.wakeLock.request) navigator.wakeLock.request("screen").then(function(w){ phWake = w; }).catch(function(){}); } catch(e){}
     phWatch = navigator.geolocation.watchPosition(function(pos){
-      var c = pos.coords, t = Math.max(0,(pos.timestamp - phT0)/1000);
-      var spd = (c.speed!=null && isFinite(c.speed) && c.speed>=0) ? c.speed*3.6 : null;
-      // au tout début, on écarte un point trop imprécis (fix pas encore stable)
-      if(phPts.length===0 && c.accuracy!=null && c.accuracy>40){ $("phNote").textContent = "Signal GPS faible ("+Math.round(c.accuracy)+" m)… on attend un meilleur fix."; $("phAcc").textContent = Math.round(c.accuracy)+" m"; return; }
-      var p = { lat:c.latitude, lon:c.longitude, speed:(spd!=null?spd:0), bearing:(c.heading!=null&&isFinite(c.heading))?c.heading:0, alt:(c.altitude!=null&&isFinite(c.altitude))?c.altitude:0, t:t, acc:c.accuracy };
-      // si le GPS ne donne pas la vitesse, l'estimer sur la distance entre deux points
-      if(spd==null && phLast){ var dt=p.t-phLast.t; if(dt>0.2) spd = phHaversine(phLast,p)/dt*3.6; }
-      if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
-      phPts.push(p); phLast = p;
-      var dist = phDistTotal();
-      $("phPts").textContent = phPts.length;
-      $("phDist").textContent = (dist/1000).toFixed(2).replace(".",",")+" km";
-      $("phSpd").textContent = (spd!=null?phNum(spd):"0,0")+" km/h";
-      $("phSpdMax").textContent = phNum(phMax)+" km/h";
-      $("phAcc").textContent = (c.accuracy!=null?Math.round(c.accuracy)+" m":"—");
-      $("phNote").textContent = "Enregistrement en cours — "+phPts.length+" points GPS.";
-      try { mapUpdate(c.latitude, c.longitude, spd); } catch(e){}
+      var c = pos.coords;
+      phOnPos({ lat:c.latitude, lon:c.longitude, acc:c.accuracy, alt:c.altitude, speedMs:c.speed, heading:c.heading, tMs:pos.timestamp });
     }, function(err){
       $("phNote").textContent = "GPS refusé ou indisponible"+(err&&err.message?" ("+err.message+")":"")+". Autorise la localisation puis réessaie.";
       if(!phPts.length){ phStopCleanup(); $("phStart").hidden=false; $("phStop").hidden=true; }
     }, { enableHighAccuracy:true, maximumAge:1000, timeout:20000 });
   }
   function phStopCleanup(){
+    if(phBgId!=null){ var bg=phBgPlugin(); if(bg){ try{ bg.removeWatcher({ id: phBgId }); }catch(e){} } phBgId = null; }
     if(phWatch!=null && navigator.geolocation) navigator.geolocation.clearWatch(phWatch); phWatch = null;
     if(phTimer) clearInterval(phTimer); phTimer = null;
     try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}

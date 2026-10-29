@@ -21,8 +21,9 @@ TEAM="${IOS_TEAM_ID:-CKZ892CTBW}"
 # 1) Info.plist : permissions, Bluetooth en arrière-plan, chiffrement standard (HTTPS uniquement)
 plutil -replace NSBluetoothAlwaysUsageDescription -string "Lite Foil se connecte en Bluetooth à votre tracker, votre télécommande et votre batterie." "$PLIST"
 plutil -replace NSBluetoothPeripheralUsageDescription -string "Lite Foil se connecte en Bluetooth à votre matériel Lite Foil." "$PLIST"
-plutil -replace NSLocationWhenInUseUsageDescription -string "Votre position sert à vous situer sur la carte et, si vous l'activez, à apparaître dans la communauté (zone approximative)." "$PLIST"
-plutil -replace UIBackgroundModes -json '["bluetooth-central"]' "$PLIST"
+plutil -replace NSLocationWhenInUseUsageDescription -string "Votre position sert à vous situer sur la carte, à enregistrer vos sorties et, si vous l'activez, à apparaître dans la communauté (zone approximative)." "$PLIST"
+plutil -replace NSLocationAlwaysAndWhenInUseUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint ou le téléphone dans la poche. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée, et vous l'arrêtez vous-même." "$PLIST"
+plutil -replace UIBackgroundModes -json '["bluetooth-central","location"]' "$PLIST"
 plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
 plutil -lint "$PLIST" >/dev/null
 
