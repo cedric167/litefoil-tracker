@@ -115,6 +115,11 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .flyover .ctrl{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6}
 .flyover .ctrl button{border:0;background:rgba(255,255,255,.14);color:#fff;backdrop-filter:blur(8px);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
 .flyover .ctrl button.primary{background:var(--cyan)}
+.flyover .ctrl{gap:8px;flex-wrap:wrap;padding:0 12px}
+.flyover .spd{display:flex;gap:3px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:4px}
+.flyover .spd button{background:transparent;padding:9px 12px;border-radius:999px;font-size:14px;font-weight:600;color:#fff}
+.flyover .spd button.on{background:var(--cyan)}
+.flyover .ctrl #flyPlay,.flyover .ctrl #flyReplay{min-width:48px;justify-content:center}
 .flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px)}
 .flyover .closef svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 
@@ -219,7 +224,13 @@ input[type=file]{display:none}
   </div>
   <button class="closef" id="closeFly" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <div class="ctrl">
-    <button id="flyReplay">↺ Rejouer</button>
+    <button id="flyPlay" aria-label="Lecture/Pause">⏸</button>
+    <div class="spd" id="flySpd">
+      <button data-s="0.5">0,5×</button>
+      <button data-s="1" class="on">1×</button>
+      <button data-s="2">2×</button>
+    </div>
+    <button id="flyReplay">↺</button>
     <button class="primary" id="flyClose2">Terminer</button>
   </div>
 </div>
@@ -532,10 +543,15 @@ function drawDetailMap(a){
 document.getElementById("closeSheet").onclick=()=>document.getElementById("sheet").classList.remove("open");
 
 /* ====================== SURVOL 3D ====================== */
-let flyRAF=null;
+let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1, camBearing=0;
+function flyBearing(a,b){const R=Math.PI/180,D=180/Math.PI;const la1=a.lat*R,la2=b.lat*R,dLon=(b.lon-a.lon)*R;const y=Math.sin(dLon)*Math.cos(la2);const x=Math.cos(la1)*Math.sin(la2)-Math.sin(la1)*Math.cos(la2)*Math.cos(dLon);return (Math.atan2(y,x)*D+360)%360;}
+function flyLerpAngle(a,b,t){let d=((b-a+540)%360)-180;return (a+d*t+360)%360;}
+function flyInteract(on){const m=flyMap;if(!m)return;for(const k of ["dragPan","dragRotate","scrollZoom","touchZoomRotate","keyboard","doubleClickZoom"]){if(m[k]){try{on?m[k].enable():m[k].disable();}catch(e){}}}}
 document.getElementById("btnFly").onclick=()=>startFly(current);
 document.getElementById("closeFly").onclick=document.getElementById("flyClose2").onclick=stopFly;
 document.getElementById("flyReplay").onclick=()=>startFly(current);
+document.getElementById("flyPlay").onclick=()=>{ if(flyProg>=1){ startFly(current); return; } flyPaused=!flyPaused; document.getElementById("flyPlay").textContent=flyPaused?"▶":"⏸"; flyInteract(flyPaused); };
+document.querySelectorAll("#flySpd button").forEach(b=>{ b.onclick=()=>{ flySpeedMul=parseFloat(b.dataset.s); document.querySelectorAll("#flySpd button").forEach(x=>x.classList.toggle("on",x===b)); }; });
 
 async function startFly(a){
   if(!a) return; await ensurePoints(a);
@@ -563,27 +579,36 @@ async function startFly(a){
 }
 function runFly(a,pts){
   cancelAnimationFrame(flyRAF);
-  const DURATION=18000; // ~18 s, comme Strava (compresse la sortie)
-  const start=performance.now();
+  const N=pts.length, BASE=30000; // 30 s à 1x (plus lent/lisible)
+  flyProg=0; flyPaused=false; camBearing = pts[0].bearing||0;
+  const playBtn=document.getElementById("flyPlay"); if(playBtn) playBtn.textContent="⏸";
+  flyInteract(false);
   const spd=document.getElementById("flySpeed"), alt=document.getElementById("flyAlt"), dist=document.getElementById("flyDist");
-  const maxSpeedDisplay=a.milieu==="mer";
-  let runningMax=0;
-  const step=(now)=>{
-    const prog=Math.min(1,(now-start)/DURATION);
-    const fi=prog*(pts.length-1); const i=Math.floor(fi); const p=pts[Math.min(i,pts.length-1)];
-    // révèle la portion parcourue
-    flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1)));
-    // caméra qui suit la tête
-    flyMap.jumpTo({center:[p.lon,p.lat],bearing:p.bearing,pitch:68,zoom:15.2});
-    runningMax=Math.max(runningMax,p.speed);
-    spd.textContent=Math.round(p.speed);
-    alt.textContent= maxSpeedDisplay ? Math.round(runningMax) : Math.round(p.alt);
-    dist.textContent=(p.dist/1000).toFixed(1);
-    if(prog<1) flyRAF=requestAnimationFrame(step);
+  const maxSpeedDisplay=a.milieu==="mer"; let runningMax=0; let last=performance.now();
+  const frame=(now)=>{
+    const dt=now-last; last=now;
+    if(!flyPaused){
+      flyProg=Math.min(1, flyProg + (dt/BASE)*flySpeedMul);
+      const fi=flyProg*(N-1); const i=Math.floor(fi); const frac=fi-i;
+      const p0=pts[i], p1=pts[Math.min(i+1,N-1)];
+      const lon=p0.lon+(p1.lon-p0.lon)*frac, lat=p0.lat+(p1.lat-p0.lat)*frac;
+      const speed=p0.speed+(p1.speed-p0.speed)*frac, altv=p0.alt+(p1.alt-p0.alt)*frac, distv=p0.dist+(p1.dist-p0.dist)*frac;
+      const LA=Math.max(2,Math.round(N*0.02)); const ahead=pts[Math.min(i+LA,N-1)];
+      const moved=Math.abs(ahead.lat-lat)+Math.abs(ahead.lon-lon);
+      if(moved>1e-5){ const want=flyBearing({lat,lon},ahead); camBearing=flyLerpAngle(camBearing,want,0.08); }
+      flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1)));
+      flyMap.jumpTo({center:[lon,lat],bearing:camBearing,pitch:68,zoom:15.2});
+      runningMax=Math.max(runningMax,speed);
+      spd.textContent=Math.round(speed);
+      alt.textContent= maxSpeedDisplay ? Math.round(runningMax) : Math.round(altv);
+      dist.textContent=(distv/1000).toFixed(1);
+      if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; flyInteract(true); }
+    }
+    flyRAF=requestAnimationFrame(frame);
   };
-  flyRAF=requestAnimationFrame(step);
+  flyRAF=requestAnimationFrame(frame);
 }
-function stopFly(){ cancelAnimationFrame(flyRAF); document.getElementById("flyover").classList.remove("open"); }
+function stopFly(){ cancelAnimationFrame(flyRAF); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
