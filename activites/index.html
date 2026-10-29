@@ -122,6 +122,8 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .flyover .ctrl #flyPlay,.flyover .ctrl #flyReplay{min-width:48px;justify-content:center}
 .flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px)}
 .flyover .closef svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.flyover .flyzoom{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:7;display:flex;flex-direction:column;gap:8px}
+.flyover .flyzoom button{width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:22px;font-weight:700;backdrop-filter:blur(8px)}
 
 /* ---------- Connexion (modale) ---------- */
 .modal{position:fixed;inset:0;z-index:70;background:rgba(10,15,18,.45);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
@@ -223,6 +225,10 @@ input[type=file]{display:none}
     </div>
   </div>
   <button class="closef" id="closeFly" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="flyzoom">
+    <button id="flyZin" aria-label="Zoom avant">+</button>
+    <button id="flyZout" aria-label="Zoom arriere">−</button>
+  </div>
   <div class="ctrl">
     <button id="flyPlay" aria-label="Lecture/Pause">⏸</button>
     <div class="spd" id="flySpd">
@@ -543,15 +549,15 @@ function drawDetailMap(a){
 document.getElementById("closeSheet").onclick=()=>document.getElementById("sheet").classList.remove("open");
 
 /* ====================== SURVOL 3D ====================== */
-let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1, camBearing=0;
-function flyBearing(a,b){const R=Math.PI/180,D=180/Math.PI;const la1=a.lat*R,la2=b.lat*R,dLon=(b.lon-a.lon)*R;const y=Math.sin(dLon)*Math.cos(la2);const x=Math.cos(la1)*Math.sin(la2)-Math.sin(la1)*Math.cos(la2)*Math.cos(dLon);return (Math.atan2(y,x)*D+360)%360;}
-function flyLerpAngle(a,b,t){let d=((b-a+540)%360)-180;return (a+d*t+360)%360;}
-function flyInteract(on){const m=flyMap;if(!m)return;for(const k of ["dragPan","dragRotate","scrollZoom","touchZoomRotate","keyboard","doubleClickZoom"]){if(m[k]){try{on?m[k].enable():m[k].disable();}catch(e){}}}}
+let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1;
+function ptGeo(p){ return {type:"Feature",geometry:{type:"Point",coordinates:[p.lon,p.lat]}}; }
 document.getElementById("btnFly").onclick=()=>startFly(current);
 document.getElementById("closeFly").onclick=document.getElementById("flyClose2").onclick=stopFly;
 document.getElementById("flyReplay").onclick=()=>startFly(current);
-document.getElementById("flyPlay").onclick=()=>{ if(flyProg>=1){ startFly(current); return; } flyPaused=!flyPaused; document.getElementById("flyPlay").textContent=flyPaused?"▶":"⏸"; flyInteract(flyPaused); };
+document.getElementById("flyPlay").onclick=()=>{ if(flyProg>=1){ startFly(current); return; } flyPaused=!flyPaused; document.getElementById("flyPlay").textContent=flyPaused?"▶":"⏸"; };
 document.querySelectorAll("#flySpd button").forEach(b=>{ b.onclick=()=>{ flySpeedMul=parseFloat(b.dataset.s); document.querySelectorAll("#flySpd button").forEach(x=>x.classList.toggle("on",x===b)); }; });
+document.getElementById("flyZin").onclick=()=>{ if(flyMap) flyMap.zoomIn(); };
+document.getElementById("flyZout").onclick=()=>{ if(flyMap) flyMap.zoomOut(); };
 
 async function startFly(a){
   if(!a) return; await ensurePoints(a);
@@ -560,18 +566,22 @@ async function startFly(a){
   document.getElementById("flyName").textContent=a.name;
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
   if(!flyMap){
-    flyMap=new maplibregl.Map({container:"flyMap",style:mapStyle,attributionControl:false,interactive:false,pitch:68,bearing:pts[0].bearing,zoom:15.2,center:[pts[0].lon,pts[0].lat]});
+    flyMap=new maplibregl.Map({container:"flyMap",style:mapStyle,attributionControl:false,interactive:true,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
   }
   const setup=()=>{
     try{ flyMap.setTerrain({source:"dem",exaggeration:1.25}); }catch(e){}
-    if(flyMap.getLayer("flyFull")) flyMap.removeLayer("flyFull");
-    if(flyMap.getSource("flyFull")) flyMap.removeSource("flyFull");
-    if(flyMap.getLayer("flyHead")) flyMap.removeLayer("flyHead");
-    if(flyMap.getSource("flyHead")) flyMap.removeSource("flyHead");
+    for(const id of ["flyFull","flyHead","flyDot"]){ if(flyMap.getLayer(id)) flyMap.removeLayer(id); if(flyMap.getSource(id)) flyMap.removeSource(id); }
     flyMap.addSource("flyFull",{type:"geojson",data:lineGeo(pts)});
-    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",paint:{"line-color":"#ff5a1f","line-width":5,"line-opacity":.25},layout:{"line-join":"round","line-cap":"round"}});
+    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",paint:{"line-color":"#ff5a1f","line-width":4,"line-opacity":.22},layout:{"line-join":"round","line-cap":"round"}});
     flyMap.addSource("flyHead",{type:"geojson",data:lineGeo([pts[0]])});
     flyMap.addLayer({id:"flyHead",type:"line",source:"flyHead",paint:{"line-color":"#ff5a1f","line-width":6,"line-opacity":1},layout:{"line-join":"round","line-cap":"round"}});
+    flyMap.addSource("flyDot",{type:"geojson",data:ptGeo(pts[0])});
+    flyMap.addLayer({id:"flyDot",type:"circle",source:"flyDot",paint:{"circle-radius":8,"circle-color":"#ff5a1f","circle-stroke-color":"#fff","circle-stroke-width":3}});
+    // vue fixe cadree sur toute la trace : seul le point se deplace
+    let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+    for(const q of pts){ if(q.lon<minx)minx=q.lon; if(q.lon>maxx)maxx=q.lon; if(q.lat<miny)miny=q.lat; if(q.lat>maxy)maxy=q.lat; }
+    try{ const cam=flyMap.cameraForBounds([[minx,miny],[maxx,maxy]],{padding:70,bearing:0}); if(cam) flyMap.jumpTo({center:cam.center,zoom:Math.min((cam.zoom||14),16.5),pitch:55,bearing:0}); }
+    catch(e){ flyMap.jumpTo({center:[pts[0].lon,pts[0].lat],zoom:15,pitch:55,bearing:0}); }
     runFly(a,pts);
   };
   flyMap.resize();
@@ -579,10 +589,9 @@ async function startFly(a){
 }
 function runFly(a,pts){
   cancelAnimationFrame(flyRAF);
-  const N=pts.length, BASE=30000; // 30 s à 1x (plus lent/lisible)
-  flyProg=0; flyPaused=false; camBearing = pts[0].bearing||0;
+  const N=pts.length, BASE=30000; // 30 s a 1x
+  flyProg=0; flyPaused=false;
   const playBtn=document.getElementById("flyPlay"); if(playBtn) playBtn.textContent="⏸";
-  flyInteract(false);
   const spd=document.getElementById("flySpeed"), alt=document.getElementById("flyAlt"), dist=document.getElementById("flyDist");
   const maxSpeedDisplay=a.milieu==="mer"; let runningMax=0; let last=performance.now();
   const frame=(now)=>{
@@ -593,16 +602,13 @@ function runFly(a,pts){
       const p0=pts[i], p1=pts[Math.min(i+1,N-1)];
       const lon=p0.lon+(p1.lon-p0.lon)*frac, lat=p0.lat+(p1.lat-p0.lat)*frac;
       const speed=p0.speed+(p1.speed-p0.speed)*frac, altv=p0.alt+(p1.alt-p0.alt)*frac, distv=p0.dist+(p1.dist-p0.dist)*frac;
-      const LA=Math.max(2,Math.round(N*0.02)); const ahead=pts[Math.min(i+LA,N-1)];
-      const moved=Math.abs(ahead.lat-lat)+Math.abs(ahead.lon-lon);
-      if(moved>1e-5){ const want=flyBearing({lat,lon},ahead); camBearing=flyLerpAngle(camBearing,want,0.08); }
-      flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1)));
-      flyMap.jumpTo({center:[lon,lat],bearing:camBearing,pitch:68,zoom:15.2});
+      flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1).concat([{lon,lat}])));
+      flyMap.getSource("flyDot").setData(ptGeo({lon,lat}));
       runningMax=Math.max(runningMax,speed);
       spd.textContent=Math.round(speed);
       alt.textContent= maxSpeedDisplay ? Math.round(runningMax) : Math.round(altv);
       dist.textContent=(distv/1000).toFixed(1);
-      if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; flyInteract(true); }
+      if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; }
     }
     flyRAF=requestAnimationFrame(frame);
   };
