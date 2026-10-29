@@ -3,6 +3,7 @@
  * Deux déclencheurs Realtime Database (région europe-west1) :
  *   - chatPush : nouveau message de salon  (/chat/{id})
  *   - dmPush   : nouveau message privé      (/dm/{pair}/{id}, pair = uidA__uidB)
+ *   - reportAlert : nouveau signalement      (/reports/{id}), envoyé aux modérateurs
  *
  * Chaque appareil enregistre son jeton FCM dans /pushTokens/{uid}/{clé} = {token, pseudo, t}
  * (écrit par l'appli). On envoie un message « data-only » : le service worker
@@ -12,7 +13,7 @@
 const { onValueCreated } = require("firebase-functions/v2/database");
 const { onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
-const { defineSecret } = require("firebase-functions/params");
+const { defineSecret, defineString } = require("firebase-functions/params");
 const { initializeApp } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { getMessaging } = require("firebase-admin/messaging");
@@ -143,4 +144,27 @@ exports.groupPush = onValueCreated({ ref: "/groupMessages/{gid}/{id}", instance:
     title: (g.name || "Groupe") + " · " + (m.pseudo || "Rider"),
     body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
   });
+});
+
+/* Signalements (charte de la communauté) : prévient l'équipe Lite Foil à chaque nouveau
+ * signalement, pour le traiter sous 24 h (exigence Apple, règle 1.2).
+ * Les identifiants (uid) des modérateurs sont dans functions/.env :
+ *   REPORT_ADMIN_UIDS=uid1,uid2
+ * Chaque modérateur reçoit la notification sur les appareils où il a activé les
+ * notifications du chat. Le signalement reste dans /reports ; on y note l'envoi. */
+const REPORT_ADMIN_UIDS = defineString("REPORT_ADMIN_UIDS", { default: "" });
+
+exports.reportAlert = onValueCreated({ ref: "/reports/{id}", instance: DB_INSTANCE }, async (event) => {
+  const r = event.data.val() || {};
+  const admins = REPORT_ADMIN_UIDS.value().split(",").map((s) => s.trim()).filter(Boolean);
+  if (!admins.length) { console.warn("reportAlert : REPORT_ADMIN_UIDS vide, personne n'est prévenu"); return; }
+  const what = r.type === "message" ? "Message" : "Rider";
+  const target = r.targetPseudo || r.targetUid || "inconnu";
+  await sendToUids(admins, {
+    type: "report",
+    channel: "report",
+    title: "⚠️ Signalement · " + what + " de " + target,
+    body: (r.text ? "« " + String(r.text).slice(0, 100) + " » · " : "") + "signalé par " + (r.byPseudo || r.by || "un rider")
+  });
+  await event.data.ref.child("alertSentTo").set(admins);
 });

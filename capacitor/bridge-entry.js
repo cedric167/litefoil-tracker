@@ -8,6 +8,7 @@
  * touche à rien (navigator.bluetooth du navigateur reste utilisé).
  */
 import { BleClient, numberToUUID } from '@capacitor-community/bluetooth-le';
+import { Geolocation } from '@capacitor/geolocation';
 
 const Cap = window.Capacitor;
 const isNative = !!(Cap && typeof Cap.isNativePlatform === 'function' && Cap.isNativePlatform());
@@ -178,4 +179,78 @@ if (isNative && !window.__LF_NATIVE_BLE__) {
   navigator.bluetooth.getDevices = async () => loadDevs().map((x) => new LFDevice(x.id, x.name));
 
   console.log('[Lite Foil] Pont Bluetooth natif actif.');
+}
+
+/*
+ * App native : on masque les textes réservés au web (classe .web-only, ex. « Chrome sur Android »)
+ * et on fait passer navigator.geolocation par le plugin natif @capacitor/geolocation.
+ * Sans ça, la WebView iOS ajoute sa propre demande « localhost would like to use your
+ * current location » après l'autorisation iOS.
+ */
+if (isNative && !window.__LF_NATIVE_GEO__) {
+  window.__LF_NATIVE_GEO__ = true;
+
+  document.documentElement.classList.add('lf-native');
+  const css = document.createElement('style');
+  css.textContent = '.lf-native .web-only{display:none!important}';
+  document.head.appendChild(css);
+
+  // Position native -> objet au format Web (GeolocationPosition)
+  const toWebPosition = (p) => ({
+    timestamp: p.timestamp,
+    coords: {
+      latitude: p.coords.latitude,
+      longitude: p.coords.longitude,
+      accuracy: p.coords.accuracy,
+      altitude: p.coords.altitude ?? null,
+      altitudeAccuracy: p.coords.altitudeAccuracy ?? null,
+      heading: p.coords.heading ?? null,
+      speed: p.coords.speed ?? null,
+    },
+  });
+  // Erreur native -> GeolocationPositionError (1 refus, 2 indisponible, 3 délai dépassé)
+  const toWebError = (e) => {
+    const message = String((e && e.message) || e || 'Position indisponible');
+    const code = /denied|permission|refus/i.test(message) ? 1 : /timeout|time out|délai/i.test(message) ? 3 : 2;
+    return { code, message, PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 };
+  };
+  const toNativeOptions = (o = {}) => ({
+    enableHighAccuracy: !!o.enableHighAccuracy,
+    timeout: o.timeout,
+    maximumAge: o.maximumAge,
+  });
+
+  let nextWatchId = 1;
+  const watches = new Map(); // id Web (nombre) -> promesse de l'id natif
+
+  const geo = {
+    getCurrentPosition(success, error, options) {
+      Geolocation.getCurrentPosition(toNativeOptions(options))
+        .then((p) => success && success(toWebPosition(p)))
+        .catch((e) => error && error(toWebError(e)));
+    },
+    watchPosition(success, error, options) {
+      const id = nextWatchId++;
+      watches.set(id, Geolocation.watchPosition(toNativeOptions(options), (p, e) => {
+        if (e) { if (error) error(toWebError(e)); return; }
+        if (p && success) success(toWebPosition(p));
+      }));
+      return id;
+    },
+    clearWatch(id) {
+      const pending = watches.get(id);
+      if (!pending) return;
+      watches.delete(id);
+      pending.then((nativeId) => Geolocation.clearWatch({ id: nativeId })).catch(() => {});
+    },
+  };
+
+  try {
+    Object.defineProperty(navigator, 'geolocation', { value: geo, configurable: true });
+  } catch (e) {
+    // propriété non redéfinissable : on remplace les méthodes de l'objet existant
+    Object.assign(navigator.geolocation, geo);
+  }
+
+  console.log('[Lite Foil] Position native active.');
 }
