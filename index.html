@@ -694,8 +694,9 @@
   </div>
   <div class="tabs">
     <button class="tab active" data-tab="dash">Accueil</button>
-    <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
+    <button class="tab" data-tab="tracker">Tracking</button>
     <button class="tab" data-tab="meteo">Météo</button>
+    <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
@@ -2074,7 +2075,9 @@
   // Sous-écrans regroupés dans l'onglet « Lite Foil Ultra »
   const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote"];
   function showTab(name) {
-    const isSub = ULTRA_SUB.indexOf(name) >= 0;
+    // Un onglet dédié dans la barre (ex. Tracking) est prioritaire sur le sous-écran Lite Foil Ultra.
+    const hasOwnTab = !!document.querySelector(".tab[data-tab=\"" + name + "\"]");
+    const isSub = !hasOwnTab && ULTRA_SUB.indexOf(name) >= 0;
     const tabName = isSub ? "ultra" : name;
     const tab = document.querySelector(".tab[data-tab=\"" + tabName + "\"]");
     if (!tab && !isSub) return;
@@ -2094,6 +2097,7 @@
   for (const b of document.querySelectorAll("[data-goto]")) b.addEventListener("click", () => { showTab(b.dataset.goto); try { localStorage.setItem("lf.tab", b.dataset.goto); } catch (err) {} });
   // Bouton « retour » au menu Lite Foil Ultra en haut de chaque sous-écran
   for (const sub of ULTRA_SUB) {
+    if (sub === "tracker") continue; // Tracking a désormais son propre onglet : pas de bouton « retour »
     const pane = document.getElementById("tab-" + sub);
     if (!pane) continue;
     const back = document.createElement("button");
