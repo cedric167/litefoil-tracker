@@ -18,5 +18,9 @@
         "noDeviceFound": "Aucun appareil trouvé"
       }
     }
+  },
+  "server": {
+    "url": "https://cedric167.github.io/litefoil-tracker/",
+    "cleartext": false
   }
 }

@@ -39,7 +39,7 @@ workflows:
       - name: Numero de build
         script: |
           cd ios/App
-          agvtool new-marketing-version 1.1.5 || true
+          agvtool new-marketing-version 1.2.0 || true
           agvtool new-version -all $(($(date +%s) / 60)) || true
       - name: Build IPA
         script: |
@@ -89,7 +89,7 @@ workflows:
         script: |
           VC=$(date +%s)
           sed -i.bak "s/versionCode 1/versionCode $VC/" android/app/build.gradle
-          sed -i.bak 's/versionName "1.0"/versionName "1.1.0"/' android/app/build.gradle
+          sed -i.bak 's/versionName "1.0"/versionName "1.2.0"/' android/app/build.gradle
           echo "versionCode applique : $VC"
       - name: Build de l'app (AAB release)
         script: |

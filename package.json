@@ -6,7 +6,8 @@
   "scripts": {
     "build:www": "node scripts/build-www.mjs",
     "sync": "npm run build:www && cap sync",
-    "ios:setup": "bash scripts/ios-setup.sh"
+    "ios:setup": "bash scripts/ios-setup.sh",
+    "build:bridge": "node scripts/build-bridge.mjs"
   },
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.3.1",
