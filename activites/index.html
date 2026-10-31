@@ -31,7 +31,7 @@ button{font-family:inherit;cursor:pointer}
 .tnum{font-variant-numeric:tabular-nums}
 
 /* ---------- Header ---------- */
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(244,246,247,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:12px;height:58px}
 .back{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;text-decoration:none;color:var(--fg);flex:0 0 auto}
 .back svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -204,6 +204,7 @@ input[type=file]{display:none}
     <label class="fld"><span>Mot de passe</span><input type="password" id="logPass" autocomplete="current-password" placeholder="••••••••"></label>
     <p class="login-err" id="logErr" hidden></p>
     <button class="btn-primary" id="logGo">Se connecter</button>
+    <p class="muted" style="font-size:13px;margin-top:14px;text-align:center">Pas encore de compte ? <a href="https://www.sportstracklive.com/fr/users/sign_up" target="_blank" rel="noopener" style="color:var(--accent,#14b8ab);font-weight:700">Créer un compte SportsTrackLive</a> (gratuit), puis reviens te connecter ici.</p>
     <p class="muted" style="font-size:11px;margin-top:12px">🔒 Ton mot de passe passe par notre serveur sécurisé et n'est jamais enregistré.</p>
   </div>
 </div>
