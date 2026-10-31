@@ -675,6 +675,27 @@
   .map-wrap:fullscreen .map-fs{ top:14px; right:14px; }
   .leaflet-container{ font:inherit; }
   .leaflet-control-attribution{ font-size:10px; }
+.trk-hero{position:relative;overflow:hidden;border-radius:24px;padding:22px 20px 18px;color:#fff;background:linear-gradient(135deg,#0b5f5a 0%,#14b8ab 60%,#2fd3c3 100%);box-shadow:0 14px 34px -14px rgba(20,184,171,.55);margin-bottom:18px}
+.trk-hero:before{content:"";position:absolute;right:-60px;top:-70px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.12)}
+.trk-hero-top{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;position:relative}
+.trk-kicker{font-size:11.5px;letter-spacing:.14em;font-weight:800;opacity:.85}
+.trk-title{margin:4px 0 6px;font-size:24px;line-height:1.1;color:#fff}
+.trk-sub{margin:0;font-size:13.5px;line-height:1.4;opacity:.92;max-width:34ch}
+.trk-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 12px;font-weight:700;font-size:13px;backdrop-filter:blur(6px)}
+.trk-chip .dot{width:9px;height:9px;border-radius:50%;background:#e6fff9;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+.trk-chip.rec .dot{background:#ff5252;animation:trkblink 1s infinite}
+@keyframes trkblink{50%{opacity:.25}}
+.trk-feats{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;position:relative}
+.trk-feats span{font-size:12px;font-weight:700;background:rgba(255,255,255,.16);border-radius:999px;padding:5px 10px}
+.trk-watch-head{display:flex;gap:12px;align-items:flex-start}
+.trk-watch-ic{flex:0 0 auto;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#1fd3c3,#14b8ab);color:#fff;font-size:22px}
+.trk-watch-ic svg{width:26px;height:26px}
+.trk-watch-ic.board{background:linear-gradient(145deg,#2b3a40,#141c1f)}
+.trk-steps{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.35}
+.trk-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 18px;font-weight:700;font-size:15px;text-decoration:none;border:0;cursor:pointer;font-family:inherit}
+.trk-btn.primary,.trk-btn:not(.ghost){background:#111;color:#fff}
+.trk-btn.ghost{background:transparent;color:var(--cyan-ink,#0e7c74);border:1.5px solid var(--line,#d9e0e3)}
+.trk-board{margin-top:14px}
 .phstl{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--mist,#f4f6f7)}
 .phstl-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
 .phstl-row input{width:22px;height:22px;margin:2px 0 0;accent-color:#14b8ab;flex:0 0 auto}
@@ -708,7 +729,7 @@
   </div>
   <div class="tabs">
     <button class="tab active" data-tab="dash">Accueil</button>
-    <button class="tab" data-tab="tracker">Tracking</button>
+    <button class="tab" data-tab="tracking">Tracking</button>
     <button class="tab" data-tab="meteo">Météo</button>
     <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
@@ -1054,22 +1075,23 @@
     <button class="ultra-item" data-goto="remote"><span class="ui-ic">🎮</span><span class="ui-tx"><b>Télécommande</b><span>État, réglages et mises à jour de la télécommande</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   </section>
 
-  <section id="tab-tracker" class="tabpane" hidden>
-  <div class="row" style="margin-bottom:14px">
-    <span><span class="lamp" id="lamp"></span><span id="stateText">Non connecté</span></span>
-    <span style="flex:1"></span>
-    <button class="primary" id="btnConnect">Connecter</button>
+  <section id="tab-tracking" class="tabpane" hidden>
+  <div class="trk-hero">
+    <div class="trk-hero-top">
+      <div>
+        <div class="trk-kicker">TRACKING</div>
+        <h2 class="trk-title">Suivre avec mon téléphone</h2>
+        <p class="trk-sub">Sans boîtier : le GPS de ce téléphone enregistre ta sortie, foil, surf, wing, rando, vélo… et la publie en direct si tu le souhaites.</p>
+      </div>
+      <div class="trk-chip" id="trkChip"><span class="dot"></span><span id="trkChipTx">Prêt</span></div>
+    </div>
+    <div class="trk-feats">
+      <span>📍 Trace GPS</span><span>⚡ Vitesse &amp; max</span><span>🗺️ Carte en direct</span><span>🛰️ SportsTrackLive</span><span>🎬 Survol 3D</span>
+    </div>
   </div>
-  <div class="note" id="firstSteps">Allume le tracker, appuie sur « Connecter » et choisis <code>LITEFOIL-TRACKER</code>.
-    Puis renseigne ton compte SportsTrackLive ci-dessous : à chaque sortie lancée depuis la télécommande, le tracker
-    s'y connecte seul et y enregistre ta session.</div>
 
-  <h2>Suivre avec mon téléphone</h2>
   <div class="card" id="phoneCard">
-    <div class="note" style="margin-top:0"><b>Sans le boîtier Lite Foil.</b> Enregistre ta sortie avec le GPS de ce téléphone
-      (foil, surf, wing, nage, rando, vélo…). Garde le téléphone sur toi — dans l'app, tu peux verrouiller l'écran,
-      l'enregistrement continue ; dans le navigateur, laisse l'écran allumé. À la fin, la sortie apparaît
-      dans <b>Activités — Terre &amp; Mer</b>, avec la carte, les stats et le survol 3D.</div>
+    <div class="note" style="margin-top:0">Garde le téléphone sur toi. Dans l'appli installée, tu peux verrouiller l'écran, l'enregistrement continue ; dans le navigateur, laisse l'écran allumé. À la fin, la sortie apparaît dans <b>Mes activités — Terre &amp; Mer</b>, avec la carte, les stats et le survol 3D.</div>
     <div class="phlab" style="margin-top:14px">Type d'activité</div>
     <div class="phseg" id="phSeg">
       <button type="button" data-m="mer" aria-selected="true">🌊 Mer</button>
@@ -1108,12 +1130,50 @@
       <button class="map-fs" id="mapFs" title="Plein écran" aria-label="Plein écran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
     </div>
     <div class="row" style="margin-top:10px">
-      <span class="note" id="mapNote" style="margin:0">Connecte le tracker : la carte suit ta position dès qu'il y a un fix GPS.</span>
+      <span class="note" id="mapNote" style="margin:0">La carte suit ta position pendant la sortie.</span>
       <span style="flex:1"></span>
       <button id="mapRecenter" hidden>Recentrer</button>
     </div>
     <a class="linkbtn" id="btnStlMap" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">Voir la session sur SportsTrackLive</a>
   </div>
+
+
+  <h2>Ma montre</h2>
+  <div class="card trk-watch">
+    <div class="trk-watch-head">
+      <div class="trk-watch-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="6.5" width="10" height="11" rx="2.5"/><path d="M9 6.5V4h6v2.5M9 17.5V20h6v-2.5"/></svg></div>
+      <div><b>Connecter ma montre</b><div class="note" style="margin:2px 0 0">Garmin et Suunto se synchronisent <b>automatiquement</b> via SportsTrackLive : une seule autorisation, puis tes sorties montre arrivent toutes seules dans Mes activités.</div></div>
+    </div>
+    <ol class="trk-steps">
+      <li><b>1.</b> Le bouton ouvre l'onglet Garmin / Suunto de ton compte SportsTrackLive (même compte que l'appli).</li>
+      <li><b>2.</b> Autorise Garmin Connect ou Suunto en un clic.</li>
+      <li><b>3.</b> C'est tout : les prochaines sorties enregistrées par la montre apparaissent ici.</li>
+    </ol>
+    <div class="row" style="margin-top:12px">
+      <a class="primary trk-btn" href="https://www.sportstracklive.com/configuration?tab=garmin" target="_blank" rel="noopener">Connecter Garmin / Suunto</a>
+      <a class="trk-btn ghost" href="activites/index.html">Mes activités</a>
+    </div>
+    <div class="note" style="margin-top:10px">ℹ️ L'intégration montre est une option Premium de SportsTrackLive. Pas encore de compte ? <a href="https://www.sportstracklive.com/fr/users/sign_up" target="_blank" rel="noopener"><b>Créer un compte</b></a>.</div>
+  </div>
+
+  <div class="card trk-board">
+    <div class="trk-watch-head">
+      <div class="trk-watch-ic board">📡</div>
+      <div><b>Tu as le boîtier Lite Foil dans la planche ?</b><div class="note" style="margin:2px 0 0">Le tracker de la planche (GPS + 4G, suivi en direct sans téléphone) se gère dans le menu Lite Foil Ultra.</div></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button type="button" class="trk-btn ghost" data-goto="tracker">Ouvrir Lite Foil Ultra › Tracker GPS</button></div>
+  </div>
+  </section>
+
+  <section id="tab-tracker" class="tabpane" hidden>
+  <div class="row" style="margin-bottom:14px">
+    <span><span class="lamp" id="lamp"></span><span id="stateText">Non connecté</span></span>
+    <span style="flex:1"></span>
+    <button class="primary" id="btnConnect">Connecter</button>
+  </div>
+  <div class="note" id="firstSteps">Allume le tracker, appuie sur « Connecter » et choisis <code>LITEFOIL-TRACKER</code>.
+    Puis renseigne ton compte SportsTrackLive ci-dessous : à chaque sortie lancée depuis la télécommande, le tracker
+    s'y connecte seul et y enregistre ta session.</div>
 
   <h2>Compte SportsTrackLive</h2>
   <div class="card">
@@ -1908,6 +1968,7 @@
     if(!bg && !navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
     phPts = []; phMax = 0; phT0 = Date.now(); phLast = null; phBgId = null;
     phStlReset();
+    try { $("trkChip").className = "trk-chip rec"; $("trkChipTx").textContent = "Enregistrement"; } catch(e){}
     $("phStart").hidden = true; $("phStop").hidden = false;
     $("phPts").textContent = "0"; $("phDist").textContent = "0,00 km"; $("phSpd").textContent = "— km/h"; $("phSpdMax").textContent = "— km/h"; $("phAcc").textContent = "—"; $("phDur").textContent = "0:00";
     phTimer = setInterval(phTick, 1000);
@@ -1950,6 +2011,7 @@
     try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}
   }
   function phStop(){
+    try { $("trkChip").className = "trk-chip"; $("trkChipTx").textContent = "Terminé"; } catch(e){}
     phStopCleanup();
     $("phStart").hidden = false; $("phStop").hidden = true;
     if(phPts.length < 2){ $("phNote").textContent = "Sortie trop courte : pas assez de points GPS pour enregistrer."; try { phStlFinish(null); } catch(e){} return; }
@@ -2277,7 +2339,7 @@
     if (!tab && !isSub) return;
     for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
     for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
-    if (name === "tracker") mapOnShow();
+    if (name === "tracking" || name === "tracker") mapOnShow();
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
   }
@@ -2291,7 +2353,6 @@
   for (const b of document.querySelectorAll("[data-goto]")) b.addEventListener("click", () => { showTab(b.dataset.goto); try { localStorage.setItem("lf.tab", b.dataset.goto); } catch (err) {} });
   // Bouton « retour » au menu Lite Foil Ultra en haut de chaque sous-écran
   for (const sub of ULTRA_SUB) {
-    if (sub === "tracker") continue; // Tracking a désormais son propre onglet : pas de bouton « retour »
     const pane = document.getElementById("tab-" + sub);
     if (!pane) continue;
     const back = document.createElement("button");
