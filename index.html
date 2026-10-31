@@ -1804,6 +1804,8 @@
     try {
       var C = window.Capacitor; if(!C) return null;
       if(C.Plugins && C.Plugins.BackgroundGeolocation) return C.Plugins.BackgroundGeolocation;
+      // Plugin absent de la build native (retiré le 31/10/2026 en attendant la déclaration Play avec vidéo) : repli sur le GPS web, écran allumé.
+      if(C.isPluginAvailable && !C.isPluginAvailable("BackgroundGeolocation")) return null;
       if(C.isNativePlatform && C.isNativePlatform() && C.registerPlugin) return C.registerPlugin("BackgroundGeolocation");
       return null;
     } catch(e){ return null; }
