@@ -675,6 +675,14 @@
   .map-wrap:fullscreen .map-fs{ top:14px; right:14px; }
   .leaflet-container{ font:inherit; }
   .leaflet-control-attribution{ font-size:10px; }
+.phstl{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--mist,#f4f6f7)}
+.phstl-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.phstl-row input{width:22px;height:22px;margin:2px 0 0;accent-color:#14b8ab;flex:0 0 auto}
+.phstl-row span{display:flex;flex-direction:column;line-height:1.3}
+.phstl-row small{color:var(--muted,#6b7a80);font-size:12.5px;font-weight:500}
+.phstl #phStlLogin{margin-top:10px}
+.phstl .stl-banner{margin:10px 0 0;font-size:14px}
+.phstl .row button{margin:0}
 .stl-banner{display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:14px;font-weight:700;font-size:15px;margin:0 0 12px;line-height:1.3}
 .stl-banner .big{font-size:22px;line-height:1}
 .stl-banner.ok{background:#e4f8ec;color:#0c6b35;border:1px solid #9fdbb6}
@@ -1075,6 +1083,16 @@
       <div class="kv"><div class="k">Vitesse max</div><div class="v" id="phSpdMax">— km/h</div></div>
       <div class="kv"><div class="k">Points GPS</div><div class="v" id="phPts">0</div></div>
       <div class="kv"><div class="k">Précision</div><div class="v" id="phAcc">—</div></div>
+    </div>
+    <div class="phstl" id="phStl">
+      <label class="phstl-row"><input type="checkbox" id="phStlOn"><span><b>Publier en direct sur SportsTrackLive</b><small>Ta sortie apparaît en direct sur ton compte, comme avec le boîtier.</small></span></label>
+      <div id="phStlLogin" hidden>
+        <input id="phStlEmail" type="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="E-mail SportsTrackLive">
+        <input id="phStlPass" type="password" autocomplete="current-password" placeholder="Mot de passe SportsTrackLive" style="margin-top:8px">
+        <div class="row" style="margin-top:10px"><button class="primary" id="phStlGo" type="button">Se connecter</button></div>
+        <div class="note" style="margin-top:8px">Pas encore de compte ? <a href="https://www.sportstracklive.com/fr/users/sign_up" target="_blank" rel="noopener"><b>Créer un compte SportsTrackLive</b></a> (gratuit), puis reviens ici.</div>
+      </div>
+      <div id="phStlState" class="stl-banner" hidden></div>
     </div>
     <div class="row" style="margin-top:14px">
       <button class="primary" id="phStart">▶ Démarrer la sortie</button>
@@ -1875,6 +1893,7 @@
     if(spd==null && phLast){ var dt=p.t-phLast.t; if(dt>0.2) spd = phHaversine(phLast,p)/dt*3.6; }
     if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
     phPts.push(p); phLast = p;
+    try { phStlPush(p); } catch(e){}
     var dist = phDistTotal();
     $("phPts").textContent = phPts.length;
     $("phDist").textContent = (dist/1000).toFixed(2).replace(".",",")+" km";
@@ -1888,6 +1907,7 @@
     var bg = phBgPlugin();
     if(!bg && !navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
     phPts = []; phMax = 0; phT0 = Date.now(); phLast = null; phBgId = null;
+    phStlReset();
     $("phStart").hidden = true; $("phStop").hidden = false;
     $("phPts").textContent = "0"; $("phDist").textContent = "0,00 km"; $("phSpd").textContent = "— km/h"; $("phSpdMax").textContent = "— km/h"; $("phAcc").textContent = "—"; $("phDur").textContent = "0:00";
     phTimer = setInterval(phTick, 1000);
@@ -1932,8 +1952,9 @@
   function phStop(){
     phStopCleanup();
     $("phStart").hidden = false; $("phStop").hidden = true;
-    if(phPts.length < 2){ $("phNote").textContent = "Sortie trop courte : pas assez de points GPS pour enregistrer."; return; }
+    if(phPts.length < 2){ $("phNote").textContent = "Sortie trop courte : pas assez de points GPS pour enregistrer."; try { phStlFinish(null); } catch(e){} return; }
     var sess = phBuildSession();
+    try { phStlFinish(sess); } catch(e){}
     phSaveLocal(sess);
     $("phNote").innerHTML = "Sortie enregistrée ✔ "+(sess.distanceM/1000).toFixed(2).replace(".",",")+" km · "+phFmtDur(sess.durationSec)+" · max "+phNum(sess.maxSpeedKmh)+" km/h. <a href=\"activites/\" style=\"color:var(--accent-ink);font-weight:800\">Voir dans Activités →</a>";
   }
@@ -1956,7 +1977,93 @@
   function phSaveLocal(sess){
     try { var arr = JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr.unshift(sess); if(arr.length>100) arr = arr.slice(0,100); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); } catch(e){}
   }
+  // ---------------- Publication en direct sur SportsTrackLive depuis le téléphone ----------------
+  // Même session que la page Activités (clés stl_token / stl_uid / stl_name). Connexion via la
+  // fonction serveur stlAuth (clé d'application côté serveur). Les écritures (POST /v1/track,
+  // PUT /v1/track/{id}/points, PUT /v1/track/{id}/end_live) se font avec le jeton utilisateur.
+  var PH_STL_API = "https://api.sportstracklive.com", PH_STL_FN = "https://europe-west1-litefoil-communaute-222fd.cloudfunctions.net/stlAuth";
+  var PH_STL_CAT = { efoil:"efoil", wing:"wingfoil", surf:"surfing", kite:"kitesurfing", sup:"sup", swim:"swimming", windsurf:"windsurfing", kayak:"kayaking", boating:"boating",
+                     running:"running", hiking:"hiking", cycling:"cycling", trail:"trail_running", skiing:"skiing", free_flight:"paragliding", other:"other" };
+  var phStl = { token:null, uid:null, name:null, trackId:null, queue:[], sent:0, busy:false, timer:null, failed:0, wanted:false, creating:false };
+  function phStlRestore(){ try { phStl.token = localStorage.getItem("stl_token")||null; phStl.uid = localStorage.getItem("stl_uid")||null; phStl.name = localStorage.getItem("stl_name")||null; phStl.wanted = localStorage.getItem("lf.ph.stl")==="1"; } catch(e){} }
+  function phStlSave(){ try { if(phStl.token){ localStorage.setItem("stl_token", phStl.token); localStorage.setItem("stl_uid", phStl.uid||""); if(phStl.name) localStorage.setItem("stl_name", phStl.name); } localStorage.setItem("lf.ph.stl", phStl.wanted?"1":"0"); } catch(e){} }
+  function phStlLogout(){ phStl.token = phStl.uid = phStl.name = null; try { ["stl_token","stl_uid","stl_name"].forEach(function(k){ localStorage.removeItem(k); }); } catch(e){} phStlPaint(); }
+  function phStlBanner(kind, text){ var b=$("phStlState"); if(!b) return; if(!kind){ b.hidden=true; return; } var ic = kind==="ok"?"✅":kind==="bad"?"❌":"⏳"; b.className="stl-banner "+kind; b.innerHTML='<span class="big">'+ic+'</span><span></span>'; b.lastChild.textContent=text; b.hidden=false; }
+  function phStlPaint(){
+    var on=$("phStlOn"), lg=$("phStlLogin"); if(!on) return;
+    on.checked = !!phStl.wanted;
+    if(!phStl.wanted){ lg.hidden = true; phStlBanner(null); return; }
+    if(phStl.token){ lg.hidden = true; if(!phStl.trackId) phStlBanner("ok", "Connecté à SportsTrackLive"+(phStl.name?" · "+phStl.name:"")+" · la prochaine sortie sera publiée en direct."); }
+    else { lg.hidden = false; phStlBanner("wait", "Connecte ton compte SportsTrackLive pour publier en direct."); }
+  }
+  async function phStlLogin(){
+    var email=$("phStlEmail").value.trim(), pass=$("phStlPass").value; if(!email||!pass){ phStlBanner("bad","Saisis l'e-mail et le mot de passe."); return; }
+    phStlBanner("wait","Vérification auprès de SportsTrackLive…"); $("phStlGo").disabled = true;
+    try {
+      var r = await fetch(PH_STL_FN, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ email:email, password:pass }) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.token){ phStlBanner("bad", r.status===401 ? "Identifiants refusés par SportsTrackLive : vérifie l'e-mail et le mot de passe." : "SportsTrackLive injoignable, réessaie dans un instant."); return; }
+      phStl.token = j.token; phStl.uid = String((j.user&&j.user.id)||""); phStl.name = (j.user&&(j.user.user_name||j.user.name))||null; phStlSave(); $("phStlPass").value = "";
+      phStlPaint(); log("SportsTrackLive : connecté"+(phStl.name?" ("+phStl.name+")":""), "g");
+    } catch(e){ phStlBanner("bad","SportsTrackLive injoignable, réessaie dans un instant."); }
+    finally { $("phStlGo").disabled = false; }
+  }
+  function phStlDate(ms){ var d=new Date(ms), p=function(x){return String(x).padStart(2,"0");}, o=-d.getTimezoneOffset(), sg=o>=0?"+":"-"; o=Math.abs(o); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds())+" "+sg+p(Math.floor(o/60))+p(o%60); }
+  function phStlPoint(p){ return { latitude:+p.lat.toFixed(6), longitude:+p.lon.toFixed(6), speed:+(p.speed||0).toFixed(1), bearing:Math.round(p.bearing||0), altitude:Math.round(p.alt||0), elevation:Math.round(p.alt||0), date: phStlDate(phT0 + p.t*1000) }; }
+  function phStlHeaders(){ return { "Content-Type":"application/json", "X-STL-Token": phStl.token }; }
+  // Appelée au démarrage de la sortie : remise à zéro, la trace est créée au premier point.
+  function phStlReset(){ phStl.trackId = null; phStl.queue = []; phStl.sent = 0; phStl.busy = false; phStl.failed = 0; phStl.creating = false; if(phStl.timer) clearInterval(phStl.timer); phStl.timer = null;
+    if(phStl.wanted && phStl.token){ phStlBanner("wait","SportsTrackLive : en attente du premier point GPS…"); phStl.timer = setInterval(phStlFlush, 10000); } }
+  // Appelée à chaque point GPS retenu.
+  function phStlPush(p){ if(!phStl.wanted || !phStl.token) return; if(!phStl.trackId){ if(!phStl.creating) phStlCreate(p); else phStl.queue.push(p); return; } phStl.queue.push(p); }
+  async function phStlCreate(p){
+    phStl.creating = true;
+    try {
+      var body = { track: { category_name: PH_STL_CAT[phType]||"other", track_type: "live_track" }, location: phStlPoint(p) };
+      var r = await fetch(PH_STL_API+"/v1/track", { method:"POST", headers: phStlHeaders(), body: JSON.stringify(body) });
+      if(r.status===401){ phStlBanner("bad","SportsTrackLive : session expirée, reconnecte-toi (la sortie reste enregistrée dans le téléphone)."); phStlLogout(); phStl.wanted = true; return; }
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.track || !j.track.id){
+        // catégorie inconnue du serveur ? on retente sans catégorie
+        if(r.status>=400 && r.status<500 && body.track.category_name!=="other"){ body.track.category_name = "other"; r = await fetch(PH_STL_API+"/v1/track", { method:"POST", headers: phStlHeaders(), body: JSON.stringify(body) }); j = await r.json().catch(function(){ return {}; }); }
+        if(!r.ok || !j.track || !j.track.id){ phStl.failed++; phStlBanner("bad","SportsTrackLive : création de la session refusée (HTTP "+r.status+"). La sortie reste enregistrée dans le téléphone."); log("STL : création refusée HTTP "+r.status+" "+JSON.stringify(j).slice(0,120), "e"); phStl.creating = false; phStl.wanted = false; return; }
+      }
+      phStl.trackId = j.track.id; phStl.sent = 1;
+      phStlBanner("ok","En direct sur SportsTrackLive · session n° "+phStl.trackId+" · 1 point envoyé");
+      log("STL : session live n° "+phStl.trackId+" créée", "g");
+    } catch(e){ phStl.failed++; phStlBanner("wait","SportsTrackLive injoignable pour l'instant, nouvel essai au prochain point…"); }
+    finally { phStl.creating = false; }
+  }
+  async function phStlFlush(){
+    if(!phStl.trackId || phStl.busy || !phStl.queue.length || !phStl.token) return;
+    phStl.busy = true; var batch = phStl.queue.splice(0, 200);
+    try {
+      var r = await fetch(PH_STL_API+"/v1/track/"+phStl.trackId+"/points", { method:"PUT", headers: phStlHeaders(), body: JSON.stringify({ points: batch.map(phStlPoint) }) });
+      if(r.ok){ phStl.sent += batch.length; phStl.failed = 0; phStlBanner("ok","En direct sur SportsTrackLive · session n° "+phStl.trackId+" · "+phStl.sent+" points envoyés"); }
+      else { phStl.queue = batch.concat(phStl.queue); phStl.failed++; if(r.status===401){ phStlBanner("bad","SportsTrackLive : session expirée, les points restent dans le téléphone."); } else phStlBanner("wait","SportsTrackLive : envoi en attente ("+phStl.queue.length+" points, HTTP "+r.status+")…"); }
+    } catch(e){ phStl.queue = batch.concat(phStl.queue); phStl.failed++; phStlBanner("wait","SportsTrackLive : réseau indisponible, "+phStl.queue.length+" points en attente…"); }
+    finally { phStl.busy = false; }
+  }
+  // Appelée à la fin de la sortie : envoie ce qui reste puis clôt la session live.
+  async function phStlFinish(sess){
+    if(phStl.timer) clearInterval(phStl.timer); phStl.timer = null;
+    if(!phStl.trackId){ if(phStl.wanted && phStl.token) phStlBanner("wait","SportsTrackLive : aucune session live créée (pas de réseau ou pas de point GPS)."); return; }
+    if(sess) sess.stlTrackId = phStl.trackId;
+    var tries = 0; while(phStl.queue.length && tries++ < 5){ await phStlFlush(); if(phStl.queue.length) await new Promise(function(r){ setTimeout(r, 1500); }); }
+    try { var r = await fetch(PH_STL_API+"/v1/track/"+phStl.trackId+"/end_live", { method:"PUT", headers: phStlHeaders(), body: "{}" });
+      phStlBanner(r.ok?"ok":"wait", r.ok ? "Session SportsTrackLive n° "+phStl.trackId+" terminée · "+phStl.sent+" points publiés." : "Session n° "+phStl.trackId+" : fin non confirmée (HTTP "+r.status+"), les points sont publiés."); }
+    catch(e){ phStlBanner("wait","Session n° "+phStl.trackId+" : fin non confirmée (réseau), les points sont publiés."); }
+    phStl.trackId = null;
+  }
+  function phStlBind(){
+    var on=$("phStlOn"); if(!on) return;
+    phStlRestore(); phStlPaint();
+    on.addEventListener("change", function(){ phStl.wanted = on.checked; phStlSave(); phStlPaint(); });
+    var go=$("phStlGo"); if(go) go.addEventListener("click", phStlLogin);
+    var pw=$("phStlPass"); if(pw) pw.addEventListener("keydown", function(e){ if(e.key==="Enter") phStlLogin(); });
+  }
   function phBind(){
+    phStlBind();
     var a=$("phStart"), b=$("phStop"); if(a) a.addEventListener("click", phStart); if(b) b.addEventListener("click", phStop);
     var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(btn) phSetMilieu(btn.dataset.m); });
     var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; });
