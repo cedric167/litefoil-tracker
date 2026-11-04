@@ -5,3 +5,10 @@ ios/
 www/
 build/
 .DS_Store
+
+# Paquets Play et cache Firebase (artefacts locaux)
+*.aab
+.firebase/
+*.aab.part*
+android_twa_backup_*/
+firebase-debug.log
