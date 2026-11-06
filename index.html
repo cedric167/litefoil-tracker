@@ -169,6 +169,51 @@
   .links { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
   .linkbtn { display:block; padding:13px 10px; }
   .linkbtn.primary { grid-column:1 / -1; }
+  /* ===== Accueil (refonte) ===== */
+  .home-hello{ display:flex; align-items:flex-end; justify-content:space-between; margin:6px 4px 14px; }
+  .hh-date{ font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .hh-title{ font-family:"Instrument Serif", Georgia, serif; font-weight:400; font-size:34px; line-height:1.05; margin:4px 0 0; color:var(--text); }
+  .home-cond{ display:block; width:100%; text-align:left; border:0; cursor:pointer; font-family:inherit; color:#fff; border-radius:22px; padding:18px 18px 16px;
+    background:radial-gradient(120% 140% at 100% 0%, #2bb6c0 0%, #0f6f8a 45%, #0b3a55 100%); box-shadow:0 10px 30px rgba(11,58,85,.28); position:relative; overflow:hidden; }
+  .home-cond::after{ content:""; position:absolute; inset:auto -10% -38% -10%; height:70%; background:radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.14), transparent 70%); pointer-events:none; }
+  .home-cond:active{ transform:scale(.99); }
+  .hc-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; opacity:.85; }
+  .hc-spot{ text-transform:none; letter-spacing:0; font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%; }
+  .hc-main{ display:flex; align-items:flex-end; justify-content:space-between; margin:10px 0 12px; }
+  .hc-wind{ display:flex; align-items:baseline; gap:6px; }
+  .hc-wind b{ font-size:56px; font-weight:800; letter-spacing:-2px; line-height:1; font-variant-numeric:tabular-nums; }
+  .hc-wind small{ font-size:16px; font-weight:700; opacity:.85; }
+  .hc-arrow{ display:inline-block; font-size:24px; font-weight:800; margin-right:4px; transition:transform .3s; }
+  .hc-side{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; font-size:13.5px; font-weight:600; opacity:.92; }
+  .hc-row{ display:flex; align-items:center; gap:16px; font-size:14px; border-top:1px solid rgba(255,255,255,.18); padding-top:11px; }
+  .hc-row b{ font-weight:800; }
+  .hc-more{ margin-left:auto; display:inline-flex; align-items:center; gap:2px; font-weight:700; font-size:13px; opacity:.9; }
+  .home-card{ margin-top:14px; background:#fff; border:1px solid var(--line-soft); border-radius:22px; padding:16px; box-shadow:var(--sh-sm); }
+  .hcard-head{ display:flex; justify-content:space-between; align-items:center; }
+  .hcard-link{ display:inline-flex; align-items:center; gap:2px; font-size:13px; font-weight:700; color:var(--accent-ink); text-decoration:none; }
+  .home-stats{ display:grid; grid-template-columns:repeat(3,1fr); margin:14px 0 16px; }
+  .home-stats div{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .home-stats div+div{ border-left:1px solid var(--line-soft); }
+  .home-stats b{ font-size:26px; font-weight:800; letter-spacing:-.5px; font-variant-numeric:tabular-nums; color:var(--text); }
+  .home-stats span{ font-size:12px; color:var(--muted); font-weight:600; }
+  .home-go{ width:100%; display:flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:16px; padding:15px; font-family:inherit; font-size:16px; font-weight:800; color:#fff; background:#0b0d10; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.18); }
+  .home-go svg{ width:18px; height:18px; fill:#fff; }
+  .home-go:active{ transform:scale(.98); }
+  /* matériel : une liste propre au lieu de 4 grosses tuiles */
+  #tab-dash .dev-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  #tab-dash .devcard{ flex-direction:row; align-items:center; justify-content:flex-start; text-align:left; gap:11px; padding:13px 12px; border-radius:18px; background:#fff; border:1px solid var(--line-soft); box-shadow:var(--sh-sm); display:grid; grid-template-columns:38px 1fr; grid-template-rows:auto auto; column-gap:11px; row-gap:1px; }
+  #tab-dash .devcard .dev-ic{ grid-row:1 / span 2; width:38px; height:38px; padding:9px; box-sizing:border-box; border-radius:12px; background:var(--tile); }
+  #tab-dash .devcard .dev-nm{ font-size:14px; font-weight:700; align-self:end; }
+  #tab-dash .devcard .dev-st{ font-size:12px; align-self:start; }
+  #tab-dash .devcard.on .dev-ic{ background:#e3f7ee; color:var(--ok); }
+  #tab-dash .devcard + .card, #tab-dash .dev-grid + .card{ margin-top:10px !important; padding:10px 12px; border-radius:18px; }
+  .home-links{ display:grid; grid-template-columns:repeat(auto-fit,minmax(70px,1fr)); gap:10px; }
+  .home-links a{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:14px 6px 12px; background:#fff; border:1px solid var(--line-soft); border-radius:18px; box-shadow:var(--sh-sm); text-decoration:none; color:var(--text); font-size:12.5px; font-weight:700; }
+  .home-links a[hidden]{ display:none; }
+  .home-links a:active{ transform:scale(.97); }
+  .hl-ic{ width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#fff; }
+  .hl-ic svg{ width:22px; height:22px; }
+  .hl-site{ background:#0b0d10; } .hl-yt{ background:#e62117; } .hl-fb{ background:#1877f2; } .hl-ig{ background:linear-gradient(135deg,#f9a23b,#e1306c 55%,#833ab4); }
   .tagline { font-family:"Instrument Serif", Georgia, serif; font-size:26px; line-height:1.15; margin:4px 0 6px; }
   .stlHead{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
   .stlHead #stlLogo{ height:42px; width:auto; flex:none; border-radius:8px; }
@@ -811,33 +856,30 @@
   </div>
 
   <section id="tab-dash" class="tabpane">
-    <a class="wa site sm" href="https://litefoil.fr/" target="_blank" rel="noopener" style="margin-top:2px">
-      <span class="wa-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 2.6 15.2 0 18M12 3c-2.6 2.8-2.6 15.2 0 18"/></svg></span>
-      <span class="wa-t"><b>Site litefoil.fr</b><span>Boutique, planches &amp; infos</span></span>
-      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-    <a class="wa yt sm" href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener" style="margin-top:10px">
-      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-      <span class="wa-t"><b>Lite Foil sur YouTube</b><span>Toutes nos vidéos et tutos</span></span>
-      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-    <a class="wa stl sm" href="activites/index.html" style="margin-top:10px">
-      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></span>
-      <span class="wa-t"><b>Mes activités — Terre &amp; Mer</b><span>Parcours, km, vitesse &amp; survol 3D</span></span>
-      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-    <div class="social-col" style="margin-top:10px">
-    <a class="wa fb sm" id="lnkFacebook" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener">
-      <span class="wa-ic"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
-      <span class="wa-t"><b>Lite Foil sur Facebook</b><span>Actus, photos et vidéos de la communauté</span></span>
-      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-    <a class="wa ig sm" id="lnkInstagram" href="#" target="_blank" rel="noopener" hidden>
-      <span class="wa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="#fff" stroke="none"/></svg></span>
-      <span class="wa-t"><b>Lite Foil sur Instagram</b><span>Les plus belles sessions en images</span></span>
-      <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
+    <!-- Accueil (refonte 06/11) : bonjour, conditions du moment, mes sorties, appareils, liens Lite Foil -->
+    <div class="home-hello">
+      <div><div class="hh-date" id="homeDate"></div><h2 class="hh-title" id="homeHello">Bonjour 👋</h2></div>
     </div>
+
+    <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
+      <div class="hc-top"><span class="hc-lbl">Conditions maintenant</span><span class="hc-spot" id="hcSpot">—</span></div>
+      <div class="hc-main">
+        <div class="hc-wind"><span class="hc-arrow" id="hcArrow">↑</span><b id="hcWind">—</b><small>nds</small></div>
+        <div class="hc-side"><span id="hcDir">Vent —</span><span id="hcGust">Rafales —</span></div>
+      </div>
+      <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
+    </button>
+
+    <div class="home-card">
+      <div class="hcard-head"><span class="m-label">Mes sorties</span><a class="hcard-link" href="activites/index.html">Tout voir <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></div>
+      <div class="home-stats">
+        <div><b id="hsN">0</b><span>sorties</span></div>
+        <div><b id="hsKm">0</b><span>km</span></div>
+        <div><b id="hsH">0 h</b><span>sur l'eau</span></div>
+      </div>
+      <button class="home-go" type="button" data-goto="tracking"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Démarrer une sortie</button>
+    </div>
+
     <div class="card hero-metric" style="display:none">
       <div class="hm-top"><span class="hm-label">Vitesse</span><span class="hm-max" id="dSpdMax">max —</span></div>
       <div class="hm-value"><span id="dSpd">—</span><span class="hm-unit">km/h</span></div>
@@ -855,7 +897,7 @@
         <div class="m-sub" id="dPowSub">—</div>
       </div>
     </div>
-    <div class="m-label" style="margin:18px 6px 8px">Appareils</div>
+    <div class="m-label" style="margin:22px 6px 10px">Mon matériel</div>
     <div class="dev-grid">
       <button class="devcard" data-goto="tracker" id="dcTracker">
         <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
@@ -883,7 +925,15 @@
       </div>
     </div>
 
-    <div class="m-label" style="margin:18px 6px 8px">Aide et suggestions</div>
+    <div class="m-label" style="margin:22px 6px 10px">Lite Foil</div>
+    <div class="home-links">
+      <a href="https://litefoil.fr/" target="_blank" rel="noopener"><span class="hl-ic hl-site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><span>Boutique</span></a>
+      <a href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener"><span class="hl-ic hl-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 7.5v9l7.5-4.5z"/></svg></span><span>YouTube</span></a>
+      <a id="lnkFacebook" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener"><span class="hl-ic hl-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/></svg></span><span>Facebook</span></a>
+      <a id="lnkInstagram" href="#" target="_blank" rel="noopener" hidden><span class="hl-ic hl-ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.8" cy="7.2" r=".9" fill="currentColor" stroke="none"/></svg></span><span>Instagram</span></a>
+    </div>
+
+    <div class="m-label" style="margin:22px 6px 8px">Aide et suggestions</div>
     <div class="ioslist">
       <a href="mailto:cedric@litefoil.fr?subject=Id%C3%A9e%20d%27am%C3%A9lioration%20Lite%20Foil" target="_blank" rel="noopener"><span class="ic" style="background:#0a84ff"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></span><span class="lb">Proposer une amélioration</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
       <a href="https://cedric167.github.io/litefoil-tracker/manuel/telecommande.pdf?v=20261030" target="_blank" rel="noopener"><span class="ic" style="background:#ff9f0a"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19a2 2 0 012-2h13"/></svg></span><span class="lb">Manuel de la télécommande</span><svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
@@ -4710,6 +4760,39 @@
       wgInitUI(); };
     const lb=$m("mtoLocate"); if(lb) lb.addEventListener("click",locate);
     var gb=document.getElementById("mtoGeo"); if(gb) gb.addEventListener("click",function(){ locate(); window.scrollTo({top:0,behavior:"smooth"}); });
+  })();
+</script>
+<script>
+  // ---------------- Accueil : bonjour, conditions du moment, mes sorties ----------------
+  (function(){
+    var $h=function(id){ return document.getElementById(id); };
+    function hello(){ var d=new Date(), ps=""; try{ ps=localStorage.getItem("lf.comm.pseudo")||""; }catch(e){}
+      var h=d.getHours(), w=(h<5||h>=18)?"Bonsoir":"Bonjour";
+      if($h("homeDate")) $h("homeDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+      if($h("homeHello")) $h("homeHello").textContent=w+(ps?" "+ps:"")+" 👋"; }
+    function stats(){ var n=0, km=0, sec=0;
+      try{ var s=JSON.parse(localStorage.getItem("lf_my_stats")||"null"); if(s){ n=+s.n||0; km=+s.km||0; sec=+s.sec||0; } }catch(e){}
+      if(!n){ try{ JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").forEach(function(a){ var d=+a.distanceM||0; if(d>=100){ n++; km+=d/1000; sec+=+a.durationSec||0; } }); }catch(e){} }
+      if($h("hsN")) $h("hsN").textContent=n.toLocaleString("fr-FR");
+      if($h("hsKm")) $h("hsKm").textContent=(km>=100?Math.round(km):Math.round(km*10)/10).toLocaleString("fr-FR");
+      if($h("hsH")) $h("hsH").textContent=sec>=3600 ? Math.round(sec/3600)+" h" : Math.round(sec/60)+" min"; }
+    var DIRS=["N","NE","E","SE","S","SO","O","NO"];
+    function cond(){ var pos={lat:43.014,lng:3.055,name:"Méditerranée"}; // même spot par défaut que l'onglet Météo try{ var p=JSON.parse(localStorage.getItem("lf.meteo.pos")||"null"); if(p&&p.lat!=null) pos=p; }catch(e){}
+      var lng=pos.lng!=null?pos.lng:pos.lon; if($h("hcSpot")) $h("hcSpot").textContent="📍 "+(pos.name||"Mon spot");
+      fetch("https://api.open-meteo.com/v1/forecast?latitude="+pos.lat+"&longitude="+lng+"&current=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m&wind_speed_unit=kn&timezone=auto")
+        .then(function(r){ return r.json(); }).then(function(j){ var c=j.current||{};
+          $h("hcWind").textContent=Math.round(c.wind_speed_10m||0);
+          var dir=+c.wind_direction_10m||0; $h("hcDir").textContent="Vent de "+DIRS[Math.round(dir/45)%8];
+          $h("hcArrow").style.transform="rotate("+((dir+180)%360)+"deg)";
+          $h("hcGust").textContent="Rafales "+Math.round(c.wind_gusts_10m||0)+" nds";
+          $h("hcTemp").textContent=Math.round(c.temperature_2m||0)+"°C"; }).catch(function(){});
+      fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+pos.lat+"&longitude="+lng+"&current=wave_height&timezone=auto")
+        .then(function(r){ return r.json(); }).then(function(j){ var w=j.current&&j.current.wave_height; $h("hcWave").textContent=(w!=null?String(Math.round(w*10)/10).replace(".",",")+" m":"—"); }).catch(function(){ $h("hcWave").textContent="—"; }); }
+    hello(); stats(); cond();
+    // rafraîchit quand on revient sur l'appli (pseudo changé, nouvelle sortie, vent qui tourne)
+    var last=Date.now();
+    document.addEventListener("visibilitychange", function(){ if(document.hidden) return; hello(); stats(); if(Date.now()-last>10*60000){ last=Date.now(); cond(); } });
+    document.querySelectorAll('.tab[data-tab="dash"]').forEach(function(t){ t.addEventListener("click", function(){ hello(); stats(); }); });
   })();
 </script>
 </body>
