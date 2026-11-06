@@ -257,6 +257,28 @@
   .ev-card .evc-t small{ font-size:11px; font-weight:700; color:#7a4fe0; text-transform:uppercase; letter-spacing:.04em; }
   .ev-card .evc-t b{ font-size:15px; line-height:1.25; word-break:break-word; }
   .ev-card .evc-t span{ font-size:12.5px; color:var(--muted); }
+  /* photo de couverture (format bannière 16:9, comme Meetup / Facebook) */
+  .ev-cover{ position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; flex:0 0 auto; background:linear-gradient(135deg,#b48cff,#7a4fe0); display:flex; align-items:center; justify-content:center; }
+  .ev-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  .ev-cover .evc-ic{ font-size:52px; filter:drop-shadow(0 3px 8px rgba(0,0,0,.25)); }
+  .ev-cover .ev-date{ position:absolute; left:12px; bottom:12px; box-shadow:0 2px 10px rgba(0,0,0,.35); }
+  .ev-cover .evc-edit{ position:absolute; right:12px; bottom:12px; border:0; background:rgba(0,0,0,.6); color:#fff; font-weight:700; font-size:13px; padding:8px 12px; border-radius:100px; cursor:pointer; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .ev-cover.off img{ filter:grayscale(.85); }
+  .gc-body>.ev-cover.hero{ margin:-14px -16px 0; width:calc(100% + 32px); border-radius:0; }
+  .ev-date.ph{ position:relative; overflow:hidden; background:#333 center/cover no-repeat; text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  .ev-date.ph::before{ content:""; position:absolute; inset:0; background:rgba(0,0,0,.38); }
+  .ev-date.ph>*{ position:relative; }
+  .ev-date.ph.off{ filter:grayscale(1); }
+  .ev-pick{ position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; border:1.5px dashed #b9a3f0; background:#f6f2ff; color:#5b33c4; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; overflow:hidden; font-weight:700; font-size:14.5px; touch-action:none; user-select:none; -webkit-user-select:none; }
+  .ev-pick small{ font-weight:400; font-size:12px; color:var(--muted); }
+  .ev-pick .evp-ic{ font-size:30px; }
+  .ev-pick.has{ border-style:solid; border-color:transparent; cursor:grab; }
+  .ev-pick img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
+  .ev-pick .evp-hint{ position:absolute; left:50%; top:10px; transform:translateX(-50%); background:rgba(0,0,0,.55); color:#fff; font-size:12px; font-weight:600; padding:4px 10px; border-radius:100px; white-space:nowrap; pointer-events:none; }
+  .ev-pick-acts{ display:flex; gap:8px; }
+  .ev-pick-acts button{ flex:1; border:1px solid var(--line); background:var(--card); color:var(--text); font-weight:700; font-size:13px; padding:8px; border-radius:10px; cursor:pointer; }
+  .ev-pick-acts button.rm{ color:#b3263a; }
+  .ev-card .ev-cover{ border-radius:0; }
   .ev-card .evc-go{ display:block; width:100%; border:0; border-top:1px solid var(--line-soft); background:#f1ebff; color:#5b33c4; font-weight:700; font-size:14px; padding:10px; cursor:pointer; }
   .chat-head #chatTransBtn{ margin-left:auto; }
   /* liste des discussions / groupes façon WhatsApp (couleurs turquoise Lite Foil) */
@@ -3225,7 +3247,7 @@
       // ---------- événements (agenda) : /events/{id} = {title,topic,when,place,desc,max,by,byPseudo,t,cancelled,att:{uid:{pseudo,t}}} ----------
       createEvent(o){ const eref=db.push(db.ref(d,"events")); const att={}; att[uid]={pseudo:me.pseudo||"Rider",t:db.serverTimestamp()};
         const e={title:o.title,topic:o.topic||"efoil",when:o.when,place:o.place||"",desc:o.desc||"",by:uid,byPseudo:me.pseudo||"Rider",t:db.serverTimestamp(),att:att};
-        if(o.max) e.max=o.max;
+        if(o.max) e.max=o.max; if(o.img) e.img=o.img;
         return db.set(eref,e).then(function(){ return eref.key; }); },
       watchEvents(cb){ // événements à venir (et ceux du jour), triés par date
         const q=db.query(db.ref(d,"events"), db.orderByChild("when"), db.startAt(Date.now()-EV_KEEP));
@@ -3234,7 +3256,8 @@
       getEvent(eid){ return db.get(db.ref(d,"events/"+eid)).then(function(s){ const v=s.val(); if(v) v.id=eid; return v; }); },
       joinEvent(eid){ return db.set(db.ref(d,"events/"+eid+"/att/"+uid),{pseudo:me.pseudo||"Rider",t:db.serverTimestamp()}); },
       leaveEvent(eid){ return db.remove(db.ref(d,"events/"+eid+"/att/"+uid)); },
-      cancelEvent(eid){ return db.set(db.ref(d,"events/"+eid+"/cancelled"),true); }
+      cancelEvent(eid){ return db.set(db.ref(d,"events/"+eid+"/cancelled"),true); },
+      setEventImg(eid,img){ return db.set(db.ref(d,"events/"+eid+"/img"),img||null); }
     };
   }
 
@@ -3307,7 +3330,8 @@
       getEvent(eid){ return Promise.resolve(demoEvents[eid]||null); },
       joinEvent(eid){ const e=demoEvents[eid]; if(e){ e.att=e.att||{}; e.att[uid]={pseudo:me.pseudo||"Rider",t:Date.now()}; fireEvents(); } return Promise.resolve(); },
       leaveEvent(eid){ const e=demoEvents[eid]; if(e&&e.att){ delete e.att[uid]; fireEvents(); } return Promise.resolve(); },
-      cancelEvent(eid){ const e=demoEvents[eid]; if(e){ e.cancelled=true; fireEvents(); } return Promise.resolve(); }
+      cancelEvent(eid){ const e=demoEvents[eid]; if(e){ e.cancelled=true; fireEvents(); } return Promise.resolve(); },
+      setEventImg(eid,img){ const e=demoEvents[eid]; if(e){ if(img) e.img=img; else delete e.img; fireEvents(); } return Promise.resolve(); }
     };
   }
 
@@ -3833,6 +3857,32 @@
   const EV_MONTHS=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
   function fmtEvWhen(t){ var d=new Date(t||Date.now()); return d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" · "+timeLabel(t); }
   function evDateHtml(t,off){ var d=new Date(t||Date.now()); return '<span class="ev-date'+(off?" off":"")+'"><b>'+d.getDate()+'</b><span>'+EV_MONTHS[d.getMonth()]+'</span></span>'; }
+  // photo de couverture : bannière 16:9 ; sans photo, dégradé + icône de l'activité
+  function evCoverHtml(e,cls,withDate,extra){ var off=e&&(e.cancelled||evPast(e));
+    return '<div class="ev-cover'+(cls?" "+cls:"")+(off?" off":"")+'">'+(e&&e.img?'<img src="'+e.img+'" alt="">':'<span class="evc-ic">'+((e&&CHAN_ICON[e.topic])||"📅")+'</span>')+(withDate?evDateHtml(e.when,off):"")+(extra||"")+'</div>'; }
+  function evThumbHtml(e,off){ if(!e.img) return evDateHtml(e.when,off); var d=new Date(e.when||Date.now()); return '<span class="ev-date ph'+(off?" off":"")+'" style="background-image:url('+e.img+')"><b>'+d.getDate()+'</b><span>'+EV_MONTHS[d.getMonth()]+'</span></span>'; }
+  // recadre une photo au format 16:9 (px/py = position 0..100 choisie par glissement), compressée pour la base
+  function cropEvCover(src,px,py){ return new Promise(function(resolve,reject){ var im=new Image(); im.onload=function(){ var W=960,H=540, r=Math.max(W/im.width,H/im.height), sw=W/r, sh=H/r;
+    var sx=(im.width-sw)*(px/100), sy=(im.height-sh)*(py/100); var cv=document.createElement("canvas"); cv.width=W; cv.height=H; var cx=cv.getContext("2d"); cx.drawImage(im,sx,sy,sw,sh,0,0,W,H);
+    try{ resolve(cv.toDataURL("image/jpeg",0.68)); }catch(e){ reject(e); } }; im.onerror=reject; im.src=src; }); }
+  // zone « Ajouter une photo » : choisir, glisser pour cadrer, changer / retirer
+  function evPhotoPicker(host){ var st={src:null,px:50,py:50};
+    host.innerHTML='<div class="ev-pick" id="evPick"><span class="evp-ic">📷</span>Ajouter une photo de couverture<small>Le spot, le groupe, une session… (facultatif)</small></div>'
+      +'<div class="ev-pick-acts" id="evPickActs" hidden><button type="button" id="evPickChg">Changer</button><button type="button" class="rm" id="evPickRm">Retirer</button></div>'
+      +'<input id="evPickFile" type="file" accept="image/*" hidden>';
+    var box=$("evPick"), fi=$("evPickFile"), acts=$("evPickActs");
+    function draw(){ if(!st.src){ box.classList.remove("has"); box.innerHTML='<span class="evp-ic">📷</span>Ajouter une photo de couverture<small>Le spot, le groupe, une session… (facultatif)</small>'; acts.hidden=true; return; }
+      box.classList.add("has"); box.innerHTML='<img src="'+st.src+'" alt="" style="object-position:'+st.px+'% '+st.py+'%"><span class="evp-hint">↕ Glisse pour cadrer</span>'; acts.hidden=false; }
+    fi.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,1600,0.85).then(function(d){ st.src=d; st.px=50; st.py=50; draw(); }).catch(function(){ alert("Photo illisible, essaie une autre image."); }); e.target.value=""; });
+    $("evPickChg").addEventListener("click", function(){ fi.click(); });
+    $("evPickRm").addEventListener("click", function(){ st.src=null; draw(); });
+    var drag=null;
+    box.addEventListener("pointerdown", function(e){ if(!st.src){ fi.click(); return; } drag={x:e.clientX,y:e.clientY,px:st.px,py:st.py,moved:false}; try{ box.setPointerCapture(e.pointerId); }catch(_){} });
+    box.addEventListener("pointermove", function(e){ if(!drag) return; var r=box.getBoundingClientRect(), dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>3) drag.moved=true;
+      st.px=Math.max(0,Math.min(100,drag.px-dx/r.width*100)); st.py=Math.max(0,Math.min(100,drag.py-dy/r.height*100)); var im=box.querySelector("img"); if(im) im.style.objectPosition=st.px+"% "+st.py+"%"; var h=box.querySelector(".evp-hint"); if(h) h.hidden=true; });
+    var end=function(){ drag=null; }; box.addEventListener("pointerup", end); box.addEventListener("pointercancel", end);
+    return { get:function(){ return st.src ? cropEvCover(st.src,st.px,st.py) : Promise.resolve(null); } };
+  }
   function evAtt(e){ var a=(e&&e.att)||{}; return Object.keys(a).filter(function(u){ return a[u] && !blocked.has(u); }); }
   function evIn(e){ return !!(e && e.att && e.att[me.uid]); }
   function evFull(e){ return !!(e && e.max && evAtt(e).length>=e.max); }
@@ -3840,11 +3890,12 @@
   function evNewCount(){ var n=0, now=Date.now(); for(var i=0;i<myEvents.length;i++){ var e=myEvents[i]; if(e.by!==me.uid && !e.cancelled && (+e.when||0)>now && (+e.t||0)>evSeen) n++; } return n; }
   function evCardHtml(ev){ if(!ev) return "";
     var where=[fmtEvWhen(ev.when)]; if(ev.place) where.push(ev.place);
-    return '<div class="ev-card"><div class="evc-top">'+evDateHtml(ev.when)+'<div class="evc-t"><small>Événement'+(ev.topic&&CHANS[ev.topic]?" · "+esc(CHANS[ev.topic]):"")+'</small><b>'+esc(ev.title||"Événement")+'</b><span>'+esc(where.join(" · "))+'</span></div></div>'
+    var full=myEvents.filter(function(x){ return x.id===ev.id; })[0], cimg=full&&full.img;
+    return '<div class="ev-card">'+(cimg?'<div class="ev-cover"><img src="'+cimg+'" alt=""></div>':'')+'<div class="evc-top">'+evDateHtml(ev.when)+'<div class="evc-t"><small>Événement'+(ev.topic&&CHANS[ev.topic]?" · "+esc(CHANS[ev.topic]):"")+'</small><b>'+esc(ev.title||"Événement")+'</b><span>'+esc(where.join(" · "))+'</span></div></div>'
       +'<button class="evc-go" data-eid="'+esc(ev.id||"")+'">Voir et s\'inscrire</button></div>'; }
   function onEvents(list){
     myEvents=(list||[]).filter(function(e){ return e && e.title && !blocked.has(e.by); }).sort(function(a,b){ return (+a.when||0)-(+b.when||0); });
-    if(chatMode==="events") renderEventsList();
+    if(chatMode==="events") renderEventsList(); else if(chatMode!=="groups" && $("chatBox") && $("chatBox").querySelector(".ev-card")) renderChat();
     if(evDetailId){ var e=myEvents.filter(function(x){ return x.id===evDetailId; })[0]; if(e) renderEventDetail(e); }
     recomputeBadges();
   }
@@ -3856,7 +3907,7 @@
     function row(e){ var n=evAtt(e).length, off=e.cancelled||evPast(e);
       var tag = e.cancelled ? '<span class="ev-cancel">Annulé</span>' : (evIn(e) ? '<span class="ev-in">Inscrit ✓</span>' : (evFull(e) ? '<span class="ev-full">Complet</span>' : ''));
       var sub=[fmtEvWhen(e.when)]; if(e.place) sub.push(e.place);
-      return '<button class="grow" data-eid="'+esc(e.id)+'">'+evDateHtml(e.when,off)+'<span class="grow-main"><span class="grow-top"><b>'+esc(e.title)+'</b></span><span class="grow-sub">'+esc(sub.join(" · "))+'</span></span><span class="grow-right"><span class="grow-tm">👥 '+n+(e.max?"/"+e.max:"")+'</span>'+tag+'</span></button>'; }
+      return '<button class="grow" data-eid="'+esc(e.id)+'">'+evThumbHtml(e,off)+'<span class="grow-main"><span class="grow-top"><b>'+esc(e.title)+'</b></span><span class="grow-sub">'+esc(sub.join(" · "))+'</span></span><span class="grow-right"><span class="grow-tm">👥 '+n+(e.max?"/"+e.max:"")+'</span>'+tag+'</span></button>'; }
     var html='<div class="glist"><button class="gnew" id="evNewBtn"><span class="gnew-ic" style="background:#7a4fe0">＋</span><span>Créer un événement</span></button>';
     if(!myEvents.length){ html+='<div class="comm-empty" style="margin-top:8px">Aucun événement prévu pour l\'instant.<br>Organise une sortie : les riders pourront s\'inscrire en un clic.</div>'; }
     else {
@@ -3887,6 +3938,7 @@
     o.innerHTML='<div class="gcard">'
       +'<div class="gc-head"><button class="gc-x" id="evClose">✕</button><b>Nouvel événement</b><span></span></div>'
       +'<div class="gc-body ev-form">'
+        +'<div id="evPhotoHost" style="display:flex;flex-direction:column;gap:8px"></div>'
         +'<label>Titre<input id="evTitle" maxlength="60" placeholder="Ex. : Sortie eFoil au lever du soleil"></label>'
         +'<label>Activité<select id="evTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }).join("")+'</select></label>'
         +'<div class="ev-2"><label>Date<input id="evDate" type="date" min="'+minD+'" value="'+dflt+'"></label><label>Heure<input id="evTime" type="time" value="10:00"></label></div>'
@@ -3899,6 +3951,7 @@
       +'<div class="gc-foot"><button class="btn-ghost2" id="evCancel">Annuler</button><button class="btn-main" id="evCreate">Créer l\'événement</button></div>'
     +'</div>';
     $("evClose").addEventListener("click", closeOverlay); $("evCancel").addEventListener("click", closeOverlay);
+    var photo=evPhotoPicker($("evPhotoHost"));
     var err=function(s){ var e=$("evErr"); e.textContent=s; e.hidden=!s; };
     $("evCreate").addEventListener("click", function(){
       var title=$("evTitle").value.trim(), topic=$("evTopic").value, ds=$("evDate").value, ts=$("evTime").value||"10:00";
@@ -3911,7 +3964,7 @@
       if(!backend){ err("Communauté hors ligne, réessaie dans un instant."); return; }
       var btn=$("evCreate"); btn.disabled=true; btn.textContent="Création…"; err("");
       var o2={title:title,topic:CHANS[topic]?topic:"efoil",when:when,place:place,desc:desc}; if(max) o2.max=max;
-      backend.createEvent(o2).then(function(eid){
+      photo.get().catch(function(){ return null; }).then(function(img){ if(img) o2.img=img; return backend.createEvent(o2); }).then(function(eid){
         var ev={id:eid,title:title,when:when,place:place,topic:o2.topic};
         var ch=announceCh||"salon";
         var txt="📅 "+title+" · "+fmtEvWhen(when)+(place?" · "+place:"")+" — inscris-toi dans l'Agenda de la communauté";
@@ -3948,7 +4001,8 @@
     o.innerHTML='<div class="gcard">'
       +'<div class="gc-head"><button class="gc-x" id="evdClose">✕</button><b>Événement</b><span></span></div>'
       +'<div class="gc-body">'
-        +'<div class="gi-top">'+evDateHtml(e.when, e.cancelled||past)+'<div class="gi-name">'+esc(e.title||"Événement")+'</div><div class="gi-sub">Organisé par '+esc(e.byPseudo||"Rider")+'</div></div>'
+        +evCoverHtml(e,"hero",true, owner&&!e.cancelled&&!past?'<button class="evc-edit" id="evdPhoto">📷 '+(e.img?"Changer la photo":"Ajouter une photo")+'</button><input id="evdPhotoFile" type="file" accept="image/*" hidden>':'')
+        +'<div class="gi-top"><div class="gi-name">'+esc(e.title||"Événement")+'</div><div class="gi-sub">Organisé par '+esc(e.byPseudo||"Rider")+'</div></div>'
         +status
         +'<div class="ev-info"><div><span>📅</span><span>'+esc(fmtEvWhen(e.when))+'</span></div>'
           +(e.place?'<div><span>📍</span><span>'+esc(e.place)+'</span></div>':'')
@@ -3973,6 +4027,9 @@
     var s=$("evdShare"); if(s) s.addEventListener("click", function(){ s.disabled=true;
       backend.sendMessage("salon", ("📅 "+e.title+" · "+fmtEvWhen(e.when)+(e.place?" · "+e.place:"")+" — inscris-toi dans l'Agenda de la communauté").slice(0,400), null, null, {ev:{id:e.id,title:e.title,when:e.when,place:e.place||"",topic:e.topic}, topic:e.topic})
         .then(function(){ s.textContent="✓ Partagé dans le salon"; }).catch(function(){ s.disabled=false; }); });
+    var ph=$("evdPhoto"), phf=$("evdPhotoFile"); if(ph&&phf){ ph.addEventListener("click", function(){ phf.click(); });
+      phf.addEventListener("change", function(ev){ var f=ev.target.files&&ev.target.files[0]; if(!f) return; ph.disabled=true; ph.textContent="Envoi de la photo…";
+        compressImage(f,1600,0.85).then(function(d){ return cropEvCover(d,50,50); }).then(function(img){ return backend.setEventImg(e.id,img).then(function(){ e.img=img; renderEventDetail(e); refetch(); }); }).catch(fail); }); }
     var r=$("evdReport"); if(r) r.addEventListener("click", function(){ if(!confirm("Signaler cet événement à l'équipe Lite Foil ?")) return;
       if(backend&&backend.sendReport) backend.sendReport({type:"event",targetUid:e.by,targetPseudo:e.byPseudo,text:("Événement « "+e.title+" » ("+e.id+") "+(e.desc||"")).slice(0,400)}); r.textContent="✓ Signalé, merci"; r.disabled=true; });
   }

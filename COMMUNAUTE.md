@@ -104,7 +104,7 @@ erreur de permission.
   ".indexOn": ["when"],
   "$eid": {
     ".write": "auth != null && ((!data.exists() && newData.child('by').val() === auth.uid) || (data.exists() && data.child('by').val() === auth.uid))",
-    ".validate": "newData.hasChildren(['title','when','by']) && newData.child('title').isString() && newData.child('title').val().length <= 60 && newData.child('when').isNumber()",
+    ".validate": "newData.hasChildren(['title','when','by']) && newData.child('title').isString() && newData.child('title').val().length <= 60 && newData.child('when').isNumber() && (!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 300000))",
     "att": {
       "$uid": {
         ".write": "auth != null && auth.uid === $uid"
@@ -114,6 +114,7 @@ erreur de permission.
 }
 ```
 
+L'organisateur peut ajouter une **photo de couverture** (recadrée en 16:9, environ 60 à 100 Ko, stockée dans `img`).
 Seul l'organisateur peut modifier ou annuler son événement ; chaque rider ne peut
 inscrire ou désinscrire **que lui-même**. Le nombre de places est vérifié dans
 l'appli. Un événement peut être signalé (il arrive dans `reports`, type `event`).
@@ -126,7 +127,7 @@ Pour essayer sans toucher à la vraie base : ouvrir l'appli avec `?demo=1`.
 /presence/{uid} : { pseudo, lat, lng, t }         # lat/lng = zone arrondie ; t = horodatage serveur ; auto-effacé à la déconnexion
 /chat/{id}      : { uid, pseudo, text, t, lat, lng } # salon commun (120 derniers affichés)
 /dm/{a__b}/{id} : { uid, pseudo, text, t }         # fil privé entre 2 riders (uids triés)
-/events/{id}    : { title, topic, when, place, desc, max, by, byPseudo, t, cancelled, att:{ uid:{pseudo,t} } } # agenda
+/events/{id}    : { title, topic, when, place, desc, max, img, by, byPseudo, t, cancelled, att:{ uid:{pseudo,t} } } # agenda
 ```
 
 ## Entretien (facultatif)
