@@ -121,12 +121,40 @@ l'appli. Un événement peut être signalé (il arrive dans `reports`, type `eve
 
 Pour essayer sans toucher à la vraie base : ouvrir l'appli avec `?demo=1`.
 
+### Discussion des participants + compteurs de non-lus (à ajouter aussi)
+
+Chaque événement a sa discussion, réservée aux inscrits et à l'organisateur
+(`/eventMessages/{eid}`). Le serveur tient le nombre de messages non lus de chaque
+rider dans `/unread/{uid}` (chiffre sur l'icône de l'appli) ; l'appli le remet à zéro
+quand on lit. Ajoute ces deux blocs à côté de `"events"` :
+
+```json
+"eventMessages": {
+  "$eid": {
+    ".read": "auth != null && (root.child('events/'+$eid+'/att/'+auth.uid).exists() || root.child('events/'+$eid+'/by').val() === auth.uid)",
+    "$id": {
+      ".write": "auth != null && (root.child('events/'+$eid+'/att/'+auth.uid).exists() || root.child('events/'+$eid+'/by').val() === auth.uid) && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && data.child('uid').val() === auth.uid))",
+      ".validate": "!newData.exists() || newData.child('text').isString() && newData.child('text').val().length <= 400",
+      "reactions": { "$uid": { ".write": "auth != null && auth.uid === $uid" } }
+    }
+  }
+},
+"unread": {
+  "$uid": {
+    ".read": "auth != null && auth.uid === $uid",
+    ".write": "auth != null && auth.uid === $uid"
+  }
+}
+```
+
 ## Structure des données (pour info)
 
 ```
 /presence/{uid} : { pseudo, lat, lng, t }         # lat/lng = zone arrondie ; t = horodatage serveur ; auto-effacé à la déconnexion
 /chat/{id}      : { uid, pseudo, text, t, lat, lng } # salon commun (120 derniers affichés)
 /dm/{a__b}/{id} : { uid, pseudo, text, t }         # fil privé entre 2 riders (uids triés)
+/eventMessages/{eid}/{id} : { uid, pseudo, text, img, t } # discussion des participants
+/unread/{uid}/{clé} : nombre   # clé = d_<uid> | g_<gid> | e_<eid> (tenu par le serveur)
 /events/{id}    : { title, topic, when, place, desc, max, img, by, byPseudo, t, cancelled, att:{ uid:{pseudo,t} } } # agenda
 ```
 

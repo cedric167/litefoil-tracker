@@ -1,14 +1,17 @@
 /* Lite Foil — notifications « appli fermée » du chat Communauté.
  *
- * Deux déclencheurs Realtime Database (région europe-west1) :
- *   - chatPush : nouveau message de salon  (/chat/{id})
+ * Déclencheurs Realtime Database (région europe-west1) :
+ *   - chatPush : nouveau message de salon public (/chat/{id}) : appli web seulement, sans chiffre
  *   - dmPush   : nouveau message privé      (/dm/{pair}/{id}, pair = uidA__uidB)
+ *   - groupPush : message d'un groupe privé (/groupMessages/{gid}/{id})
+ *   - eventChatPush : discussion d'un événement (/eventMessages/{eid}/{id}), aux inscrits
  *   - reportAlert : nouveau signalement      (/reports/{id}), envoyé aux modérateurs
  *
- * Chaque appareil enregistre son jeton FCM dans /pushTokens/{uid}/{clé} = {token, pseudo, t}
- * (écrit par l'appli). On envoie un message « data-only » : le service worker
- * (firebase-messaging-compat, voir sw.js) affiche la notification et gère le canal.
- * Les jetons périmés sont supprimés automatiquement.
+ * Chaque appareil enregistre son jeton FCM dans /pushTokens/{uid}/{clé} = {token, pseudo, plat, t}
+ * (plat = "ios" | "android" | "web"). Appli web : message « data-only », le service worker
+ * affiche la notification. Applis iPhone/Android : vraie notification + chiffre sur l'icône.
+ * Le chiffre = somme de /unread/{uid}/{conversation} (+1 à chaque message, remis à zéro
+ * par l'appli quand on lit). Les jetons périmés sont supprimés automatiquement.
  */
 const { onValueCreated } = require("firebase-functions/v2/database");
 const { onRequest } = require("firebase-functions/v2/https");
@@ -60,41 +63,77 @@ const CHANS = {
   skim: "Skimboard", kayak: "Kayak"
 };
 
-// Envoie un message data-only à tous les jetons des utilisateurs donnés, puis nettoie
-// les jetons que FCM signale comme invalides.
-async function sendToUids(uids, data) {
+// +1 non-lu pour chaque destinataire sur cette conversation ; renvoie {uid: total non-lus}
+// (le total sert de chiffre sur l'icône de l'appli).
+async function bumpUnread(uids, key) {
   const db = getDatabase();
-  const tokens = [];
-  const pathByToken = {};
+  const badges = {};
+  await Promise.all(uids.map(async (uid) => {
+    await db.ref("unread/" + uid + "/" + key).transaction((n) => (+n || 0) + 1);
+    const all = (await db.ref("unread/" + uid).get()).val() || {};
+    badges[uid] = Object.values(all).reduce((a, n) => a + (+n || 0), 0);
+  }));
+  return badges;
+}
+
+// Envoie la notification à tous les appareils des utilisateurs donnés, puis nettoie
+// les jetons que FCM signale comme invalides.
+//   opts.badges : {uid: nombre} → chiffre sur l'icône (applis natives)
+//   opts.webOnly : n'envoie qu'à l'appli web (salons publics : pas de notif sur les téléphones)
+async function sendToUids(uids, data, opts) {
+  opts = opts || {};
+  const db = getDatabase();
+  const messages = [];
+  const paths = [];
+  const seen = {};
   for (const uid of uids) {
     const snap = await db.ref("pushTokens/" + uid).get();
     const v = snap.val() || {};
     for (const key in v) {
       const tok = v[key] && v[key].token;
-      if (tok && !pathByToken[tok]) { tokens.push(tok); pathByToken[tok] = "pushTokens/" + uid + "/" + key; }
+      if (!tok || seen[tok]) continue;
+      seen[tok] = true;
+      const plat = (v[key] && v[key].plat) || "web";
+      const native = plat === "ios" || plat === "android";
+      if (native && opts.webOnly) continue;
+      const badge = opts.badges && opts.badges[uid] != null ? opts.badges[uid] : undefined;
+      let msg;
+      if (native) {
+        msg = {
+          token: tok,
+          notification: { title: data.title, body: data.body },
+          data,
+          apns: { payload: { aps: Object.assign({ sound: "default", "thread-id": data.channel || "lf" }, badge != null ? { badge } : {}) } },
+          android: { priority: "high", notification: Object.assign({ sound: "default", tag: data.channel || "lf" }, badge != null ? { notificationCount: badge } : {}) }
+        };
+      } else {
+        msg = {
+          token: tok,
+          data,
+          android: { priority: "high" },
+          webpush: { headers: { Urgency: "high" }, fcmOptions: { link: APP_URL } }
+        };
+      }
+      messages.push(msg);
+      paths.push("pushTokens/" + uid + "/" + key);
     }
   }
-  if (!tokens.length) return;
-
-  const resp = await getMessaging().sendEachForMulticast({
-    tokens,
-    data,
-    android: { priority: "high" },
-    webpush: { headers: { Urgency: "high" }, fcmOptions: { link: APP_URL } }
-  });
+  if (!messages.length) return;
 
   const dead = [];
-  resp.responses.forEach((r, i) => {
-    if (!r.success) {
-      const code = r.error && r.error.code;
-      if (code === "messaging/registration-token-not-registered" ||
-          code === "messaging/invalid-argument" ||
-          code === "messaging/invalid-registration-token") {
-        const p = pathByToken[tokens[i]];
-        if (p) dead.push(db.ref(p).remove().catch(() => {}));
+  for (let i = 0; i < messages.length; i += 500) {
+    const resp = await getMessaging().sendEach(messages.slice(i, i + 500));
+    resp.responses.forEach((r, j) => {
+      if (!r.success) {
+        const code = r.error && r.error.code;
+        if (code === "messaging/registration-token-not-registered" ||
+            code === "messaging/invalid-argument" ||
+            code === "messaging/invalid-registration-token") {
+          dead.push(db.ref(paths[i + j]).remove().catch(() => {}));
+        }
       }
-    }
-  });
+    });
+  }
   if (dead.length) await Promise.all(dead);
 }
 
@@ -112,20 +151,23 @@ exports.chatPush = onValueCreated({ ref: "/chat/{id}", instance: DB_INSTANCE }, 
     channel: topic,
     title: (m.pseudo || "Rider") + " · " + ch,
     body: String(m.text).slice(0, 140)
-  });
+  }, { webOnly: true });
 });
 
 exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE }, async (event) => {
   const m = event.data.val() || {};
-  if (!m.text) return;
+  if (!m.text && !m.img) return;
   const uids = String(event.params.pair).split("__").filter((u) => u && u !== m.uid);
   if (!uids.length) return;
+  const badges = await bumpUnread(uids, "d_" + m.uid);
   await sendToUids(uids, {
     type: "dm",
-    channel: "dm",
+    channel: "dm:" + m.uid,
+    peer: String(m.uid || ""),
+    pseudo: String(m.pseudo || "Rider"),
     title: (m.pseudo || "Rider") + " · Message privé",
-    body: String(m.text).slice(0, 140)
-  });
+    body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
+  }, { badges });
 });
 
 exports.groupPush = onValueCreated({ ref: "/groupMessages/{gid}/{id}", instance: DB_INSTANCE }, async (event) => {
@@ -138,12 +180,35 @@ exports.groupPush = onValueCreated({ ref: "/groupMessages/{gid}/{id}", instance:
   const members = g.members ? Object.keys(g.members) : [];
   const uids = members.filter((u) => u !== m.uid);
   if (!uids.length) return;
+  const badges = await bumpUnread(uids, "g_" + gid);
   await sendToUids(uids, {
     type: "group",
     channel: "group:" + gid,
+    gid: String(gid),
     title: (g.name || "Groupe") + " · " + (m.pseudo || "Rider"),
     body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
-  });
+  }, { badges });
+});
+
+exports.eventChatPush = onValueCreated({ ref: "/eventMessages/{eid}/{id}", instance: DB_INSTANCE }, async (event) => {
+  const m = event.data.val() || {};
+  if (!m.text && !m.img) return;
+  const eid = event.params.eid;
+  const db = getDatabase();
+  const e = (await db.ref("events/" + eid).get()).val() || {};
+  if (e.cancelled) return;
+  const set = Object.assign({}, e.att || {});
+  if (e.by) set[e.by] = true;
+  const uids = Object.keys(set).filter((u) => u !== m.uid);
+  if (!uids.length) return;
+  const badges = await bumpUnread(uids, "e_" + eid);
+  await sendToUids(uids, {
+    type: "event",
+    channel: "ev:" + eid,
+    eid: String(eid),
+    title: "📅 " + (e.title || "Événement") + " · " + (m.pseudo || "Rider"),
+    body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
+  }, { badges });
 });
 
 /* Signalements (charte de la communauté) : prévient l'équipe Lite Foil à chaque nouveau

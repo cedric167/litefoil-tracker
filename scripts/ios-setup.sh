@@ -104,3 +104,72 @@ fi
 plutil -lint "$PLIST" >/dev/null
 
 echo "Réglages iOS Lite Foil appliqués (équipe $TEAM). Étape suivante : npx cap sync ios"
+
+# 6) Notifications (messages privés, groupes, discussions d'événements) + chiffre sur l'icône.
+#    Activé seulement si ios-assets/GoogleService-Info.plist existe (fichier de l'appli iOS
+#    téléchargé depuis la console Firebase). Sans lui, l'appli est construite comme avant.
+#    Codemagic installe alors le module @capacitor-firebase/messaging (voir codemagic.yaml).
+GSI="$ROOT/ios-assets/GoogleService-Info.plist"
+if [ -f "$GSI" ]; then
+  cp "$GSI" "$APP/App/GoogleService-Info.plist"
+  # fichier ajouté aux ressources de l'appli dans le projet Xcode
+  /usr/bin/env ruby -e '
+    require "xcodeproj"
+    p = Xcodeproj::Project.open(ARGV[0])
+    t = p.targets.find { |x| x.name == "App" }
+    g = p.main_group.find_subpath("App", false)
+    unless g.files.any? { |f| f.path == "GoogleService-Info.plist" }
+      t.add_resources([g.new_reference("GoogleService-Info.plist")])
+      p.save
+    end
+  ' "$APP/App.xcodeproj"
+  # droit « notifications push » (aps-environment) : l'identifiant d'app doit avoir Push Notifications activé chez Apple
+  cat > "$APP/App/App.entitlements" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>aps-environment</key>
+	<string>production</string>
+</dict>
+</plist>
+PLIST
+  sed -i '' '/CODE_SIGN_ENTITLEMENTS = /d' "$PBX"
+  sed -i '' "s/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Automatic;\\
+				CODE_SIGN_ENTITLEMENTS = App\/App.entitlements;/" "$PBX"
+  plutil -replace UIBackgroundModes -json '["bluetooth-central","location","remote-notification"]' "$PLIST"
+  # AppDelegate : démarre Firebase et transmet le jeton Apple au module de notifications
+  DELEGATE="$APP/App/AppDelegate.swift"
+  if ! grep -q "LITEFOIL_PUSH" "$DELEGATE"; then
+    /usr/bin/ruby -E UTF-8 -e '
+      f = ARGV[0]; s = File.read(f)
+      s.sub!("import Capacitor\n", "import Capacitor\nimport FirebaseCore\nimport FirebaseMessaging\n") or abort "import Capacitor introuvable"
+      s.sub!(/(didFinishLaunchingWithOptions[^{]*\{\n)/) { $1 + "        // LITEFOIL_PUSH : Firebase pour les notifications\n        if FirebaseApp.app() == nil { FirebaseApp.configure() }\n" } or abort "didFinishLaunching introuvable"
+      methods = <<~SWIFT
+          // LITEFOIL_PUSH : jeton Apple -> jeton Firebase, transmis au module @capacitor-firebase/messaging
+          func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+              Messaging.messaging().apnsToken = deviceToken
+              Messaging.messaging().token(completion: { (token, error) in
+                  if let error = error {
+                      NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+                  } else if let token = token {
+                      NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: token)
+                  }
+              })
+          }
+
+          func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+              NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+          }
+
+      SWIFT
+      methods = methods.gsub(/^/, "    ").gsub(/^    $/, "")
+      s.sub!(/(\n    func applicationWillResignActive)/) { "\n" + methods + $1.sub(/\A\n/, "") } or abort "applicationWillResignActive introuvable"
+      File.write(f, s)
+    ' "$DELEGATE"
+  fi
+  plutil -lint "$PLIST" >/dev/null
+  echo "Notifications iOS activées (GoogleService-Info.plist présent)."
+else
+  echo "Notifications iOS non activées : ios-assets/GoogleService-Info.plist absent."
+fi

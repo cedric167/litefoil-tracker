@@ -71,6 +71,9 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .act:active{transform:scale(.99)}
 .act .spark{width:92px;height:62px;flex:0 0 auto;border-radius:12px;background:#eef3f4;overflow:hidden}
 .act .spark svg{width:100%;height:100%}
+.act .spark.map{position:relative;background:#cfdde0}
+.act .spark.map img{position:absolute;width:256px;height:256px;max-width:none;pointer-events:none}
+.act .spark.map svg{position:absolute;inset:0}
 .act .mid{flex:1;min-width:0}
 .act .mid .nm{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .act .mid .sub{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
@@ -503,13 +506,26 @@ document.getElementById("logGo").onclick=async()=>{
 document.getElementById("logPass").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("logGo").click(); });
 function fmtDur(s){ s=Math.round(s); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h${String(m).padStart(2,"0")}`:`${m} min`; }
 function fmtDate(d){ return d? d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) : ""; }
-function sparkline(pts){
+// Vignette = photo satellite dézoomée autour du parcours (on voit le spot), avec la trace par-dessus.
+function mapThumb(pts){
   if(!pts||pts.length<2) return "";
+  const w=92,h=62;
+  const proj=(lat,lon,z)=>{ const n=256*Math.pow(2,z), s=Math.sin(lat*Math.PI/180);
+    return [(lon+180)/360*n, (0.5-Math.log((1+s)/(1-s))/(4*Math.PI))*n]; };
   const la=pts.map(p=>p.lat), lo=pts.map(p=>p.lon);
   const laMin=Math.min(...la),laMax=Math.max(...la),loMin=Math.min(...lo),loMax=Math.max(...lo);
-  const w=92,h=62,pad=8, sx=(loMax-loMin)||1e-6, sy=(laMax-laMin)||1e-6;
-  const d=pts.map((p,i)=>{const x=pad+(p.lon-loMin)/sx*(w-2*pad); const y=h-pad-(p.lat-laMin)/sy*(h-2*pad); return (i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1);}).join(" ");
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#ff5a1f" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+  // zoom le plus grand où le parcours tient dans ~45 % de la vignette (assez large pour voir la côte autour)
+  let z=13; // jamais plus près que le niveau 13 (≈ 1,5 km de large) : on reconnaît le spot
+  for(;z>3;z--){ const a=proj(laMax,loMin,z), b=proj(laMin,loMax,z); if((b[0]-a[0])<=w*0.45 && (b[1]-a[1])<=h*0.45) break; }
+  const c=proj((laMin+laMax)/2,(loMin+loMax)/2,z), ox=c[0]-w/2, oy=c[1]-h/2, max=Math.pow(2,z);
+  let tiles="";
+  for(let tx=Math.floor(ox/256); tx<=Math.floor((ox+w)/256); tx++)
+    for(let ty=Math.floor(oy/256); ty<=Math.floor((oy+h)/256); ty++){
+      if(ty<0||ty>=max) continue; const wx=((tx%max)+max)%max;
+      tiles+=`<img loading="lazy" alt="" style="left:${(tx*256-ox).toFixed(1)}px;top:${(ty*256-oy).toFixed(1)}px" src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${wx}">`; }
+  const step=Math.max(1,Math.floor(pts.length/400));
+  const d=pts.filter((p,i)=>i%step===0||i===pts.length-1).map((p,i)=>{ const q=proj(p.lat,p.lon,z); return (i?"L":"M")+(q[0]-ox).toFixed(1)+" "+(q[1]-oy).toFixed(1); }).join(" ");
+  return tiles+`<svg viewBox="0 0 ${w} ${h}"><path d="${d}" fill="none" stroke="#fff" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/><path d="${d}" fill="none" stroke="#ff5a1f" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 function render(){
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-selected", b.dataset.k===filter));
@@ -527,7 +543,7 @@ function render(){
     const badge = a.milieu==="mer"?"badge-mer":"badge-terre";
     const el=document.createElement("div"); el.className="act"; el.style.borderLeftColor = a.milieu==="mer"?"var(--mer)":"var(--terre)";
     el.innerHTML=`
-      <div class="spark">${sparkline(a.points)||""}</div>
+      <div class="spark${a.points&&a.points.length>1?" map":""}">${mapThumb(a.points)||""}</div>
       <div class="mid">
         <div class="nm">${sportIcon(a.milieu,a.activityType)} ${a.name}</div>
         <div class="sub">${fmtDate(a.startedAt)}</div>
