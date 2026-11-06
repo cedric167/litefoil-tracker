@@ -147,6 +147,34 @@ quand on lit. Ajoute ces deux blocs à côté de `"events"` :
 }
 ```
 
+## Compte officiel « Équipe Lite Foil », chiffres de la communauté
+
+- Les messages de l'uid réservé `litefoil-team` (écrits par le serveur : accueil des
+  nouveaux membres, météo du week-end le vendredi 17 h, conseil de la semaine le mardi
+  18 h) s'affichent avec le badge **✓ Officiel**.
+- Pour que **ton propre compte** ait aussi le badge (nouveautés, événements officiels) :
+  dans l'appli, *Mon profil* → copie la ligne « Identifiant : … », puis dans la console
+  Firebase → Realtime Database → Données, ajoute `official / <ton identifiant> : true`.
+  Tes événements apparaissent alors en tête, dans « ⭐ Événements officiels Lite Foil ».
+- Mets aussi ton identifiant dans `functions/.env` → `REPORT_ADMIN_UIDS=` : les réponses
+  des riders au message d'accueil te seront transmises en notification.
+- Chaque rider publie ses vrais chiffres (`/stats/{uid}` = sorties de plus de 100 m et km),
+  l'appli affiche le total sous le nombre de membres.
+
+Règles à ajouter (à côté des autres) :
+
+```json
+"official": { ".read": "auth != null", ".write": false },
+"stats": {
+  ".read": "auth != null",
+  "$uid": {
+    ".write": "auth != null && auth.uid === $uid",
+    ".validate": "newData.child('n').isNumber() && newData.child('km').isNumber() && newData.child('n').val() <= 5000 && newData.child('km').val() <= 200000"
+  }
+},
+"welcomed": { ".read": false, ".write": false }
+```
+
 ## Structure des données (pour info)
 
 ```

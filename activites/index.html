@@ -532,6 +532,8 @@ function render(){
   const items = ALL.filter(a=> filter==="tout" ? true : a.milieu===filter)
                    .sort((a,b)=> (b.startedAt||0)-(a.startedAt||0));
   const km = items.reduce((s,a)=>s+a.distanceM,0)/1000;
+  // mes vrais chiffres (sorties de plus de 100 m), partagés avec la Communauté (total des riders)
+  try{ const real=ALL.filter(a=>(a.distanceM||0)>=100); localStorage.setItem("lf_my_stats", JSON.stringify({n:real.length, km:Math.round(real.reduce((s,a)=>s+a.distanceM,0)/100)/10, t:Date.now()})); }catch(e){}
   const time = items.reduce((s,a)=>s+a.durationSec,0);
   document.getElementById("sumCount").textContent=items.length;
   document.getElementById("sumKm").textContent=km.toFixed(1);

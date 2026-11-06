@@ -37,5 +37,9 @@
    seule le module de notifications (`@capacitor-firebase/messaging`), le droit
    « push » iOS et la permission Android.
 
+Le serveur de l'étape 5 met aussi en route le compte **Équipe Lite Foil** : message
+d'accueil privé à chaque nouveau membre, météo du week-end dans chaque salon le vendredi
+à 17 h et conseil de la semaine le mardi à 18 h (voir `COMMUNAUTE.md`).
+
 Tant que les étapes 3 à 6 ne sont pas faites, l'appli marche comme avant : le chiffre
 s'affiche quand on ouvre l'appli, mais pas de notification appli fermée.

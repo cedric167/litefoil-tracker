@@ -346,6 +346,12 @@
   .gi-act{ display:block; width:100%; text-align:left; border:0; background:var(--tile); color:var(--accent-ink); font-weight:600; padding:12px 14px; border-radius:12px; cursor:pointer; }
   .gi-mlabel{ font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted-2); margin-top:4px; }
   .mem-list{ display:flex; flex-direction:column; gap:2px; }
+  .off-badge{ display:inline-flex; align-items:center; gap:3px; font-size:10.5px; font-weight:800; color:#fff; background:linear-gradient(135deg,#1fb5bd,#148a90); padding:1px 7px 1px 5px; border-radius:100px; margin-left:6px; vertical-align:1px; letter-spacing:.01em; white-space:nowrap; }
+  .ev-off{ font-size:11px; font-weight:800; color:#fff; background:linear-gradient(135deg,#1fb5bd,#148a90); padding:3px 8px; border-radius:100px; white-space:nowrap; }
+  .comm-stats{ display:flex; flex-wrap:wrap; gap:8px; margin:-6px 2px 14px; }
+  .comm-stats span{ display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); background:var(--tile); border-radius:100px; padding:6px 12px; font-weight:600; }
+  .comm-stats b{ color:var(--text); font-weight:800; font-variant-numeric:tabular-nums; }
+  .comm-myid{ margin-top:12px; font-size:11px; color:var(--muted-2); word-break:break-all; user-select:all; -webkit-user-select:all; }
   .mem-adm{ font-size:11px; color:var(--accent-ink); background:var(--tile); padding:2px 8px; border-radius:100px; }
   .mem-rm{ border:0; background:none; color:var(--bad); font-size:12px; cursor:pointer; }
   .gi-leave{ margin-top:8px; border:0; background:none; color:var(--bad); font-weight:700; padding:12px; border-radius:12px; cursor:pointer; text-align:center; }
@@ -414,7 +420,7 @@
   .bubble.me{ background:var(--accent-ink); color:#fff; border-bottom-right-radius:5px; }
   .bubble.only-img{ padding:0; background:transparent!important; border:0; }
   .chat-img{ display:block; max-width:230px; width:100%; border-radius:12px; cursor:pointer; }
-  .bubble .btxt{ display:block; }
+  .bubble .btxt{ display:block; white-space:pre-line; }
   .chat-img + .btxt{ margin-top:6px; }
   .ctime{ font-size:10.5px; color:var(--muted-2); margin:3px 5px 0; display:flex; gap:9px; align-items:center; }
   .crow.me .ctime{ justify-content:flex-end; }
@@ -889,6 +895,7 @@
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
     <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
     <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<button type="button" class="mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span>&nbsp;›</button></div>
+    <div class="comm-stats" id="commStats" hidden></div>
 
     <div class="riders-strip-wrap" id="ridersStripWrap">
       <div class="m-label" style="margin:2px 6px 6px">Riders en ligne</div>
@@ -1021,6 +1028,7 @@
         <label for="commDmPref" style="margin-top:10px">Qui peut m'écrire en privé</label>
         <select id="commDmPref"><option value="all">Tout le monde</option><option value="none">Personne</option></select>
         <button class="primary" id="profEditSave">Enregistrer</button>
+        <div class="comm-myid" id="commMyId"></div>
       </div>
     </div>
     <div class="sheet" id="commSheet" hidden>
@@ -3108,6 +3116,13 @@
   const avatarColor = uid => `hsl(${hue(uid)},60%,47%)`;
   const timeLabel = t => { const d=new Date(t||Date.now()); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
   const pairKey = (a,b) => [a,b].sort().join("__");
+  // compte officiel : messages postés par le serveur (uid réservé, impossible à imiter) ou par un compte
+  // ajouté dans /official depuis la console Firebase → badge « Équipe Lite Foil »
+  const TEAM_UID = "litefoil-team", TEAM_NAME = "Équipe Lite Foil", TEAM_AV = "icon-192.png";
+  let officialSet = new Set([TEAM_UID]);
+  function isOfficial(u){ return !!u && officialSet.has(u); }
+  function offBadge(u){ return isOfficial(u) ? '<span class="off-badge" title="Compte officiel Lite Foil">✓ Officiel</span>' : ""; }
+  let commStats = {};
   const savePseudo = () => { try{ localStorage.setItem("lf.comm.pseudo", me.pseudo); }catch(e){} };
 
   // ---------- état ----------
@@ -3231,6 +3246,9 @@
       clearTyping(){ return db.remove(db.ref(d,"typing/"+uid)); },
       saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var o={pseudo:p.pseudo,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; return db.set(db.ref(d,"profiles/"+uid),o); },
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
+      watchOfficial(cb){ return db.onValue(db.ref(d,"official"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
+      watchStats(cb){ return db.onValue(db.ref(d,"stats"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
+      saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,t:db.serverTimestamp()}).catch(function(){}); },
       watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); },
       // ---------- groupes privés (facon WhatsApp) ----------
@@ -3294,8 +3312,10 @@
     (function(){ var dd=new Date(); dd.setDate(dd.getDate()+((6-dd.getDay()+7)%7||7)); dd.setHours(10,0,0,0);
       demoEvents["e-demo"]={id:"e-demo",title:"Sortie eFoil au lever du soleil",topic:"efoil",when:dd.getTime(),place:"Plage sud, Port-Barcarès",desc:"Balade tranquille ouverte à tous les niveaux, on se retrouve sur le parking 15 min avant.",max:8,by:"demo-aurel",byPseudo:"Aurel66",t:Date.now()-7200000,att:{"demo-aurel":{pseudo:"Aurel66",t:Date.now()-7200000},"demo-marine":{pseudo:"Marine",t:Date.now()-3600000}}}; })();
     const demoDM={}; let demoDMcb=null;
+    demoDM[TEAM_UID]={pseudo:TEAM_NAME,text:"Bienvenue dans la communauté Lite Foil 👋",by:TEAM_UID,t:Date.now()-60000,unread:1};
     const fireDM=()=>{ if(demoDMcb) demoDMcb(Object.assign({},demoDM)); };
-    const msgs={ "ev:e-demo":[{uid:"demo-aurel",pseudo:"Aurel66",text:"Je prends la remorque, qui a besoin d'une place ? 🚐",t:Date.now()-1800000}], salon:[
+    const msgs={ ["dm:"+pairKey(uid,TEAM_UID)]:[{uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,text:"Bienvenue dans la communauté Lite Foil 👋 Ici tu trouves les riders près de chez toi, les salons par sport et les événements. Présente-toi dans le salon de ton sport, et n'hésite pas à créer une sortie !",t:Date.now()-60000}], "ev:e-demo":[{uid:"demo-aurel",pseudo:"Aurel66",text:"Je prends la remorque, qui a besoin d'une place ? 🚐",t:Date.now()-1800000}], salon:[
+      {uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,text:"🌤️ Météo du week-end à Leucate – Le Barcarès\nSam. : 💨 9 nds NO (raf. 14) · 🌊 0,3 m · 21°C\nDim. : 💨 6 nds E · 🌊 0,2 m · 22°C\n👉 Mer calme : parfait pour l'eFoil !",t:Date.now()-7000000,topic:"efoil"},
       {uid:"demo-aurel",pseudo:"Aurel66",text:"Salut la communauté 👋",t:Date.now()-5400000,topic:"general",lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
       {uid:"demo-aurel",pseudo:"Aurel66",text:"Session eFoil demain 9h à la plage sud, qui vient ?",t:Date.now()-3600000,topic:"efoil",lat:demo["demo-aurel"].lat,lng:demo["demo-aurel"].lng},
       {uid:"demo-marine",pseudo:"Marine",text:"Partant en eFoil si le vent est calme 🤙",t:Date.now()-1800000,topic:"efoil",lat:demo["demo-marine"].lat,lng:demo["demo-marine"].lng},
@@ -3321,7 +3341,10 @@
       setTyping(){ return Promise.resolve(); },
       clearTyping(){ return Promise.resolve(); },
       saveProfile(){ return Promise.resolve(); },
-      watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; cb(o); return function(){}; },
+      watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
+      watchOfficial(cb){ cb({}); return function(){}; },
+      watchStats(cb){ var o={"demo-aurel":{n:42,km:612.4},"demo-marine":{n:17,km:203.9}}; var m=myStats(); if(m) o[uid]=m; cb(o); return function(){}; },
+      saveStats(){ return Promise.resolve(); },
       watchTyping(){ return function(){}; },
       sendReport(){ return Promise.resolve(); },
       // ---------- groupes privés (démo, en mémoire) ----------
@@ -3747,12 +3770,12 @@
       box.innerHTML='<div class="comm-empty">'+(chatMode==="near"?emptyNear:(isConvo?"Démarre la conversation 👋":emptySalon))+'</div>'; return; }
     arr = arr.slice(-120);
     const tl=targetLang();
-    function _avatar(m,i){ if(m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+m.av+'" alt=""></div>'; var ini=(((m.pseudo||"R").trim()[0])||"R").toUpperCase(); return '<div class="cav tapp" data-i="'+i+'" style="background:'+avatarColor(m.uid||"x")+'">'+esc(ini)+'</div>'; }
+    function _avatar(m,i){ if(isOfficial(m.uid) && !m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+TEAM_AV+'" alt=""></div>'; if(m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+m.av+'" alt=""></div>'; var ini=(((m.pseudo||"R").trim()[0])||"R").toUpperCase(); return '<div class="cav tapp" data-i="'+i+'" style="background:'+avatarColor(m.uid||"x")+'">'+esc(ini)+'</div>'; }
     let prevDay="";
     function dayLabel(t){ var d=new Date(t||Date.now()), td=new Date(), yd=new Date(Date.now()-86400000); var k=x=>x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate(); if(k(d)===k(td)) return "Aujourd'hui"; if(k(d)===k(yd)) return "Hier"; return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }
     box.innerHTML = arr.map((m,i)=>{ const mine=m.uid===me.uid;
       let sep=""; const dk=new Date(m.t||Date.now()).toDateString(); if(dk!==prevDay){ prevDay=dk; sep='<div class="cday">'+esc(dayLabel(m.t))+'</div>'; }
-      const who=(mine||chatMode==="dm")?"":'<div class="who2 tapp" data-i="'+i+'">'+esc(m.pseudo||"Rider")+'</div>';
+      const who=(mine||chatMode==="dm")?"":'<div class="who2 tapp" data-i="'+i+'">'+esc(isOfficial(m.uid)&&m.uid===TEAM_UID?TEAM_NAME:(m.pseudo||"Rider"))+offBadge(m.uid)+'</div>';
       const flag = mine?"":`<button class="flag" data-i="${i}" title="Signaler" aria-label="Signaler ce message">⚑</button>`;
       const replyBtn = `<button class="msg-reply" data-i="${i}" title="Répondre" aria-label="Répondre">↩︎</button>`;
       // annonce d'événement : la carte remplace le texte (gardé pour les notifications et anciennes versions)
@@ -3801,7 +3824,7 @@
     dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
     dmSeen[uid]=Date.now(); saveDmSeen(); dmNotif[uid]=dmSeen[uid]; clearDeliveredNotifs(); if(backend.markDMRead) backend.markDMRead(uid); if(backend.clearUnread) backend.clearUnread("d_"+uid);
     $("chatSeg").hidden=true; $("chatBack").hidden=false; $("chatTitle").hidden=false; $("chatTitle").classList.add("tap");
-    setConvoHeader(ps, uid, pr.av, "en ligne");
+    setConvoHeader(ps, uid, pr.av||(uid===TEAM_UID?TEAM_AV:""), isOfficial(uid) ? "✓ Compte officiel Lite Foil" : "en ligne");
     $("chatCard").classList.add("wchat","dm"); $("chatCard").classList.remove("group");
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
@@ -3874,7 +3897,7 @@
       var prev=tick+esc((e.text||(e.img?"📷 Photo":"")).slice(0,90));
       var tm=e.t?timeLabel(e.t):"";
       var av = prof.av ? '<span class="gav" style="width:54px;height:54px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:54px;height:54px;background:'+avatarColor(p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
-      return '<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+badge+'</span></button>';
+      return '<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b>'+offBadge(p)+'</span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+badge+'</span></button>';
     }).join("")+'</div>';
     box.querySelectorAll(".grow").forEach(function(b){ b.addEventListener("click", function(){ openDM(b.dataset.uid, b.dataset.ps); }); });
   }
@@ -3984,7 +4007,7 @@
   function evCardHtml(ev){ if(!ev) return "";
     var where=[fmtEvWhen(ev.when)]; if(ev.place) where.push(ev.place);
     var full=myEvents.filter(function(x){ return x.id===ev.id; })[0], cimg=full&&full.img;
-    return '<div class="ev-card">'+(cimg?'<div class="ev-cover"><img src="'+cimg+'" alt=""></div>':'')+'<div class="evc-top">'+evDateHtml(ev.when)+'<div class="evc-t"><small>Événement'+(ev.topic&&CHANS[ev.topic]?" · "+esc(CHANS[ev.topic]):"")+'</small><b>'+esc(ev.title||"Événement")+'</b><span>'+esc(where.join(" · "))+'</span></div></div>'
+    return '<div class="ev-card">'+(cimg?'<div class="ev-cover"><img src="'+cimg+'" alt=""></div>':'')+'<div class="evc-top">'+evDateHtml(ev.when)+'<div class="evc-t"><small>'+(full&&isOfficial(full.by)?"Événement officiel":"Événement")+(ev.topic&&CHANS[ev.topic]?" · "+esc(CHANS[ev.topic]):"")+'</small><b>'+esc(ev.title||"Événement")+'</b><span>'+esc(where.join(" · "))+'</span></div></div>'
       +'<button class="evc-go" data-eid="'+esc(ev.id||"")+'">Voir et s\'inscrire</button></div>'; }
   function onEvents(list){
     myEvents=(list||[]).filter(function(e){ return e && e.title && !blocked.has(e.by); }).sort(function(a,b){ return (+a.when||0)-(+b.when||0); });
@@ -3998,15 +4021,17 @@
     var box=$("chatBox"); if(!box) return;
     // ouvrir l'agenda = tous les événements vus
     var mx=evSeen; for(var i=0;i<myEvents.length;i++){ var t=+myEvents[i].t||0; if(t>mx) mx=t; } if(mx>evSeen){ evSeen=mx; saveEvSeen(); setTimeout(recomputeBadges,0); }
-    var mine=myEvents.filter(function(e){ return evIn(e) && !e.cancelled; }), others=myEvents.filter(function(e){ return !(evIn(e) && !e.cancelled); });
+    var mine=myEvents.filter(function(e){ return evIn(e) && !e.cancelled; }), others0=myEvents.filter(function(e){ return !(evIn(e) && !e.cancelled); });
+    var offi=others0.filter(function(e){ return isOfficial(e.by) && !e.cancelled; }), others=others0.filter(function(e){ return !(isOfficial(e.by) && !e.cancelled); });
     function row(e){ var n=evAtt(e).length, off=e.cancelled||evPast(e);
-      var tag = e.cancelled ? '<span class="ev-cancel">Annulé</span>' : (evIn(e) ? '<span class="ev-in">Inscrit ✓</span>' : (evFull(e) ? '<span class="ev-full">Complet</span>' : ''));
+      var tag = (isOfficial(e.by)&&!e.cancelled?'<span class="ev-off">✓ Officiel</span>':'') + (e.cancelled ? '<span class="ev-cancel">Annulé</span>' : (evIn(e) ? '<span class="ev-in">Inscrit ✓</span>' : (evFull(e) ? '<span class="ev-full">Complet</span>' : '')));
       var sub=[fmtEvWhen(e.when)]; if(e.place) sub.push(e.place);
       var um=evMember(e)&&!e.cancelled?evMsgUnread(e.id):0; if(um>0) tag='<span class="gbadge" title="messages non lus">'+(um>99?"99+":um)+'</span>'+tag;
       return '<button class="grow" data-eid="'+esc(e.id)+'">'+evThumbHtml(e,off)+'<span class="grow-main"><span class="grow-top"><b>'+esc(e.title)+'</b></span><span class="grow-sub">'+esc(sub.join(" · "))+'</span></span><span class="grow-right"><span class="grow-tm">👥 '+n+(e.max?"/"+e.max:"")+'</span>'+tag+'</span></button>'; }
     var html='<div class="glist"><button class="gnew" id="evNewBtn"><span class="gnew-ic" style="background:#7a4fe0">＋</span><span>Créer un événement</span></button>';
     if(!myEvents.length){ html+='<div class="comm-empty" style="margin-top:8px">Aucun événement prévu pour l\'instant.<br>Organise une sortie : les riders pourront s\'inscrire en un clic.</div>'; }
     else {
+      if(offi.length) html+='<div class="ev-sec">⭐ Événements officiels Lite Foil</div>'+offi.map(row).join("");
       if(mine.length) html+='<div class="ev-sec">Mes inscriptions</div>'+mine.map(row).join("");
       if(others.length) html+='<div class="ev-sec">'+(mine.length?"Autres événements":"À venir")+'</div>'+others.map(row).join("");
     }
@@ -4098,7 +4123,7 @@
       +'<div class="gc-head"><button class="gc-x" id="evdClose">✕</button><b>Événement</b><span></span></div>'
       +'<div class="gc-body">'
         +evCoverHtml(e,"hero",true, owner&&!e.cancelled&&!past?'<button class="evc-edit" id="evdPhoto">📷 '+(e.img?"Changer la photo":"Ajouter une photo")+'</button><input id="evdPhotoFile" type="file" accept="image/*" hidden>':'')
-        +'<div class="gi-top"><div class="gi-name">'+esc(e.title||"Événement")+'</div><div class="gi-sub">Organisé par '+esc(e.byPseudo||"Rider")+'</div></div>'
+        +'<div class="gi-top"><div class="gi-name">'+esc(e.title||"Événement")+'</div><div class="gi-sub">Organisé par '+esc(isOfficial(e.by)&&e.by===TEAM_UID?TEAM_NAME:(e.byPseudo||"Rider"))+offBadge(e.by)+'</div></div>'
         +status
         +'<div class="ev-info"><div><span>📅</span><span>'+esc(fmtEvWhen(e.when))+'</span></div>'
           +(e.place?'<div><span>📍</span><span>'+esc(e.place)+'</span></div>':'')
@@ -4319,7 +4344,18 @@
   function onPresence2(){ onPresence(lastPresenceRaw); }
   function onTyping(map){ typers=map||{}; renderTyping(); }
   function onProfiles(map){ profileMap = map||{}; recomputeMembers(); }
-  function recomputeMembers(){ var set={}; for(var k in profileMap){ if(!blocked.has(k)) set[k]=1; } for(var i=0;i<salonMsgs.length;i++){ var u=salonMsgs[i].uid; if(u && !blocked.has(u)) set[u]=1; } for(var rk in riders){ if(!blocked.has(rk)) set[rk]=1; } var n=Object.keys(set).length; var e=$("commMembers"); if(e) e.textContent = n+" membre"+(n>1?"s":""); }
+  // mes sorties : calculées par la page Activités (lf_my_stats), sinon depuis les sorties suivies au téléphone
+  function myStats(){ try{ var s=JSON.parse(localStorage.getItem("lf_my_stats")||"null"); if(s && s.n>=0) return {n:+s.n||0, km:Math.round((+s.km||0)*10)/10};
+      var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"), n=0, m=0; arr.forEach(function(a){ var d=+a.distanceM||0; if(d>=100){ n++; m+=d; } }); return {n:n, km:Math.round(m/100)/10}; }catch(e){ return null; } }
+  function publishMyStats(){ if(!backend||!backend.saveStats||!me.pseudo) return; var m=myStats(); if(!m || !m.n) return;
+    var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=m.n+"|"+m.km; if(prev===cur) return;
+    backend.saveStats(m); try{ localStorage.setItem(k,cur); }catch(e){} }
+  function renderCommStats(){ var el=$("commStats"); if(!el) return; var n=0, km=0;
+    for(var u in commStats){ var v=commStats[u]||{}; n+=(+v.n||0); km+=(+v.km||0); }
+    if(n<=0){ el.hidden=true; return; }
+    var fmt=function(x){ return Math.round(x).toLocaleString("fr-FR"); };
+    el.innerHTML='<span>🏄 <b>'+fmt(n)+'</b> sortie'+(n>1?"s":"")+' enregistrée'+(n>1?"s":"")+'</span><span>📍 <b>'+fmt(km)+'</b> km parcourus</span>'; el.hidden=false; }
+  function recomputeMembers(){ var set={}; for(var k in profileMap){ if(!blocked.has(k) && k!==TEAM_UID) set[k]=1; } for(var i=0;i<salonMsgs.length;i++){ var u=salonMsgs[i].uid; if(u && !blocked.has(u)) set[u]=1; } for(var rk in riders){ if(!blocked.has(rk)) set[rk]=1; } var n=Object.keys(set).length; var e=$("commMembers"); if(e) e.textContent = n+" membre"+(n>1?"s":""); }
   function renderTyping(){ var el=$("chatTyping"); if(!el) return; var ch=currentChannel(); var names=[]; for(var k in typers){ if(blocked.has(k)) continue; var r=typers[k]; if(!r||r.ch!==ch) continue; names.push(r.pseudo||"Rider"); }
     var txt = !names.length ? "" : (names.length===1 ? (names[0]+" écrit…") : (names.length===2 ? (names[0]+" et "+names[1]+" écrivent…") : (names.length+" riders écrivent…")));
     // En conversation privée / groupe (skin WhatsApp) : on affiche le statut d'écriture
@@ -4464,6 +4500,10 @@
     presenceUnsub = backend.watchPresence(onPresence);
     if(backend.watchTyping) typingUnsub = backend.watchTyping(onTyping);
     if(backend.watchProfiles) membersUnsub = backend.watchProfiles(onProfiles);
+    if(backend.watchOfficial) backend.watchOfficial(function(map){ officialSet=new Set([TEAM_UID].concat(Object.keys(map||{}).filter(function(k){ return map[k]; }))); recomputeBadges(); renderChat(); });
+    if(backend.watchStats) backend.watchStats(function(map){ commStats=map||{}; renderCommStats(); });
+    publishMyStats();
+    var _mid=$("commMyId"); if(_mid && backend.uid) _mid.textContent="Identifiant : "+backend.uid;
     if(backend.watchMyGroups) groupsUnsub = backend.watchMyGroups(onMyGroups);
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
