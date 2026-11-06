@@ -87,12 +87,46 @@ présence modifiable seulement par son propriétaire, messages **non modifiables
 une fois postés** (pas d'effacement des autres), texte limité à 400 caractères,
 messages privés accessibles aux **deux participants uniquement**.
 
+## Événements (Agenda) : règle à ajouter
+
+L'onglet **Agenda** du chat permet à chaque rider de créer un événement (titre,
+activité, date, heure, lieu, places, description) et aux autres de s'y inscrire.
+On peut aussi le créer depuis le bouton **+** du tchat : une carte « Voir et
+s'inscrire » est alors postée dans le salon, le groupe ou la conversation.
+
+Ajoute ce bloc dans les règles (Realtime Database → Règles), au même niveau que
+`"chat"`, puis **Publier**. Sans lui, la création d'un événement affiche une
+erreur de permission.
+
+```json
+"events": {
+  ".read": "auth != null",
+  ".indexOn": ["when"],
+  "$eid": {
+    ".write": "auth != null && ((!data.exists() && newData.child('by').val() === auth.uid) || (data.exists() && data.child('by').val() === auth.uid))",
+    ".validate": "newData.hasChildren(['title','when','by']) && newData.child('title').isString() && newData.child('title').val().length <= 60 && newData.child('when').isNumber()",
+    "att": {
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}
+```
+
+Seul l'organisateur peut modifier ou annuler son événement ; chaque rider ne peut
+inscrire ou désinscrire **que lui-même**. Le nombre de places est vérifié dans
+l'appli. Un événement peut être signalé (il arrive dans `reports`, type `event`).
+
+Pour essayer sans toucher à la vraie base : ouvrir l'appli avec `?demo=1`.
+
 ## Structure des données (pour info)
 
 ```
 /presence/{uid} : { pseudo, lat, lng, t }         # lat/lng = zone arrondie ; t = horodatage serveur ; auto-effacé à la déconnexion
 /chat/{id}      : { uid, pseudo, text, t, lat, lng } # salon commun (120 derniers affichés)
 /dm/{a__b}/{id} : { uid, pseudo, text, t }         # fil privé entre 2 riders (uids triés)
+/events/{id}    : { title, topic, when, place, desc, max, by, byPseudo, t, cancelled, att:{ uid:{pseudo,t} } } # agenda
 ```
 
 ## Entretien (facultatif)
