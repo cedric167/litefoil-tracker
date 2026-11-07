@@ -197,7 +197,8 @@ Règles à ajouter (à côté des autres) :
 ## Vidéos des riders (onglet Vidéos, fil façon TikTok)
 
 - Fichiers dans **Firebase Storage** (forfait Blaze requis) : `videos/{uid}/{id}.mp4`,
-  30 s et 80 Mo maximum. Fiche dans `/videos/{id}` (auteur, lien, miniature, légende,
+  60 s maximum (au-delà, le rider choisit un extrait de 60 s ; au-delà de 40 Mo la vidéo est
+  recompressée en 720p dans le téléphone), 150 Mo maximum. Fiche dans `/videos/{id}` (auteur, lien, miniature, légende,
   activité, likes) ; commentaires dans `/videoComments/{id}`.
 - **Modération** : l'auteur et les comptes de `/official` (toi) peuvent supprimer une
   vidéo ou un commentaire (menu ⋯ ou 🗑️). Les vidéos signalées arrivent dans `reports`
@@ -236,7 +237,7 @@ service firebase.storage {
     match /videos/{uid}/{file} {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.auth.uid == uid
-                    && request.resource.size < 80 * 1024 * 1024
+                    && request.resource.size < 150 * 1024 * 1024
                     && request.resource.contentType.matches('video/.*');
       allow delete: if request.auth != null && request.auth.uid == uid;
     }

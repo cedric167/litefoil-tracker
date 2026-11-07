@@ -506,6 +506,10 @@
   .vu-pick{ position:relative; width:100%; min-height:150px; border-radius:16px; border:1.5px dashed #9ad7da; background:#effafa; color:#0b6d72; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; overflow:hidden; font-weight:700; font-size:15px; text-align:center; padding:10px; }
   .vu-pick small{ font-weight:400; font-size:12px; color:var(--muted); } .vu-pick.has{ border-style:solid; padding:0; min-height:220px; background:#000; }
   .vu-pick img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.85; } .vu-ok{ position:relative; background:rgba(0,0,0,.6); color:#fff; padding:6px 12px; border-radius:100px; font-size:13px; }
+  .vu-trim{ display:flex; flex-direction:column; gap:8px; background:var(--tile); border-radius:14px; padding:10px; }
+  .vu-trim video{ width:100%; max-height:220px; border-radius:10px; background:#000; object-fit:contain; }
+  .vu-trim-l{ display:flex; justify-content:space-between; gap:8px; font-size:13px; } .vu-trim-l span{ color:var(--muted); font-variant-numeric:tabular-nums; }
+  .vu-trim input[type=range]{ width:100%; accent-color:#1fb5bd; }
   .vu-prog{ height:8px; border-radius:100px; background:var(--tile); overflow:hidden; } .vu-prog i{ display:block; height:100%; width:0; background:linear-gradient(90deg,#1fb5bd,#5acdd1); transition:width .2s; }
   .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
   .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
@@ -4233,18 +4237,20 @@
   /* ================= VIDÉOS DES RIDERS (fil vertical façon TikTok) =================
      Publier une vidéo (30 s max), la faire défiler en plein écran, liker (double-tap), commenter, partager.
      Modération : l'auteur et les comptes officiels (/official) peuvent supprimer une vidéo ou un commentaire. */
-  const VID_MAX_S = 30, VID_MAX_MB = 80;
+  // 60 s maximum par vidéo (coût du stockage et de la lecture) ; au-delà on propose de choisir un extrait.
+  // Les vidéos lourdes (> 40 Mo) sont recompressées dans le téléphone (720p, ~2,5 Mbit/s) avant l'envoi.
+  const VID_MAX_S = 60, VID_MAX_MB = 150, VID_COMPRESS_MB = 40;
   let videos = [], vidUnsub = null, vfMuted = true, vfComUnsub = null;
   function canModerate(uid){ return uid===me.uid || isOfficial(me.uid); }
   function vidLikes(v){ return v && v.likes ? Object.keys(v.likes).length : 0; }
   function vidLiked(v){ return !!(v && v.likes && v.likes[me.uid]); }
   // vidéos officielles hébergées avec l'appli (dossier videos/) : visibles même sans stockage Firebase
   const SEED_VIDEOS = [
-    {id:"lf-seed-5", url:"videos/litefoil-5.mp4", thumb:"videos/litefoil-5.jpg", caption:"Vol au soleil sur l'eau turquoise ☀️", topic:"efoil", t:Date.parse("2026-11-07T12:00:00Z")},
-    {id:"lf-seed-4", url:"videos/litefoil-4.mp4", thumb:"videos/litefoil-4.jpg", caption:"Départ en douceur dans l'eau claire 💧", topic:"efoil", t:Date.parse("2026-11-07T11:00:00Z")},
-    {id:"lf-seed-3", url:"videos/litefoil-3.mp4", thumb:"videos/litefoil-3.jpg", caption:"Sortie en mer, cap sur les criques 🏝️", topic:"efoil", t:Date.parse("2026-11-07T10:00:00Z")},
-    {id:"lf-seed-2", url:"videos/litefoil-2.mp4", thumb:"videos/litefoil-2.jpg", caption:"1 seule planche, 3 façons de voler : eFoil, wing foil, paddle ⚡", topic:"efoil", t:Date.parse("2026-11-07T09:00:00Z")},
-    {id:"lf-seed-1", url:"videos/litefoil-1.mp4", thumb:"videos/litefoil-1.jpg", caption:"Balade en eFoil le long de la côte 🌊", topic:"efoil", t:Date.parse("2026-11-07T08:00:00Z")}
+    {id:"lf-seed-5", url:"videos/litefoil-5.mp4", thumb:"videos/litefoil-5.jpg", caption:"Vol au soleil sur l'eau turquoise ☀️", topic:"efoil", t:Date.parse("2026-11-06T12:00:00Z")},
+    {id:"lf-seed-4", url:"videos/litefoil-4.mp4", thumb:"videos/litefoil-4.jpg", caption:"Départ en douceur dans l'eau claire 💧", topic:"efoil", t:Date.parse("2026-11-06T11:00:00Z")},
+    {id:"lf-seed-3", url:"videos/litefoil-3.mp4", thumb:"videos/litefoil-3.jpg", caption:"Sortie en mer, cap sur les criques 🏝️", topic:"efoil", t:Date.parse("2026-11-06T10:00:00Z")},
+    {id:"lf-seed-2", url:"videos/litefoil-2.mp4", thumb:"videos/litefoil-2.jpg", caption:"1 seule planche, 3 façons de voler : eFoil, wing foil, paddle ⚡", topic:"efoil", t:Date.parse("2026-11-06T09:00:00Z")},
+    {id:"lf-seed-1", url:"videos/litefoil-1.mp4", thumb:"videos/litefoil-1.jpg", caption:"Balade en eFoil le long de la côte 🌊", topic:"efoil", t:Date.parse("2026-11-06T08:00:00Z")}
   ];
   function vidVisible(){ var ids={}; videos.forEach(function(v){ if(v) ids[v.id]=1; });
     var seeds=SEED_VIDEOS.filter(function(v){ return !ids[v.id]; }).map(function(v){ return Object.assign({uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,seed:true,likes:seedLikes(v.id)}, v); });
@@ -4346,15 +4352,41 @@
     $("vcSend").addEventListener("click", send); $("vcInput").addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); send(); } }); }
 
   // ---------- publier une vidéo ----------
-  function videoThumb(file){ return new Promise(function(res){ var url=URL.createObjectURL(file), v=document.createElement("video"); v.muted=true; v.playsInline=true; v.preload="auto"; v.src=url;
+  function videoThumb(file, at){ return new Promise(function(res){ var url=URL.createObjectURL(file), v=document.createElement("video"); v.muted=true; v.playsInline=true; v.preload="auto"; v.src=url;
     var done=false, fin=function(r){ if(done) return; done=true; res(r); };
-    v.addEventListener("loadedmetadata", function(){ var d=v.duration||0; try{ v.currentTime=Math.min(0.6, d/3); }catch(e){ fin({dur:d,thumb:""}); } });
+    v.addEventListener("loadedmetadata", function(){ var d=v.duration||0; try{ v.currentTime=(at!=null ? Math.min(at+0.6, Math.max(0,d-0.1)) : Math.min(0.6, d/3)); }catch(e){ fin({dur:d,thumb:""}); } });
     v.addEventListener("seeked", function(){ try{ var w=360, h=Math.round(w*(v.videoHeight||640)/(v.videoWidth||360)); var c=document.createElement("canvas"); c.width=w; c.height=Math.min(h,640); c.getContext("2d").drawImage(v,0,0,w,h); fin({dur:v.duration||0, thumb:c.toDataURL("image/jpeg",0.7)}); }catch(e){ fin({dur:v.duration||0,thumb:""}); } });
     v.addEventListener("error", function(){ fin({dur:0,thumb:"",err:true}); }); setTimeout(function(){ fin({dur:v.duration||0,thumb:""}); },8000); }); }
+  // recompression et découpe dans le téléphone : la vidéo est rejouée dans un canvas (720p) et réenregistrée
+  // (MediaRecorder, MP4 si le téléphone sait le faire, sinon WebM). Durée de traitement = durée de l'extrait.
+  function recMime(){ var l=["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+    if(!window.MediaRecorder || !MediaRecorder.isTypeSupported) return ""; for(var i=0;i<l.length;i++){ if(MediaRecorder.isTypeSupported(l[i])) return l[i]; } return ""; }
+  function canTranscode(){ var c=document.createElement("canvas"); return !!(window.MediaRecorder && c.captureStream && recMime()); }
+  function transcodeVideo(file, start, dur, onProg){ return new Promise(function(res, rej){
+    var url=URL.createObjectURL(file), v=document.createElement("video"); v.src=url; v.playsInline=true; v.preload="auto"; v.crossOrigin="anonymous";
+    var stopped=false, ac=null, rec=null, chunks=[], mime=recMime();
+    function cleanup(){ try{ v.pause(); }catch(e){} try{ ac&&ac.close(); }catch(e){} URL.revokeObjectURL(url); }
+    v.addEventListener("error", function(){ cleanup(); rej(new Error("vidéo illisible")); });
+    v.addEventListener("loadedmetadata", function(){
+      var W0=v.videoWidth||720, H0=v.videoHeight||1280, sc=Math.min(1, 1280/Math.max(W0,H0)), W=Math.round(W0*sc/2)*2, H=Math.round(H0*sc/2)*2;
+      var c=document.createElement("canvas"); c.width=W; c.height=H; var x=c.getContext("2d"); var stream=c.captureStream(30);
+      try{ var AC=window.AudioContext||window.webkitAudioContext; ac=new AC(); var src=ac.createMediaElementSource(v), dst=ac.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(function(t){ stream.addTrack(t); }); if(ac.resume) ac.resume(); }catch(e){}
+      try{ rec=new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:2500000, audioBitsPerSecond:96000}); }catch(e){ cleanup(); rej(e); return; }
+      rec.ondataavailable=function(e){ if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop=function(){ cleanup(); var type=(mime.split(";")[0])||"video/webm"; res(new File(chunks, "video."+(type.indexOf("mp4")>=0?"mp4":"webm"), {type:type})); };
+      var end=Math.min(v.duration||dur, start+dur);
+      function draw(){ if(stopped) return; x.drawImage(v,0,0,W,H); var t=v.currentTime; if(onProg) onProg(Math.max(0,Math.min(1,(t-start)/(end-start||1))));
+        if(t>=end-0.05 || v.ended){ stopped=true; try{ rec.stop(); }catch(e){} return; }
+        if(v.requestVideoFrameCallback) v.requestVideoFrameCallback(draw); else requestAnimationFrame(draw); }
+      v.addEventListener("seeked", function go(){ v.removeEventListener("seeked", go); rec.start(1000); var p=v.play(); if(p&&p.catch) p.catch(function(e){ stopped=true; cleanup(); rej(e); }); draw(); });
+      v.currentTime=start; });
+    v.load(); }); }
+  function fmtSec(t){ t=Math.max(0,Math.round(t)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); }
   function openVideoUpload(){ if(!charterOk){ closeFeed(); showCharter(); return; } if(!me.pseudo){ closeFeed(); alert("Choisissez d'abord un pseudo dans Mon profil pour publier."); return; }
     var o=gOverlay(); o.hidden=false; var picked=null, meta=null;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vuClose">✕</button><b>Publier une vidéo</b><span></span></div><div class="gc-body ev-form">'
-      +'<div class="vu-pick" id="vuPick"><span class="evp-ic">🎬</span>Choisir une vidéo<small>'+VID_MAX_S+' secondes maximum · format vertical conseillé</small></div><input id="vuFile" type="file" accept="video/*" hidden>'
+      +'<div class="vu-pick" id="vuPick"><span class="evp-ic">🎬</span>Choisir une vidéo<small>'+VID_MAX_S+' secondes maximum (sinon vous choisissez l\'extrait) · format vertical conseillé</small></div><input id="vuFile" type="file" accept="video/*" hidden>'
+      +'<div class="vu-trim" id="vuTrim" hidden><video id="vuPrev" playsinline muted preload="metadata"></video><div class="vu-trim-l"><b>Choisissez l\'extrait de '+VID_MAX_S+' s</b><span id="vuTrimLbl"></span></div><input type="range" id="vuStart" min="0" max="0" step="0.5" value="0"></div>'
       +'<label>Légende<input id="vuCap" maxlength="150" placeholder="Ex. : Session du matin, mer d\'huile 🌅"></label>'
       +'<label>Activité<select id="vuTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }).join("")+'</select></label>'
       +'<div class="gc-count">En publiant, vous confirmez être l\'auteur de la vidéo et respecter la charte de la communauté. Les vidéos inappropriées sont supprimées par l\'équipe Lite Foil.</div>'
@@ -4363,14 +4395,27 @@
     var err=function(s){ var e=$("vuErr"); e.textContent=s; e.hidden=!s; };
     $("vuClose").addEventListener("click", closeOverlay); $("vuCancel").addEventListener("click", closeOverlay);
     $("vuPick").addEventListener("click", function(){ $("vuFile").click(); });
-    $("vuFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; err(""); picked=null;
-      if(f.size > VID_MAX_MB*1048576){ err("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo). Maximum "+VID_MAX_MB+" Mo : coupez-la ou filmez en 1080p."); return; }
+    var trimStart=0, needTrim=false, needCompress=false, prevUrl=null;
+    function showPicked(m,f){ var mb=Math.round(f.size/1048576*10)/10, info=(m.dur?Math.round(m.dur)+" s · ":"")+mb+" Mo";
+      $("vuPick").innerHTML=(m.thumb?'<img src="'+m.thumb+'" alt="">':'')+'<span class="vu-ok">✓ '+info+(needTrim?' · extrait de '+VID_MAX_S+' s':(needCompress?' · sera compressée':''))+'</span>'; $("vuPick").classList.add("has"); }
+    $("vuFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; err(""); picked=null; $("vuGo").disabled=true; $("vuTrim").hidden=true;
       $("vuPick").innerHTML='<span class="evp-ic">⏳</span>Lecture de la vidéo…';
-      videoThumb(f).then(function(m){ if(m.dur && m.dur > VID_MAX_S+0.9){ $("vuPick").innerHTML='<span class="evp-ic">🎬</span>Choisir une autre vidéo'; err("Vidéo trop longue ("+Math.round(m.dur)+" s). Maximum "+VID_MAX_S+" secondes."); return; }
-        picked=f; meta=m; $("vuPick").innerHTML=(m.thumb?'<img src="'+m.thumb+'" alt="">':'')+'<span class="vu-ok">✓ '+(m.dur?Math.round(m.dur)+" s · ":"")+Math.round(f.size/1048576*10)/10+' Mo</span>'; $("vuPick").classList.add("has"); $("vuGo").disabled=false; }); });
-    $("vuGo").addEventListener("click", function(){ if(!picked||!backend||!backend.publishVideo) return; var btn=$("vuGo"); btn.disabled=true; btn.textContent="Envoi…"; err("");
-      var pr=$("vuProg"); pr.hidden=false;
-      backend.publishVideo(picked, {thumb:meta.thumb, dur:Math.round(meta.dur||0), caption:$("vuCap").value.trim(), topic:$("vuTopic").value}, function(p){ pr.querySelector("i").style.width=Math.round(p*100)+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; })
+      videoThumb(f).then(function(m){ var tooLong = m.dur && m.dur > VID_MAX_S+0.9, heavy = f.size > VID_COMPRESS_MB*1048576;
+        if((tooLong || f.size > VID_MAX_MB*1048576) && !canTranscode()){ $("vuPick").innerHTML='<span class="evp-ic">🎬</span>Choisir une autre vidéo'; err(tooLong ? ("Vidéo trop longue ("+Math.round(m.dur)+" s) et ce téléphone ne sait pas la couper : maximum "+VID_MAX_S+" secondes.") : ("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo), maximum "+VID_MAX_MB+" Mo.")); return; }
+        needTrim=!!tooLong; needCompress=!tooLong && heavy && canTranscode(); picked=f; meta=m; trimStart=0; showPicked(m,f); $("vuGo").disabled=false;
+        if(needTrim){ var tr=$("vuTrim"), pv=$("vuPrev"), sl=$("vuStart"); if(prevUrl) URL.revokeObjectURL(prevUrl); prevUrl=URL.createObjectURL(f); pv.src=prevUrl; tr.hidden=false;
+          sl.max=Math.max(0, Math.floor((m.dur-VID_MAX_S)*2)/2); sl.value=0;
+          var upd=function(){ trimStart=+sl.value; $("vuTrimLbl").textContent="de "+fmtSec(trimStart)+" à "+fmtSec(trimStart+VID_MAX_S)+" (sur "+fmtSec(m.dur)+")"; try{ pv.currentTime=trimStart+0.3; }catch(_){} };
+          sl.oninput=upd; sl.onchange=function(){ upd(); videoThumb(f, trimStart).then(function(m2){ if(m2.thumb){ meta.thumb=m2.thumb; showPicked(meta,f); } }); }; upd(); } }); });
+    $("vuGo").addEventListener("click", function(){ if(!picked||!backend||!backend.publishVideo) return; var btn=$("vuGo"); btn.disabled=true; err("");
+      var pr=$("vuProg"), bar=pr.querySelector("i"); pr.hidden=false; bar.style.width="0%";
+      var prep = (needTrim||needCompress) ? (function(){ btn.textContent="Préparation…"; $("vuTrim").hidden=true;
+          var d = needTrim ? VID_MAX_S : (meta.dur||VID_MAX_S);
+          return transcodeVideo(picked, needTrim?trimStart:0, d, function(p){ bar.style.width=Math.round(p*50)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; })
+            .then(function(out){ if(out.size > VID_MAX_MB*1048576) throw new Error("vidéo encore trop lourde après compression"); return out; }); })()
+        : Promise.resolve(picked);
+      prep.then(function(file){ var base=(needTrim||needCompress)?50:0;
+        return backend.publishVideo(file, {thumb:meta.thumb, dur:Math.round(needTrim?VID_MAX_S:(meta.dur||0)), caption:$("vuCap").value.trim(), topic:$("vuTopic").value}, function(p){ bar.style.width=Math.round(base+p*(100-base))+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; }); })
         .then(function(){ closeOverlay(); showTabVideos(); setTimeout(function(){ openFeed(0); },300); })
         .catch(function(e){ btn.disabled=false; btn.textContent="Publier"; pr.hidden=true; err("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")+(/storage|unauthorized|permission/i.test(String(e&&(e.code||e.message)))?" (le stockage des vidéos doit être activé dans Firebase)":"")); }); }); }
   function showTabVideos(){ var t=document.querySelector('.tab[data-tab="videos"]'); if(t) t.click(); }
