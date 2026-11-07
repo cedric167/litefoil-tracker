@@ -670,6 +670,7 @@
   #profEditSheet .verif-ok{ font-size:14px; font-weight:600; color:#128a90; }
   #profEditSheet .verif-note{ margin-top:8px; font-size:13px; color:#3d4a52; }
   #profEditSheet .verif-note:empty{ display:none; }
+  #profEditSheet .prof-del{ display:block; margin:14px auto 0; background:none; border:0; color:#c0392b; font-weight:600; font-size:14px; text-decoration:underline; cursor:pointer; }
   .chat-emoji-btn{ font-size:20px; }
   .chan-sel-wrap{ display:flex; align-items:center; gap:8px; margin:0 0 12px; }
   .chan-ic{ font-size:18px; flex:none; }
@@ -1286,6 +1287,7 @@
         <select id="commDmPref"><option value="all">Tout le monde</option><option value="none">Personne</option></select>
         <button class="primary" id="profEditSave">Enregistrer</button>
         <div class="comm-myid" id="commMyId"></div>
+        <button type="button" class="prof-del" id="profDelete">Supprimer mon profil</button>
       </div>
     </div>
     <div class="sheet" id="commSheet" hidden>
@@ -3493,8 +3495,11 @@
     const app = appMod.initializeApp(cfg);
     const auth = authMod.getAuth(app);
     try{ auth.languageCode = "fr"; }catch(e){}
-    const cred = await authMod.signInAnonymously(auth);
-    const uid = cred.user.uid;
+    // on reprend le compte déjà connecté (profil validé par e-mail compris) ; nouveau compte anonyme seulement s'il n'y en a aucun
+    // (signInAnonymously remplacerait un compte rattaché à un e-mail par un compte vide)
+    if(auth.authStateReady) await auth.authStateReady();
+    const user0 = auth.currentUser || (await authMod.signInAnonymously(auth)).user;
+    const uid = user0.uid;
     const d = db.getDatabase(app);
     const inc = (typeof db.increment==="function") ? db.increment : null; // compteur atomique de non-lus (si dispo)
     const presRef = db.ref(d, "presence/"+uid);
@@ -3557,7 +3562,18 @@
       sendVerification(email){ var u=auth.currentUser; if(!u) return Promise.reject(new Error("no-user"));
         if(u.email){ if(u.email.toLowerCase()!==email.toLowerCase()) return Promise.reject({code:"lf/other-email", email:u.email}); return authMod.sendEmailVerification(u); }
         var pw=""; var a=new Uint8Array(18); crypto.getRandomValues(a); for(var i=0;i<a.length;i++) pw+=("0"+a[i].toString(16)).slice(-2);
-        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ return authMod.sendEmailVerification(auth.currentUser); }); },
+        // mot de passe tiré au hasard, gardé seulement sur ce téléphone : il sert à confirmer la suppression du compte
+        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ try{ localStorage.setItem("lf.comm.k", pw); }catch(e){} return authMod.sendEmailVerification(auth.currentUser); }); },
+      // suppression du profil : données de la communauté puis compte Firebase (l'adresse e-mail redevient libre)
+      deleteAccount(){ var u=auth.currentUser; if(!u) return Promise.resolve("none");
+        return db.get(db.ref(d,"profiles/"+uid+"/nk")).catch(function(){ return null; }).then(function(s){ var nk=s&&s.val(); var up={};
+          if(nk) up["names/"+nk]=null; up["profiles/"+uid]=null; up["presence/"+uid]=null; up["typing/"+uid]=null; up["pushTokens/"+uid]=null; up["cards/"+uid]=null; up["stats/"+uid]=null;
+          return db.update(db.ref(d),up).catch(function(){}); })
+        .then(function(){ return authMod.deleteUser(u).then(function(){ return "deleted"; }); })
+        .catch(function(err){ var pw=""; try{ pw=localStorage.getItem("lf.comm.k")||""; }catch(e){}
+          if(err && err.code==="auth/requires-recent-login" && pw && u.email)
+            return authMod.reauthenticateWithCredential(u, authMod.EmailAuthProvider.credential(u.email, pw)).then(function(){ return authMod.deleteUser(auth.currentUser); }).then(function(){ return "deleted"; });
+          return authMod.signOut(auth).then(function(){ return "signedout"; }); }); },
       refreshVerification(){ var u=auth.currentUser; if(!u) return Promise.resolve(this.emailState()); var self=this;
         return authMod.reload(u).then(function(){ return auth.currentUser.emailVerified ? auth.currentUser.getIdToken(true) : null; }).then(function(){ return self.emailState(); }); },
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
@@ -3684,6 +3700,7 @@
       emailState(){ return { email:"demo@litefoil.fr", verified:true }; },
       sendVerification(){ return Promise.resolve(); },
       refreshVerification(){ return Promise.resolve(this.emailState()); },
+      deleteAccount(){ return Promise.resolve("deleted"); },
       watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; o["demo-aurel"].brand="litefoil"; o["demo-marine"].brand="waydoo"; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
       // ---------- vidéos (démo, en mémoire) ----------
       watchVideos(cb){ demoVidCb=cb; cb(demoVideos.slice()); return function(){ demoVidCb=null; }; },
@@ -5234,6 +5251,17 @@
     if(!v){ setVerifNote("Choisis un pseudo."); return; }
     claimProfile(v,false).then(function(ok){ if(ok && s) s.hidden=true; }); });
   var _smu=$("sheetMute"); if(_smu) _smu.addEventListener("click", function(){ if(sheetTarget&&sheetTarget.uid){ toggleMute(sheetTarget.uid); _smu.textContent = isMuted(sheetTarget.uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; } });
+  // supprimer mon profil : tout est effacé (profil, pseudo, photo, carte, stats, compte), on peut en recréer un avec une nouvelle validation e-mail
+  var _pdel=$("profDelete"); if(_pdel) _pdel.addEventListener("click", function(){
+    if(!backend || !backend.deleteAccount) return;
+    if(!confirm("Supprimer ton profil ?\n\nTon pseudo, ta photo, ta présentation, ta carte et tes stats seront effacés. Tes anciens messages restent visibles.\n\nTu pourras recréer un profil, avec une nouvelle validation par e-mail.")) return;
+    _pdel.disabled=true; _pdel.textContent="Suppression…";
+    backend.deleteAccount().then(function(res){
+      ["lf.comm.pseudo","lf.comm.claimed","lf.comm.email","lf.comm.verifsent","lf.comm.avatar","lf.comm.bio","lf.comm.k","lf.comm.cardimg","lf.comm.brand"].forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+      alert(res==="signedout" ? "Ton profil est supprimé. Pour réutiliser la même adresse e-mail, écris-nous via « Signaler un problème »." : "Ton profil est supprimé. Tu peux en créer un nouveau quand tu veux.");
+      location.reload();
+    }).catch(function(){ _pdel.disabled=false; _pdel.textContent="Supprimer mon profil"; alert("Suppression impossible pour le moment, réessaie."); });
+  });
   var _pes=$("profEditSheet"); if(_pes) _pes.addEventListener("click", function(e){ if(e.target.id==="profEditSheet") e.target.hidden=true; });
   ["profEditSheet","commSheet"].forEach(function(idp){ var s=document.getElementById(idp); if(s && s.parentNode!==document.body) document.body.appendChild(s); });
   $("chatSeg").querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
