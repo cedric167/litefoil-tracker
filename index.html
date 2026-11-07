@@ -536,6 +536,24 @@
   .lb-note{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; background:linear-gradient(135deg,#0f6f8a,#0b3a55); }
   .lb-row .pick-ps{ flex:1; min-width:0; }
   .lb-km{ font-weight:800; font-variant-numeric:tabular-nums; }
+  /* ===== haut de la page Communauté ===== */
+  .cm-hero{ border-radius:24px; padding:18px 16px 14px; color:#fff; margin:4px 0 14px; background:radial-gradient(120% 140% at 100% 0%, #2bb6c0 0%, #0f6f8a 45%, #0b3a55 100%); box-shadow:0 10px 28px rgba(11,58,85,.25); }
+  .cmh-eb{ font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+  .cmh-title{ font-family:"Instrument Serif", Georgia, serif; font-weight:400; font-size:32px; line-height:1.05; margin:4px 0 14px; }
+  .cmh-me{ display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.12); border-radius:18px; padding:10px; }
+  .cmh-av{ position:relative; flex:0 0 auto; border:0; background:none; padding:0; cursor:pointer; }
+  .cmh-av .prof-edit-av{ width:52px; height:52px; font-size:22px; box-shadow:0 0 0 2px rgba(255,255,255,.85); }
+  .cmh-edit{ position:absolute; right:-3px; bottom:-3px; width:20px; height:20px; border-radius:50%; background:#fff; color:#0b3a55; font-style:normal; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .cmh-id{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .cmh-id b{ font-size:17px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .cmh-id span{ font-size:12.5px; opacity:.88; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cm-hero .card-btn{ flex:0 0 auto; background:#fff; color:#0b3a55; box-shadow:none; padding:8px 12px 8px 8px; } .cm-hero .card-btn .cb-n{ background:#0b3a55; color:#fff; }
+  .cmh-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .cmh-chip{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#fff !important; background:rgba(255,255,255,.14); border:0; border-radius:100px; padding:7px 12px; font-family:inherit; cursor:pointer; }
+  .cmh-chip .dot-on{ width:8px; height:8px; border-radius:50%; background:#3ee07a; box-shadow:0 0 0 3px rgba(62,224,122,.25); }
+  .cmh-chip .mem-ic{ filter:grayscale(1) brightness(3); }
+  .cm-hero .mem-btn, .cm-hero .mem-btn:hover{ background:rgba(255,255,255,.14) !important; color:#fff !important; box-shadow:none !important; border:0 !important; }
+  .cm-hero .mem-btn *{ color:#fff !important; }
+  .cm-hero + .comm-stats{ margin-top:-4px; }
   .comm-myid{ margin-top:12px; font-size:11px; color:var(--muted-2); word-break:break-all; user-select:all; -webkit-user-select:all; }
   .mem-adm{ font-size:11px; color:var(--accent-ink); background:var(--tile); padding:2px 8px; border-radius:100px; }
   .mem-rm{ border:0; background:none; color:var(--bad); font-size:12px; cursor:pointer; }
@@ -1100,17 +1118,20 @@
   </section>
 
   <section id="tab-communaute" class="tabpane" hidden>
-    <p class="tagline">Les riders connectés près de toi.</p>
-    <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
-    <div class="rider-actions"><button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button><button class="card-btn" id="myCardBtn" type="button"><span class="cb-n" id="myCardNote">40</span>Ma carte de rider</button></div>
-    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<button type="button" class="mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">Riders Lite Foil</span>&nbsp;›</button></div>
+    <!-- 07/11 : haut de page refait (espace du rider : profil, carte, en ligne, membres) -->
+    <div class="cm-hero">
+      <div class="cmh-eb">Communauté Lite Foil</div>
+      <h2 class="cmh-title">Ride avec les autres.</h2>
+      <div class="cmh-me">
+        <button class="cmh-av" id="profEditBtn" type="button" aria-label="Mon profil"><span class="prof-edit-av" id="profBtnAv">+</span><i class="cmh-edit">✎</i></button>
+        <div class="cmh-id"><b id="cmhName">Mon profil</b><span id="cmhGrade">Touchez votre photo pour le compléter</span></div>
+        <button class="card-btn" id="myCardBtn" type="button"><span class="cb-n" id="myCardNote">40</span>Ma carte</button>
+      </div>
+      <div class="cmh-row" id="commOnlineTop"><span class="cmh-chip"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne</span><button type="button" class="cmh-chip mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">Riders Lite Foil</span>&nbsp;›</button></div>
+    </div>
     <div class="comm-stats" id="commStats" hidden></div>
     <div id="defiBox"></div>
 
-    <div class="riders-strip-wrap" id="ridersStripWrap">
-      <div class="m-label" style="margin:2px 6px 6px">Riders en ligne</div>
-      <div class="riders-strip" id="ridersStrip"></div>
-    </div>
 
     <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
 
@@ -1198,6 +1219,11 @@
       <div class="note" id="chatNote" style="margin-top:8px">Renseigne un pseudo et active ta visibilité pour discuter.</div>
     </div>
 
+    <div class="m-label" style="margin:22px 6px 8px">Riders près de toi</div>
+    <div class="riders-strip-wrap" id="ridersStripWrap">
+      
+      <div class="riders-strip" id="ridersStrip"></div>
+    </div>
     <div class="card" style="padding:12px">
       <div class="comm-wrap" id="commWrap">
         <div id="commMap"></div>
@@ -5031,6 +5057,9 @@
       +'<div class="defi-me">'+(r?('Tu es '+r+(r===1?"er":"e")+' avec '+(Math.round(mk*10)/10).toLocaleString("fr-FR")+' km 🔥'):'Enregistre une sortie eFoil pour entrer dans le classement →')+'</div></div>';
     $("defiOpen").addEventListener("click", openDefiBoard);
     var n=$("myCardNote"); if(n) n.textContent=riderNote(riderXP(myStats()||{}));
+    var mxp=riderXP(myStats()||{}), mlv=riderLevel(mxp), nm=$("cmhName"), gr=$("cmhGrade");
+    if(nm) nm.textContent = me.pseudo || "Créer mon profil";
+    if(gr) gr.textContent = me.pseudo ? ("N"+(mlv+1)+" · "+GRADES[mlv][1]+" · "+mxp.toLocaleString("fr-FR")+" pts") : "Pseudo et photo pour rejoindre les riders";
     try{ window.LF_RIDER={note:riderNote(riderXP(myStats()||{})), rank:r, km:mk, mois:mois}; document.dispatchEvent(new Event("lf-rider")); }catch(e){} }
   function openDefiBoard(){ var o=gOverlay(); o.hidden=false; var b=defiBoard();
     var rows=b.slice(0,50).map(function(x,i){ var pr=profileMap[x.uid]||{}, av=(x.uid===me.uid?me.av:pr.av);
