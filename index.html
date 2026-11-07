@@ -430,6 +430,12 @@
   .rcard.r-rare{ --rc-a:#1b2f6b; --rc-b:#0b1636; --rc-glow:#2f6fe0; --rc-edge:#7fb0ff; }
   .rcard.r-epic{ --rc-a:#3d1a6e; --rc-b:#160830; --rc-glow:#8a4fe0; --rc-edge:#c79cff; }
   .rcard.r-legend{ --rc-a:#5c4207; --rc-b:#1e1402; --rc-glow:#f1c24b; --rc-edge:#ffd76a; }
+  .rcard > *{ z-index:2; } .rcard .rc-av{ z-index:1; }
+  .rc-photo{ position:absolute; right:-6px; top:8px; height:278px; max-width:215px; object-fit:contain; object-position:bottom right; z-index:1 !important; filter:drop-shadow(0 10px 20px rgba(0,0,0,.45)); }
+  .rc-photo-acts{ display:flex; gap:8px; }
+  .rc-photo-acts button{ flex:1; border:1px solid var(--line); background:var(--card); color:var(--text); font-family:inherit; font-weight:700; font-size:14px; padding:11px 10px; border-radius:14px; cursor:pointer; }
+  .rc-photo-acts button.main{ background:linear-gradient(135deg,#1b2f6b,#2f6fe0); color:#fff; border:0; }
+  .rc-photo-acts button:disabled{ opacity:.6; }
   .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
   .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
   .rc-how b{ color:var(--accent-ink); white-space:nowrap; }
@@ -1141,6 +1147,9 @@
         <input id="commAvFile" type="file" accept="image/*" hidden>
         <label for="commBio" style="margin-top:10px">Présentation</label>
         <textarea id="commBio" class="comm-bio" maxlength="200" rows="3" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
+        <label for="commBrand" style="margin-top:10px">Mon eFoil</label>
+        <select id="commBrand"></select>
+        <input id="commBrandOther" maxlength="24" placeholder="Nom de la marque" autocomplete="off" hidden style="margin-top:8px">
         <label for="commDmPref" style="margin-top:10px">Qui peut m'écrire en privé</label>
         <select id="commDmPref"><option value="all">Tout le monde</option><option value="none">Personne</option></select>
         <button class="primary" id="profEditSave">Enregistrer</button>
@@ -3240,10 +3249,19 @@
   function isOfficial(u){ return !!u && officialSet.has(u); }
   function offBadge(u){ return isOfficial(u) ? '<span class="off-badge" title="Compte officiel Lite Foil">✓ Officiel</span>' : ""; }
   let commStats = {};
+  // photo de la carte de rider (détourée si possible) : la mienne en local, celles des autres chargées à la demande
+  // marque d'eFoil du rider (affichée sur sa carte et son profil)
+  const EFOIL_BRANDS=[["litefoil","Lite Foil","LITE FOIL"],["lift","Lift Foils","LIFT"],["fliteboard","Fliteboard","FLITE"],["waydoo","Waydoo","WAYDOO"],["awake","Awake","AWAKE"],
+    ["aerofoils","Aerofoils (Audi e-tron)","AEROFOILS"],["sifly","SiFly","SIFLY"],["foildrive","Foil Drive (assist)","FOIL DRIVE"]];
+  function brandInfo(b){ if(!b) return null; for(var i=0;i<EFOIL_BRANDS.length;i++){ if(EFOIL_BRANDS[i][0]===b) return {name:EFOIL_BRANDS[i][1], short:EFOIL_BRANDS[i][2]}; }
+    if(b==="none") return null; var t=String(b).replace(/^autre:/,"").slice(0,24); return t ? {name:t, short:t.toUpperCase().slice(0,12)} : null; }
+  let cardCache = {};
   const savePseudo = () => { try{ localStorage.setItem("lf.comm.pseudo", me.pseudo); }catch(e){} };
 
   // ---------- état ----------
   const me = { uid:null, pseudo:"", pos:null, av:"", bio:"" };
+  // marque d'eFoil et photo de carte (gardées sur le téléphone)
+  try{ me.brand=localStorage.getItem("lf.comm.brand")||""; me.cardImg=localStorage.getItem("lf.comm.cardimg")||""; }catch(e){ me.brand=""; me.cardImg=""; }
   let riders = {}, curMsgs = [];
   let chatMode = "salon", dmPeer = null;
   let curGroup = null, myGroups = [], groupsUnsub = null, prevChatMode = "salon";
@@ -3361,8 +3379,10 @@
       deleteMessage(ch,msgId){ if(!msgId) return Promise.resolve(); const base = pathFor(ch); return db.remove(db.ref(d,base+"/"+msgId)); },
       setTyping(ch){ return db.set(db.ref(d,"typing/"+uid),{ch:ch,pseudo:me.pseudo,t:db.serverTimestamp()}); },
       clearTyping(){ return db.remove(db.ref(d,"typing/"+uid)); },
-      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var o={pseudo:p.pseudo,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; return db.set(db.ref(d,"profiles/"+uid),o); },
+      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var o={pseudo:p.pseudo,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; if(me.brand && me.brand!=="none") o.brand=String(me.brand).slice(0,32); return db.set(db.ref(d,"profiles/"+uid),o); },
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
+      saveCard(img){ return img ? db.set(db.ref(d,"cards/"+uid),{img:img,t:db.serverTimestamp()}) : db.remove(db.ref(d,"cards/"+uid)); },
+      getCard(u){ return db.get(db.ref(d,"cards/"+u+"/img")).then(function(s){ return s.val()||null; }).catch(function(){ return null; }); },
       watchOfficial(cb){ return db.onValue(db.ref(d,"official"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
       watchStats(cb){ return db.onValue(db.ref(d,"stats"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
       saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,month:o.month,eKm:o.eKm||0,eo:o.eo||0,ej:o.ej||0,sport:o.sport||"efoil",t:db.serverTimestamp()}).catch(function(){}); },
@@ -3458,8 +3478,10 @@
       setTyping(){ return Promise.resolve(); },
       clearTyping(){ return Promise.resolve(); },
       saveProfile(){ return Promise.resolve(); },
-      watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
+      watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; o["demo-aurel"].brand="litefoil"; o["demo-marine"].brand="waydoo"; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
       watchOfficial(cb){ cb({}); return function(){}; },
+      saveCard(){ return Promise.resolve(); },
+      getCard(){ return Promise.resolve(null); },
       watchStats(cb){ var mk=monthKey(); var o={"demo-aurel":{n:42,km:612.4,month:mk,eKm:48.6,eo:3,ej:5,sport:"efoil"},"demo-marine":{n:17,km:203.9,month:mk,eKm:21.2,eo:0,ej:4,sport:"wing"},"demo-leo":{n:6,km:38,month:mk,eKm:9.8,ej:1,sport:"efoil"}}; cb(o); return function(){}; },
       saveStats(){ return Promise.resolve(); },
       watchTyping(){ return function(){}; },
@@ -4440,7 +4462,7 @@
   function openSheet(uid,ps,av,bio){ sheetTarget={uid,ps,av,bio};
     $("sheetTitle").textContent=ps||"Rider";
     var a=$("sheetAv"); if(a){ if(av){ a.innerHTML='<img src="'+av+'" alt="">'; a.style.background="transparent"; } else { a.textContent=(((ps||"R").trim()[0])||"R").toUpperCase(); a.style.background=avatarColor(uid||"x"); } }
-    var b=$("sheetBio"); if(b){ b.textContent = bio || "Pas encore de présentation."; b.hidden=false; }
+    var b=$("sheetBio"); if(b){ var bi=brandInfo(uid===me.uid?me.brand:(profileMap[uid]||{}).brand); b.textContent = (bio || "Pas encore de présentation.") + (bi ? "\n🏄 Mon eFoil : "+bi.name : ""); b.style.whiteSpace="pre-line"; b.hidden=false; }
     var pref=(uid&&profileMap[uid]&&profileMap[uid].dm)||"all";
     var mb=$("sheetMsg"); if(mb) mb.hidden = (!uid || uid===me.uid || pref==="none");
     var mu=$("sheetMute"); if(mu){ mu.hidden=(!uid||uid===me.uid); mu.textContent = isMuted(uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; }
@@ -4498,10 +4520,11 @@
     var topic=(mine?chatTopic:(st.sport||"efoil")); var sport=(CHANS[topic]||"eFoil").toUpperCase();
     var rank=defiRank(uid), stat=Math.round(+st.km||0).toLocaleString("fr-FR")+" km · "+(+st.n||0)+" sortie"+((+st.n||0)>1?"s":"");
     var avHtml=av?'<img src="'+av+'" alt="">':esc(((ps||"R").trim()[0]||"R").toUpperCase());
+    var cimg=mine?me.cardImg:cardCache[uid];
     return '<div class="rcard '+rar[0]+'"><span class="rc-rar">'+rar[1]+'</span><span class="rc-note">'+note+'</span>'
       +'<div class="rc-tags"><span class="rc-sport">'+esc(sport.slice(0,9))+'</span><span class="rc-lvl">N'+(lv+1)+'</span></div>'
-      +'<span class="rc-club">LITE FOIL</span>'
-      +'<div class="rc-av" style="background:'+(av?"#000":avatarColor(uid||"x"))+'">'+avHtml+'</div>'
+      +'<span class="rc-club">'+esc((brandInfo(mine?me.brand:pr.brand)||{short:"LITE FOIL"}).short)+'</span>'
+      +(cimg?'<img class="rc-photo" src="'+cimg+'" alt="">':'<div class="rc-av" style="background:'+(av?"#000":avatarColor(uid||"x"))+'">'+avHtml+'</div>')
       +'<div class="rc-rib">★ '+esc(GRADES[lv][1]+" "+(CHANS[topic]||"eFoil"))+'</div>'
       +'<div class="rc-name">'+esc(ps||"Rider")+'</div>'
       +'<div class="rc-stat">'+esc(stat)+'</div>'
@@ -4510,12 +4533,71 @@
     var st=mine?(myStats()||{}):(commStats[uid]||{}), xp=riderXP(st), lv=riderLevel(xp), nxt=GRADES[lv+1];
     var prog=nxt?Math.round(100*(xp-GRADES[lv][0])/(nxt[0]-GRADES[lv][0])):100;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Ma carte de rider":"Carte de rider")+'</b><span></span></div><div class="gc-body">'
-      +riderCardHtml(uid)
+      +'<div id="rcSlot">'+riderCardHtml(uid)+'</div>'
+      +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de vous en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
       +(nxt?'<div><div class="gc-count" style="margin-bottom:6px">'+(mine?"Plus que ":"Encore ")+'<b>'+(nxt[0]-xp)+' pts</b> pour passer <b>'+nxt[1]+'</b></div><div class="rc-prog"><i style="width:'+prog+'%"></i></div></div>':'<div class="gc-count">Grade maximum atteint : Légende 👑</div>')
       +(mine?'<div class="gi-mlabel">Comment gagner des points</div><div class="rc-how"><div><span>🏄 Chaque sortie enregistrée</span><b>+10 pts</b></div><div><span>📍 Chaque km parcouru</span><b>+2 pts</b></div><div><span>📅 Organiser un événement</span><b>+20 pts</b></div><div><span>🤝 Rejoindre un événement</span><b>+10 pts</b></div></div>'
         +'<div class="gi-mlabel">Grades</div><div class="rc-how">'+GRADES.map(function(g,i){ return '<div><span>N'+(i+1)+' · '+g[1]+'</span><b>'+g[0].toLocaleString("fr-FR")+' pts</b></div>'; }).join("")+'</div>':'')
       +'</div></div>';
-    $("rcClose").addEventListener("click", closeOverlay); }
+    $("rcClose").addEventListener("click", closeOverlay);
+    if(!mine && cardCache[uid]===undefined && backend && backend.getCard){ backend.getCard(uid).then(function(img){ cardCache[uid]=img; var sl=$("rcSlot"); if(sl && img) sl.innerHTML=riderCardHtml(uid); }); }
+    var pb=$("rcPhotoBtn"), pf=$("rcPhotoFile");
+    if(pb && pf){ pb.addEventListener("click", function(){ pf.click(); });
+      pf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; e.target.value="";
+        pb.disabled=true; pb.textContent="Détourage en cours…"; $("rcPhotoNote").textContent="Patiente quelques secondes, on retire le fond de ta photo…";
+        makeCardPhoto(f).then(function(r){ me.cardImg=r.img; try{ localStorage.setItem("lf.comm.cardimg", r.img); }catch(_){}
+          if(backend && backend.saveCard) backend.saveCard(r.img).catch(function(){});
+          openRiderCard(me.uid); var n=$("rcPhotoNote"); if(n) n.textContent = r.cut ? "✓ Fond retiré, ta photo est sur ta carte." : "Le fond n'a pas pu être retiré automatiquement : la photo est fondue dans la carte. Essaie une photo de toi en entier sur fond simple."; })
+        .catch(function(){ pb.disabled=false; pb.textContent="📷 Mettre ma photo sur la carte"; $("rcPhotoNote").textContent="Photo illisible, essaie une autre image."; }); }); }
+    var prm=$("rcPhotoRm"); if(prm) prm.addEventListener("click", function(){ me.cardImg=""; try{ localStorage.removeItem("lf.comm.cardimg"); }catch(_){} if(backend && backend.saveCard) backend.saveCard(null).catch(function(){}); openRiderCard(me.uid); }); }
+  // ---------- photo de carte : détourage automatique de la personne (MediaPipe, modèle DeepLab, ~3 Mo chargés à la demande) ----------
+  let segPromise=null;
+  function loadSegmenter(){ if(segPromise) return segPromise;
+    var V="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+    segPromise=import(V+"/vision_bundle.mjs").then(function(m){ return m.FilesetResolver.forVisionTasks(V+"/wasm").then(function(fs){
+      return m.ImageSegmenter.createFromOptions(fs,{ baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/latest/deeplab_v3.tflite", delegate:"CPU" },
+        runningMode:"IMAGE", outputConfidenceMasks:true, outputCategoryMask:false }); }); });
+    segPromise.catch(function(){ segPromise=null; }); return segPromise; }
+  function loadImg(file){ return new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(){ var im=new Image(); im.onload=function(){ res(im); }; im.onerror=rej; im.src=fr.result; }; fr.onerror=rej; fr.readAsDataURL(file); }); }
+  function exportCard(cv){ var w=cv.toDataURL("image/webp",0.85); return w.indexOf("data:image/webp")===0 ? w : cv.toDataURL("image/png"); }
+  function makeCardPhoto(file){ return loadImg(file).then(function(im){
+    var sc=Math.min(1, 720/Math.max(im.width,im.height)), W=Math.round(im.width*sc), H=Math.round(im.height*sc);
+    var cv=document.createElement("canvas"); cv.width=W; cv.height=H; var cx=cv.getContext("2d"); cx.drawImage(im,0,0,W,H);
+    return loadSegmenter().then(function(seg){
+      var r=seg.segment(cv), mk=r.confidenceMasks && r.confidenceMasks[15]; if(!mk) throw new Error("pas de masque");
+      var mw=mk.width, mh=mk.height, a=mk.getAsFloat32Array();
+      var m=document.createElement("canvas"); m.width=mw; m.height=mh; var mx=m.getContext("2d"), md=mx.createImageData(mw,mh), on=0, x0=mw, y0=mh, x1=0, y1=0;
+      // on ne garde que la plus grande zone « personne » (évite les morceaux de fond détectés à tort)
+      var lab=new Int32Array(a.length), best=0, bestN=0, cur=0, st=[];
+      for(var i0=0;i0<a.length;i0++){ if(a[i0]<0.55 || lab[i0]) continue; cur++; var n=0; st.push(i0); lab[i0]=cur;
+        while(st.length){ var q=st.pop(); n++; var qx=q%mw, qy=(q/mw)|0;
+          [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(dd){ var nx=qx+dd[0], ny=qy+dd[1]; if(nx<0||ny<0||nx>=mw||ny>=mh) return; var j=ny*mw+nx; if(!lab[j] && a[j]>=0.55){ lab[j]=cur; st.push(j); } }); }
+        if(n>bestN){ bestN=n; best=cur; } }
+      var keep=new Uint8Array(a.length); for(var i1=0;i1<a.length;i1++){ if(lab[i1]===best) keep[i1]=1; }
+      // bord doux : on accepte les pixels voisins de la zone gardée
+      for(var i=0;i<a.length;i++){ var x=i%mw, y=(i/mw)|0, near=keep[i];
+        if(!near){ for(var dy=-2;dy<=2&&!near;dy++) for(var dx=-2;dx<=2&&!near;dx++){ var xx=x+dx, yy=y+dy; if(xx>=0&&yy>=0&&xx<mw&&yy<mh&&keep[yy*mw+xx]) near=1; } }
+        var v=near?Math.max(0,Math.min(1,(a[i]-0.35)/0.35)):0; md.data[i*4+3]=Math.round(v*255);
+        if(keep[i]){ on++; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
+      try{ r.close&&r.close(); }catch(_){}
+      if(on < a.length*0.03) throw new Error("personne non trouvée");
+      mx.putImageData(md,0,0);
+      var o=document.createElement("canvas"); o.width=W; o.height=H; var ox=o.getContext("2d");
+      ox.drawImage(cv,0,0); ox.globalCompositeOperation="destination-in"; ox.filter="blur(1.5px)"; ox.drawImage(m,0,0,W,H); ox.filter="none";
+      // recadrage autour de la personne
+      var fx=W/mw, fy=H/mh, px=Math.max(0,(x0*fx)-W*0.04), py=Math.max(0,(y0*fy)-H*0.04), pw=Math.min(W-px,(x1-x0)*fx+W*0.08), ph=Math.min(H-py,(y1-y0)*fy+H*0.06);
+      var k=Math.min(1, 560/ph), c=document.createElement("canvas"); c.width=Math.round(pw*k); c.height=Math.round(ph*k);
+      c.getContext("2d").drawImage(o,px,py,pw,ph,0,0,c.width,c.height);
+      return {img:exportCard(c), cut:true};
+    }).catch(function(){
+      // repli : photo recadrée en portrait, bords fondus dans la carte
+      var tw=Math.min(W, H*0.75), th=tw/0.75, sx=(W-tw)/2, sy=Math.max(0,(H-th)/3), k=Math.min(1,560/th);
+      var c=document.createElement("canvas"); c.width=Math.round(tw*k); c.height=Math.round(th*k); var x=c.getContext("2d");
+      x.drawImage(cv,sx,sy,tw,th,0,0,c.width,c.height);
+      var g=x.createRadialGradient(c.width/2,c.height*0.42,c.width*0.25,c.width/2,c.height*0.5,c.width*0.75); g.addColorStop(0,"rgba(0,0,0,1)"); g.addColorStop(1,"rgba(0,0,0,0)");
+      x.globalCompositeOperation="destination-in"; x.fillStyle=g; x.fillRect(0,0,c.width,c.height);
+      return {img:exportCard(c), cut:false};
+    }); }); }
   // ---------- défi eFoil du mois (km d'eFoil enregistrés ce mois-ci) ----------
   function defiBoard(){ var out=[];
     for(var u in commStats){ if(u===TEAM_UID || blocked.has(u)) continue; var km=monthEfoilKm(commStats[u]); if(u===me.uid) continue; if(km>0) out.push({uid:u, km:km}); }
@@ -4588,8 +4670,15 @@
   $("commSheet").addEventListener("click", e=>{ if(e.target===$("commSheet")) closeSheet(); });
   $("commPseudo").addEventListener("input", ()=>{ me.pseudo=$("commPseudo").value.trim().slice(0,24); savePseudo(); updateChatGate(); publishMe(); if(pendingJoin && me.pseudo) tryPendingJoin(); });
   var _bio=$("commBio"); if(_bio){ _bio.value=me.bio||""; _bio.addEventListener("input", function(){ me.bio=_bio.value.trim().slice(0,200); try{ localStorage.setItem("lf.comm.bio", me.bio); }catch(e){} }); }
-  var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s){ var dp=$("commDmPref"); if(dp) dp.value=dmPref; s.hidden=false; } });
-  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; var dp=$("commDmPref"); if(dp && (dp.value==="all"||dp.value==="none")){ dmPref=dp.value; saveDmPref(); } updateChatGate(); if(me.pseudo && backend && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref}); });
+  function fillBrand(){ var sel=$("commBrand"), oth=$("commBrandOther"); if(!sel) return;
+    if(!sel.options.length){ sel.innerHTML='<option value="">— Choisir —</option>'+EFOIL_BRANDS.map(function(b){ return '<option value="'+b[0]+'">'+esc(b[1])+'</option>'; }).join("")+'<option value="autre">Autre marque…</option><option value="none">Je n\'ai pas encore d\'eFoil</option>';
+      sel.addEventListener("change", function(){ oth.hidden = sel.value!=="autre"; if(!oth.hidden) oth.focus(); }); }
+    var b=me.brand||""; if(b.indexOf("autre:")===0){ sel.value="autre"; oth.value=b.slice(6); oth.hidden=false; } else { sel.value=b; oth.hidden=true; } }
+  function readBrand(){ var sel=$("commBrand"), oth=$("commBrandOther"); if(!sel) return;
+    var v=sel.value; if(v==="autre"){ var t=(oth.value||"").trim().slice(0,24); v=t?("autre:"+t):""; }
+    me.brand=v; try{ localStorage.setItem("lf.comm.brand", v); }catch(e){} }
+  var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ var s=$("profEditSheet"); if(s){ var dp=$("commDmPref"); if(dp) dp.value=dmPref; fillBrand(); s.hidden=false; } });
+  var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); if(s) s.hidden=true; readBrand(); renderDefi(); var dp=$("commDmPref"); if(dp && (dp.value==="all"||dp.value==="none")){ dmPref=dp.value; saveDmPref(); } updateChatGate(); if(me.pseudo && backend && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref}); });
   var _smu=$("sheetMute"); if(_smu) _smu.addEventListener("click", function(){ if(sheetTarget&&sheetTarget.uid){ toggleMute(sheetTarget.uid); _smu.textContent = isMuted(sheetTarget.uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; } });
   var _pes=$("profEditSheet"); if(_pes) _pes.addEventListener("click", function(e){ if(e.target.id==="profEditSheet") e.target.hidden=true; });
   ["profEditSheet","commSheet"].forEach(function(idp){ var s=document.getElementById(idp); if(s && s.parentNode!==document.body) document.body.appendChild(s); });
