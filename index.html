@@ -314,7 +314,16 @@
   .fs-in{ width:100%; box-sizing:border-box; padding:12px 14px; border:1.5px solid var(--line); border-radius:14px; font:600 15px inherit; font-family:inherit; }
   .fs-list{ margin-top:10px; } .fs-list .pf-fr{ border-radius:12px; margin-bottom:6px; border:1px solid var(--line); }
   .fs-act{ margin-left:auto; border:0; border-radius:9px; padding:8px 11px; font:700 13px inherit; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; white-space:nowrap; } .fs-act.ghost{ background:#e3e8ec; color:#3d4a52; }
-  .up-wrap{ padding:4px 16px 16px; } .up-wrap .pf-grid{ margin:0 -16px; }
+  .up-wrap{ padding:4px 16px 16px; }
+  /* 07/11 : palmarès */
+  .res-wrap{ grid-column:1/-1; padding:12px 16px; } .res-review{ grid-column:1/-1; margin:10px 16px 0; padding:10px 12px; border-radius:14px; background:#fff7e0; border:1px solid #f1d58a; }
+  .res-row{ display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); } .res-row:last-child{ border-bottom:0; }
+  .res-pl{ flex:none; min-width:52px; font-weight:800; font-size:15px; } .res-t{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; } .res-t b{ font-size:15px; } .res-t small{ font-size:12.5px; color:var(--muted); }
+  .res-t a{ font-size:13px; font-weight:700; color:#128a90; } .res-ok{ align-self:flex-start; font-size:12px; font-weight:800; color:#1a9c55; } .res-wait{ align-self:flex-start; font-size:12px; font-weight:800; color:#b7791f; } .res-no{ align-self:flex-start; font-size:12px; font-weight:800; color:#c0392b; }
+  .res-del{ flex:none; border:0; background:none; color:var(--muted); font-size:16px; cursor:pointer; padding:4px; width:auto; min-height:0; box-shadow:none; }
+  .res-acts{ display:flex; gap:8px; margin-top:4px; } .res-acts button{ border:0; border-radius:9px; padding:7px 12px; font:700 13px inherit; font-family:inherit; background:#1a9c55; color:#fff; cursor:pointer; width:auto; } .res-acts button.no{ background:#e3e8ec; color:#3d4a52; }
+  .res-form label{ display:block; margin-top:10px; font-size:13px; font-weight:600; color:var(--muted); } .res-form input, .res-form select{ width:100%; box-sizing:border-box; }
+  .res-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; } .res-err{ color:#c0392b; font-size:13px; font-weight:600; margin-top:8px; } .res-err:empty{ display:none; } .up-wrap .pf-grid{ margin:0 -16px; }
   .chat-modes button{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:7px; border:1.5px solid var(--line); background:var(--card); border-radius:18px; padding:12px 4px 10px; cursor:pointer; transition:transform .13s ease, box-shadow .13s ease, border-color .13s ease, background .13s ease; }
   .chat-modes button:active{ transform:scale(.96); }
   .chat-modes .cm-lbl{ font-size:12.5px; font-weight:700; color:var(--muted); white-space:nowrap; }
@@ -1435,6 +1444,7 @@
       <button type="button" data-pt="vid" class="on">Vidéos</button>
       <button type="button" data-pt="sess">Sessions</button>
       <button type="button" data-pt="fr">Amis</button>
+      <button type="button" data-pt="pal">🏆</button>
     </div>
     <div class="pf-grid" id="pfGrid"></div>
   </section>
@@ -3739,6 +3749,11 @@
       declineFriend(from){ return db.remove(db.ref(d,"friendReq/"+uid+"/"+from)); },
       removeFriend(o){ var up={}; up["friends/"+uid+"/"+o]=null; up["friends/"+o+"/"+uid]=null; return db.update(db.ref(d),up); },
       // ---------- sessions partagées sur le profil (visibles par moi et mes amis) : résumé + forme du tracé, sans coordonnées GPS ----------
+      // palmarès : résultats de compétitions /results/{uid}/{id}, vérifiés par Lite Foil (st : pending → ok / no)
+      watchResults(cb){ return db.onValue(db.ref(d,"results"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      addResult(o){ var r=db.push(db.ref(d,"results/"+uid)); o.st="pending"; o.t=db.serverTimestamp(); return db.set(r, o); },
+      deleteResult(id){ return db.remove(db.ref(d,"results/"+uid+"/"+id)); },
+      reviewResult(u,id,st){ return db.update(db.ref(d,"results/"+u+"/"+id), {st:st, by:uid}); },
       // notes des Cartes Rider (calculées sur le téléphone, publiées pour les amis)
       saveRatings(o){ return db.set(db.ref(d,"ratings/"+uid), o); },
       watchRatings(cb){ return db.onValue(db.ref(d,"ratings"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
@@ -3903,6 +3918,8 @@
       getSessions(u){ return Promise.resolve(u==="demo-marine"?[{id:"s1",t:Date.now()-86400000,sport:"efoil",d:12400,dur:3300,vmax:31.5,shape:"10,80 25,40 50,20 75,35 90,70 60,85 30,90"}]:[]); },
       shareSession(){ return Promise.resolve(); }, unshareSession(){ return Promise.resolve(); },
       saveRatings(){ return Promise.resolve(); },
+      watchResults(cb){ cb({"demo-marine":{r1:{comp:"Championnat de France eFoil",date:Date.now()-40*86400000,sport:"efoil",place:3,perf:"",fed:"FFM",level:"national",st:"ok"}}}); return function(){}; },
+      addResult(){ return Promise.resolve(); }, deleteResult(){ return Promise.resolve(); }, reviewResult(){ return Promise.resolve(); },
       watchRatings(cb){ cb({"demo-marine":{g:78,d:{efoil:{r:81,n:12,s:[84,62,88,71,58,79]},wingfoil:{r:66,n:4,s:[70,55,68,61,60,52]}}},"demo-aurel":{g:58,d:{efoil:{r:58,n:6,s:[61,40,66,52,47,60]}}},"demo-leo":{g:93,d:{kitesurf:{r:93,n:80,s:[97,90,95,92,88,96]}}}}); return function(){}; },
       signInWithPassword(){ return Promise.resolve(); },
       sendPasswordLink(){ return Promise.resolve(); },
@@ -5440,6 +5457,7 @@
     else if(pfTab==="sess"){ var list=sess.map(function(a){ var o=sessSummary(a); o.shared=!!mySharedSess[String(a.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_")]; return o; });
       g.innerHTML = list.length ? list.map(function(o,i){ return sessTile(o,i,true); }).join("") : '<div class="comm-empty">Pas encore de session.<br>Lance un enregistrement dans l\'onglet Tracking 📍</div>';
       g.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.si; openSessDetail(list[i], true, sess[i]); }); }); }
+    else if(pfTab==="pal"){ g.innerHTML = (isOfficial(me.uid)?reviewHtml():"")+palmaresHtml(me.uid, true); bindPalmares(g); bindReview(g); }
     else { g.innerHTML = fr.length ? friendRows(fr) : '<div class="comm-empty">Pas encore d\'amis.<br><button class="primary" id="pfFind2" style="margin-top:10px">Rechercher des amis</button></div>'; bindFriendRows(g); var f2=$("pfFind2"); if(f2) f2.addEventListener("click", openFriendSearch); }
   }
   window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
@@ -5467,7 +5485,7 @@
         +'<div class="pf-name">'+esc(pName(uid))+(isOfficial(uid)?' <span class="pf-off">✓ Équipe Lite Foil</span>':'')+'</div>'
         +(p.bio?'<div class="pf-bio">'+esc(p.bio)+'</div>':'')
         +'<div class="pf-acts">'+friendBtnHtml(uid,true)+(p.dm!=="none"?'<button type="button" id="upMsg">Message</button>':'')+'<button type="button" id="upCard">🃏 Sa carte</button></div>'
-        +'<div class="pf-tabs"><button type="button" data-ut="vid" class="'+(tab==="vid"?"on":"")+'">Vidéos</button><button type="button" data-ut="sess" class="'+(tab==="sess"?"on":"")+'">Sessions</button></div>'
+        +'<div class="pf-tabs"><button type="button" data-ut="vid" class="'+(tab==="vid"?"on":"")+'">Vidéos</button><button type="button" data-ut="sess" class="'+(tab==="sess"?"on":"")+'">Sessions</button><button type="button" data-ut="pal" class="'+(tab==="pal"?"on":"")+'">🏆 Palmarès</button></div>'
         +'<div class="pf-grid" id="upGrid"></div></div></div>';
       $("upClose").addEventListener("click", closeOverlay);
       bindFriendBtns(g, draw);
@@ -5476,6 +5494,7 @@
       g.querySelectorAll("[data-ut]").forEach(function(b){ b.addEventListener("click", function(){ tab=b.dataset.ut; draw(); }); });
       var gr=$("upGrid");
       if(tab==="vid"){ gr.innerHTML = vids.length ? vidTiles(vids) : '<div class="comm-empty">Pas encore de vidéo.</div>'; bindVidTiles(gr); }
+      else if(tab==="pal"){ gr.innerHTML = palmaresHtml(uid, false); }
       else if(!sess){ gr.innerHTML='<div class="comm-empty">🔒 Ses sessions sont visibles par ses amis.</div>'; }
       else { gr.innerHTML = sess.length ? sess.map(function(o,i){ return sessTile(o,i,false); }).join("") : '<div class="comm-empty">Aucune session partagée.</div>';
         gr.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ openSessDetail(sess[+b.dataset.si], false); }); }); }
@@ -5483,6 +5502,48 @@
     draw();
     if(backend && backend.getFriends) backend.getFriends(uid).then(function(m){ nFr=Object.keys(m||{}).length; if(!g.hidden) draw(); });
     if(backend && backend.getSessions) backend.getSessions(uid).then(function(l){ sess=l; if(!g.hidden) draw(); }).catch(function(){}); }
+  // ---------- 07/11 : palmarès (résultats officiels de compétitions, vérifiés par l'équipe Lite Foil) ----------
+  let resultsAll={};
+  const RES_LEVEL={ club:"Club", regional:"Régional", national:"National", international:"International" };
+  function resultsOf(u){ var m=resultsAll[u]||{}; return Object.keys(m).map(function(id){ var r=m[id]; r.id=id; r.uid=u; return r; }).filter(function(r){ return r && r.comp; }).sort(function(a,b){ return (+b.date||0)-(+a.date||0); }); }
+  function placeTxt(p){ p=+p||0; return p===1?"🥇 1er":p===2?"🥈 2e":p===3?"🥉 3e":(p?p+"e":""); }
+  function resultRows(list, mine){ if(!list.length) return '';
+    return list.map(function(r){ var sp=LF_SP[r.sport], dt=r.date?new Date(+r.date).toLocaleDateString("fr-FR",{month:"short",year:"numeric"}):"";
+      var badge = r.st==="ok" ? '<span class="res-ok">✓ Vérifié</span>' : r.st==="no" ? '<span class="res-no">Refusé</span>' : '<span class="res-wait">⏳ En vérification</span>';
+      if(!mine && r.st!=="ok") return "";
+      return '<div class="res-row"><div class="res-pl">'+(placeTxt(r.place)||"🏁")+'</div><div class="res-t"><b>'+esc(r.comp)+'</b><small>'+(sp?sp.ic+" "+esc(sp.name)+" · ":"")+esc(RES_LEVEL[r.level]||"")+(r.fed?" · "+esc(r.fed):"")+(dt?" · "+dt:"")+(r.perf?" · "+esc(r.perf):"")+'</small>'+badge+'</div>'
+        +(mine?'<button type="button" class="res-del" data-rdel="'+esc(r.id)+'" aria-label="Supprimer">✕</button>':'')+'</div>'; }).join(""); }
+  function palmaresHtml(u, mine){ var list=resultsOf(u), rows=resultRows(list, mine);
+    return '<div class="res-wrap">'+(rows||'<div class="comm-empty">'+(mine?"Ajoute tes résultats de compétitions officielles : ils sont vérifiés par l'équipe Lite Foil avant d'apparaître sur ton profil.":"Pas encore de résultat vérifié.")+'</div>')
+      +(mine?'<button class="primary" id="resAdd" style="margin-top:10px">+ Ajouter un résultat</button>':'')+'</div>'; }
+  function bindPalmares(root){ var a=$("resAdd"); if(a) a.addEventListener("click", openResultForm);
+    root.querySelectorAll("[data-rdel]").forEach(function(b){ b.addEventListener("click", function(){ if(confirm("Supprimer ce résultat ?")) backend.deleteResult(b.dataset.rdel).catch(function(){}); }); }); }
+  function openResultForm(){ if(!profileReady()){ askProfile("Valide ton profil pour ajouter un résultat."); return; }
+    var g=gOverlay(); g.hidden=false; var opts=(mySports.length?mySports:LF_SPORTS.map(function(x){ return x[0]; })).map(function(k){ return '<option value="'+k+'">'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</option>'; }).join("");
+    g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rfClose">✕</button><b>Ajouter un résultat</b><span></span></div><div class="gc-body res-form">'
+      +'<label>Compétition</label><input id="rfComp" maxlength="80" placeholder="Championnat de France, Coupe régionale…">'
+      +'<label>Sport</label><select id="rfSport">'+opts+'</select>'
+      +'<div class="res-2"><div><label>Date</label><input id="rfDate" type="date"></div><div><label>Classement</label><input id="rfPlace" type="number" min="1" max="9999" inputmode="numeric" placeholder="1"></div></div>'
+      +'<div class="res-2"><div><label>Niveau</label><select id="rfLevel"><option value="club">Club</option><option value="regional">Régional</option><option value="national" selected>National</option><option value="international">International</option></select></div><div><label>Fédération</label><input id="rfFed" maxlength="40" placeholder="FFV, FFS, FFA…"></div></div>'
+      +'<label>Performance (optionnel)</label><input id="rfPerf" maxlength="30" placeholder="6,42 m · 12:31 · 38,5 nds">'
+      +'<label>Lien vers le résultat officiel (optionnel)</label><input id="rfProof" maxlength="300" inputmode="url" placeholder="https://… (site de la fédération)">'
+      +'<div class="note" style="margin-top:8px">Ton résultat apparaîtra sur ton profil une fois vérifié par l\'équipe Lite Foil.</div>'
+      +'<div class="res-err" id="rfErr"></div><button class="primary" id="rfGo" style="margin-top:10px">Envoyer pour vérification</button></div></div>';
+    $("rfClose").addEventListener("click", closeOverlay);
+    $("rfGo").addEventListener("click", function(){ var comp=$("rfComp").value.trim(), ds=$("rfDate").value, pl=parseInt($("rfPlace").value,10), proof=$("rfProof").value.trim();
+      var err=function(t){ $("rfErr").textContent=t; };
+      if(comp.length<3) return err("Indique le nom de la compétition."); if(!ds) return err("Indique la date.");
+      if(proof && !/^https:\/\//.test(proof)) return err("Le lien doit commencer par https://");
+      var o={ comp:comp, sport:$("rfSport").value, date:new Date(ds+"T12:00:00").getTime(), level:$("rfLevel").value, fed:$("rfFed").value.trim(), perf:$("rfPerf").value.trim() };
+      if(pl>0) o.place=pl; if(proof) o.proof=proof;
+      $("rfGo").disabled=true; backend.addResult(o).then(function(){ closeOverlay(); pfTab="pal"; renderProfil(); }).catch(function(){ $("rfGo").disabled=false; err("Envoi impossible pour le moment, réessaie."); }); }); }
+  // équipe Lite Foil : résultats à vérifier
+  function pendingResults(){ var out=[]; Object.keys(resultsAll).forEach(function(u){ resultsOf(u).forEach(function(r){ if(r.st==="pending") out.push(r); }); }); return out; }
+  function reviewHtml(){ var P=pendingResults(); if(!P.length) return "";
+    return '<div class="res-review"><b>Résultats à vérifier ('+P.length+')</b>'+P.map(function(r){ var sp=LF_SP[r.sport];
+      return '<div class="res-row"><div class="res-pl">'+(placeTxt(r.place)||"🏁")+'</div><div class="res-t"><b>'+esc(r.comp)+'</b><small>'+esc(pName(r.uid))+' · '+(sp?esc(sp.name):"")+' · '+esc(RES_LEVEL[r.level]||"")+(r.fed?" · "+esc(r.fed):"")+(r.perf?" · "+esc(r.perf):"")+'</small>'
+        +(r.proof?'<a href="'+esc(r.proof)+'" target="_blank" rel="noopener">Voir la preuve ↗</a>':'<small>Pas de lien de preuve</small>')+'<div class="res-acts"><button data-rok="'+esc(r.uid)+'|'+esc(r.id)+'">✓ Valider</button><button class="no" data-rno="'+esc(r.uid)+'|'+esc(r.id)+'">Refuser</button></div></div></div>'; }).join("")+'</div>'; }
+  function bindReview(root){ root.querySelectorAll("[data-rok],[data-rno]").forEach(function(b){ b.addEventListener("click", function(){ var v=(b.dataset.rok||b.dataset.rno).split("|"); backend.reviewResult(v[0], v[1], b.dataset.rok?"ok":"no").catch(function(){ alert("Action impossible."); }); }); }); }
   // carte Événements en haut de la Communauté : prochain événement + pastille
   function updEvCard(){ var nx=$("cmEvNext"); if(nx){ var now=Date.now(), up=(myEvents||[]).filter(function(e){ return !e.cancelled && (+e.when||0)>now-3600000; });
       nx.textContent = up.length ? ("Prochain : "+up[0].title+" · "+fmtEvWhen(up[0].when)) : "Sorties et rendez-vous des riders"; }
@@ -5508,7 +5569,7 @@
     o.querySelectorAll("[data-cs]").forEach(function(b){ b.addEventListener("click", function(){ openRiderCard(uid, b.dataset.cs||null); }); });
     var rs=$("rcSports"); if(rs) rs.addEventListener("click", function(){ openSportsPicker(); });
     $("rcClose").addEventListener("click", closeOverlay);
-    var sb=$("rcShare"); if(sb) sb.addEventListener("click", function(){ shareRiderCard(uid); });
+    var sb=$("rcShare"); if(sb) sb.addEventListener("click", function(){ shareRiderCard(uid, sel); });
     if(!mine && cardCache[uid]===undefined && backend && backend.getCard){ backend.getCard(uid).then(function(img){ cardCache[uid]=img; var sl=$("rcSlot"); if(sl && img){ var C2=cardsOf(uid); sl.innerHTML = C2 ? fcardHtml(uid, sel, C2) : riderCardHtml(uid); } }); }
     var pb=$("rcPhotoBtn"), pf=$("rcPhotoFile");
     if(pb && pf){ pb.addEventListener("click", function(){ pf.click(); });
@@ -5567,11 +5628,42 @@
       x.textAlign="center"; x.fillStyle="#fff"; x.font='400 '+(76)+'px "Instrument Serif", Georgia, serif'; x.fillText("Rejoins-moi sur l'eau.", W/2, cy0+CH+120);
       x.font='600 34px "Instrument Sans", sans-serif'; x.fillStyle="rgba(255,255,255,.75)"; x.fillText("Appli Lite Foil · météo, sorties, communauté", W/2, cy0+CH+175);
       return new Promise(function(res){ cv.toBlob(function(b){ res({blob:b, url:cv.toDataURL("image/png"), d:D}); }, "image/png"); }); }); }
-  function shareRiderCard(uid){ var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
+  // 07/11 : image de la Carte Rider (blason, couleur du niveau, 6 stats) pour le partage
+  const TIER_COLORS = { "t-blue":["#0c2a6b","#1e5bd6","#8fb8ff","#ffffff"], "t-bronze":["#6e4320","#d79c63","#f3c99a","#2b1708"], "t-silver":["#7d8a94","#eef2f4","#ffffff","#1b2328"], "t-gold":["#a67a1c","#f8dc80","#fff1bf","#2a1d05"], "t-icon":["#e9d48f","#fffef8","#c9a227","#3a2a00"] };
+  function drawFcard(uid, k){ var C=cardsOf(uid), main=!k||!C.d[k], sp=main?null:LF_SP[k], n=main?C.g:C.d[k].r, tier=cardTier(n), col=TIER_COLORS[tier[0]], mine=uid===me.uid, pr=profileMap[uid]||{};
+    var ps=(mine?me.pseudo:(pr.pseudo||pName(uid)))||"Rider", img=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
+    return Promise.all([document.fonts?document.fonts.load('800 60px "Instrument Sans"'):0, document.fonts?document.fonts.load('400 60px "Instrument Serif"'):0, loadImgUrl(img||av||"")]).catch(function(){ return [0,0,null]; }).then(function(r){
+      var photo=r[2], W=1080, H=1620, CW=840, CH=1200, cx0=(W-CW)/2, cy0=80;
+      var cv=document.createElement("canvas"); cv.width=W; cv.height=H; var x=cv.getContext("2d");
+      var g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#0b3a55"); g.addColorStop(1,"#061826"); x.fillStyle=g; x.fillRect(0,0,W,H);
+      var shield=function(ins){ var X=cx0+ins, Y=cy0+ins, w=CW-2*ins, h=CH-2*ins; x.beginPath(); x.moveTo(X+w*.12,Y); x.lineTo(X+w*.88,Y); x.lineTo(X+w,Y+h*.07); x.lineTo(X+w,Y+h*.86); x.lineTo(X+w*.5,Y+h); x.lineTo(X,Y+h*.86); x.lineTo(X,Y+h*.07); x.closePath(); };
+      x.save(); x.shadowColor="rgba(0,0,0,.45)"; x.shadowBlur=50; x.shadowOffsetY=24; shield(0); var cg=x.createLinearGradient(cx0,cy0,cx0+CW*.4,cy0+CH); cg.addColorStop(0,col[1]); cg.addColorStop(1,col[0]); x.fillStyle=cg; x.fill(); x.restore();
+      x.save(); shield(0); x.clip(); var rg=x.createRadialGradient(cx0+CW*.7,cy0+CH*.18,10,cx0+CW*.7,cy0+CH*.18,CW*.8); rg.addColorStop(0,"rgba(255,255,255,.35)"); rg.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=rg; x.fillRect(cx0,cy0,CW,CH);
+      x.fillStyle="rgba(255,255,255,.10)"; x.beginPath(); x.moveTo(cx0+CW*.42,cy0); x.lineTo(cx0+CW*.58,cy0); x.lineTo(cx0+CW*.1,cy0+CH); x.lineTo(cx0-CW*.06,cy0+CH); x.fill();
+      if(photo){ if(img){ var ph=CH*.5, pw=Math.min(CW*.62, photo.width*ph/photo.height), phh=pw*photo.height/photo.width; x.drawImage(photo, cx0+CW*.94-pw, cy0+CH*.08+(ph-phh), pw, phh); }
+        else { var R=CW*.22, ax=cx0+CW*.66, ay=cy0+CH*.27; x.save(); x.beginPath(); x.arc(ax,ay,R,0,Math.PI*2); x.clip(); x.drawImage(photo, ax-R, ay-R, 2*R, 2*R); x.restore(); x.strokeStyle=col[2]; x.lineWidth=8; x.beginPath(); x.arc(ax,ay,R,0,Math.PI*2); x.stroke(); } }
+      else { x.fillStyle="rgba(255,255,255,.2)"; x.beginPath(); x.arc(cx0+CW*.66, cy0+CH*.27, CW*.22, 0, Math.PI*2); x.fill(); x.fillStyle=col[3]; x.textAlign="center"; x.font='800 170px "Instrument Sans", sans-serif'; x.fillText(ps.charAt(0).toUpperCase(), cx0+CW*.66, cy0+CH*.27+60); }
+      x.restore();
+      x.strokeStyle=col[2]; x.lineWidth=6; shield(18); x.stroke();
+      x.fillStyle=col[3]; x.textAlign="center";
+      x.font='800 30px "Instrument Sans", sans-serif'; x.globalAlpha=.75; x.fillText(tier[1].split("").join(String.fromCharCode(8202)), cx0+CW/2, cy0+60); x.globalAlpha=1;
+      x.font='800 170px "Instrument Sans", sans-serif'; x.fillText(String(n), cx0+CW*.2, cy0+CH*.2);
+      x.font='800 36px "Instrument Sans", sans-serif'; x.fillText(main?"GLOBAL":sp.name.toUpperCase().slice(0,12), cx0+CW*.2, cy0+CH*.255);
+      x.font='70px sans-serif'; x.fillText(main?"🏆":sp.ic, cx0+CW*.2, cy0+CH*.34);
+      x.font='800 64px "Instrument Sans", sans-serif'; x.fillText(ps.toUpperCase().slice(0,16), cx0+CW/2, cy0+CH*.63);
+      x.globalAlpha=.6; x.fillRect(cx0+CW*.18, cy0+CH*.665, CW*.64, 4); x.globalAlpha=1;
+      var cells = main ? C.order.slice(0,6).map(function(q){ return [C.d[q].r, LF_SP[q].name.split(" ")[0].slice(0,7).toUpperCase()]; }) : LF_FAM[sp.fam].stats.map(function(st,i){ return [C.d[k].s[i], st]; });
+      cells.forEach(function(c,i){ var cx=cx0+CW*(0.24+0.26*(i%3)), cy=cy0+CH*(0.735+0.075*Math.floor(i/3)); x.textAlign="right"; x.font='800 58px "Instrument Sans", sans-serif'; x.fillText(String(c[0]), cx+8, cy); x.textAlign="left"; x.globalAlpha=.72; x.font='800 26px "Instrument Sans", sans-serif'; x.fillText(c[1], cx+16, cy); x.globalAlpha=1; });
+      x.textAlign="center"; x.globalAlpha=.7; x.font='700 26px "Instrument Sans", sans-serif'; x.fillText((main?(C.order.length+" discipline"+(C.order.length>1?"s":"")):(C.d[k].n+" sortie"+(C.d[k].n>1?"s":"")))+" · LITE FOIL", cx0+CW/2, cy0+CH*.9); x.globalAlpha=1;
+      x.fillStyle="#fff"; x.font='400 76px "Instrument Serif", Georgia, serif'; x.fillText("Rejoins-moi sur l'eau.", W/2, cy0+CH+150);
+      x.font='600 34px "Instrument Sans", sans-serif'; x.fillStyle="rgba(255,255,255,.75)"; x.fillText("Appli Lite Foil · cartes, sorties, communauté", W/2, cy0+CH+205);
+      var D={ ps:ps, note:n, grade:tier[1].charAt(0)+tier[1].slice(1).toLowerCase(), sport:main?"Globale":sp.name, rank:null };
+      return new Promise(function(res){ cv.toBlob(function(b){ res({blob:b, url:cv.toDataURL("image/png"), d:D}); }, "image/png"); }); }); }
+  function shareRiderCard(uid, k){ var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="shClose">✕</button><b>Partager la carte</b><span></span></div><div class="gc-body"><div class="comm-empty">Préparation de l\'image…</div></div></div>';
     $("shClose").addEventListener("click", closeOverlay);
-    drawRiderCard(uid).then(function(r){ var D=r.d;
-      var txt=(mine?"Ma carte de rider Lite Foil":"La carte de rider de "+D.ps)+" : "+D.note+" · "+D.grade+" "+D.sport+(D.rank?" · "+D.rank+(D.rank===1?"er":"e")+" au défi eFoil du mois":"")+" 🏄 Rejoins-moi sur l'appli Lite Foil : "+APP_LINK;
+    (cardsOf(uid) ? drawFcard(uid, k) : drawRiderCard(uid)).then(function(r){ var D=r.d;
+      var txt=(mine?"Ma Carte Rider Lite Foil":"La Carte Rider de "+D.ps)+" : "+D.note+" · "+D.grade+" "+D.sport+(D.rank?" · "+D.rank+(D.rank===1?"er":"e")+" au défi eFoil du mois":"")+" 🏄 Rejoins-moi sur l'appli Lite Foil : "+APP_LINK;
       var file=null; try{ file=new File([r.blob], "carte-rider-lite-foil.png", {type:"image/png"}); }catch(e){}
       // appli iPhone/Android : modules natifs Partage + Fichiers (image écrite dans le cache puis partagée)
       var NS=nativePlug("Share"), NF=nativePlug("Filesystem"), native=!!(NS && NF);
@@ -5873,6 +5965,7 @@
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
     if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
     if(backend.watchRatings) backend.watchRatings(function(m){ ratingsCache=m||{}; });
+    if(backend.watchResults) backend.watchResults(function(m){ resultsAll=m||{}; renderProfil(); });
     setTimeout(publishRatings, 4000);
     if(backend.watchFriends) backend.watchFriends(onFriends);
     if(backend.watchFriendReqs) backend.watchFriendReqs(onFriendReqs);
