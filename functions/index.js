@@ -13,7 +13,8 @@
  * Le chiffre = somme de /unread/{uid}/{conversation} (+1 à chaque message, remis à zéro
  * par l'appli quand on lit). Les jetons périmés sont supprimés automatiquement.
  */
-const { onValueCreated } = require("firebase-functions/v2/database");
+const { onValueCreated, onValueDeleted } = require("firebase-functions/v2/database");
+const { getStorage } = require("firebase-admin/storage");
 const { onRequest } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { ServerValue } = require("firebase-admin/database");
@@ -406,4 +407,15 @@ exports.weeklyTip = onSchedule({ schedule: "0 18 * * 2", timeZone: "Europe/Paris
     if (!list.length) continue;
     await postOfficial(salon, "💡 Conseil de la semaine\n" + list[week % list.length]);
   }
+});
+
+
+/* ===================== Vidéos des riders =====================
+ * Quand une vidéo est supprimée (par son auteur ou par un modérateur), on efface aussi
+ * le fichier dans Firebase Storage pour ne pas payer son stockage. */
+const VIDEO_BUCKET = "litefoil-communaute-222fd.firebasestorage.app";
+exports.videoCleanup = onValueDeleted({ ref: "/videos/{vid}", instance: DB_INSTANCE }, async (event) => {
+  const v = event.data.val() || {};
+  if (!v.path || !/^videos\//.test(v.path)) return;
+  try { await getStorage().bucket(VIDEO_BUCKET).file(v.path).delete(); } catch (e) { console.warn("videoCleanup :", e.message); }
 });

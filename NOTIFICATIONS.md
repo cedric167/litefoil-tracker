@@ -37,6 +37,12 @@
    seule le module de notifications (`@capacitor-firebase/messaging`), le droit
    « push » iOS et la permission Android.
 
+7. **Vidéos des riders** : Firebase → **Passer au forfait Blaze** (paiement à l'usage),
+   puis **Storage → Commencer** (région Europe). Coller les règles Storage et les règles
+   `videos` / `videoComments` de `COMMUNAUTE.md`. Ajouter ton identifiant dans
+   `official` pour pouvoir supprimer n'importe quelle vidéo. Conseil : mettre une
+   **alerte de budget** (Google Cloud → Facturation → Budgets, ex. 20 €/mois).
+
 Le serveur de l'étape 5 met aussi en route le compte **Équipe Lite Foil** : message
 d'accueil privé à chaque nouveau membre, météo du week-end dans chaque salon le vendredi
 à 17 h et conseil de la semaine le mardi à 18 h (voir `COMMUNAUTE.md`).

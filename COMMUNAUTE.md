@@ -194,6 +194,56 @@ Règles à ajouter (à côté des autres) :
   `REGLEMENT_DEFI.md` (brouillon à valider). Vérifier les traces des premiers avant
   de remettre le lot (les chiffres viennent des téléphones des riders).
 
+## Vidéos des riders (onglet Vidéos, fil façon TikTok)
+
+- Fichiers dans **Firebase Storage** (forfait Blaze requis) : `videos/{uid}/{id}.mp4`,
+  30 s et 80 Mo maximum. Fiche dans `/videos/{id}` (auteur, lien, miniature, légende,
+  activité, likes) ; commentaires dans `/videoComments/{id}`.
+- **Modération** : l'auteur et les comptes de `/official` (toi) peuvent supprimer une
+  vidéo ou un commentaire (menu ⋯ ou 🗑️). Les vidéos signalées arrivent dans `reports`
+  (type `video`). Le fichier est effacé du stockage par la fonction `videoCleanup`.
+
+Règles Realtime Database (à côté des autres) :
+
+```json
+"videos": {
+  ".read": "auth != null",
+  ".indexOn": ["t"],
+  "$vid": {
+    ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('official/'+auth.uid).exists())))",
+    ".validate": "!newData.exists() || (newData.child('url').isString() && newData.child('caption').val().length <= 150)",
+    "likes": { "$uid": { ".write": "auth != null && auth.uid === $uid" } }
+  }
+},
+"videoComments": {
+  "$vid": {
+    ".read": "auth != null",
+    ".write": "auth != null && !newData.exists() && root.child('official/'+auth.uid).exists()",
+    "$cid": {
+      ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('official/'+auth.uid).exists())))",
+      ".validate": "!newData.exists() || (newData.child('text').isString() && newData.child('text').val().length <= 300)"
+    }
+  }
+}
+```
+
+Règles **Storage** (Firebase → Storage → Règles) :
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /videos/{uid}/{file} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == uid
+                    && request.resource.size < 80 * 1024 * 1024
+                    && request.resource.contentType.matches('video/.*');
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
+
 ## Structure des données (pour info)
 
 ```

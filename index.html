@@ -446,6 +446,45 @@
   .share-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
   .share-grid a, .share-grid button{ display:flex; flex-direction:column; align-items:center; gap:6px; border:0; background:none; font-family:inherit; font-size:12px; font-weight:700; color:var(--text); text-decoration:none; cursor:pointer; padding:0; }
   .share-grid i{ width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:24px; color:#fff; }
+  /* ===== vidéos (onglet + fil plein écran) ===== */
+  .vid-hero{ border-radius:24px; padding:20px 18px; color:#fff; position:relative; overflow:hidden; background:radial-gradient(120% 140% at 100% 0%, #2bb6c0 0%, #0f6f8a 45%, #0b3a55 100%); box-shadow:0 10px 28px rgba(11,58,85,.28); }
+  .vh-eb{ font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+  .vh-title{ font-family:"Instrument Serif", Georgia, serif; font-weight:400; font-size:34px; line-height:1.05; margin:6px 0 6px; }
+  .vh-sub{ font-size:14.5px; line-height:1.4; margin:0 0 14px; opacity:.9; }
+  .vh-acts{ display:flex; gap:10px; }
+  .vh-acts button{ flex:1; border:0; border-radius:14px; padding:13px; font-family:inherit; font-size:15.5px; font-weight:800; cursor:pointer; }
+  .vh-play{ background:#fff; color:#0b3a55; } .vh-add{ background:rgba(255,255,255,.16); color:#fff; box-shadow:0 0 0 1.5px rgba(255,255,255,.5) inset !important; }
+  .vid-head{ display:flex; justify-content:space-between; align-items:center; margin:20px 6px 10px; } .vid-count{ font-size:12.5px; color:var(--muted); font-weight:600; }
+  .vid-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:4px; border-radius:16px; overflow:hidden; }
+  .vg-it{ position:relative; aspect-ratio:9/14; border:0; padding:0; cursor:pointer; background:#0b3a55 center/cover no-repeat; }
+  .vg-like{ position:absolute; left:6px; bottom:6px; color:#fff; font-size:12px; font-weight:800; text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  .vg-off{ position:absolute; right:6px; top:6px; background:#1fb5bd; color:#fff; font-size:11px; font-weight:800; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .vf{ position:fixed; inset:0; z-index:9000; background:#000; }
+  .vf-top{ position:absolute; top:0; left:0; right:0; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 12px 10px; color:#fff; background:linear-gradient(180deg,rgba(0,0,0,.55),transparent); pointer-events:none; }
+  .vf-top b{ font-size:16px; font-weight:800; } .vf-top button{ pointer-events:auto; width:42px; height:42px; border-radius:50%; border:0; background:rgba(0,0,0,.35); color:#fff; font-size:18px; cursor:pointer; }
+  .vf-list{ height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; } .vf-list::-webkit-scrollbar{ display:none; }
+  .vf-item{ position:relative; height:100%; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; background:#000; }
+  .vf-item video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .vf-item::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:45%; background:linear-gradient(0deg,rgba(0,0,0,.65),transparent); pointer-events:none; }
+  .vf-play{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:64px; color:rgba(255,255,255,.85); display:none; pointer-events:none; }
+  .vf-item.paused .vf-play{ display:block; }
+  .vf-heart{ position:absolute; left:50%; top:45%; transform:translate(-50%,-50%) scale(0); font-size:110px; color:#ff3d6e; text-shadow:0 6px 24px rgba(0,0,0,.4); pointer-events:none; opacity:0; z-index:2; }
+  .vf-heart.pop{ animation:vfPop .8s ease-out; } @keyframes vfPop{ 0%{ opacity:0; transform:translate(-50%,-50%) scale(.3);} 25%{ opacity:1; transform:translate(-50%,-50%) scale(1.15);} 60%{ opacity:1; transform:translate(-50%,-50%) scale(1);} 100%{ opacity:0; transform:translate(-50%,-60%) scale(1);} }
+  .vf-side{ position:absolute; right:10px; bottom:calc(env(safe-area-inset-bottom) + 110px); z-index:2; display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .vf-side button{ border:0; background:none; color:#fff; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; font-family:inherit; text-shadow:0 1px 6px rgba(0,0,0,.5); }
+  .vf-side i{ font-style:normal; font-size:30px; line-height:1; } .vf-side b{ font-size:12.5px; font-weight:800; }
+  .vf-side button.on i{ color:#ff3d6e; } .vf-side button[data-a="like"] i{ transition:transform .15s; } .vf-side button.on i{ transform:scale(1.12); }
+  .vf-av{ width:50px; height:50px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 2px #fff !important; } .vf-av img,.vf-av span{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; color:#fff; }
+  .vf-info{ position:absolute; left:14px; right:80px; bottom:calc(env(safe-area-inset-bottom) + 26px); z-index:2; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.6); }
+  .vf-info b{ font-size:16px; font-weight:800; } .vf-info p{ margin:6px 0; font-size:14.5px; line-height:1.35; } .vf-info span{ font-size:12.5px; opacity:.85; font-weight:600; }
+  .vf-add{ position:absolute; right:14px; top:calc(env(safe-area-inset-top) + 64px); z-index:3; width:46px; height:46px; border-radius:14px; border:0; background:#1fb5bd; color:#fff; font-size:26px; font-weight:800; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.35); }
+  .vc-row{ display:flex; gap:10px; align-items:flex-start; padding:8px 2px; } .vc-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; font-size:14.5px; }
+  .vc-txt b{ font-size:13px; } .vc-txt small{ font-weight:500; color:var(--muted); } .vc-txt span{ word-break:break-word; }
+  .vc-del{ border:0; background:none; cursor:pointer; font-size:16px; opacity:.7; } .vc-foot{ gap:8px; } .vc-foot input{ flex:1; min-width:0; border:1px solid var(--line); border-radius:12px; padding:11px 12px; font:inherit; font-size:15px; }
+  .vu-pick{ position:relative; width:100%; min-height:150px; border-radius:16px; border:1.5px dashed #9ad7da; background:#effafa; color:#0b6d72; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; overflow:hidden; font-weight:700; font-size:15px; text-align:center; padding:10px; }
+  .vu-pick small{ font-weight:400; font-size:12px; color:var(--muted); } .vu-pick.has{ border-style:solid; padding:0; min-height:220px; background:#000; }
+  .vu-pick img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.85; } .vu-ok{ position:relative; background:rgba(0,0,0,.6); color:#fff; padding:6px 12px; border-radius:100px; font-size:13px; }
+  .vu-prog{ height:8px; border-radius:100px; background:var(--tile); overflow:hidden; } .vu-prog i{ display:block; height:100%; width:0; background:linear-gradient(90deg,#1fb5bd,#5acdd1); transition:width .2s; }
   .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
   .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
   .rc-how b{ color:var(--accent-ink); white-space:nowrap; }
@@ -926,6 +965,7 @@
     <button class="tab" data-tab="tracking">Tracking</button>
     <button class="tab" data-tab="meteo">Météo</button>
     <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
+    <button class="tab" data-tab="videos">Vidéos</button>
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
@@ -1185,6 +1225,17 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <section id="tab-videos" class="tabpane" hidden>
+    <div class="vid-hero">
+      <div class="vh-eb">Vidéos des riders</div>
+      <h2 class="vh-title">Vos plus belles sessions.</h2>
+      <p class="vh-sub">Publiez vos vidéos d'eFoil, de wing ou de surf, likez, commentez et faites défiler comme sur TikTok.</p>
+      <div class="vh-acts"><button class="vh-play" id="vidWatch" type="button">▶ Regarder</button><button class="vh-add" id="vidPost" type="button">＋ Publier</button></div>
+    </div>
+    <div class="vid-head"><span class="m-label">Dernières vidéos</span><span class="vid-count" id="vidCount"></span></div>
+    <div class="vid-grid" id="vidGrid"><div class="comm-empty" style="grid-column:1/-1">Chargement…</div></div>
   </section>
 
   <section id="tab-meteo" class="tabpane" hidden>
@@ -2558,6 +2609,7 @@
     if (name === "tracking" || name === "tracker") mapOnShow();
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
+    if (name === "videos" && window.videosOnShow) window.videosOnShow();
   }
   for (const tab of document.querySelectorAll(".tab")) {
     if (!tab.dataset.tab) continue;
@@ -3393,6 +3445,24 @@
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
       saveCard(img){ return img ? db.set(db.ref(d,"cards/"+uid),{img:img,t:db.serverTimestamp()}) : db.remove(db.ref(d,"cards/"+uid)); },
       getCard(u){ return db.get(db.ref(d,"cards/"+u+"/img")).then(function(s){ return s.val()||null; }).catch(function(){ return null; }); },
+      // ---------- vidéos (fil façon TikTok) : fichier dans Firebase Storage, fiche dans /videos ----------
+      _st:null,
+      storage(){ if(!this._st) this._st=import("https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js").then(function(m){ return {m:m, s:m.getStorage(app)}; }); return this._st; },
+      watchVideos(cb){ return db.onValue(db.query(db.ref(d,"videos"), db.limitToLast(80)), function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v){ v.id=c.key; out.push(v); } }); cb(out.reverse()); }, function(){ cb([]); }); },
+      publishVideo(file, meta, onProgress){ const self=this, ext=((file.name||"").split(".").pop()||"mp4").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"mp4";
+        const vref=db.push(db.ref(d,"videos")), path="videos/"+uid+"/"+vref.key+"."+ext;
+        return self.storage().then(function(S){ return new Promise(function(res,rej){
+          const task=S.m.uploadBytesResumable(S.m.ref(S.s,path), file, {contentType:file.type||"video/mp4"});
+          task.on("state_changed", function(sn){ if(onProgress) onProgress(sn.bytesTransferred/(sn.totalBytes||1)); }, rej, function(){ S.m.getDownloadURL(task.snapshot.ref).then(res, rej); }); }); })
+        .then(function(url){ const v={uid:uid,pseudo:me.pseudo||"Rider",url:url,path:path,thumb:meta.thumb||"",caption:(meta.caption||"").slice(0,150),topic:meta.topic||"efoil",dur:meta.dur||0,t:db.serverTimestamp()};
+          if(me.av) v.av=me.av; return db.set(vref,v).then(function(){ return vref.key; }); }); },
+      likeVideo(vid,on){ return db.set(db.ref(d,"videos/"+vid+"/likes/"+uid), on?true:null); },
+      deleteVideo(v){ const self=this; return db.remove(db.ref(d,"videos/"+v.id)).then(function(){ db.remove(db.ref(d,"videoComments/"+v.id)).catch(function(){});
+        if(v.uid===uid && v.path) return self.storage().then(function(S){ return S.m.deleteObject(S.m.ref(S.s,v.path)); }).catch(function(){}); }); },
+      watchVideoComments(vid,cb){ return db.onValue(db.query(db.ref(d,"videoComments/"+vid), db.limitToLast(200)), function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v){ v.id=c.key; out.push(v); } }); cb(out); }, function(){ cb([]); }); },
+      addVideoComment(vid,text){ const o={uid:uid,pseudo:me.pseudo||"Rider",text:String(text).slice(0,300),t:db.serverTimestamp()}; if(me.av) o.av=me.av;
+        return db.push(db.ref(d,"videoComments/"+vid),o); },
+      deleteVideoComment(vid,cid){ return db.remove(db.ref(d,"videoComments/"+vid+"/"+cid)); },
       watchOfficial(cb){ return db.onValue(db.ref(d,"official"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
       watchStats(cb){ return db.onValue(db.ref(d,"stats"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
       saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,month:o.month,eKm:o.eKm||0,eo:o.eo||0,ej:o.ej||0,sport:o.sport||"efoil",t:db.serverTimestamp()}).catch(function(){}); },
@@ -3458,6 +3528,10 @@
     const fireEvents=()=>{ if(demoEventsCb) demoEventsCb(Object.keys(demoEvents).map(function(k){ return Object.assign({},demoEvents[k],{att:Object.assign({},demoEvents[k].att)}); })); };
     (function(){ var dd=new Date(); dd.setDate(dd.getDate()+((6-dd.getDay()+7)%7||7)); dd.setHours(10,0,0,0);
       demoEvents["e-demo"]={id:"e-demo",title:"Sortie eFoil au lever du soleil",topic:"efoil",when:dd.getTime(),place:"Plage sud, Port-Barcarès",desc:"Balade tranquille ouverte à tous les niveaux, on se retrouve sur le parking 15 min avant.",max:8,by:"demo-aurel",byPseudo:"Aurel66",t:Date.now()-7200000,att:{"demo-aurel":{pseudo:"Aurel66",t:Date.now()-7200000},"demo-marine":{pseudo:"Marine",t:Date.now()-3600000}}}; })();
+    const DEMO_VID="https://litefoil.fr/cdn/shop/videos/c/vp/e098ec1ef4e84f2094f6707f89383c5a/e098ec1ef4e84f2094f6707f89383c5a.SD-480p-1.5Mbps-86567816.mp4?v=0", DEMO_POSTER="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=600";
+    const demoVideos=[{id:"vd1",uid:"demo-aurel",pseudo:"Aurel66",url:DEMO_VID,thumb:DEMO_POSTER,caption:"Session du matin, mer d'huile 🌅",topic:"efoil",t:Date.now()-5400000,likes:{"demo-marine":true,"demo-leo":true}},
+      {id:"vd2",uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,url:DEMO_VID,thumb:DEMO_POSTER,caption:"Lite Foil Ultra : 1 seule planche, 3 façons de voler ⚡",topic:"efoil",t:Date.now()-86400000,likes:{"demo-aurel":true}}];
+    let demoVidCb=null; const demoComs={vd1:[{id:"c1",uid:"demo-marine",pseudo:"Marine",text:"Trop beau ce plan d'eau 😍",t:Date.now()-3000000}]}, demoComCb={};
     const demoDM={}; let demoDMcb=null;
     demoDM[TEAM_UID]={pseudo:TEAM_NAME,text:"Bienvenue dans la communauté Lite Foil 👋",by:TEAM_UID,t:Date.now()-60000,unread:1};
     const fireDM=()=>{ if(demoDMcb) demoDMcb(Object.assign({},demoDM)); };
@@ -3489,6 +3563,16 @@
       clearTyping(){ return Promise.resolve(); },
       saveProfile(){ return Promise.resolve(); },
       watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; o["demo-aurel"].brand="litefoil"; o["demo-marine"].brand="waydoo"; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
+      // ---------- vidéos (démo, en mémoire) ----------
+      watchVideos(cb){ demoVidCb=cb; cb(demoVideos.slice()); return function(){ demoVidCb=null; }; },
+      publishVideo(file, meta, onProgress){ var url=URL.createObjectURL(file), i=0; return new Promise(function(res){ var t=setInterval(function(){ i+=0.2; if(onProgress) onProgress(Math.min(1,i)); if(i>=1){ clearInterval(t);
+        var v={id:"v"+Date.now(),uid:uid,pseudo:me.pseudo||"Rider",av:me.av||"",url:url,thumb:meta.thumb||"",caption:meta.caption||"",topic:meta.topic||"efoil",t:Date.now(),likes:{}};
+        demoVideos.unshift(v); if(demoVidCb) demoVidCb(demoVideos.slice()); res(v.id); } },150); }); },
+      likeVideo(vid,on){ demoVideos.forEach(function(v){ if(v.id===vid){ v.likes=v.likes||{}; if(on) v.likes[uid]=true; else delete v.likes[uid]; } }); if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
+      deleteVideo(v){ for(var i=0;i<demoVideos.length;i++){ if(demoVideos[i].id===v.id){ demoVideos.splice(i,1); break; } } if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
+      watchVideoComments(vid,cb){ (demoComCb[vid]=demoComCb[vid]||[]).push(cb); cb((demoComs[vid]||[]).slice()); return function(){ demoComCb[vid]=(demoComCb[vid]||[]).filter(function(f){ return f!==cb; }); }; },
+      addVideoComment(vid,text){ (demoComs[vid]=demoComs[vid]||[]).push({id:"c"+Date.now(),uid:uid,pseudo:me.pseudo||"Rider",text:text,t:Date.now()}); (demoComCb[vid]||[]).forEach(function(f){ f(demoComs[vid].slice()); }); return Promise.resolve(); },
+      deleteVideoComment(vid,cid){ demoComs[vid]=(demoComs[vid]||[]).filter(function(c){ return c.id!==cid; }); (demoComCb[vid]||[]).forEach(function(f){ f(demoComs[vid].slice()); }); return Promise.resolve(); },
       watchOfficial(cb){ cb({}); return function(){}; },
       saveCard(){ return Promise.resolve(); },
       getCard(){ return Promise.resolve(null); },
@@ -4095,6 +4179,138 @@
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); updateChatGate(); recomputeBadges();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
+
+  /* ================= VIDÉOS DES RIDERS (fil vertical façon TikTok) =================
+     Publier une vidéo (30 s max), la faire défiler en plein écran, liker (double-tap), commenter, partager.
+     Modération : l'auteur et les comptes officiels (/official) peuvent supprimer une vidéo ou un commentaire. */
+  const VID_MAX_S = 30, VID_MAX_MB = 80;
+  let videos = [], vidUnsub = null, vfMuted = true, vfComUnsub = null;
+  function canModerate(uid){ return uid===me.uid || isOfficial(me.uid); }
+  function vidLikes(v){ return v && v.likes ? Object.keys(v.likes).length : 0; }
+  function vidLiked(v){ return !!(v && v.likes && v.likes[me.uid]); }
+  function vidVisible(){ return videos.filter(function(v){ return v && v.url && !blocked.has(v.uid); }); }
+  function onVideos(list){ videos=list||[]; renderVideoGrid(); var vf=$("vf"); if(vf && !vf.hidden) refreshFeedCounts(); }
+  function fmtCount(n){ return n>=1000 ? (Math.round(n/100)/10).toLocaleString("fr-FR")+" k" : String(n); }
+  function renderVideoGrid(){ var g=$("vidGrid"); if(!g) return; var vs=vidVisible();
+    $("vidCount").textContent = vs.length ? (vs.length+" vidéo"+(vs.length>1?"s":"")) : "";
+    if(!vs.length){ g.innerHTML='<div class="comm-empty" style="grid-column:1/-1">Pas encore de vidéo.<br>Publiez la première session de la communauté 🎬</div>'; return; }
+    g.innerHTML=vs.map(function(v,i){ return '<button class="vg-it" data-i="'+i+'" style="background-image:url('+(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span>'+(isOfficial(v.uid)?'<span class="vg-off">✓</span>':'')+'</button>'; }).join("");
+    g.querySelectorAll(".vg-it").forEach(function(b){ b.addEventListener("click", function(){ openFeed(+b.dataset.i); }); }); }
+  window.videosOnShow = function(){ renderVideoGrid(); };
+
+  // ---------- fil plein écran ----------
+  function feedItemHtml(v,i){ var off=isOfficial(v.uid), name=(off&&v.uid===TEAM_UID)?TEAM_NAME:(v.pseudo||"Rider");
+    var av=v.av||(off&&v.uid===TEAM_UID?TEAM_AV:"");
+    return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'">'
+      +'<video playsinline loop muted preload="metadata" src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
+      +'<div class="vf-heart">♥</div><div class="vf-play">▶</div>'
+      +'<div class="vf-side">'
+        +'<button class="vf-av" data-a="profile">'+(av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>')+'</button>'
+        +'<button data-a="like" class="'+(vidLiked(v)?"on":"")+'"><i>♥</i><b>'+fmtCount(vidLikes(v))+'</b></button>'
+        +'<button data-a="com"><i>💬</i><b class="vf-nc">·</b></button>'
+        +'<button data-a="share"><i>↗</i><b>Partager</b></button>'
+        +'<button data-a="more"><i>⋯</i></button>'
+      +'</div>'
+      +'<div class="vf-info"><b>@'+esc(name)+(off?' <span class="off-badge">✓ Officiel</span>':'')+'</b>'+(v.caption?'<p>'+esc(v.caption)+'</p>':'')+'<span>'+((CHAN_ICON[v.topic]||"🏄")+" "+(CHANS[v.topic]||"Glisse"))+' · '+esc(timeAgo(v.t))+'</span></div>'
+    +'</section>'; }
+  function timeAgo(t){ var s=(Date.now()-(+t||Date.now()))/1000; if(s<3600) return Math.max(1,Math.round(s/60))+" min"; if(s<86400) return Math.round(s/3600)+" h"; return Math.round(s/86400)+" j"; }
+  function feedEl(){ var vf=$("vf"); if(vf) return vf;
+    vf=document.createElement("div"); vf.id="vf"; vf.className="vf"; vf.hidden=true;
+    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><button class="vf-mute" id="vfMute" aria-label="Son">🔇</button></div><div class="vf-list" id="vfList"></div><button class="vf-add" id="vfAdd" aria-label="Publier une vidéo">＋</button>';
+    document.body.appendChild(vf);
+    $("vfClose").addEventListener("click", closeFeed);
+    $("vfMute").addEventListener("click", function(){ vfMuted=!vfMuted; this.textContent=vfMuted?"🔇":"🔊"; vf.querySelectorAll("video").forEach(function(x){ x.muted=vfMuted; }); });
+    $("vfAdd").addEventListener("click", openVideoUpload);
+    return vf; }
+  function openFeed(start){ var vs=vidVisible(); if(!vs.length){ openVideoUpload(); return; }
+    var vf=feedEl(), list=$("vfList"); list.innerHTML=vs.map(feedItemHtml).join(""); vf.hidden=false; document.body.style.overflow="hidden";
+    list.querySelectorAll(".vf-item").forEach(function(it){ wireFeedItem(it, vs[+it.dataset.i]); });
+    // la vidéo à l'écran joue, les autres sont en pause (calculé au défilement)
+    vfActive=-1; var tgt=list.querySelector('.vf-item[data-i="'+(start||0)+'"]'); if(tgt) list.scrollTop=tgt.offsetTop;
+    if(!list._wired){ list._wired=true; var tm=null; list.addEventListener("scroll", function(){ clearTimeout(tm); tm=setTimeout(feedActivate,90); }, {passive:true}); }
+    setTimeout(feedActivate,50); }
+  let vfActive=-1;
+  function feedActivate(){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
+    var k=Math.max(0, Math.min(its.length-1, Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
+    its.forEach(function(it,i){ var vd=it.querySelector("video"); if(i===k){ vd.muted=vfMuted; var p=vd.play(); if(p&&p.catch) p.catch(function(){}); it.classList.remove("paused"); watchCount(it); } else { vd.pause(); } }); }
+  function closeFeed(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll("video").forEach(function(x){ x.pause(); }); vfActive=-1; if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } vf.hidden=true; document.body.style.overflow=""; }
+  // compteur de commentaires de la vidéo à l'écran
+  let vfCountUnsub=null;
+  function watchCount(it){ if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(!backend||!backend.watchVideoComments) return;
+    vfCountUnsub=backend.watchVideoComments(it.dataset.vid, function(cs){ var b=it.querySelector(".vf-nc"); if(b) b.textContent=fmtCount(cs.filter(function(c){ return !blocked.has(c.uid); }).length); }); }
+  function refreshFeedCounts(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll(".vf-item").forEach(function(it){ var v=videos.filter(function(x){ return x.id===it.dataset.vid; })[0];
+    if(!v){ it.remove(); return; } var lb=it.querySelector('[data-a="like"]'); lb.classList.toggle("on", vidLiked(v)); lb.querySelector("b").textContent=fmtCount(vidLikes(v)); }); }
+  function toggleLike(v, force){ if(!backend||!backend.likeVideo) return; if(!charterOk){ closeFeed(); showCharter(); return; }
+    var on = force===true ? true : !vidLiked(v); if(force===true && vidLiked(v)) return;
+    v.likes=v.likes||{}; if(on) v.likes[me.uid]=true; else delete v.likes[me.uid]; refreshFeedCounts(); backend.likeVideo(v.id,on).catch(function(){}); }
+  function wireFeedItem(it, v){ var vd=it.querySelector("video"), last=0;
+    vd.addEventListener("loadedmetadata", function(){ vd.style.objectFit = vd.videoHeight>=vd.videoWidth ? "cover" : "contain"; });
+    vd.addEventListener("click", function(ev){ var now=Date.now();
+      if(now-last<300){ toggleLike(v,true); var h=it.querySelector(".vf-heart"); h.classList.remove("pop"); void h.offsetWidth; h.classList.add("pop"); last=0; return; }
+      last=now; setTimeout(function(){ if(last!==now) return; if(vd.paused){ vd.play().catch(function(){}); it.classList.remove("paused"); } else { vd.pause(); it.classList.add("paused"); } },300); });
+    it.querySelectorAll(".vf-side button").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.a;
+      if(a==="like") toggleLike(v);
+      else if(a==="com") openVideoComments(v);
+      else if(a==="share") shareVideo(v);
+      else if(a==="more") videoMenu(v);
+      else if(a==="profile"){ if(v.uid!==me.uid){ closeFeed(); var pr=profileMap[v.uid]||{}; openSheet(v.uid, pr.pseudo||v.pseudo, pr.av||v.av, pr.bio); } } }); }); }
+  function shareVideo(v){ var txt="🎬 Vidéo de "+(v.pseudo||"un rider")+" sur l'appli Lite Foil"+(v.caption?" : « "+v.caption+" »":"")+" 🏄 "+APP_LINK;
+    var NS=nativePlug("Share"); if(NS){ NS.share({title:"Vidéo Lite Foil", text:txt, url:v.url, dialogTitle:"Partager la vidéo"}).catch(function(){}); return; }
+    if(navigator.share){ navigator.share({title:"Vidéo Lite Foil", text:txt, url:v.url}).catch(function(){}); return; }
+    window.open("https://wa.me/?text="+encodeURIComponent(txt+" "+v.url),"_blank"); }
+  function videoMenu(v){ var o=gOverlay(); o.hidden=false; var mod=canModerate(v.uid);
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vmClose">✕</button><b>Vidéo</b><span></span></div><div class="gc-body">'
+      +(v.uid!==me.uid?'<button class="gi-act" id="vmReport" style="color:#b3263a">⚑ Signaler cette vidéo</button><button class="gi-act" id="vmBlock">🚫 Bloquer '+esc(v.pseudo||"ce rider")+'</button>':'')
+      +(mod?'<button class="gi-act" id="vmDel" style="color:#b3263a">🗑️ Supprimer la vidéo'+(v.uid!==me.uid?" (modération)":"")+'</button>':'')
+      +'</div></div>';
+    $("vmClose").addEventListener("click", closeOverlay);
+    var r=$("vmReport"); if(r) r.addEventListener("click", function(){ if(backend&&backend.sendReport) backend.sendReport({type:"video",targetUid:v.uid,targetPseudo:v.pseudo,text:("Vidéo "+v.id+" : "+(v.caption||"")).slice(0,400)}); r.textContent="✓ Signalée, merci. L'équipe Lite Foil va la vérifier."; r.disabled=true; });
+    var bl=$("vmBlock"); if(bl) bl.addEventListener("click", function(){ if(!confirm("Bloquer "+(v.pseudo||"ce rider")+" ? Ses vidéos et messages seront masqués.")) return; blocked.add(v.uid); saveBlocked(); closeOverlay(); closeFeed(); renderVideoGrid(); renderChat(); });
+    var dl=$("vmDel"); if(dl) dl.addEventListener("click", function(){ if(!confirm("Supprimer définitivement cette vidéo ?")) return; dl.disabled=true;
+      backend.deleteVideo(v).then(function(){ closeOverlay(); var it=document.querySelector('.vf-item[data-vid="'+v.id+'"]'); if(it) it.remove(); if(!document.querySelector(".vf-item")) closeFeed(); }).catch(function(e){ dl.disabled=false; alert("Suppression impossible : "+((e&&(e.code||e.message))||"erreur")); }); }); }
+  function openVideoComments(v){ var o=gOverlay(); o.hidden=false;
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vcClose">✕</button><b>Commentaires</b><span></span></div><div class="gc-body" id="vcList"><div class="comm-empty">Chargement…</div></div>'
+      +'<div class="gc-foot vc-foot"><input id="vcInput" maxlength="300" placeholder="Ajouter un commentaire…" autocomplete="off"><button class="btn-main" id="vcSend">Envoyer</button></div></div>';
+    var close=function(){ if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } closeOverlay(); };
+    $("vcClose").addEventListener("click", close);
+    vfComUnsub = backend.watchVideoComments(v.id, function(cs){ var box=$("vcList"); if(!box) return; cs=cs.filter(function(c){ return !blocked.has(c.uid); });
+      box.innerHTML = cs.length ? cs.map(function(c){ var av=c.av?'<span class="cav"><img src="'+c.av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(c.uid)+'">'+esc(((c.pseudo||"R").trim()[0]||"R").toUpperCase())+'</span>';
+        return '<div class="vc-row">'+av+'<div class="vc-txt"><b>'+esc(c.pseudo||"Rider")+offBadge(c.uid)+' <small>'+esc(timeAgo(c.t))+'</small></b><span>'+esc(c.text||"")+'</span></div>'+(canModerate(c.uid)?'<button class="vc-del" data-cid="'+esc(c.id)+'" title="Supprimer">🗑️</button>':'')+'</div>'; }).join("")
+        : '<div class="comm-empty">Pas encore de commentaire. Lancez la discussion 👋</div>';
+      box.querySelectorAll(".vc-del").forEach(function(b){ b.addEventListener("click", function(){ if(confirm("Supprimer ce commentaire ?")) backend.deleteVideoComment(v.id, b.dataset.cid).catch(function(){}); }); });
+      box.scrollTop=box.scrollHeight; });
+    var send=function(){ var i=$("vcInput"), t=(i.value||"").trim(); if(!t) return; if(!charterOk){ close(); closeFeed(); showCharter(); return; } if(!me.pseudo){ close(); closeFeed(); alert("Choisissez d'abord un pseudo dans Mon profil."); return; } backend.addVideoComment(v.id,t).catch(function(){}); i.value=""; };
+    $("vcSend").addEventListener("click", send); $("vcInput").addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); send(); } }); }
+
+  // ---------- publier une vidéo ----------
+  function videoThumb(file){ return new Promise(function(res){ var url=URL.createObjectURL(file), v=document.createElement("video"); v.muted=true; v.playsInline=true; v.preload="auto"; v.src=url;
+    var done=false, fin=function(r){ if(done) return; done=true; res(r); };
+    v.addEventListener("loadedmetadata", function(){ var d=v.duration||0; try{ v.currentTime=Math.min(0.6, d/3); }catch(e){ fin({dur:d,thumb:""}); } });
+    v.addEventListener("seeked", function(){ try{ var w=360, h=Math.round(w*(v.videoHeight||640)/(v.videoWidth||360)); var c=document.createElement("canvas"); c.width=w; c.height=Math.min(h,640); c.getContext("2d").drawImage(v,0,0,w,h); fin({dur:v.duration||0, thumb:c.toDataURL("image/jpeg",0.7)}); }catch(e){ fin({dur:v.duration||0,thumb:""}); } });
+    v.addEventListener("error", function(){ fin({dur:0,thumb:"",err:true}); }); setTimeout(function(){ fin({dur:v.duration||0,thumb:""}); },8000); }); }
+  function openVideoUpload(){ if(!charterOk){ closeFeed(); showCharter(); return; } if(!me.pseudo){ closeFeed(); alert("Choisissez d'abord un pseudo dans Mon profil pour publier."); return; }
+    var o=gOverlay(); o.hidden=false; var picked=null, meta=null;
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vuClose">✕</button><b>Publier une vidéo</b><span></span></div><div class="gc-body ev-form">'
+      +'<div class="vu-pick" id="vuPick"><span class="evp-ic">🎬</span>Choisir une vidéo<small>'+VID_MAX_S+' secondes maximum · format vertical conseillé</small></div><input id="vuFile" type="file" accept="video/*" hidden>'
+      +'<label>Légende<input id="vuCap" maxlength="150" placeholder="Ex. : Session du matin, mer d\'huile 🌅"></label>'
+      +'<label>Activité<select id="vuTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }).join("")+'</select></label>'
+      +'<div class="gc-count">En publiant, vous confirmez être l\'auteur de la vidéo et respecter la charte de la communauté. Les vidéos inappropriées sont supprimées par l\'équipe Lite Foil.</div>'
+      +'<div class="vu-prog" id="vuProg" hidden><i></i></div><div class="ev-err" id="vuErr" hidden></div>'
+      +'</div><div class="gc-foot"><button class="btn-ghost2" id="vuCancel">Annuler</button><button class="btn-main" id="vuGo" disabled>Publier</button></div></div>';
+    var err=function(s){ var e=$("vuErr"); e.textContent=s; e.hidden=!s; };
+    $("vuClose").addEventListener("click", closeOverlay); $("vuCancel").addEventListener("click", closeOverlay);
+    $("vuPick").addEventListener("click", function(){ $("vuFile").click(); });
+    $("vuFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; err(""); picked=null;
+      if(f.size > VID_MAX_MB*1048576){ err("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo). Maximum "+VID_MAX_MB+" Mo : coupez-la ou filmez en 1080p."); return; }
+      $("vuPick").innerHTML='<span class="evp-ic">⏳</span>Lecture de la vidéo…';
+      videoThumb(f).then(function(m){ if(m.dur && m.dur > VID_MAX_S+0.9){ $("vuPick").innerHTML='<span class="evp-ic">🎬</span>Choisir une autre vidéo'; err("Vidéo trop longue ("+Math.round(m.dur)+" s). Maximum "+VID_MAX_S+" secondes."); return; }
+        picked=f; meta=m; $("vuPick").innerHTML=(m.thumb?'<img src="'+m.thumb+'" alt="">':'')+'<span class="vu-ok">✓ '+(m.dur?Math.round(m.dur)+" s · ":"")+Math.round(f.size/1048576*10)/10+' Mo</span>'; $("vuPick").classList.add("has"); $("vuGo").disabled=false; }); });
+    $("vuGo").addEventListener("click", function(){ if(!picked||!backend||!backend.publishVideo) return; var btn=$("vuGo"); btn.disabled=true; btn.textContent="Envoi…"; err("");
+      var pr=$("vuProg"); pr.hidden=false;
+      backend.publishVideo(picked, {thumb:meta.thumb, dur:Math.round(meta.dur||0), caption:$("vuCap").value.trim(), topic:$("vuTopic").value}, function(p){ pr.querySelector("i").style.width=Math.round(p*100)+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; })
+        .then(function(){ closeOverlay(); showTabVideos(); setTimeout(function(){ openFeed(0); },300); })
+        .catch(function(e){ btn.disabled=false; btn.textContent="Publier"; pr.hidden=true; err("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")+(/storage|unauthorized|permission/i.test(String(e&&(e.code||e.message)))?" (le stockage des vidéos doit être activé dans Firebase)":"")); }); }); }
+  function showTabVideos(){ var t=document.querySelector('.tab[data-tab="videos"]'); if(t) t.click(); }
 
   /* ================= ÉVÉNEMENTS (agenda : créer une sortie, s'inscrire) ================= */
   const EV_MONTHS=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
@@ -4887,6 +5103,9 @@
     if(backend.watchMyGroups) groupsUnsub = backend.watchMyGroups(onMyGroups);
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
+    if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
+    var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(0); });
+    var _vp=$("vidPost"); if(_vp) _vp.addEventListener("click", openVideoUpload);
     if(me.pseudo && backend.saveProfile) backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref});
     // lien d'invitation à un groupe privé : ?join=<gid>&k=<code>
     try{ var usp=new URLSearchParams(location.search); var jg=usp.get("join"); if(jg){ pendingJoin={gid:jg,k:usp.get("k")||""}; } }catch(e){}
