@@ -296,7 +296,7 @@
   .pf-id{ font-size:13px; color:var(--muted); margin:1px 4px 0; } .pf-bio{ font-size:14px; margin:6px 4px 0; white-space:pre-line; }
   .pf-bio:empty{ display:none; }
   .pf-acts{ display:flex; gap:8px; margin:12px 0 10px; } .pf-acts button{ flex:1; padding:9px 6px; border:0; border-radius:10px; background:#e9eef1; font:700 13.5px inherit; font-family:inherit; color:var(--ink,#0b0d10); cursor:pointer; }
-  .pf-acts button#pfFind{ flex:0 0 52px; } .pf-acts button.pf-main{ background:#1fb5bd; color:#fff; }
+  .pf-acts button#pfFind{ flex:0 0 52px; } .pf-ovr{ display:inline-block; min-width:26px; padding:1px 5px; border-radius:6px; font-size:12.5px; margin-left:3px; } .pf-ovr.t-blue{ background:#1e5bd6; color:#fff; } .pf-ovr.t-bronze{ background:#c98d55; color:#2b1708; } .pf-ovr.t-silver{ background:#d5dde2; } .pf-ovr.t-gold{ background:#f1cd61; } .pf-ovr.t-icon{ background:#fffdf3; border:1.5px solid #c9a227; } .pf-acts button.pf-main{ background:#1fb5bd; color:#fff; }
   .pf-reqs{ margin:0 0 10px; padding:10px 12px; border-radius:14px; background:#eef7f8; border:1px solid #cfe6e8; }
   .pf-reqs .pf-rq{ display:flex; align-items:center; gap:10px; padding:6px 0; } .pf-reqs .pf-rq b{ flex:1; font-size:14px; }
   .pf-rq button{ border:0; border-radius:9px; padding:7px 10px; font:700 13px inherit; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; } .pf-rq button.no{ background:#e3e8ec; color:#3d4a52; }
@@ -498,6 +498,44 @@
   .rcard > *{ z-index:2; } .rcard .rc-av{ z-index:1; }
   .rc-photo{ position:absolute; right:-6px; top:8px; height:278px; max-width:215px; object-fit:contain; object-position:bottom right; z-index:1 !important; filter:drop-shadow(0 10px 20px rgba(0,0,0,.45)); }
   .rc-photo-acts{ display:flex; gap:8px; }
+  /* 07/11 : Cartes Rider par sport (blason, 6 stats, niveaux bleu / bronze / argent / or / icône) */
+  .fcard{ flex:none; --c1:#0c2a6b; --c2:#1e5bd6; --ed:#8fb8ff; --ink:#fff; --sub:rgba(255,255,255,.75);
+    position:relative; width:280px; max-width:80vw; aspect-ratio:280/400; margin:6px auto 4px; color:var(--ink); font-family:inherit;
+    background:radial-gradient(90% 55% at 70% 18%, rgba(255,255,255,.28), transparent 60%), linear-gradient(165deg, var(--c2) 0%, var(--c1) 100%);
+    clip-path:polygon(12% 0,88% 0,100% 7%,100% 86%,50% 100%,0 86%,0 7%); filter:drop-shadow(0 14px 24px rgba(0,0,0,.25)); }
+  .fcard::before{ content:""; position:absolute; inset:6px; clip-path:polygon(12% 0,88% 0,100% 7%,100% 86%,50% 100%,0 86%,0 7%); border:2px solid var(--ed); pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48' viewBox='0 0 28 48'%3E%3Cpath d='M14 0l14 8v16l-14 8L0 24V8z' fill='none' stroke='white' stroke-opacity='.08'/%3E%3C/svg%3E"); }
+  .fcard .fc-shine{ position:absolute; inset:-40%; background:linear-gradient(115deg, transparent 45%, rgba(255,255,255,.28) 50%, transparent 55%); transform:translateX(-60%); animation:rcShine 3.6s ease-in-out infinite; pointer-events:none; }
+  .fcard.t-bronze{ --c1:#6e4320; --c2:#d79c63; --ed:#f3c99a; --ink:#2b1708; --sub:rgba(43,23,8,.7); }
+  .fcard.t-silver{ --c1:#7d8a94; --c2:#eef2f4; --ed:#ffffff; --ink:#1b2328; --sub:rgba(27,35,40,.7); }
+  .fcard.t-gold{ --c1:#a67a1c; --c2:#f8dc80; --ed:#fff1bf; --ink:#2a1d05; --sub:rgba(42,29,5,.72); }
+  .fcard.t-icon{ --c1:#e9d48f; --c2:#fffef8; --ed:#c9a227; --ink:#3a2a00; --sub:rgba(58,42,0,.72); }
+  .fcard.t-icon::before{ border-width:3px; box-shadow:inset 0 0 18px rgba(201,162,39,.45); }
+  .fcard > *{ position:absolute; z-index:2; }
+  .fc-l{ left:9%; top:9%; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .fc-ovr{ font-size:54px; font-weight:800; line-height:.95; letter-spacing:-2px; }
+  .fc-pos{ font-size:12px; font-weight:800; letter-spacing:.06em; max-width:84px; text-align:center; line-height:1.1; }
+  .fc-ic{ font-size:24px; margin-top:6px; }
+  .fc-tier{ top:3.4%; left:50%; transform:translateX(-50%); font-size:10px; font-weight:800; letter-spacing:.2em; color:var(--sub); }
+  .fc-photo{ right:6%; top:8%; height:50%; max-width:62%; object-fit:contain; object-position:bottom right; z-index:1 !important; filter:drop-shadow(0 8px 14px rgba(0,0,0,.35)); }
+  .fc-av{ right:12%; top:12%; width:44%; aspect-ratio:1; border-radius:50%; object-fit:cover; border:3px solid var(--ed); z-index:1 !important; }
+  .fc-avl{ right:12%; top:12%; width:44%; aspect-ratio:1; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:60px; font-weight:800; background:rgba(255,255,255,.18); z-index:1 !important; }
+  .fc-name{ left:6%; right:6%; top:59%; text-align:center; font-size:22px; font-weight:800; text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fc-line{ left:18%; right:18%; top:67.5%; height:1.5px; background:var(--sub); opacity:.6; }
+  .fc-stats{ left:10%; right:10%; top:70%; display:grid; grid-template-columns:repeat(3,1fr); gap:4px 6px; }
+  .fc-stats div{ display:flex; align-items:baseline; justify-content:center; gap:4px; } .fc-stats b{ font-size:19px; font-weight:800; } .fc-stats span{ font-size:10.5px; font-weight:800; color:var(--sub); letter-spacing:.04em; white-space:nowrap; }
+  .fc-main .fc-stats span{ font-size:9.5px; } .fc-stats .fc-empty{ grid-column:1/-1; font-size:13px; font-weight:700; color:var(--sub); }
+  .fc-foot{ left:0; right:0; bottom:8.5%; text-align:center; font-size:10px; font-weight:700; color:var(--sub); letter-spacing:.06em; }
+  .fc-ths{ flex:none; display:flex; gap:8px; overflow-x:auto; padding:2px 2px 10px; margin:0 -4px; scrollbar-width:none; } .fc-ths::-webkit-scrollbar{ display:none; }
+  .fc-th{ flex:none; height:auto; min-height:58px; width:auto; display:flex; flex-direction:column; align-items:center; gap:2px; min-width:76px; padding:8px 10px; border-radius:14px; border:2px solid transparent; background:#e9eef1; font-family:inherit; cursor:pointer; box-shadow:none; }
+  .fc-th b{ font-size:18px; } .fc-th span{ font-size:11px; font-weight:700; white-space:nowrap; color:#3d4a52; }
+  .fc-th.on{ border-color:#1fb5bd; } .fc-th.t-blue{ background:#dbe7ff; } .fc-th.t-bronze{ background:#f3dcc4; } .fc-th.t-silver{ background:#edf1f3; } .fc-th.t-gold{ background:#fbecb8; } .fc-th.t-icon{ background:#fffaf0; border-color:#c9a227; }
+  .fc-th.fc-add{ background:#fff; border:2px dashed #b9c6cd; }
+  .fc-tiers{ display:flex; flex-wrap:wrap; gap:6px; } .fc-tiers span{ font-size:12px; font-weight:800; padding:5px 9px; border-radius:8px; }
+  .fc-tiers .t-blue{ background:#1e5bd6; color:#fff; } .fc-tiers .t-bronze{ background:#c98d55; color:#2b1708; } .fc-tiers .t-silver{ background:#d5dde2; color:#1b2328; } .fc-tiers .t-gold{ background:#f1cd61; color:#2a1d05; } .fc-tiers .t-icon{ background:#fffdf3; color:#3a2a00; border:2px solid #c9a227; }
+  .sp-fam{ margin-top:12px; } .sp-fam > b{ font-size:13px; color:var(--muted); } .sp-chips{ display:flex; flex-wrap:wrap; gap:7px; margin-top:7px; }
+  .sp-chip{ border:1.5px solid var(--line); background:var(--card); border-radius:100px; padding:7px 11px; font:700 13.5px inherit; font-family:inherit; cursor:pointer; box-shadow:none; min-height:0; width:auto; }
+  .sp-chip.on{ background:#1fb5bd; border-color:#1fb5bd; color:#fff; }
   .rc-photo-acts button{ flex:1; border:1px solid var(--line); background:var(--card); color:var(--text); font-family:inherit; font-weight:700; font-size:14px; padding:11px 10px; border-radius:14px; cursor:pointer; }
   .rc-photo-acts button.main{ background:linear-gradient(135deg,#0f6f8a,#0b3a55); color:#fff; border:0; }
   .rc-photo-acts button:disabled{ opacity:.6; }
@@ -1340,6 +1378,8 @@
         <input id="commAvFile" type="file" accept="image/*" hidden>
         <label for="commBio" style="margin-top:10px">Présentation</label>
         <textarea id="commBio" class="comm-bio" maxlength="200" rows="3" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
+        <label style="margin-top:10px">Mes sports (une Carte Rider par sport)</label>
+        <div id="commSportsPick"></div>
         <label for="commBrand" style="margin-top:10px">Mon eFoil</label>
         <select id="commBrand"></select>
         <input id="commBrandOther" maxlength="24" placeholder="Nom de la marque" autocomplete="off" hidden style="margin-top:8px">
@@ -2359,14 +2399,18 @@
   }
   var phMilieu = "mer", phType = "efoil", phCat = "Foil électrique";
   // Activités proposées par milieu : [clé interne, libellé affiché]
+  // 07/11 : mêmes sports que les Cartes Rider (les sports choisis dans « Mes sports » passent en premier)
   var PH_ACTS = {
-    mer: [["efoil","Foil électrique"],["wing","Wingfoil"],["surf","Surf"],["kite","Kitesurf"],["sup","SUP / Paddle"],["swim","Nage"],["windsurf","Windsurf"],["kayak","Kayak"],["boating","Bateau"],["other","Autre (eau)"]],
-    terre: [["running","Course à pied"],["hiking","Marche / Rando"],["cycling","Vélo"],["trail","Trail"],["skiing","Ski"],["free_flight","Parapente"],["other","Autre (terre)"]]
+    mer: [["efoil","E-foil"],["wingfoil","Wing foil"],["parawing","Para wing"],["windsurf","Windsurf"],["pumpfoil","Pump foil"],["kitesurf","Kitesurf"],["surffoil","Surf foil"],["supdownwind","SUP Downwind"],
+      ["surf","Surf"],["bodyboard","Bodyboard"],["sup","Stand up paddle"],["canoe","Canoë / Kayak"],["deriveur","Dériveur"],["jetski","Jetski"],["swim","Nage"],["other","Autre (eau)"]],
+    terre: [["running","Running"],["marche","Marche athlétique"],["rando","Randonnée"],["trail","Trail"],["velo","Vélo"],["ski","Ski"],["snowboard","Snowboard"],["skate","Skateboard"],["longboard","Longboard"],
+      ["surfskate","Surfskate"],["roller","Roller"],["longueur","Saut en longueur"],["perche","Saut à la perche"],["parapente","Parapente"],["other","Autre (terre)"]]
   };
   function phFillActs(){
     var sel = $("phAct"); if(!sel) return;
     sel.innerHTML = "";
-    PH_ACTS[phMilieu].forEach(function(a){ var o = document.createElement("option"); o.value = a[0]; o.textContent = a[1]; sel.appendChild(o); });
+    var mine = []; try{ mine = (localStorage.getItem("lf.comm.sports")||"").split(","); }catch(e){}
+    PH_ACTS[phMilieu].slice().sort(function(x,y){ return (mine.indexOf(x[0])<0?1:0)-(mine.indexOf(y[0])<0?1:0); }).forEach(function(a){ var o = document.createElement("option"); o.value = a[0]; o.textContent = a[1]; sel.appendChild(o); });
     phType = sel.value; phCat = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
   }
   function phSetMilieu(m){
@@ -3648,7 +3692,7 @@
       // profil : réservé aux comptes dont l'e-mail est validé ; le pseudo est réservé dans /names/{clé} (un seul propriétaire)
       // en une seule écriture (profil + réservation + libération de l'ancien pseudo), vérifiée par les règles Firebase
       saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var nk=pseudoKey(p.pseudo); if(!nk || !auth.currentUser || !auth.currentUser.emailVerified) return Promise.resolve();
-        var o={pseudo:p.pseudo,nk:nk,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; if(me.brand && me.brand!=="none") o.brand=String(me.brand).slice(0,32);
+        var o={pseudo:p.pseudo,nk:nk,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; if(me.brand && me.brand!=="none") o.brand=String(me.brand).slice(0,32); if(mySports.length) o.sports=mySports.join(",").slice(0,300);
         return db.get(db.ref(d,"profiles/"+uid+"/nk")).then(function(s){ var old=s.val(); var up={}; up["names/"+nk]=uid; if(old && old!==nk) up["names/"+old]=null; up["profiles/"+uid]=o; return db.update(db.ref(d),up); }); },
       nameOwner(nk){ return db.get(db.ref(d,"names/"+nk)).then(function(s){ return s.exists()? s.val() : null; }); },
       // ---------- amis : demande /friendReq/{à}/{de}, liste /friends/{uid}/{ami}=true des deux côtés ----------
@@ -3662,6 +3706,9 @@
       declineFriend(from){ return db.remove(db.ref(d,"friendReq/"+uid+"/"+from)); },
       removeFriend(o){ var up={}; up["friends/"+uid+"/"+o]=null; up["friends/"+o+"/"+uid]=null; return db.update(db.ref(d),up); },
       // ---------- sessions partagées sur le profil (visibles par moi et mes amis) : résumé + forme du tracé, sans coordonnées GPS ----------
+      // notes des Cartes Rider (calculées sur le téléphone, publiées pour les amis)
+      saveRatings(o){ return db.set(db.ref(d,"ratings/"+uid), o); },
+      watchRatings(cb){ return db.onValue(db.ref(d,"ratings"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       getSessions(u){ return db.get(db.query(db.ref(d,"sessions/"+u), db.limitToLast(60))).then(function(s){ var out=[]; s.forEach(function(c){ var v=c.val(); if(v){ v.id=c.key; out.push(v); } }); return out.reverse(); }); },
       shareSession(id,o){ return db.set(db.ref(d,"sessions/"+uid+"/"+id), o); },
       unshareSession(id){ return db.remove(db.ref(d,"sessions/"+uid+"/"+id)); },
@@ -3822,6 +3869,8 @@
       declineFriend(){ return Promise.resolve(); }, removeFriend(){ return Promise.resolve(); },
       getSessions(u){ return Promise.resolve(u==="demo-marine"?[{id:"s1",t:Date.now()-86400000,sport:"efoil",d:12400,dur:3300,vmax:31.5,shape:"10,80 25,40 50,20 75,35 90,70 60,85 30,90"}]:[]); },
       shareSession(){ return Promise.resolve(); }, unshareSession(){ return Promise.resolve(); },
+      saveRatings(){ return Promise.resolve(); },
+      watchRatings(cb){ cb({"demo-marine":{g:78,d:{efoil:{r:81,n:12,s:[84,62,88,71,58,79]},wingfoil:{r:66,n:4,s:[70,55,68,61,60,52]}}},"demo-aurel":{g:58,d:{efoil:{r:58,n:6,s:[61,40,66,52,47,60]}}},"demo-leo":{g:93,d:{kitesurf:{r:93,n:80,s:[97,90,95,92,88,96]}}}}); return function(){}; },
       signInWithPassword(){ return Promise.resolve(); },
       sendPasswordLink(){ return Promise.resolve(); },
       watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; o["demo-aurel"].brand="litefoil"; o["demo-marine"].brand="waydoo"; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
@@ -5023,7 +5072,7 @@
     backend.sendPasswordLink(email).then(function(){ try{ localStorage.removeItem("lf.comm.k"); }catch(x){} showLogin(true); var le=$("commLoginEmail"); if(le) le.value=email;
       setLoginNote("📩 Mail envoyé à "+email+" (regarde aussi les spams). Clique sur le lien, choisis ton mot de passe, puis reviens ici et connecte-toi."); })
       .catch(function(err){ setLoginNote(loginErr(err&&err.code)); }); }
-  function openProfileSheet(){ var s=$("profEditSheet"); if(!s) return; var dp=$("commDmPref"); if(dp) dp.value=dmPref; fillBrand(); $("commPseudo").value=me.pseudo; checkPseudo(); renderVerif(); s.hidden=false; }
+  function openProfileSheet(){ var sp=$("commSportsPick"); if(sp){ sp.innerHTML=sportsPickerHtml(mySports); bindSportsPicker(sp); } var s=$("profEditSheet"); if(!s) return; var dp=$("commDmPref"); if(dp) dp.value=dmPref; fillBrand(); $("commPseudo").value=me.pseudo; checkPseudo(); renderVerif(); s.hidden=false; }
   function askProfile(msg){ openProfileSheet();
     setVerifNote(msg || (!me.verified ? "Pour participer, valide ton profil : entre ton e-mail, puis clique sur le lien reçu par mail."
       : (!me.pseudo || !me.claimed ? "Choisis un pseudo libre, puis appuie sur Enregistrer." : ""))); }
@@ -5045,7 +5094,7 @@
     if(!backend || !backend.saveProfile) return Promise.resolve(false);
     return backend.saveProfile({pseudo:pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){
       me.pseudo=pseudo; me.claimed=true; savePseudo(); try{ localStorage.setItem("lf.comm.claimed",k); }catch(e){}
-      updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); renderProfil(); return true;
+      updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); renderProfil(); publishRatings(); return true;
     }).catch(function(){ me.claimed=false; try{ localStorage.removeItem("lf.comm.claimed"); }catch(e){} updateChatGate();
       if(!silent) alert("Ce pseudo est déjà pris (ou réservé). Choisis-en un autre."); return false; });
   }
@@ -5154,6 +5203,121 @@
       +'<div class="rc-name">'+esc(ps||"Rider")+'</div>'
       +'<div class="rc-stat">'+esc(stat)+'</div>'
       +'<div class="rc-foot"><b>'+xp.toLocaleString("fr-FR")+' pts</b>'+(rank?'<span>🏆 '+rank+(rank===1?"er":"e")+' au défi eFoil du mois</span>':'<span>Communauté Lite Foil</span>')+'</div></div></div>'; }
+  // ---------- 07/11 : Cartes Rider (4 familles, 6 stats, note de 1 à 99) ----------
+  // familles de sports et leurs 6 stats
+  const LF_FAM = {
+    vol:   { name:"Vol, Foil & Vagues", stats:["SPD","WAV","FLY","CAR","PMP","DIS"] },
+    glisse:{ name:"Glisse, Vague & Plan d'eau", stats:["SPD","WAV","ENG","JIB","ACC","DRI"] },
+    terre: { name:"Terrestres, Endurance & Roulants", stats:["SPD","PAC","DIS","ALT","PWR","STA"] },
+    explo: { name:"Athlétisme & Explosivité", stats:["SPD","ACC","REG","POP","REP","EFF"] } };
+  const LF_STAT_NAME = { SPD:"Vitesse max", WAV:"Vagues / glisses", FLY:"Temps en vol", CAR:"Carving", PMP:"Pumping", DIS:"Distance", ENG:"Endurance", JIB:"Manœuvres",
+    ACC:"Accélération", DRI:"Cap / trajectoire", PAC:"Régularité d'allure", ALT:"Dénivelé", PWR:"Puissance", STA:"Tenue de l'effort", REG:"Régularité", POP:"Impulsion", REP:"Volume", EFF:"Efficacité" };
+  // [clé, nom, famille, icône, milieu, vitesse de référence km/h (≈ niveau élite), distance de référence par sortie km, seuil de vol / mouvement km/h]
+  const LF_SPORTS = [
+    ["efoil","E-foil","vol","⚡","mer",50,40,12], ["wingfoil","Wing foil","vol","🪂","mer",50,40,14], ["parawing","Para wing","vol","🪁","mer",45,35,14],
+    ["windsurf","Windsurf","vol","⛵","mer",70,50,15], ["pumpfoil","Pump foil","vol","🦵","mer",25,5,9], ["kitesurf","Kitesurf","vol","🪁","mer",70,60,15],
+    ["surffoil","Surf foil","vol","🏄","mer",35,15,10], ["supdownwind","SUP Downwind","vol","🌬️","mer",30,25,10],
+    ["surf","Surf","glisse","🏄","mer",35,8,4], ["bodyboard","Bodyboard","glisse","🌊","mer",30,6,4], ["sup","Stand up paddle","glisse","🛶","mer",14,20,3],
+    ["canoe","Canoë / Kayak","glisse","🚣","mer",16,25,3], ["deriveur","Dériveur","glisse","⛵","mer",30,40,4], ["jetski","Jetski","glisse","🚤","mer",110,80,8],
+    ["running","Running","terre","🏃","terre",25,42,5], ["marche","Marche athlétique","terre","🚶","terre",15,30,4], ["rando","Randonnée","terre","🥾","terre",7,30,2],
+    ["trail","Trail","terre","⛰️","terre",20,60,3], ["velo","Vélo","terre","🚴","terre",60,150,8], ["ski","Ski","terre","🎿","terre",100,60,6],
+    ["snowboard","Snowboard","terre","🏂","terre",90,50,6], ["skate","Skateboard","terre","🛹","terre",35,20,5], ["longboard","Longboard","terre","🛹","terre",60,30,6],
+    ["surfskate","Surfskate","terre","🛹","terre",30,15,4], ["roller","Roller","terre","🛼","terre",40,40,6],
+    ["longueur","Saut en longueur","explo","🦘","terre",36,3,6], ["perche","Saut à la perche","explo","🤸","terre",34,3,6], ["parapente","Parapente","explo","🪂","terre",70,100,8] ];
+  const LF_SP = {}; LF_SPORTS.forEach(function(x){ LF_SP[x[0]]={ k:x[0], name:x[1], fam:x[2], ic:x[3], mil:x[4], vref:x[5], dref:x[6], thr:x[7] }; });
+  // anciennes activités du tracking → sport de carte
+  const LF_OLD = { wing:"wingfoil", kite:"kitesurf", kayak:"canoe", hiking:"rando", cycling:"velo", skiing:"ski", free_flight:"parapente", electric:"efoil", phone:"" };
+  function sportOf(a){ var t=String((a&&a.activityType)||"").toLowerCase(); if(LF_SP[t]) return t; if(LF_OLD[t]!=null) return LF_OLD[t]||null;
+    var c=String((a&&a.categoryName)||"").toLowerCase(); if(/foil [ée]lectrique|e-?foil/.test(c)) return "efoil"; return null; }
+  // couleurs : bleu 1-49, bronze 50-64, argent 65-74, or 75-91, icône 92-99
+  function cardTier(n){ return n>=92?["t-icon","ICÔNE"]:n>=75?["t-gold","OR"]:n>=65?["t-silver","ARGENT"]:n>=50?["t-bronze","BRONZE"]:["t-blue","BLEU"]; }
+  function lfDist(a,b){ var R=6371000, dLa=(b.lat-a.lat)*Math.PI/180, dLo=(b.lon-a.lon)*Math.PI/180, x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
+  function cl01(x){ return Math.max(0, Math.min(1, isFinite(x)?x:0)); }
+  function rate(x){ return Math.max(1, Math.min(99, Math.round(20 + 79*Math.pow(cl01(x), 0.7)))); }
+  function bearingOf(a,b){ var y=Math.sin((b.lon-a.lon)*Math.PI/180)*Math.cos(b.lat*Math.PI/180), x=Math.cos(a.lat*Math.PI/180)*Math.sin(b.lat*Math.PI/180)-Math.sin(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.cos((b.lon-a.lon)*Math.PI/180); return (Math.atan2(y,x)*180/Math.PI+360)%360; }
+  // mesures d'une sortie (à partir du tracé GPS)
+  function sessMetrics(a, sp){ var P=(a.points||[]).filter(function(p){ return p && isFinite(p.lat) && isFinite(p.lon); }), m={ d:(+a.distanceM||0)/1000, dur:+a.durationSec||0, vmax:+a.maxSpeedKmh||0, dplus:0, fly:0, turns:0, waves:0, pump:0, acc:0, straight:0, reg:0, climb:0 };
+    if(P.length<5) return m;
+    var sp2=P.map(function(p){ return +p.speed||0; }).slice().sort(function(x,y){ return x-y; }); m.vmax=Math.min(m.vmax||1e9, sp2[Math.floor(sp2.length*0.98)]||m.vmax); // écarte les pics GPS
+    var thr=sp.thr, tFly=0, tMove=0, last=null, alt0=P[0].alt||0, mv=[], hd=null, hdT=0, inWave=false, base=0, peaks=0, prevS=P[0].speed||0, rising=false;
+    for(var i=1;i<P.length;i++){ var p=P[i], q=P[i-1], dt=Math.max(0, (p.t||0)-(q.t||0)); if(dt>30) dt=0; var v=+p.speed||0;
+      if(v>thr){ tMove+=dt; mv.push(v); } if(v>thr) tFly+=dt;
+      var dA=(p.alt||0)-alt0; if(dA>3){ m.dplus+=dA; alt0=p.alt||0; } else if(dA<-3) alt0=p.alt||0;
+      if(dt>0 && dA>0) m.climb=Math.max(m.climb, dA/dt*3600);
+      if(i>=5){ var o=P[i-5], dts=(p.t||0)-(o.t||0); if(dts>0 && dts<12){ var g=(v-(+o.speed||0))/dts; if(g>m.acc) m.acc=g; if(v>thr && (v-(+o.speed||0))>sp.vref*0.12) { if(!inWave){ m.waves++; inWave=true; } } else if(v<thr) inWave=false; } }
+      if(v>thr && i%3===0){ var b=bearingOf(P[Math.max(0,i-3)],p); if(hd!=null){ var dd=Math.abs(((b-hd)+540)%360-180); hdT+=dd; if(dd>110) m.turns+=0.5; } hd=b; }
+      var up=v>prevS; if(rising && !up && v>thr*0.6 && v<thr*2.2) peaks++; rising=up; prevS=v; }
+    m.fly = m.dur>0 ? tFly/m.dur : 0;
+    m.turnsH = m.dur>0 ? (hdT/360)/(m.dur/3600) : 0;
+    m.pump = tMove>0 ? peaks/(tMove/60) : 0;
+    if(mv.length>4){ var avg=mv.reduce(function(x,y){return x+y;},0)/mv.length, sd=Math.sqrt(mv.reduce(function(x,y){return x+(y-avg)*(y-avg);},0)/mv.length); m.reg=1-cl01(sd/avg); m.avg=avg; }
+    var sw=0, sn=0; for(var j=10;j<P.length;j+=10){ var seg=0; for(var k=j-9;k<=j;k++) seg+=lfDist(P[k-1],P[k]); if(seg>20){ sw+=lfDist(P[j-10],P[j])/seg; sn++; } } m.straight = sn? sw/sn : 0;
+    return m; }
+  // 6 stats d'un sport à partir de toutes ses sorties
+  function sportStats(sp, list){ var M=list.map(function(a){ return sessMetrics(a, sp); }), n=M.length; if(!n) return null;
+    var max=function(f){ return Math.max.apply(null, M.map(f)); }, sum=function(f){ return M.reduce(function(x,m){ return x+f(m); },0); }, avg=function(f){ return sum(f)/n; };
+    var V=max(function(m){return m.vmax;}), Dbest=max(function(m){return m.d;}), Dtot=sum(function(m){return m.d;}), Tbest=max(function(m){return m.dur;});
+    var last=M.slice(0,6).map(function(m){return m.vmax;}).filter(function(x){return x>0;}), lavg=last.length?last.reduce(function(x,y){return x+y;},0)/last.length:0, lsd=last.length>1?Math.sqrt(last.reduce(function(x,y){return x+(y-lavg)*(y-lavg);},0)/last.length):lavg;
+    var raw = {
+      SPD: V/sp.vref,
+      DIS: 0.6*Dbest/sp.dref + 0.4*Dtot/(sp.dref*25),
+      WAV: max(function(m){ return m.waves; })/20,
+      FLY: max(function(m){ return m.fly; })/0.85,
+      CAR: max(function(m){ return m.turnsH; })/40,
+      PMP: max(function(m){ return m.pump; })/12,
+      ENG: 0.5*Dtot/(sp.dref*20) + 0.5*Tbest/(4*3600),
+      JIB: max(function(m){ return m.turns; })/25,
+      ACC: max(function(m){ return m.acc; })/(sp.vref/6),
+      DRI: avg(function(m){ return m.straight; }),
+      PAC: avg(function(m){ return m.reg; }),
+      ALT: 0.6*max(function(m){ return m.dplus; })/1500 + 0.4*sum(function(m){ return m.dplus; })/30000,
+      PWR: 0.5*max(function(m){ return m.climb; })/1200 + 0.5*max(function(m){ return m.acc; })/(sp.vref/6),
+      STA: Tbest/(4*3600),
+      REG: lavg>0 ? 1-cl01(lsd/lavg)*1.5 : 0,
+      POP: sp.k==="parapente" ? max(function(m){ return m.dplus; })/1500 : 0,
+      REP: n/100,
+      EFF: sp.k==="parapente" ? avg(function(m){ return m.straight; }) : avg(function(m){ return m.reg; }) };
+    var keys=LF_FAM[sp.fam].stats, st=keys.map(function(k){ return rate(raw[k]); });
+    return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st }; }
+  let mySports=[]; try{ mySports=(localStorage.getItem("lf.comm.sports")||"").split(",").filter(function(k){ return LF_SP[k]; }); }catch(e){ mySports=[]; }
+  const saveMySports=()=>{ try{ localStorage.setItem("lf.comm.sports", mySports.join(",")); }catch(e){} };
+  // mes cartes : une par sport choisi ou pratiqué + carte principale (moyenne pondérée par le nombre de sorties)
+  function myCards(){ var by={}; localSess().forEach(function(a){ var k=sportOf(a); if(k){ (by[k]=by[k]||[]).push(a); } });
+    var keys=mySports.slice(); Object.keys(by).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); });
+    var d={}; keys.forEach(function(k){ var c=sportStats(LF_SP[k], by[k]||[]); d[k]=c||{ k:k, n:0, r:rate(0), s:LF_FAM[LF_SP[k].fam].stats.map(function(){ return rate(0); }) }; });
+    // la carte principale ne compte que les sports déjà pratiqués (sinon un sport juste coché ferait baisser la note)
+    var w=0, t=0; keys.forEach(function(k){ var c=d[k]; if(!c.n) return; w+=c.n; t+=c.n*c.r; }); if(!w){ keys.forEach(function(k){ w+=1; t+=d[k].r; }); }
+    return { g: keys.length? Math.round(t/w) : rate(0), d:d, order:keys.sort(function(x,y){ return d[y].r-d[x].r; }) }; }
+  let ratingsCache={};
+  function cardsOf(uid){ if(uid===me.uid) return myCards(); var r=ratingsCache[uid]; if(!r) return null; var d={}, keys=Object.keys(r.d||{}).filter(function(k){ return LF_SP[k]; });
+    keys.forEach(function(k){ d[k]={ k:k, n:+r.d[k].n||0, r:+r.d[k].r||1, s:(r.d[k].s||[]).map(Number) }; }); return { g:+r.g||rate(0), d:d, order:keys.sort(function(x,y){ return d[y].r-d[x].r; }) }; }
+  // publie mes notes (lues par mes amis et la communauté) quand elles changent
+  let lastRatingsJson="";
+  function publishRatings(){ if(!backend || !backend.saveRatings || !profileReady()) return; var c=myCards(), o={ g:c.g, d:{}, t:Date.now() };
+    c.order.forEach(function(k){ o.d[k]={ r:c.d[k].r, n:c.d[k].n, s:c.d[k].s }; }); var j=JSON.stringify([o.g,o.d]); if(j===lastRatingsJson) return; lastRatingsJson=j; backend.saveRatings(o).catch(function(){ lastRatingsJson=""; }); }
+  function fcardHtml(uid, k, c){ var main=!k, sp=main?null:LF_SP[k], n=main?c.g:c.d[k].r, tier=cardTier(n), mine=uid===me.uid, pr=profileMap[uid]||{};
+    var ps=mine?me.pseudo:(pr.pseudo||pName(uid)), cimg=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
+    var photo=cimg?'<img class="fc-photo" src="'+esc(cimg)+'" alt="">':(av?'<img class="fc-av" src="'+esc(av)+'" alt="">':'<div class="fc-avl">'+esc((ps||"R").charAt(0).toUpperCase())+'</div>');
+    var cells;
+    if(main){ var top=c.order.slice(0,6); cells=top.length? top.map(function(x){ return '<div><b>'+c.d[x].r+'</b><span>'+LF_SP[x].ic+' '+esc(LF_SP[x].name.split(" ")[0].slice(0,7).toUpperCase())+'</span></div>'; }).join("") : '<div class="fc-empty">Choisis tes sports</div>'; }
+    else cells=LF_FAM[sp.fam].stats.map(function(s,i){ return '<div><b>'+c.d[k].s[i]+'</b><span>'+s+'</span></div>'; }).join("");
+    return '<div class="fcard '+tier[0]+(main?' fc-main':'')+'"><div class="fc-shine"></div>'
+      +'<div class="fc-l"><div class="fc-ovr">'+n+'</div><div class="fc-pos">'+(main?"GLOBAL":esc(sp.name.toUpperCase().slice(0,10)))+'</div><div class="fc-ic">'+(main?"🏆":sp.ic)+'</div></div>'
+      +'<div class="fc-tier">'+tier[1]+'</div>'+photo
+      +'<div class="fc-name">'+esc(ps||"Rider")+'</div><div class="fc-line"></div>'
+      +'<div class="fc-stats">'+cells+'</div>'
+      +'<div class="fc-foot">'+(main?(c.order.length+" discipline"+(c.order.length>1?"s":"")):(c.d[k].n+" sortie"+(c.d[k].n>1?"s":"")))+' · Lite Foil</div></div>'; }
+  // choix des sports (puces groupées par famille)
+  function sportsPickerHtml(sel){ return Object.keys(LF_FAM).map(function(f){ return '<div class="sp-fam"><b>'+esc(LF_FAM[f].name)+'</b><div class="sp-chips">'
+      +LF_SPORTS.filter(function(x){ return x[2]===f; }).map(function(x){ return '<button type="button" class="sp-chip'+(sel.indexOf(x[0])>=0?' on':'')+'" data-sp="'+x[0]+'">'+x[3]+' '+esc(x[1])+'</button>'; }).join("")+'</div></div>'; }).join(""); }
+  function bindSportsPicker(root, onChange){ root.querySelectorAll("[data-sp]").forEach(function(b){ b.addEventListener("click", function(){ var k=b.dataset.sp, i=mySports.indexOf(k);
+      if(i>=0) mySports.splice(i,1); else mySports.push(k); b.classList.toggle("on", i<0); saveMySports(); phFillActsSafe(); if(onChange) onChange(); }); }); }
+  function phFillActsSafe(){ try{ if(typeof phFillActs==="function") phFillActs(); }catch(e){} }
+  function openSportsPicker(after){ var g=gOverlay(); g.hidden=false;
+    g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="spClose">✕</button><b>Mes sports</b><span></span></div><div class="gc-body"><div class="note" style="margin-bottom:6px">Choisis tes sports : chacun a sa carte avec 6 stats. Ta carte principale fait la moyenne de toutes.</div><div id="spPick">'+sportsPickerHtml(mySports)+'</div><button class="primary" id="spOk" style="margin-top:14px">Valider</button></div></div>';
+    bindSportsPicker($("spPick"));
+    var done=function(){ closeOverlay(); publishRatings(); if(after) after(); else openRiderCard(me.uid); };
+    $("spClose").addEventListener("click", done); $("spOk").addEventListener("click", done); }
   // ---------- 07/11 : amis et onglet Profil (façon Instagram) ----------
   let myFriends={}, friendReqs={}, pfTab="vid", mySharedSess={};
   let sentReqs={}; try{ sentReqs=JSON.parse(localStorage.getItem("lf.comm.sentreq")||"{}")||{}; }catch(e){ sentReqs={}; }
@@ -5212,6 +5376,7 @@
     $("pfId").textContent = ready ? "@"+pseudoKey(me.pseudo) : (me.verified ? "Choisis un pseudo pour être trouvé par tes amis" : "Valide ton e-mail pour activer ton profil");
     $("pfBio").textContent = me.bio||"";
     $("pfEdit").textContent = ready ? "Modifier le profil" : "Créer mon profil";
+    var pc=$("pfCard"); if(pc){ var mc=myCards(); pc.innerHTML='🃏 Ma carte <b class="pf-ovr '+cardTier(mc.g)[0]+'">'+mc.g+'</b>'; }
     var sess=localSess(), vids=videos.filter(function(v){ return v && v.uid===me.uid; }), fr=Object.keys(myFriends).filter(function(u){ return !blocked.has(u); });
     $("pfNSess").textContent=sess.length; $("pfNVid").textContent=vids.length; $("pfNFr").textContent=fr.length;
     var rq=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }), rb=$("pfReqs");
@@ -5227,7 +5392,7 @@
       g.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.si; openSessDetail(list[i], true, sess[i]); }); }); }
     else { g.innerHTML = fr.length ? friendRows(fr) : '<div class="comm-empty">Pas encore d\'amis.<br><button class="primary" id="pfFind2" style="margin-top:10px">Rechercher des amis</button></div>'; bindFriendRows(g); var f2=$("pfFind2"); if(f2) f2.addEventListener("click", openFriendSearch); }
   }
-  window.profilOnShow=function(){ renderProfil(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
+  window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
   // rechercher des amis par identifiant (pseudo unique)
   function openFriendSearch(){ var g=gOverlay(); g.hidden=false;
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="fsClose">✕</button><b>Rechercher des amis</b><span></span></div><div class="gc-body">'
@@ -5272,20 +5437,29 @@
   function updEvCard(){ var nx=$("cmEvNext"); if(nx){ var now=Date.now(), up=(myEvents||[]).filter(function(e){ return !e.cancelled && (+e.when||0)>now-3600000; });
       nx.textContent = up.length ? ("Prochain : "+up[0].title+" · "+fmtEvWhen(up[0].when)) : "Sorties et rendez-vous des riders"; }
     var src=$("evChipBadge"), b=$("cmEvBadge"); if(src && b){ b.hidden=src.hidden; b.textContent=src.textContent; } }
-  function openRiderCard(uid){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
-    var st=mine?(myStats()||{}):(commStats[uid]||{}), xp=riderXP(st), lv=riderLevel(xp), nxt=GRADES[lv+1];
-    var prog=nxt?Math.round(100*(xp-GRADES[lv][0])/(nxt[0]-GRADES[lv][0])):100;
-    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Ma carte de rider":"Carte de rider")+'</b><span></span></div><div class="gc-body">'
-      +'<div id="rcSlot">'+riderCardHtml(uid)+'</div>'
+  function openRiderCard(uid, sel){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
+    var C=cardsOf(uid);
+    if(!C){ o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>Carte de rider</b><span></span></div><div class="gc-body"><div id="rcSlot">'+riderCardHtml(uid)+'</div><div class="gc-count">Ce rider n\'a pas encore de Carte Rider par sport.</div></div></div>'; $("rcClose").addEventListener("click", closeOverlay); return; }
+    if(sel && !C.d[sel]) sel=null;
+    var cur=sel?C.d[sel]:null, sp=sel?LF_SP[sel]:null;
+    var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>🏆 Globale</span></button>'
+      +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("");
+    var legend = sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+LF_FAM[sp.fam].stats.map(function(s,i){ return '<div><span><b>'+s+'</b> · '+esc(LF_STAT_NAME[s])+'</span><b>'+cur.s[i]+'</b></div>'; }).join("")+'</div>'
+        +(mine&&!cur.n?'<div class="gc-count">Enregistre une sortie de '+esc(sp.name)+' dans Tracking pour faire monter cette carte.</div>':'')
+      : '<div class="gc-count">La carte principale fait la moyenne de tes sports, en comptant plus ceux que tu pratiques le plus.</div>';
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Mes Cartes Rider":"Cartes Rider")+'</b><span></span></div><div class="gc-body">'
+      +'<div class="fc-ths">'+thumbs+(mine?'<button type="button" class="fc-th fc-add" id="rcSports"><b>+</b><span>Mes sports</span></button>':'')+'</div>'
+      +'<div id="rcSlot">'+fcardHtml(uid, sel, C)+'</div>'
       +'<button class="rc-share-btn" id="rcShare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Partager '+(mine?"ma":"cette")+' carte</button>'
-      +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de vous en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
-      +(nxt?'<div><div class="gc-count" style="margin-bottom:6px">'+(mine?"Plus que ":"Encore ")+'<b>'+(nxt[0]-xp)+' pts</b> pour passer <b>'+nxt[1]+'</b></div><div class="rc-prog"><i style="width:'+prog+'%"></i></div></div>':'<div class="gc-count">Grade maximum atteint : Légende 👑</div>')
-      +(mine?'<div class="gi-mlabel">Comment gagner des points</div><div class="rc-how"><div><span>🏄 Chaque sortie enregistrée</span><b>+10 pts</b></div><div><span>📍 Chaque km parcouru</span><b>+2 pts</b></div><div><span>📅 Organiser un événement</span><b>+20 pts</b></div><div><span>🤝 Rejoindre un événement</span><b>+10 pts</b></div></div>'
-        +'<div class="gi-mlabel">Grades</div><div class="rc-how">'+GRADES.map(function(g,i){ return '<div><span>N'+(i+1)+' · '+g[1]+'</span><b>'+g[0].toLocaleString("fr-FR")+' pts</b></div>'; }).join("")+'</div>':'')
+      +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de toi en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
+      +legend
+      +'<div class="gi-mlabel">Niveaux des cartes</div><div class="fc-tiers"><span class="t-blue">1-49 Bleu</span><span class="t-bronze">50-64 Bronze</span><span class="t-silver">65-74 Argent</span><span class="t-gold">75-91 Or</span><span class="t-icon">92-99 Icône</span></div>'
       +'</div></div>';
+    o.querySelectorAll("[data-cs]").forEach(function(b){ b.addEventListener("click", function(){ openRiderCard(uid, b.dataset.cs||null); }); });
+    var rs=$("rcSports"); if(rs) rs.addEventListener("click", function(){ openSportsPicker(); });
     $("rcClose").addEventListener("click", closeOverlay);
     var sb=$("rcShare"); if(sb) sb.addEventListener("click", function(){ shareRiderCard(uid); });
-    if(!mine && cardCache[uid]===undefined && backend && backend.getCard){ backend.getCard(uid).then(function(img){ cardCache[uid]=img; var sl=$("rcSlot"); if(sl && img) sl.innerHTML=riderCardHtml(uid); }); }
+    if(!mine && cardCache[uid]===undefined && backend && backend.getCard){ backend.getCard(uid).then(function(img){ cardCache[uid]=img; var sl=$("rcSlot"); if(sl && img){ var C2=cardsOf(uid); sl.innerHTML = C2 ? fcardHtml(uid, sel, C2) : riderCardHtml(uid); } }); }
     var pb=$("rcPhotoBtn"), pf=$("rcPhotoFile");
     if(pb && pf){ pb.addEventListener("click", function(){ pf.click(); });
       pf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; e.target.value="";
@@ -5648,6 +5822,8 @@
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
     if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
+    if(backend.watchRatings) backend.watchRatings(function(m){ ratingsCache=m||{}; });
+    setTimeout(publishRatings, 4000);
     if(backend.watchFriends) backend.watchFriends(onFriends);
     if(backend.watchFriendReqs) backend.watchFriendReqs(onFriendReqs);
     var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(0); });

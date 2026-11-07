@@ -200,6 +200,18 @@
           ".validate": "newData.hasChildren(['t','d']) && newData.child('t').isNumber() && newData.child('d').isNumber() && (!newData.child('shape').exists() || (newData.child('shape').isString() && newData.child('shape').val().length <= 1200))"
         }
       }
+    },
+    "ratings": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
+        ".validate": "!newData.exists() || (newData.child('g').isNumber() && newData.child('g').val() >= 1 && newData.child('g').val() <= 99)",
+        "d": {
+          "$k": {
+            ".validate": "newData.child('r').isNumber() && newData.child('r').val() >= 1 && newData.child('r').val() <= 99 && $k.matches(/^[a-z]{2,16}$/)"
+          }
+        }
+      }
     }
   }
 }
