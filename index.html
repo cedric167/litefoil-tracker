@@ -4375,7 +4375,7 @@
     vfCountUnsub=backend.watchVideoComments(it.dataset.vid, function(cs){ var b=it.querySelector(".vf-nc"); if(b) b.textContent=fmtCount(cs.filter(function(c){ return !blocked.has(c.uid); }).length); }); }
   function refreshFeedCounts(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll(".vf-item").forEach(function(it){ var v=videos.filter(function(x){ return x.id===it.dataset.vid; })[0];
     if(!v){ if(!SEED_VIDEOS.some(function(x){ return x.id===it.dataset.vid; })) it.remove(); return; } var lb=it.querySelector('[data-a="like"]'); lb.classList.toggle("on", vidLiked(v)); lb.querySelector("b").textContent=fmtCount(vidLikes(v)); }); }
-  function toggleLike(v, force){ if(!backend||!backend.likeVideo) return; if(!charterOk){ closeFeed(); showCharter(); return; }
+  function toggleLike(v, force){ if(!backend||!backend.likeVideo) return; if(!charterOk){ closeFeed(); showCharter(); return; } if(!profileReady()){ closeFeed(); askProfile(); return; }
     var on = force===true ? true : !vidLiked(v); if(force===true && vidLiked(v)) return;
     v.likes=v.likes||{}; if(on) v.likes[me.uid]=true; else delete v.likes[me.uid];
     if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, on?"1":"0"); }catch(e){} var it=document.querySelector('.vf-item[data-vid="'+v.id+'"] [data-a="like"]'); if(it){ it.classList.toggle("on",on); it.querySelector("b").textContent=fmtCount(vidLikes(v)); } return; }
@@ -5297,7 +5297,7 @@
     else acts+='<button class="mm-act" data-a="report"><span class="mm-ic">⚑</span>Signaler</button>';
     msgOv.innerHTML='<div class="mm-card"><div class="mm-react">'+emojis+'</div><div class="mm-acts">'+acts+'</div></div>';
     msgOv.hidden=false;
-    msgOv.querySelectorAll(".mm-emo").forEach(function(b){ b.addEventListener("click", function(){ var mineE=(m.reactions&&m.reactions[me.uid]); if(backend) backend.addReaction(currentChannel(), m.id, mineE===b.dataset.e?"":b.dataset.e); closeMsgMenu(); }); });
+    msgOv.querySelectorAll(".mm-emo").forEach(function(b){ b.addEventListener("click", function(){ if(!profileReady()||!charterOk){ msgOv.hidden=true; updateChatGate(); askProfile(); return; } var mineE=(m.reactions&&m.reactions[me.uid]); if(backend) backend.addReaction(currentChannel(), m.id, mineE===b.dataset.e?"":b.dataset.e); closeMsgMenu(); }); });
     msgOv.querySelectorAll(".mm-act").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.a; closeMsgMenu();
       if(a==="reply"){ setReply(m); }
       else if(a==="copy"){ try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(m.text||""); }catch(e){} }

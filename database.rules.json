@@ -10,7 +10,8 @@
     "typing": {
       ".read": "auth != null",
       "$uid": {
-        ".write": "auth != null && auth.uid === $uid"
+        ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
+        ".validate": "newData.child('pseudo').val() === root.child('profiles/'+$uid+'/pseudo').val()"
       }
     },
     "profiles": {
@@ -31,7 +32,7 @@
         ".write": "auth != null && ( (!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && data.child('uid').val() === auth.uid && !newData.exists()) )",
         "reactions": {
           "$ruid": {
-            ".write": "auth != null && auth.uid === $ruid"
+            ".write": "auth != null && auth.uid === $ruid && auth.token.email_verified === true"
           }
         },
         ".validate": "(data.exists() || (auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val()))"
@@ -55,10 +56,10 @@
     "groups": {
       "$gid": {
         ".read": "auth != null",
-        ".write": "auth != null && (!data.exists() || data.child('members').child(auth.uid).exists())",
+        ".write": "auth != null && auth.token.email_verified === true && (!data.exists() || data.child('members').child(auth.uid).exists())",
         "members": {
           "$uid": {
-            ".write": "auth != null && ($uid === auth.uid || data.parent().parent().child('members').child(auth.uid).exists())"
+            ".write": "auth != null && auth.token.email_verified === true && ($uid === auth.uid || data.parent().parent().child('members').child(auth.uid).exists())"
           }
         }
       }
@@ -66,7 +67,7 @@
     "userGroups": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null"
+        ".write": "auth != null && auth.token.email_verified === true"
       }
     },
     "groupMessages": {
@@ -81,7 +82,7 @@
     "userDM": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null"
+        ".write": "auth != null && auth.token.email_verified === true"
       }
     },
     "events": {
@@ -94,7 +95,7 @@
         ".validate": "newData.hasChildren(['title','when','by']) && newData.child('title').isString() && newData.child('title').val().length <= 60 && newData.child('when').isNumber() && (!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 300000)) && (data.exists() || (auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('byPseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val()))",
         "att": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid"
+            ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true"
           }
         }
       }
@@ -107,7 +108,7 @@
           ".validate": "!newData.exists() || ((data.exists() || (auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())) && newData.child('text').isString() && newData.child('text').val().length <= 400)",
           "reactions": {
             "$uid": {
-              ".write": "auth != null && auth.uid === $uid"
+              ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true"
             }
           }
         }
@@ -151,7 +152,7 @@
         ".validate": "!newData.exists() || (newData.child('url').isString() && newData.child('caption').val().length <= 150 && (data.exists() || (auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())))",
         "likes": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid"
+            ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true"
           }
         }
       }
