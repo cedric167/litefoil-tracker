@@ -1584,7 +1584,10 @@
       <div class="kv"><div class="k">Vitesse max</div><div class="v" id="phSpdMax">— km/h</div></div>
       <div class="kv"><div class="k">Points GPS</div><div class="v" id="phPts">0</div></div>
       <div class="kv"><div class="k">Précision</div><div class="v" id="phAcc">—</div></div>
+      <div class="kv" id="phStepsKv" hidden><div class="k">👣 Pas</div><div class="v" id="phSteps">0</div></div>
+      <div class="kv" id="phJumpsKv" hidden><div class="k">🦘 Sauts</div><div class="v" id="phJumps">—</div></div>
     </div>
+    <div class="note" id="phMotNote" hidden>Pour compter les pas et mesurer les sauts, garde le téléphone <b>fixé au corps</b> (brassard ou ceinture).</div>
     <div class="phstl" id="phStl">
       <label class="phstl-row"><input type="checkbox" id="phStlOn"><span><b>Publier en direct sur SportsTrackLive</b><small>Ta sortie apparaît en direct sur ton compte, comme avec le boîtier.</small></span></label>
       <div id="phStlLogin" hidden>
@@ -2446,6 +2449,33 @@
     $("phNote").textContent = (phBgId!=null ? "Enregistrement en cours (continue écran éteint) — " : "Enregistrement en cours — ")+phPts.length+" points GPS.";
     try { mapUpdate(o.lat, o.lon, spd); } catch(e){}
   }
+  // ---------- 07/11 : capteurs du téléphone (accéléromètre) : podomètre et sauts ----------
+  // Pas : pics du module de l'accélération (filtré). Saut : chute libre (|a| < 3 m/s²) entre l'impulsion et l'impact.
+  // Hauteur = g·t²/8 (t = temps en l'air). Distance estimée = vitesse d'élan (GPS) × temps en l'air + 0,5 m (projection du corps).
+  var phMot = { on:false, steps:0, lp:9.81, above:false, lastStep:0, ffStart:0, jumps:[], stepT:[] };
+  var PH_STEP_SPORTS = ["running","marche","rando","trail","longueur","perche"], PH_JUMP_SPORTS = ["longueur","perche"];
+  function phMotUsed(){ return PH_STEP_SPORTS.indexOf(phType)>=0; }
+  function phOnMotion(e){ var a=e.accelerationIncludingGravity; if(!a || a.x==null) return; var t=e.timeStamp||Date.now();
+    var mag=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z); phMot.lp = phMot.lp*0.75 + mag*0.25; var g=phMot.lp;
+    if(!phMot.above && g>11.3 && t-phMot.lastStep>260){ phMot.above=true; phMot.steps++; phMot.lastStep=t; }
+    else if(phMot.above && g<10.3) phMot.above=false;
+    if(mag<3){ if(!phMot.ffStart) phMot.ffStart=t; }
+    else if(phMot.ffStart){ var dt=(t-phMot.ffStart)/1000; phMot.ffStart=0;
+      if(dt>=0.18 && dt<=1.6 && mag>13 && PH_JUMP_SPORTS.indexOf(phType)>=0){
+        var v=0, now=phT0?(Date.now()-phT0)/1000:0; for(var i=phPts.length-1;i>=0 && now-phPts[i].t<6;i--) v=Math.max(v, +phPts[i].speed||0);
+        var h=9.81*dt*dt/8, d=v>3 ? (v/3.6)*dt+0.5 : 0;
+        phMot.jumps.push({ t:Math.round(now), air:+dt.toFixed(2), h:+h.toFixed(2), d:+d.toFixed(2), v:+v.toFixed(1) }); if(phMot.jumps.length>60) phMot.jumps.shift();
+        try{ if(navigator.vibrate) navigator.vibrate(60); }catch(x){} } } }
+  function phMotionStart(){ phMot.steps=0; phMot.jumps=[]; phMot.lp=9.81; phMot.above=false; phMot.ffStart=0;
+    var on=phMotUsed(); $("phStepsKv").hidden=!on; $("phJumpsKv").hidden=PH_JUMP_SPORTS.indexOf(phType)<0; $("phMotNote").hidden=!on;
+    $("phSteps").textContent="0"; $("phJumps").textContent="—"; if(!on) return;
+    var go=function(){ window.addEventListener("devicemotion", phOnMotion); phMot.on=true; };
+    try{ if(typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"){
+        DeviceMotionEvent.requestPermission().then(function(st){ if(st==="granted") go(); else $("phMotNote").textContent="Capteurs de mouvement refusés : les pas et les sauts ne seront pas mesurés."; }).catch(function(){}); }
+      else go(); }catch(e){} }
+  function phMotionStop(){ try{ window.removeEventListener("devicemotion", phOnMotion); }catch(e){} phMot.on=false; }
+  function phMotionTick(){ if(!phMot.on) return; $("phSteps").textContent=phMot.steps.toLocaleString("fr-FR");
+    if(phMot.jumps.length){ var b=phMot.jumps.reduce(function(x,j){ return (j.d||j.h)>(x.d||x.h)?j:x; }); $("phJumps").textContent=phMot.jumps.length+" · "+(b.d?(b.d.toFixed(2).replace(".",",")+" m"):(Math.round(b.h*100)+" cm")); } }
   function phStart(){
     var bg = phBgPlugin();
     if(!bg && !navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
@@ -2454,7 +2484,8 @@
     try { $("trkChip").className = "trk-chip rec"; $("trkChipTx").textContent = "Enregistrement"; } catch(e){}
     $("phStart").hidden = true; $("phStop").hidden = false;
     $("phPts").textContent = "0"; $("phDist").textContent = "0,00 km"; $("phSpd").textContent = "— km/h"; $("phSpdMax").textContent = "— km/h"; $("phAcc").textContent = "—"; $("phDur").textContent = "0:00";
-    phTimer = setInterval(phTick, 1000);
+    phTimer = setInterval(function(){ phTick(); phMotionTick(); }, 1000);
+    phMotionStart();
     if(bg){
       // App native : service premier plan → l'enregistrement continue écran éteint / en poche. Arrêt manuel.
       $("phNote").textContent = "Recherche du signal GPS… tu peux verrouiller l'écran, l'enregistrement continue.";
@@ -2491,6 +2522,7 @@
     if(phBgId!=null){ var bg=phBgPlugin(); if(bg){ try{ bg.removeWatcher({ id: phBgId }); }catch(e){} } phBgId = null; }
     if(phWatch!=null && navigator.geolocation) navigator.geolocation.clearWatch(phWatch); phWatch = null;
     if(phTimer) clearInterval(phTimer); phTimer = null;
+    phMotionStop();
     try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}
   }
   function phStop(){
@@ -2501,7 +2533,7 @@
     var sess = phBuildSession();
     try { phStlFinish(sess); } catch(e){}
     phSaveLocal(sess);
-    $("phNote").innerHTML = "Sortie enregistrée ✔ "+(sess.distanceM/1000).toFixed(2).replace(".",",")+" km · "+phFmtDur(sess.durationSec)+" · max "+phNum(sess.maxSpeedKmh)+" km/h. <a href=\"activites/\" style=\"color:var(--accent-ink);font-weight:800\">Voir dans Activités →</a>";
+    $("phNote").innerHTML = "Sortie enregistrée ✔ "+(sess.distanceM/1000).toFixed(2).replace(".",",")+" km · "+phFmtDur(sess.durationSec)+" · max "+phNum(sess.maxSpeedKmh)+" km/h"+(sess.steps?" · "+sess.steps.toLocaleString("fr-FR")+" pas":"")+(sess.jumps?" · "+sess.jumps.length+" saut"+(sess.jumps.length>1?"s":""):"")+". <a href=\"activites/\" style=\"color:var(--accent-ink);font-weight:800\">Voir dans Activités →</a>";
   }
   function phBuildSession(){
     var src = phPts.slice(), t0 = src[0].t, cum = 0, out = [];
@@ -2516,7 +2548,8 @@
       categoryName: cat, activityType: phType || "phone", milieu: milieu,
       startedAt: new Date(phT0).toISOString(), durationSec: durationSec, distanceM: distanceM,
       avgSpeedKmh: avgSpeedKmh, maxSpeedKmh: +phMax.toFixed(1), maxAltM: maxAltM,
-      firstLat: out[0].lat, firstLon: out[0].lon, thumbnailUrl: null, source: "phone", points: out
+      firstLat: out[0].lat, firstLon: out[0].lon, thumbnailUrl: null, source: "phone", points: out,
+      steps: phMotUsed() ? phMot.steps : undefined, jumps: phMot.jumps.length ? phMot.jumps.slice() : undefined
     };
   }
   function phSaveLocal(sess){
@@ -3710,7 +3743,7 @@
       saveRatings(o){ return db.set(db.ref(d,"ratings/"+uid), o); },
       watchRatings(cb){ return db.onValue(db.ref(d,"ratings"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       getSessions(u){ return db.get(db.query(db.ref(d,"sessions/"+u), db.limitToLast(60))).then(function(s){ var out=[]; s.forEach(function(c){ var v=c.val(); if(v){ v.id=c.key; out.push(v); } }); return out.reverse(); }); },
-      shareSession(id,o){ return db.set(db.ref(d,"sessions/"+uid+"/"+id), o); },
+      shareSession(id,o){ return db.set(db.ref(d,"sessions/"+uid+"/"+id), JSON.parse(JSON.stringify(o))); },
       unshareSession(id){ return db.remove(db.ref(d,"sessions/"+uid+"/"+id)); },
       // validation par e-mail : le compte (anonyme) est rattaché à l'adresse, puis Firebase envoie le lien de validation
       emailState(){ var u=auth.currentUser; return { email:(u&&u.email)||"", verified:!!(u&&u.emailVerified) }; },
@@ -5237,6 +5270,10 @@
   function bearingOf(a,b){ var y=Math.sin((b.lon-a.lon)*Math.PI/180)*Math.cos(b.lat*Math.PI/180), x=Math.cos(a.lat*Math.PI/180)*Math.sin(b.lat*Math.PI/180)-Math.sin(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.cos((b.lon-a.lon)*Math.PI/180); return (Math.atan2(y,x)*180/Math.PI+360)%360; }
   // mesures d'une sortie (à partir du tracé GPS)
   function sessMetrics(a, sp){ var P=(a.points||[]).filter(function(p){ return p && isFinite(p.lat) && isFinite(p.lon); }), m={ d:(+a.distanceM||0)/1000, dur:+a.durationSec||0, vmax:+a.maxSpeedKmh||0, dplus:0, fly:0, turns:0, waves:0, pump:0, acc:0, straight:0, reg:0, climb:0 };
+    // capteurs : pas, cadence, sauts (et mesure officielle saisie par l'athlète)
+    m.steps=+a.steps||0; m.cad = (m.steps && m.dur) ? m.steps/(m.dur/60) : 0;
+    var J=(a.jumps||[]).filter(function(j){ return j && j.air>0; }); m.nJ=J.length; m.jH=J.reduce(function(x,j){ return Math.max(x,+j.h||0); },0); m.jD=J.reduce(function(x,j){ return Math.max(x,+j.d||0); },0);
+    if(+a.official>0) m.jD=Math.max(m.jD, +a.official); m.jDs=J.map(function(j){ return +j.d||0; }).filter(function(x){ return x>0; });
     if(P.length<5) return m;
     var sp2=P.map(function(p){ return +p.speed||0; }).slice().sort(function(x,y){ return x-y; }); m.vmax=Math.min(m.vmax||1e9, sp2[Math.floor(sp2.length*0.98)]||m.vmax); // écarte les pics GPS
     var thr=sp.thr, tFly=0, tMove=0, last=null, alt0=P[0].alt||0, mv=[], hd=null, hdT=0, inWave=false, base=0, peaks=0, prevS=P[0].speed||0, rising=false;
@@ -5274,9 +5311,13 @@
       PWR: 0.5*max(function(m){ return m.climb; })/1200 + 0.5*max(function(m){ return m.acc; })/(sp.vref/6),
       STA: Tbest/(4*3600),
       REG: lavg>0 ? 1-cl01(lsd/lavg)*1.5 : 0,
-      POP: sp.k==="parapente" ? max(function(m){ return m.dplus; })/1500 : 0,
-      REP: n/100,
-      EFF: sp.k==="parapente" ? avg(function(m){ return m.straight; }) : avg(function(m){ return m.reg; }) };
+      POP: sp.k==="parapente" ? max(function(m){ return m.dplus; })/1500 : max(function(m){ return m.jH; })/0.9,
+      REP: sp.fam==="explo" && sp.k!=="parapente" ? sum(function(m){ return m.nJ; })/150 : n/100,
+      EFF: sp.k==="parapente" ? avg(function(m){ return m.straight; }) : sp.k==="longueur" ? max(function(m){ return m.jD; })/8.5 : sp.k==="perche" ? max(function(m){ return m.jH; })/1.2 : avg(function(m){ return m.reg; }) };
+    // sauts : régularité des distances d'un essai à l'autre
+    var JD=[]; M.forEach(function(m){ JD=JD.concat(m.jDs||[]); }); if(JD.length>2){ var ja=JD.reduce(function(x,y){return x+y;},0)/JD.length, js=Math.sqrt(JD.reduce(function(x,y){return x+(y-ja)*(y-ja);},0)/JD.length); raw.REG=1-cl01(js/ja)*2; }
+    // course / marche : la régularité de la cadence compte aussi dans l'allure
+    var cads=M.map(function(m){ return m.cad; }).filter(function(x){ return x>0; }); if(cads.length) raw.PAC = 0.7*raw.PAC + 0.3*cl01(Math.max.apply(null,cads)/180);
     var keys=LF_FAM[sp.fam].stats, st=keys.map(function(k){ return rate(raw[k]); });
     return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st }; }
   let mySports=[]; try{ mySports=(localStorage.getItem("lf.comm.sports")||"").split(",").filter(function(k){ return LF_SP[k]; }); }catch(e){ mySports=[]; }
@@ -5349,17 +5390,26 @@
     return sel.map(function(p){ var x=5+90*(((+p.lon-mlo)*k)+(sc-w)/2)/sc, y=5+90*((xla-(+p.lat))+(sc-h)/2)/sc; return Math.round(x)+","+Math.round(y); }).join(" "); }
   function sessIcon(sp){ sp=String(sp||"").toLowerCase(); if(/foil|efoil|electric/.test(sp)) return "⚡"; if(/wing/.test(sp)) return "🪂"; if(/kite/.test(sp)) return "🪁"; if(/surf/.test(sp)) return "🏄"; if(/paddle|sup/.test(sp)) return "🛶"; if(/v[ée]lo|bike/.test(sp)) return "🚴"; if(/ski|snow/.test(sp)) return "🎿"; if(/run|course|trail|marche|rando/.test(sp)) return "🏃"; if(/mer|eau/.test(sp)) return "🌊"; return "📍"; }
   function localSess(){ try{ return JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(function(a){ return a && (+a.distanceM||0)>=100; }); }catch(e){ return []; } }
-  function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now(), sport:String(a.activityType||a.milieu||"").slice(0,24), cat:String(a.categoryName||"").slice(0,40), d:Math.round(+a.distanceM||0), dur:Math.round(+a.durationSec||0), vmax:+(+a.maxSpeedKmh||0).toFixed(1), shape:sessShape(a.points) }; }
+  function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now(), sport:String(a.activityType||a.milieu||"").slice(0,24), cat:String(a.categoryName||"").slice(0,40), d:Math.round(+a.distanceM||0), dur:Math.round(+a.durationSec||0), vmax:+(+a.maxSpeedKmh||0).toFixed(1), shape:sessShape(a.points), steps:+a.steps||undefined, nJ:(a.jumps||[]).length||undefined,
+      jH:(a.jumps||[]).reduce(function(x,j){ return Math.max(x,+j.h||0); },0)||undefined, jD:Math.max(+a.official||0,(a.jumps||[]).reduce(function(x,j){ return Math.max(x,+j.d||0); },0))||undefined }; }
   function sessTile(o, i, mine){ var km=(o.d/1000); return '<button type="button" class="pf-sess" data-si="'+i+'">'+(o.shape?'<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg>':'')
       +'<span class="ps-s">'+sessIcon(o.sport||o.cat)+'</span>'+(mine&&!o.shared?'<span class="ps-lock">🔒</span>':'')+'<span class="ps-d">'+(km>=10?km.toFixed(0):km.toFixed(1))+' km</span></button>'; }
   function pfDur(sec){ sec=+sec||0; var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60); return h? h+" h "+String(m).padStart(2,"0") : m+" min"; }
   function openSessDetail(o, mine, raw){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="sdClose">✕</button><b>'+sessIcon(o.sport||o.cat)+' '+esc(o.cat||"Session")+'</b><span></span></div><div class="gc-body">'
       +(o.shape?'<div class="pf-sess" style="aspect-ratio:16/10;border-radius:14px;cursor:default"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg></div>':'')
-      +'<div class="rc-how" style="margin-top:12px"><div><span>📅 Date</span><b>'+dt.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})+'</b></div><div><span>📍 Distance</span><b>'+(o.d/1000).toFixed(2)+' km</b></div><div><span>⏱️ Durée</span><b>'+pfDur(o.dur)+'</b></div><div><span>⚡ Vitesse max</span><b>'+(o.vmax||0)+' km/h</b></div></div>'
+      +'<div class="rc-how" style="margin-top:12px"><div><span>📅 Date</span><b>'+dt.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})+'</b></div><div><span>📍 Distance</span><b>'+(o.d/1000).toFixed(2).replace(".",",")+' km</b></div><div><span>⏱️ Durée</span><b>'+pfDur(o.dur)+'</b></div><div><span>⚡ Vitesse max</span><b>'+String(o.vmax||0).replace(".",",")+' km/h</b></div>'
+      +(o.steps?'<div><span>👣 Pas</span><b>'+o.steps.toLocaleString("fr-FR")+(o.dur?' · '+Math.round(o.steps/(o.dur/60))+' /min':'')+'</b></div>':'')
+      +(o.nJ?'<div><span>🦘 Sauts</span><b>'+o.nJ+'</b></div><div><span>⬆️ Meilleure hauteur</span><b>'+Math.round((o.jH||0)*100)+' cm</b></div>':'')
+      +(o.jD?'<div><span>📏 Meilleure distance'+(raw&&+raw.official>0?' (officielle)':' (estimée)')+'</span><b>'+o.jD.toFixed(2).replace(".",",")+' m</b></div>':'')+'</div>'
+      +(mine&&raw&&/longueur|perche/.test(String(o.sport))?'<button class="av-btn" id="sdOfficial" style="margin-top:10px">📏 Entrer ma mesure officielle</button>':'')
       +(mine?'<button class="primary" id="sdShare" style="margin-top:14px">'+(o.shared?"Ne plus montrer à mes amis":"Montrer à mes amis sur mon profil")+'</button><div class="note" style="margin-top:8px">Seuls tes amis voient tes sessions partagées. La position exacte n\'est jamais partagée, seulement la forme du parcours.</div>':'')
       +'</div></div>';
     $("sdClose").addEventListener("click", closeOverlay);
+    var so=$("sdOfficial"); if(so) so.addEventListener("click", function(){ var v=prompt("Ta meilleure mesure officielle sur cette séance, en mètres (ex. 6,42) :", raw.official?String(raw.official).replace(".",","):"");
+      if(v==null) return; var x=parseFloat(String(v).replace(",",".")); if(!(x>0 && x<12)){ alert("Mesure invalide."); return; }
+      try{ var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr.forEach(function(s2){ if(s2.id===raw.id) s2.official=x; }); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); }catch(e){}
+      raw.official=x; closeOverlay(); publishRatings(); renderProfil(); });
     var sb=$("sdShare"); if(sb) sb.addEventListener("click", function(){ if(!profileReady()){ closeOverlay(); askProfile("Valide ton profil pour partager tes sessions."); return; }
       sb.disabled=true; var id=String(raw.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_");
       var pr = o.shared ? backend.unshareSession(id) : backend.shareSession(id, sessSummary(raw));
