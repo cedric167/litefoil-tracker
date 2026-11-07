@@ -221,6 +221,13 @@
           ".validate": "!newData.exists() || (newData.child('comp').isString() && newData.child('comp').val().length >= 3 && newData.child('comp').val().length <= 80 && newData.child('date').isNumber() && newData.child('sport').isString() && newData.child('sport').val().length <= 16 && (!newData.child('perf').exists() || newData.child('perf').val().length <= 30) && (!newData.child('fed').exists() || newData.child('fed').val().length <= 40) && (!newData.child('proof').exists() || (newData.child('proof').isString() && newData.child('proof').val().beginsWith('https://') && newData.child('proof').val().length <= 300)) && (newData.child('st').val() === 'pending' || newData.child('st').val() === 'ok' || newData.child('st').val() === 'no'))"
         }
       }
+    },
+    "online": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
+        ".validate": "!newData.exists() || newData.hasChildren(['t'])"
+      }
     }
   }
 }

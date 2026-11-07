@@ -3748,6 +3748,10 @@
       watchEventMsgs(eid,cb){ const q=db.query(db.ref(d,"eventMessages/"+eid), db.limitToLast(50));
         return db.onValue(q, function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v) out.push({id:c.key,uid:v.uid,pseudo:v.pseudo,text:v.text,img:v.img,av:v.av,t:v.t}); }); cb(out); }, function(){ cb([]); }); },
       publishPresence(o){ return o ? db.set(presRef,{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:db.serverTimestamp()}) : db.remove(presRef); },
+      // « en ligne » : riders validés qui ont l'appli ouverte (sans position), retiré automatiquement à la déconnexion
+      goOnline(){ if(this._onl) return; this._onl=true; var ref=db.ref(d,"online/"+uid);
+        db.onValue(db.ref(d,".info/connected"), function(sn){ if(sn.val()!==true) return; db.onDisconnect(ref).remove().then(function(){ return db.set(ref,{t:db.serverTimestamp()}); }).catch(function(){}); }); },
+      watchOnline(cb){ return db.onValue(db.ref(d,"online"), function(sn){ cb(sn.val()||{}); }, function(){ cb({}); }); },
       watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
         for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
       sendMessage(ch,text,img,reply,extra){ const path = pathFor(ch);
@@ -3941,6 +3945,7 @@
     return {
       uid,
       publishPresence(o){ mine = o?{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:Date.now()}:null; emit(); return Promise.resolve(); },
+      goOnline(){}, watchOnline(cb){ cb({"demo-aurel":{t:Date.now()},"demo-marine":{t:Date.now()},"demo-leo":{t:Date.now()}}); return function(){}; },
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
       sendMessage(ch,text,img,reply,extra){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?((extra&&extra.topic)||chatTopic):null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; if(extra){ if(extra.ride) mo.ride=extra.ride; if(extra.gif) mo.gif=extra.gif; if(extra.ev) mo.ev=extra.ev; } (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch); var prev=previewText(mo);
         if(ch.indexOf("group:")===0){ var gid=ch.slice(6); if(demoGroups[gid]){ demoGroups[gid].last={text:prev,pseudo:me.pseudo,by:uid,t:Date.now()}; fireGroups(); } }
@@ -4102,7 +4107,6 @@
     lastPresenceRaw = map || {};
     riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
     var _cc=$("commCount"); if(_cc) _cc.textContent = Object.keys(riders).length;
-    var _on=$("commOnlineN"); if(_on) _on.textContent=String(Object.keys(riders).length);
     recomputeMembers();
     renderList(); renderMap();
   }
@@ -5195,7 +5199,7 @@
     if(!backend || !backend.saveProfile) return Promise.resolve(false);
     return backend.saveProfile({pseudo:pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){
       me.pseudo=pseudo; me.claimed=true; savePseudo(); try{ localStorage.setItem("lf.comm.claimed",k); }catch(e){}
-      updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); renderProfil(); publishRatings(); renderAbMe(); return true;
+      updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); renderProfil(); publishRatings(); renderAbMe(); if(backend.goOnline) backend.goOnline(); return true;
     }).catch(function(){ me.claimed=false; try{ localStorage.removeItem("lf.comm.claimed"); }catch(e){} updateChatGate();
       if(!silent) alert("Ce pseudo est déjà pris (ou réservé). Choisis-en un autre."); return false; });
   }
@@ -5433,7 +5437,7 @@
     var done=function(){ closeOverlay(); publishRatings(); if(after) after(); else openRiderCard(me.uid); };
     $("spClose").addEventListener("click", done); $("spOk").addEventListener("click", done); }
   // ---------- 07/11 : amis et onglet Profil (façon Instagram) ----------
-  let myFriends={}, friendReqs={}, pfTab="vid", mySharedSess={};
+  let myFriends={}, friendReqs={}, pfTab="vid", mySharedSess={}, onlineIds=[];
   let sentReqs={}; try{ sentReqs=JSON.parse(localStorage.getItem("lf.comm.sentreq")||"{}")||{}; }catch(e){ sentReqs={}; }
   const saveSentReqs=()=>{ try{ localStorage.setItem("lf.comm.sentreq", JSON.stringify(sentReqs)); }catch(e){} };
   function pName(u){ if(u===me.uid) return me.pseudo||"Moi"; if(u===TEAM_UID) return TEAM_NAME; var p=profileMap[u]; return (p&&p.pseudo)||"Rider"; }
@@ -6027,6 +6031,11 @@
     if(!backend){ backend = makeDemoBackend(); $("commDemo").hidden=false; }
     me.uid = backend.uid;
     presenceUnsub = backend.watchPresence(onPresence);
+    if(backend.watchOnline) backend.watchOnline(function(m){ onlineIds=Object.keys(m||{}).filter(function(k){ return k!==me.uid && !blocked.has(k); }); var _on=$("commOnlineN"); if(_on) _on.textContent=String(onlineIds.length); });
+    // toucher « en ligne » : liste des riders connectés, avec leur profil
+    var _ot=document.querySelector("#commOnlineTop .cmh-chip"); if(_ot){ _ot.style.cursor="pointer"; _ot.addEventListener("click", function(){ var g=gOverlay(); g.hidden=false;
+      g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="olClose">✕</button><b>🟢 En ligne</b><span></span></div><div class="gc-body"><div class="fs-list" id="olList">'+(onlineIds.length?friendRows(onlineIds):'<div class="comm-empty">Personne d\'autre en ligne pour le moment.</div>')+'</div></div></div>';
+      $("olClose").addEventListener("click", closeOverlay); bindFriendRows($("olList")); }); }
     if(backend.watchTyping) typingUnsub = backend.watchTyping(onTyping);
     if(backend.watchProfiles) membersUnsub = backend.watchProfiles(onProfiles);
     if(backend.watchOfficial) backend.watchOfficial(function(map){ officialSet=new Set([TEAM_UID].concat(Object.keys(map||{}).filter(function(k){ return map[k]; }))); recomputeBadges(); renderChat(); });
