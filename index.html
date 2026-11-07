@@ -441,6 +441,11 @@
   .rc-photo-acts button.main{ background:linear-gradient(135deg,#0f6f8a,#0b3a55); color:#fff; border:0; }
   .rc-photo-acts button:disabled{ opacity:.6; }
   .rc-wm{ position:absolute; right:22px; top:112px; width:150px; opacity:.22; filter:brightness(0) invert(1); pointer-events:none; }
+  .rc-share-btn{ width:100%; display:flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:14px; padding:13px; font-family:inherit; font-size:15px; font-weight:800; color:#fff; background:#0b0d10; cursor:pointer; }
+  .share-prev{ width:100%; border-radius:16px; display:block; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+  .share-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .share-grid a, .share-grid button{ display:flex; flex-direction:column; align-items:center; gap:6px; border:0; background:none; font-family:inherit; font-size:12px; font-weight:700; color:var(--text); text-decoration:none; cursor:pointer; padding:0; }
+  .share-grid i{ width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:24px; color:#fff; }
   .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
   .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
   .rc-how b{ color:var(--accent-ink); white-space:nowrap; }
@@ -4539,12 +4544,14 @@
     var prog=nxt?Math.round(100*(xp-GRADES[lv][0])/(nxt[0]-GRADES[lv][0])):100;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Ma carte de rider":"Carte de rider")+'</b><span></span></div><div class="gc-body">'
       +'<div id="rcSlot">'+riderCardHtml(uid)+'</div>'
+      +'<button class="rc-share-btn" id="rcShare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Partager '+(mine?"ma":"cette")+' carte</button>'
       +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de vous en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
       +(nxt?'<div><div class="gc-count" style="margin-bottom:6px">'+(mine?"Plus que ":"Encore ")+'<b>'+(nxt[0]-xp)+' pts</b> pour passer <b>'+nxt[1]+'</b></div><div class="rc-prog"><i style="width:'+prog+'%"></i></div></div>':'<div class="gc-count">Grade maximum atteint : Légende 👑</div>')
       +(mine?'<div class="gi-mlabel">Comment gagner des points</div><div class="rc-how"><div><span>🏄 Chaque sortie enregistrée</span><b>+10 pts</b></div><div><span>📍 Chaque km parcouru</span><b>+2 pts</b></div><div><span>📅 Organiser un événement</span><b>+20 pts</b></div><div><span>🤝 Rejoindre un événement</span><b>+10 pts</b></div></div>'
         +'<div class="gi-mlabel">Grades</div><div class="rc-how">'+GRADES.map(function(g,i){ return '<div><span>N'+(i+1)+' · '+g[1]+'</span><b>'+g[0].toLocaleString("fr-FR")+' pts</b></div>'; }).join("")+'</div>':'')
       +'</div></div>';
     $("rcClose").addEventListener("click", closeOverlay);
+    var sb=$("rcShare"); if(sb) sb.addEventListener("click", function(){ shareRiderCard(uid); });
     if(!mine && cardCache[uid]===undefined && backend && backend.getCard){ backend.getCard(uid).then(function(img){ cardCache[uid]=img; var sl=$("rcSlot"); if(sl && img) sl.innerHTML=riderCardHtml(uid); }); }
     var pb=$("rcPhotoBtn"), pf=$("rcPhotoFile");
     if(pb && pf){ pb.addEventListener("click", function(){ pf.click(); });
@@ -4555,6 +4562,71 @@
           openRiderCard(me.uid); var n=$("rcPhotoNote"); if(n) n.textContent = r.cut ? "✓ Fond retiré, ta photo est sur ta carte." : "Le fond n'a pas pu être retiré automatiquement : la photo est fondue dans la carte. Essaie une photo de toi en entier sur fond simple."; })
         .catch(function(){ pb.disabled=false; pb.textContent="📷 Mettre ma photo sur la carte"; $("rcPhotoNote").textContent="Photo illisible, essaie une autre image."; }); }); }
     var prm=$("rcPhotoRm"); if(prm) prm.addEventListener("click", function(){ me.cardImg=""; try{ localStorage.removeItem("lf.comm.cardimg"); }catch(_){} if(backend && backend.saveCard) backend.saveCard(null).catch(function(){}); openRiderCard(me.uid); }); }
+  // ---------- partage de la carte : image PNG dessinée sur un canvas (WhatsApp, Messenger, SMS, Gmail…) ----------
+  const APP_LINK = "https://cedric167.github.io/litefoil-tracker/?tab=communaute";
+  function loadImgUrl(u){ return new Promise(function(res){ if(!u){ res(null); return; } var im=new Image(); im.onload=function(){ res(im); }; im.onerror=function(){ res(null); }; im.src=u; }); }
+  function rr(x,c,y,w,h,r){ x.beginPath(); x.moveTo(c+r,y); x.arcTo(c+w,y,c+w,y+h,r); x.arcTo(c+w,y+h,c,y+h,r); x.arcTo(c,y+h,c,y,r); x.arcTo(c,y,c+w,y,r); x.closePath(); }
+  function cardData(uid){ var mine=uid===me.uid, st=mine?(myStats()||{}):(commStats[uid]||{}), pr=profileMap[uid]||{};
+    var xp=riderXP(st), lv=riderLevel(xp), note=riderNote(xp), rar=riderRarity(note), topic=mine?chatTopic:(st.sport||"efoil");
+    var edge={"r-bronze":"#e0a26a","r-rare":"#5acdd1","r-epic":"#c79cff","r-legend":"#ffd76a"}[rar[0]];
+    return { ps:(mine?me.pseudo:pr.pseudo)||"Rider", note:note, rar:rar[1], edge:edge, lv:lv, grade:GRADES[lv][1], sport:(CHANS[topic]||"eFoil"), xp:xp,
+      km:Math.round(+st.km||0), n:(+st.n||0), rank:defiRank(uid), brand:(brandInfo(mine?me.brand:pr.brand)||{short:"LITE FOIL"}).short, img:mine?me.cardImg:cardCache[uid] }; }
+  function drawRiderCard(uid){ var D=cardData(uid);
+    return Promise.all([document.fonts?document.fonts.load('800 60px "Instrument Sans"'):0, document.fonts?document.fonts.load('400 60px "Instrument Serif"'):0, loadImgUrl("litefoil-logo.png"), loadImgUrl(D.img)]).catch(function(){ return [0,0,null,null]; }).then(function(r){
+      var logo=r[2], photo=r[3], W=1080, H=1620, S=3, cx0=90, cy0=90, CW=300*S, CH=430*S;
+      var cv=document.createElement("canvas"); cv.width=W; cv.height=H; var x=cv.getContext("2d");
+      // fond de l'image : océan sombre
+      var g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#0b3a55"); g.addColorStop(1,"#061826"); x.fillStyle=g; x.fillRect(0,0,W,H);
+      // carte
+      x.save(); rr(x,cx0,cy0,CW,CH,26*S); x.clip();
+      var cg=x.createLinearGradient(cx0,cy0,cx0+CW*0.4,cy0+CH); cg.addColorStop(0,"#0f6f8a"); cg.addColorStop(1,"#071e2e"); x.fillStyle=cg; x.fillRect(cx0,cy0,CW,CH);
+      var rg=x.createRadialGradient(cx0+CW*0.85,cy0+CH*0.1,10,cx0+CW*0.85,cy0+CH*0.1,CW*0.9); rg.addColorStop(0,"rgba(43,182,192,.85)"); rg.addColorStop(1,"rgba(43,182,192,0)"); x.fillStyle=rg; x.fillRect(cx0,cy0,CW,CH);
+      x.strokeStyle="rgba(255,255,255,.06)"; x.lineWidth=2; for(var hy=0;hy<CH+60;hy+=72){ for(var hx=(hy/72)%2?0:42;hx<CW+60;hx+=84){ x.beginPath(); for(var k=0;k<6;k++){ var a=Math.PI/3*k+Math.PI/6, px=cx0+hx+24*Math.cos(a), py=cy0+hy+24*Math.sin(a); if(k) x.lineTo(px,py); else x.moveTo(px,py); } x.closePath(); x.stroke(); } }
+      x.fillStyle="rgba(255,255,255,.08)"; x.beginPath(); x.moveTo(cx0+CW*0.42,cy0); x.lineTo(cx0+CW*0.58,cy0); x.lineTo(cx0+CW*0.1,cy0+CH); x.lineTo(cx0-CW*0.06,cy0+CH); x.fill();
+      if(photo){ var ph=278*S, pw=Math.min(215*S, photo.width*ph/photo.height), phh=pw*photo.height/photo.width; x.drawImage(photo, cx0+CW-pw+6*S, cy0+8*S+(ph-phh), pw, phh); }
+      else if(logo){ x.globalAlpha=.22; var lw=150*S, lh=lw*logo.height/logo.width; x.filter="brightness(0) invert(1)"; x.drawImage(logo, cx0+CW-22*S-lw, cy0+112*S, lw, lh); x.filter="none"; x.globalAlpha=1; }
+      x.fillStyle="#fff"; x.textBaseline="alphabetic";
+      x.font='800 '+(13*S)+'px "Instrument Sans", sans-serif'; x.fillStyle=D.edge; x.fillText(D.rar.split("").join(String.fromCharCode(8202)), cx0+20*S, cy0+31*S);
+      x.fillStyle="#fff"; x.font='800 '+(64*S)+'px "Instrument Sans", sans-serif'; x.fillText(String(D.note), cx0+16*S, cy0+92*S);
+      // puce sport (hexagone) et niveau
+      var sp=D.sport.toUpperCase().slice(0,9); x.font='800 '+(13*S)+'px "Instrument Sans", sans-serif'; var sw=x.measureText(sp).width+24*S, sx=cx0+18*S, sy=cy0+108*S, sh=24*S;
+      x.fillStyle="#1fb5bd"; x.beginPath(); x.moveTo(sx+sw*0.1,sy); x.lineTo(sx+sw*0.9,sy); x.lineTo(sx+sw,sy+sh/2); x.lineTo(sx+sw*0.9,sy+sh); x.lineTo(sx+sw*0.1,sy+sh); x.lineTo(sx,sy+sh/2); x.fill();
+      x.fillStyle="#fff"; x.fillText(sp, sx+12*S, sy+17*S);
+      x.strokeStyle="rgba(255,255,255,.8)"; x.lineWidth=2*S; x.strokeRect(sx, sy+31*S, 40*S, 22*S); x.font='800 '+(12*S)+'px "Instrument Sans", sans-serif'; x.fillText("N"+(D.lv+1), sx+10*S, sy+47*S);
+      // marque
+      x.font='800 '+(12*S)+'px "Instrument Sans", sans-serif'; var bw=x.measureText(D.brand).width+20*S; x.fillStyle="#fff"; rr(x,cx0+CW-16*S-bw,cy0+16*S,bw,25*S,13*S); x.fill(); x.fillStyle="#071e2e"; x.fillText(D.brand, cx0+CW-16*S-bw+10*S, cy0+33*S);
+      // bas : ruban, nom, km, pied
+      var by=cy0+CH-14*S; x.textAlign="center";
+      x.font='800 '+(13*S)+'px "Instrument Sans", sans-serif'; var ribY=by-128*S; var rgr=x.createLinearGradient(cx0,0,cx0+CW,0); rgr.addColorStop(0,"rgba(31,181,189,0)"); rgr.addColorStop(.15,"rgba(31,181,189,.85)"); rgr.addColorStop(.85,"rgba(31,181,189,.85)"); rgr.addColorStop(1,"rgba(31,181,189,0)");
+      x.fillStyle=rgr; x.fillRect(cx0,ribY,CW,30*S); x.fillStyle="#fff"; x.fillText(("★ "+D.grade+" "+D.sport).toUpperCase(), cx0+CW/2, ribY+20*S);
+      x.font='800 '+(28*S)+'px "Instrument Sans", sans-serif'; x.fillText(D.ps.toUpperCase().slice(0,16), cx0+CW/2, ribY+66*S);
+      x.font='600 '+(15*S)+'px "Instrument Sans", sans-serif'; x.fillText(D.km.toLocaleString("fr-FR")+" km · "+D.n+" sortie"+(D.n>1?"s":""), cx0+CW/2, ribY+90*S);
+      x.textAlign="left"; x.font='800 '+(11*S)+'px "Instrument Sans", sans-serif'; var pt=D.xp.toLocaleString("fr-FR")+" pts", pw2=x.measureText(pt).width+14*S;
+      x.fillStyle="#1a9c55"; rr(x,cx0+18*S,by-20*S,pw2,20*S,6*S); x.fill(); x.fillStyle="#fff"; x.fillText(pt, cx0+25*S, by-6*S);
+      x.font='700 '+(13*S)+'px "Instrument Sans", sans-serif'; x.fillText(D.rank?("🏆 "+D.rank+(D.rank===1?"er":"e")+" au défi eFoil du mois"):"Communauté Lite Foil", cx0+18*S+pw2+8*S, by-5*S);
+      x.restore();
+      x.strokeStyle=D.edge; x.lineWidth=3*S; rr(x,cx0+1.5*S,cy0+1.5*S,CW-3*S,CH-3*S,25*S); x.stroke();
+      // légende sous la carte
+      x.textAlign="center"; x.fillStyle="#fff"; x.font='400 '+(76)+'px "Instrument Serif", Georgia, serif'; x.fillText("Rejoins-moi sur l'eau.", W/2, cy0+CH+120);
+      x.font='600 34px "Instrument Sans", sans-serif'; x.fillStyle="rgba(255,255,255,.75)"; x.fillText("Appli Lite Foil · météo, sorties, communauté", W/2, cy0+CH+175);
+      return new Promise(function(res){ cv.toBlob(function(b){ res({blob:b, url:cv.toDataURL("image/png"), d:D}); }, "image/png"); }); }); }
+  function shareRiderCard(uid){ var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="shClose">✕</button><b>Partager la carte</b><span></span></div><div class="gc-body"><div class="comm-empty">Préparation de l\'image…</div></div></div>';
+    $("shClose").addEventListener("click", closeOverlay);
+    drawRiderCard(uid).then(function(r){ var D=r.d;
+      var txt=(mine?"Ma carte de rider Lite Foil":"La carte de rider de "+D.ps)+" : "+D.note+" · "+D.grade+" "+D.sport+(D.rank?" · "+D.rank+(D.rank===1?"er":"e")+" au défi eFoil du mois":"")+" 🏄 Rejoins-moi sur l'appli Lite Foil : "+APP_LINK;
+      var file=null; try{ file=new File([r.blob], "carte-rider-lite-foil.png", {type:"image/png"}); }catch(e){}
+      var canFiles=!!(file && navigator.canShare && navigator.canShare({files:[file]}));
+      var enc=encodeURIComponent(txt);
+      var links=[["💬","WhatsApp","#25d366","https://wa.me/?text="+enc],["⚡","Messenger","#0084ff","fb-messenger://share?link="+encodeURIComponent(APP_LINK)],["✉️","SMS","#34c759","sms:?&body="+enc],["📧","Gmail","#ea4335","mailto:?subject="+encodeURIComponent("Ma carte de rider Lite Foil")+"&body="+enc]];
+      var body=o.querySelector(".gc-body");
+      body.innerHTML='<img class="share-prev" src="'+r.url+'" alt="Carte de rider">'
+        +(canFiles?'<button class="rc-share-btn" id="shNative">Partager l\'image (WhatsApp, Messenger, SMS, Gmail…)</button>':'')
+        +'<div class="gi-mlabel">'+(canFiles?"Ou envoyer le lien":"Envoyer")+'</div><div class="share-grid">'+links.map(function(l){ return '<a href="'+l[3]+'" target="_blank" rel="noopener"><i style="background:'+l[2]+'">'+l[0]+'</i>'+l[1]+'</a>'; }).join("")+'</div>'
+        +'<a class="gi-act" id="shSave" href="'+r.url+'" download="carte-rider-lite-foil.png" style="text-align:center;text-decoration:none">⬇️ Enregistrer l\'image</a>'
+        +'<div class="gc-count">'+(canFiles?"":"Pour envoyer l'image : enregistre-la, puis ajoute-la dans ton message. ")+'Le lien ouvre l\'appli Lite Foil.</div>';
+      var nb=$("shNative"); if(nb) nb.addEventListener("click", function(){ navigator.share({files:[file], title:"Ma carte de rider Lite Foil", text:txt}).catch(function(){}); });
+    }).catch(function(){ var b=o.querySelector(".gc-body"); if(b) b.innerHTML='<div class="comm-empty">Impossible de préparer l\'image.</div>'; }); }
   // ---------- photo de carte : détourage automatique de la personne (MediaPipe, modèle DeepLab, ~3 Mo chargés à la demande) ----------
   let segPromise=null;
   function loadSegmenter(){ if(segPromise) return segPromise;
