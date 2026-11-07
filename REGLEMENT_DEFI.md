@@ -1,4 +1,4 @@
-# Défi eFoil du mois — règlement (BROUILLON, à faire valider avant publication)
+# Défi eFoil de la semaine — règlement (BROUILLON, à faire valider avant publication)
 
 > Brouillon préparé pour Lite Foil. À relire et compléter (organisateur, lot, dates)
 > avant de le publier ou de le lier dans l'appli. Ce n'est pas un avis juridique.
@@ -8,8 +8,8 @@ Le défi est organisé par **[raison sociale Lite Foil]**, [forme juridique], [a
 immatriculée sous le numéro [SIREN] (ci-après « l'Organisateur »).
 
 ## Article 2 — Principe
-Chaque mois civil, l'Organisateur classe les participants selon le **nombre de kilomètres
-parcourus en eFoil** pendant le mois, enregistrés avec l'appli Lite Foil (suivi GPS du
+Chaque semaine, du lundi 0 h au dimanche 24 h (heure de Paris), l'Organisateur classe les
+participants selon le **nombre de kilomètres parcourus en eFoil** pendant la semaine, enregistrés avec l'appli Lite Foil (suivi GPS du
 téléphone ou tracker Lite Foil). Le défi récompense une performance sportive ; il ne
 comporte aucun tirage au sort.
 
@@ -30,18 +30,18 @@ comporte aucun tirage au sort.
   baignade) et les consignes de sécurité. Aucune prise de risque n'est encouragée.
 
 ## Article 5 — Lot
-Le premier du classement du mois remporte : **[description et valeur du lot]**.
+Le premier du classement de la semaine remporte : **[description et valeur du lot]**.
 En cas d'égalité, le participant ayant atteint le score le premier l'emporte.
 Le lot n'est ni échangeable ni remboursable.
 
 ## Article 6 — Annonce et remise
 Le gagnant est contacté par message privé dans l'appli dans les 7 jours suivant la fin
-du mois. Sans réponse sous 15 jours, le lot est attribué au suivant du classement.
+de la semaine. Sans réponse sous 15 jours, le lot est attribué au suivant du classement.
 Avec l'accord du gagnant, son pseudo peut être annoncé dans la communauté et sur les
 réseaux de Lite Foil.
 
 ## Article 7 — Données personnelles
-Les données utilisées (pseudo, kilomètres du mois) servent uniquement au classement et à
+Les données utilisées (pseudo, kilomètres de la semaine) servent uniquement au classement et à
 la remise du lot. Voir la politique de confidentialité de l'appli. Chaque participant peut
 demander la suppression de ses données à [adresse e-mail].
 

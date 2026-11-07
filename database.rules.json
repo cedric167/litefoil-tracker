@@ -128,7 +128,7 @@
       ".read": "auth != null",
       "$uid": {
         ".write": "auth != null && auth.uid === $uid",
-        ".validate": "newData.child('n').isNumber() && newData.child('km').isNumber() && newData.child('n').val() <= 5000 && newData.child('km').val() <= 200000 && (!newData.child('eKm').exists() || (newData.child('eKm').isNumber() && newData.child('eKm').val() <= 5000))"
+        ".validate": "newData.child('n').isNumber() && newData.child('km').isNumber() && newData.child('n').val() <= 5000 && newData.child('km').val() <= 200000 && (!newData.child('eKm').exists() || (newData.child('eKm').isNumber() && newData.child('eKm').val() <= 5000)) && (!newData.child('wKm').exists() || (newData.child('wKm').isNumber() && newData.child('wKm').val() <= 2000))"
       }
     },
     "welcomed": {

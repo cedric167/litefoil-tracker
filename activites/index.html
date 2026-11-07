@@ -538,7 +538,13 @@ function render(){
     month:(()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");})(),
     eKm:Math.round(real.filter(a=>{ const d=new Date(), st=a.startedAt; const ef=a.activityType==="efoil"||a.activityType==="electric"||/foil [ée]lectrique|e-?foil/i.test(a.categoryName||"");
       const ok=a.distanceM<=150000 && (!a.durationSec || a.distanceM/a.durationSec*3.6<=55);
-      return ef && ok && st && st.getFullYear()===d.getFullYear() && st.getMonth()===d.getMonth(); }).reduce((s,a)=>s+a.distanceM,0)/100)/10})); }catch(e){}
+      return ef && ok && st && st.getFullYear()===d.getFullYear() && st.getMonth()===d.getMonth(); }).reduce((s,a)=>s+a.distanceM,0)/100)/10,
+    // défi eFoil de la semaine : du lundi 0 h au dimanche (clé = date du lundi)
+    ...(()=>{ const m=new Date(); m.setHours(0,0,0,0); m.setDate(m.getDate()-((m.getDay()+6)%7));
+      const wk=m.getFullYear()+"-"+String(m.getMonth()+1).padStart(2,"0")+"-"+String(m.getDate()).padStart(2,"0");
+      const wKm=Math.round(real.filter(a=>{ const st=a.startedAt; const ef=a.activityType==="efoil"||a.activityType==="electric"||/foil [ée]lectrique|e-?foil/i.test(a.categoryName||"");
+        const ok=a.distanceM<=150000 && (!a.durationSec || a.distanceM/a.durationSec*3.6<=55); return ef && ok && st && st>=m; }).reduce((s,a)=>s+a.distanceM,0)/100)/10;
+      return {week:wk, wKm:wKm}; })()})); }catch(e){}
   const time = items.reduce((s,a)=>s+a.durationSec,0);
   document.getElementById("sumCount").textContent=items.length;
   document.getElementById("sumKm").textContent=km.toFixed(1);
