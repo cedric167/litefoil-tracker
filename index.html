@@ -199,7 +199,7 @@
   .home-go{ width:100%; display:flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:16px; padding:15px; font-family:inherit; font-size:16px; font-weight:800; color:#fff; background:#0b0d10; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.18); }
   .home-defi{ margin-top:12px; width:100%; display:flex; align-items:center; gap:12px; border:0; text-align:left; cursor:pointer; font-family:inherit; color:#fff; border-radius:20px; padding:12px 14px;
     background:radial-gradient(120% 140% at 100% 0%, #ffb547 0%, #ef7d2e 40%, #b2401a 100%); box-shadow:0 8px 20px rgba(178,64,26,.25); }
-  .hd-note{ flex:0 0 auto; width:46px; height:54px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; background:linear-gradient(160deg,#1b2f6b,#0b1636); box-shadow:0 0 0 2px #7fb0ff inset; }
+  .hd-note{ flex:0 0 auto; width:46px; height:54px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; background:linear-gradient(160deg,#0f6f8a,#071e2e); box-shadow:0 0 0 2px #5acdd1 inset; }
   .hd-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
   .hd-txt b{ font-size:15.5px; font-weight:800; }
   .hd-txt span{ font-size:13px; opacity:.92; }
@@ -416,7 +416,7 @@
   .rc-rar{ position:absolute; top:18px; left:20px; font-size:13px; font-weight:800; letter-spacing:.14em; color:var(--rc-edge,#7fb0ff); }
   .rc-note{ position:absolute; top:34px; left:18px; font-size:64px; font-weight:800; line-height:1; letter-spacing:-2px; text-shadow:0 3px 12px rgba(0,0,0,.3); }
   .rc-tags{ position:absolute; top:108px; left:18px; display:flex; flex-direction:column; gap:7px; align-items:flex-start; }
-  .rc-sport{ font-size:13px; font-weight:800; letter-spacing:.06em; background:#ff4f9a; color:#fff; padding:4px 12px; clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%); }
+  .rc-sport{ font-size:13px; font-weight:800; letter-spacing:.06em; background:#1fb5bd; color:#fff; padding:4px 12px; clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%); }
   .rc-lvl{ font-size:12px; font-weight:800; border:2px solid rgba(255,255,255,.75); padding:2px 10px; clip-path:polygon(12% 0,100% 0,88% 100%,0 100%); }
   .rc-club{ position:absolute; top:16px; right:16px; background:#fff; color:#0b1636; font-size:12px; font-weight:800; padding:5px 10px; border-radius:100px; letter-spacing:.04em; }
   .rc-av{ position:absolute; top:58px; right:14px; width:168px; height:200px; border-radius:22px 22px 80px 22px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:84px; font-weight:800; color:rgba(255,255,255,.9); box-shadow:0 10px 30px rgba(0,0,0,.35); }
@@ -426,24 +426,27 @@
   .rc-stat{ position:absolute; top:354px; left:0; right:0; text-align:center; font-size:15px; font-weight:600; opacity:.92; }
   .rc-foot{ position:absolute; bottom:14px; left:18px; right:18px; display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; opacity:.9; }
   .rc-foot b{ background:#1a9c55; color:#fff; font-size:11px; padding:2px 7px; border-radius:6px; }
-  .rcard.r-bronze{ --rc-a:#5a3a22; --rc-b:#24160c; --rc-glow:#c07a3c; --rc-edge:#e0a26a; }
-  .rcard.r-rare{ --rc-a:#1b2f6b; --rc-b:#0b1636; --rc-glow:#2f6fe0; --rc-edge:#7fb0ff; }
-  .rcard.r-epic{ --rc-a:#3d1a6e; --rc-b:#160830; --rc-glow:#8a4fe0; --rc-edge:#c79cff; }
-  .rcard.r-legend{ --rc-a:#5c4207; --rc-b:#1e1402; --rc-glow:#f1c24b; --rc-edge:#ffd76a; }
+  /* fond bleu Lite Foil pour toutes les cartes ; seule la couleur du liseré change avec la rareté */
+  .rcard{ --rc-a:#0f6f8a; --rc-b:#071e2e; --rc-glow:#2bb6c0; }
+  .rcard.r-bronze{ --rc-edge:#e0a26a; }
+  .rcard.r-rare{ --rc-edge:#5acdd1; }
+  .rcard.r-epic{ --rc-edge:#c79cff; }
+  .rcard.r-legend{ --rc-edge:#ffd76a; }
   .rcard > *{ z-index:2; } .rcard .rc-av{ z-index:1; }
   .rc-photo{ position:absolute; right:-6px; top:8px; height:278px; max-width:215px; object-fit:contain; object-position:bottom right; z-index:1 !important; filter:drop-shadow(0 10px 20px rgba(0,0,0,.45)); }
   .rc-photo-acts{ display:flex; gap:8px; }
   .rc-photo-acts button{ flex:1; border:1px solid var(--line); background:var(--card); color:var(--text); font-family:inherit; font-weight:700; font-size:14px; padding:11px 10px; border-radius:14px; cursor:pointer; }
-  .rc-photo-acts button.main{ background:linear-gradient(135deg,#1b2f6b,#2f6fe0); color:#fff; border:0; }
+  .rc-photo-acts button.main{ background:linear-gradient(135deg,#0f6f8a,#0b3a55); color:#fff; border:0; }
   .rc-photo-acts button:disabled{ opacity:.6; }
+  .rc-wm{ position:absolute; right:22px; top:112px; width:150px; opacity:.22; filter:brightness(0) invert(1); pointer-events:none; }
   .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
   .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
   .rc-how b{ color:var(--accent-ink); white-space:nowrap; }
   .rc-prog{ height:8px; border-radius:100px; background:var(--tile); overflow:hidden; }
   .rc-prog i{ display:block; height:100%; background:linear-gradient(90deg,#1fb5bd,#5acdd1); border-radius:100px; }
   .rider-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  .card-btn{ display:inline-flex; align-items:center; gap:8px; border:0; border-radius:100px; padding:9px 16px 9px 10px; font-family:inherit; font-size:14px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(135deg,#1b2f6b,#2f6fe0); box-shadow:0 4px 12px rgba(27,47,107,.3); }
-  .card-btn .cb-n{ background:#fff; color:#1b2f6b; border-radius:100px; padding:2px 8px; font-size:13px; }
+  .card-btn{ display:inline-flex; align-items:center; gap:8px; border:0; border-radius:100px; padding:9px 16px 9px 10px; font-family:inherit; font-size:14px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(135deg,#0f6f8a,#0b3a55); box-shadow:0 4px 12px rgba(11,58,85,.3); }
+  .card-btn .cb-n{ background:#fff; color:#0b3a55; border-radius:100px; padding:2px 8px; font-size:13px; }
   .defi{ margin:4px 0 14px; border-radius:22px; padding:16px; color:#fff; cursor:pointer; position:relative; overflow:hidden;
     background:radial-gradient(120% 120% at 100% 0%, #ffb547 0%, #ef7d2e 35%, #b2401a 100%); box-shadow:0 10px 26px rgba(178,64,26,.3); }
   .defi::after{ content:"🏆"; position:absolute; right:-6px; bottom:-14px; font-size:96px; opacity:.18; transform:rotate(-12deg); }
@@ -458,7 +461,7 @@
   .lb-row.me{ background:#fff6ec; border-radius:12px; }
   .lb-pos{ width:28px; text-align:center; font-weight:800; font-size:15px; color:var(--muted); }
   .lb-pos.p1{ color:#d4a017; } .lb-pos.p2{ color:#8a99a6; } .lb-pos.p3{ color:#b8733a; }
-  .lb-note{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; background:linear-gradient(135deg,#1b2f6b,#2f6fe0); }
+  .lb-note{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; background:linear-gradient(135deg,#0f6f8a,#0b3a55); }
   .lb-row .pick-ps{ flex:1; min-width:0; }
   .lb-km{ font-weight:800; font-variant-numeric:tabular-nums; }
   .comm-myid{ margin-top:12px; font-size:11px; color:var(--muted-2); word-break:break-all; user-select:all; -webkit-user-select:all; }
@@ -4524,7 +4527,7 @@
     return '<div class="rcard '+rar[0]+'"><span class="rc-rar">'+rar[1]+'</span><span class="rc-note">'+note+'</span>'
       +'<div class="rc-tags"><span class="rc-sport">'+esc(sport.slice(0,9))+'</span><span class="rc-lvl">N'+(lv+1)+'</span></div>'
       +'<span class="rc-club">'+esc((brandInfo(mine?me.brand:pr.brand)||{short:"LITE FOIL"}).short)+'</span>'
-      +(cimg?'<img class="rc-photo" src="'+cimg+'" alt="">':'<div class="rc-av" style="background:'+(av?"#000":avatarColor(uid||"x"))+'">'+avHtml+'</div>')
+      +(cimg?'<img class="rc-photo" src="'+cimg+'" alt="">':'<img class="rc-wm" src="litefoil-logo.png" alt="">')
       +'<div class="rc-rib">★ '+esc(GRADES[lv][1]+" "+(CHANS[topic]||"eFoil"))+'</div>'
       +'<div class="rc-name">'+esc(ps||"Rider")+'</div>'
       +'<div class="rc-stat">'+esc(stat)+'</div>'
