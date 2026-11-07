@@ -421,10 +421,12 @@
   .rc-club{ position:absolute; top:16px; right:16px; background:#fff; color:#0b1636; font-size:12px; font-weight:800; padding:5px 10px; border-radius:100px; letter-spacing:.04em; }
   .rc-av{ position:absolute; top:58px; right:14px; width:168px; height:200px; border-radius:22px 22px 80px 22px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:84px; font-weight:800; color:rgba(255,255,255,.9); box-shadow:0 10px 30px rgba(0,0,0,.35); }
   .rc-av img{ width:100%; height:100%; object-fit:cover; }
-  .rc-rib{ position:absolute; top:276px; left:0; right:0; background:linear-gradient(90deg, rgba(31,181,189,.0), rgba(31,181,189,.85) 15%, rgba(31,181,189,.85) 85%, rgba(31,181,189,0)); text-align:center; font-size:13px; font-weight:800; letter-spacing:.08em; padding:7px 10px; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .rc-name{ position:absolute; top:316px; left:0; right:0; text-align:center; font-size:28px; font-weight:800; letter-spacing:.02em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 16px; }
-  .rc-stat{ position:absolute; top:354px; left:0; right:0; text-align:center; font-size:15px; font-weight:600; opacity:.92; }
-  .rc-foot{ position:absolute; bottom:14px; left:18px; right:18px; display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; opacity:.9; }
+  .rc-bottom{ position:absolute; left:0; right:0; bottom:14px; display:flex; flex-direction:column; gap:6px; }
+  .rc-rib{ background:linear-gradient(90deg, rgba(31,181,189,.0), rgba(31,181,189,.85) 15%, rgba(31,181,189,.85) 85%, rgba(31,181,189,0)); text-align:center; font-size:13px; font-weight:800; letter-spacing:.08em; padding:7px 10px; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rc-name{ margin-top:4px; line-height:1.1; text-align:center; font-size:28px; font-weight:800; letter-spacing:.02em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 16px; }
+  .rc-stat{ line-height:1.2; text-align:center; font-size:15px; font-weight:600; opacity:.92; }
+  .rc-foot{ margin:6px 18px 0; min-width:0; display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; opacity:.9; }
+  .rc-foot span{ min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .rc-foot b{ background:#1a9c55; color:#fff; font-size:11px; padding:2px 7px; border-radius:6px; }
   /* fond bleu Lite Foil pour toutes les cartes ; seule la couleur du liseré change avec la rareté */
   .rcard{ --rc-a:#0f6f8a; --rc-b:#071e2e; --rc-glow:#2bb6c0; }
@@ -4528,10 +4530,10 @@
       +'<div class="rc-tags"><span class="rc-sport">'+esc(sport.slice(0,9))+'</span><span class="rc-lvl">N'+(lv+1)+'</span></div>'
       +'<span class="rc-club">'+esc((brandInfo(mine?me.brand:pr.brand)||{short:"LITE FOIL"}).short)+'</span>'
       +(cimg?'<img class="rc-photo" src="'+cimg+'" alt="">':'<img class="rc-wm" src="litefoil-logo.png" alt="">')
-      +'<div class="rc-rib">★ '+esc(GRADES[lv][1]+" "+(CHANS[topic]||"eFoil"))+'</div>'
+      +'<div class="rc-bottom"><div class="rc-rib">★ '+esc(GRADES[lv][1]+" "+(CHANS[topic]||"eFoil"))+'</div>'
       +'<div class="rc-name">'+esc(ps||"Rider")+'</div>'
       +'<div class="rc-stat">'+esc(stat)+'</div>'
-      +'<div class="rc-foot"><b>'+xp.toLocaleString("fr-FR")+' pts</b>'+(rank?'<span>🏆 '+rank+(rank===1?"er":"e")+' au défi eFoil du mois</span>':'<span>Communauté Lite Foil</span>')+'</div></div>'; }
+      +'<div class="rc-foot"><b>'+xp.toLocaleString("fr-FR")+' pts</b>'+(rank?'<span>🏆 '+rank+(rank===1?"er":"e")+' au défi eFoil du mois</span>':'<span>Communauté Lite Foil</span>')+'</div></div></div>'; }
   function openRiderCard(uid){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
     var st=mine?(myStats()||{}):(commStats[uid]||{}), xp=riderXP(st), lv=riderLevel(xp), nxt=GRADES[lv+1];
     var prog=nxt?Math.round(100*(xp-GRADES[lv][0])/(nxt[0]-GRADES[lv][0])):100;
