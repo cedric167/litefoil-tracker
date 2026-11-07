@@ -4616,7 +4616,9 @@
     drawRiderCard(uid).then(function(r){ var D=r.d;
       var txt=(mine?"Ma carte de rider Lite Foil":"La carte de rider de "+D.ps)+" : "+D.note+" · "+D.grade+" "+D.sport+(D.rank?" · "+D.rank+(D.rank===1?"er":"e")+" au défi eFoil du mois":"")+" 🏄 Rejoins-moi sur l'appli Lite Foil : "+APP_LINK;
       var file=null; try{ file=new File([r.blob], "carte-rider-lite-foil.png", {type:"image/png"}); }catch(e){}
-      var canFiles=!!(file && navigator.canShare && navigator.canShare({files:[file]}));
+      // appli iPhone/Android : modules natifs Partage + Fichiers (image écrite dans le cache puis partagée)
+      var NS=nativePlug("Share"), NF=nativePlug("Filesystem"), native=!!(NS && NF);
+      var canFiles=native || !!(file && navigator.canShare && navigator.canShare({files:[file]}));
       var enc=encodeURIComponent(txt);
       var links=[["💬","WhatsApp","#25d366","https://wa.me/?text="+enc],["⚡","Messenger","#0084ff","fb-messenger://share?link="+encodeURIComponent(APP_LINK)],["✉️","SMS","#34c759","sms:?&body="+enc],["📧","Gmail","#ea4335","mailto:?subject="+encodeURIComponent("Ma carte de rider Lite Foil")+"&body="+enc]];
       var body=o.querySelector(".gc-body");
@@ -4625,7 +4627,12 @@
         +'<div class="gi-mlabel">'+(canFiles?"Ou envoyer le lien":"Envoyer")+'</div><div class="share-grid">'+links.map(function(l){ return '<a href="'+l[3]+'" target="_blank" rel="noopener"><i style="background:'+l[2]+'">'+l[0]+'</i>'+l[1]+'</a>'; }).join("")+'</div>'
         +'<a class="gi-act" id="shSave" href="'+r.url+'" download="carte-rider-lite-foil.png" style="text-align:center;text-decoration:none">⬇️ Enregistrer l\'image</a>'
         +'<div class="gc-count">'+(canFiles?"":"Pour envoyer l'image : enregistre-la, puis ajoute-la dans ton message. ")+'Le lien ouvre l\'appli Lite Foil.</div>';
-      var nb=$("shNative"); if(nb) nb.addEventListener("click", function(){ navigator.share({files:[file], title:"Ma carte de rider Lite Foil", text:txt}).catch(function(){}); });
+      function doShare(){ if(native){ return NF.writeFile({path:"carte-rider-lite-foil.png", data:r.url.split(",")[1], directory:"CACHE"})
+          .then(function(w){ return NS.share({title:"Ma carte de rider Lite Foil", text:txt, files:[w.uri], dialogTitle:"Partager ma carte"}); }).catch(function(){}); }
+        return navigator.share({files:[file], title:"Ma carte de rider Lite Foil", text:txt}).catch(function(){}); }
+      var nb=$("shNative"); if(nb) nb.addEventListener("click", doShare);
+      // dans l'appli, « Enregistrer » passe par le menu de partage (choix « Enregistrer l'image » / « Photos »)
+      var sv=$("shSave"); if(sv && native) sv.addEventListener("click", function(ev){ ev.preventDefault(); doShare(); });
     }).catch(function(){ var b=o.querySelector(".gc-body"); if(b) b.innerHTML='<div class="comm-empty">Impossible de préparer l\'image.</div>'; }); }
   // ---------- photo de carte : détourage automatique de la personne (MediaPipe, modèle DeepLab, ~3 Mo chargés à la demande) ----------
   let segPromise=null;
