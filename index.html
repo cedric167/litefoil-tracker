@@ -670,6 +670,8 @@
   #profEditSheet .verif-ok{ font-size:14px; font-weight:600; color:#128a90; }
   #profEditSheet .verif-note{ margin-top:8px; font-size:13px; color:#3d4a52; }
   #profEditSheet .verif-note:empty{ display:none; }
+  #profEditSheet .link-btn{ display:block; margin-top:8px; padding:0; background:none; border:0; color:#128a90; font-weight:600; font-size:14px; text-decoration:underline; cursor:pointer; }
+  #profEditSheet .login-box .primary{ margin-top:10px; }
   #profEditSheet .prof-del{ display:block; margin:14px auto 0; background:none; border:0; color:#c0392b; font-weight:600; font-size:14px; text-decoration:underline; cursor:pointer; }
   .chat-emoji-btn{ font-size:20px; }
   .chan-sel-wrap{ display:flex; align-items:center; gap:8px; margin:0 0 12px; }
@@ -1275,6 +1277,20 @@
             <button type="button" class="av-btn" id="commVerifCheck" hidden>J'ai cliqué sur le lien</button>
           </div>
           <div class="verif-note" id="commVerifNote"></div>
+        </div>
+        <div class="verif-box login-box" id="commLoginBox">
+          <div class="verif-note" id="commPwInfo" hidden>Pour retrouver ton profil si tu changes de téléphone, choisis un mot de passe : tu reçois un lien par mail.</div>
+          <button type="button" class="av-btn" id="commPwSet" hidden>Choisir mon mot de passe</button>
+          <button type="button" class="link-btn" id="commLoginToggle">J'ai déjà un profil (nouveau téléphone)</button>
+          <div id="commLoginForm" hidden>
+            <label for="commLoginEmail">E-mail de mon profil</label>
+            <input id="commLoginEmail" type="email" inputmode="email" autocomplete="username" placeholder="ton@email.fr">
+            <label for="commLoginPw">Mot de passe</label>
+            <input id="commLoginPw" type="password" autocomplete="current-password">
+            <button type="button" class="primary" id="commLoginGo">Me connecter</button>
+            <button type="button" class="av-btn" id="commLoginReset">Pas encore de mot de passe ou oublié : recevoir un lien</button>
+          </div>
+          <div class="verif-note" id="commLoginNote"></div>
         </div>
         <button type="button" class="av-btn" id="commAvBtn">Changer la photo</button>
         <input id="commAvFile" type="file" accept="image/*" hidden>
@@ -3498,6 +3514,11 @@
     // on reprend le compte déjà connecté (profil validé par e-mail compris) ; nouveau compte anonyme seulement s'il n'y en a aucun
     // (signInAnonymously remplacerait un compte rattaché à un e-mail par un compte vide)
     if(auth.authStateReady) await auth.authStateReady();
+    // session d'un profil devenue invalide (mot de passe changé, compte supprimé) : on se déconnecte et on proposera de se reconnecter
+    if(auth.currentUser && !auth.currentUser.isAnonymous){
+      try{ await auth.currentUser.getIdToken(); }catch(e){ var dead=["auth/user-token-expired","auth/user-disabled","auth/user-not-found","auth/invalid-user-token"];
+        if(e && dead.indexOf(e.code)>=0){ try{ localStorage.setItem("lf.comm.relogin","1"); }catch(_){} await authMod.signOut(auth); } }
+    }
     const user0 = auth.currentUser || (await authMod.signInAnonymously(auth)).user;
     const uid = user0.uid;
     const d = db.getDatabase(app);
@@ -3571,9 +3592,14 @@
           return db.update(db.ref(d),up).catch(function(){}); })
         .then(function(){ return authMod.deleteUser(u).then(function(){ return "deleted"; }); })
         .catch(function(err){ var pw=""; try{ pw=localStorage.getItem("lf.comm.k")||""; }catch(e){}
+          if(err && err.code==="auth/requires-recent-login" && !pw && u.email){ pw=(prompt("Pour confirmer la suppression, entre le mot de passe de ton profil :")||""); }
           if(err && err.code==="auth/requires-recent-login" && pw && u.email)
             return authMod.reauthenticateWithCredential(u, authMod.EmailAuthProvider.credential(u.email, pw)).then(function(){ return authMod.deleteUser(auth.currentUser); }).then(function(){ return "deleted"; });
           return authMod.signOut(auth).then(function(){ return "signedout"; }); }); },
+      // retrouver son profil sur un autre téléphone : connexion avec l'e-mail et le mot de passe du profil
+      signInWithPassword(email,pw){ return authMod.signInWithEmailAndPassword(auth, email, pw).then(function(){ try{ localStorage.removeItem("lf.comm.relogin"); localStorage.removeItem("lf.comm.k"); }catch(e){} }); },
+      // lien par mail pour choisir (ou changer) son mot de passe
+      sendPasswordLink(email){ return authMod.sendPasswordResetEmail(auth, email); },
       refreshVerification(){ var u=auth.currentUser; if(!u) return Promise.resolve(this.emailState()); var self=this;
         return authMod.reload(u).then(function(){ return auth.currentUser.emailVerified ? auth.currentUser.getIdToken(true) : null; }).then(function(){ return self.emailState(); }); },
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
@@ -3701,6 +3727,8 @@
       sendVerification(){ return Promise.resolve(); },
       refreshVerification(){ return Promise.resolve(this.emailState()); },
       deleteAccount(){ return Promise.resolve("deleted"); },
+      signInWithPassword(){ return Promise.resolve(); },
+      sendPasswordLink(){ return Promise.resolve(); },
       watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; o["demo-aurel"].brand="litefoil"; o["demo-marine"].brand="waydoo"; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
       // ---------- vidéos (démo, en mémoire) ----------
       watchVideos(cb){ demoVidCb=cb; cb(demoVideos.slice()); return function(){ demoVidCb=null; }; },
@@ -4883,7 +4911,23 @@
     var pend=false; try{ pend=localStorage.getItem("lf.comm.verifsent")==="1"; }catch(e){}
     var ck=$("commVerifCheck"); if(ck) ck.hidden=!pend;
     var sd=$("commVerifSend"); if(sd) sd.textContent=pend?"Renvoyer le mail de validation":"Recevoir le mail de validation";
+    var pi=$("commPwInfo"), ps=$("commPwSet"), lt=$("commLoginToggle"); if(pi) pi.hidden=!me.verified; if(ps) ps.hidden=!me.verified;
+    if(lt) lt.textContent = me.verified ? "Me reconnecter avec mon mot de passe" : "J'ai déjà un profil (nouveau téléphone)";
   }
+  function setLoginNote(t){ var n=$("commLoginNote"); if(n) n.textContent=t||""; }
+  function showLogin(open){ var f=$("commLoginForm"); if(!f) return; f.hidden=!open; if(open){ var le=$("commLoginEmail"); if(le && !le.value){ var se=""; try{ se=localStorage.getItem("lf.comm.email")||""; }catch(e){} le.value=me.email||se; } } }
+  function loginErr(c){ return (c==="auth/invalid-credential"||c==="auth/wrong-password"||c==="auth/user-not-found"||c==="auth/invalid-login-credentials") ? "E-mail ou mot de passe incorrect."
+    : c==="auth/too-many-requests" ? "Trop d'essais : réessaie dans quelques minutes." : c==="auth/invalid-email" ? "Adresse e-mail invalide." : "Connexion impossible pour le moment, réessaie."; }
+  function doLogin(){ var e=($("commLoginEmail").value||"").trim(), pw=$("commLoginPw").value||"";
+    if(!e || !pw){ setLoginNote("Entre ton e-mail et ton mot de passe."); return; } if(!backend || !backend.signInWithPassword) return;
+    var b=$("commLoginGo"); b.disabled=true; setLoginNote("Connexion…");
+    backend.signInWithPassword(e,pw).then(function(){ try{ localStorage.setItem("lf.comm.email",e); localStorage.removeItem("lf.comm.claimed"); }catch(x){} setLoginNote("✅ Connecté, ton profil revient…"); setTimeout(function(){ location.reload(); },600); })
+      .catch(function(err){ b.disabled=false; setLoginNote(loginErr(err&&err.code)); }); }
+  function sendPwLink(email){ if(!backend || !backend.sendPasswordLink) return;
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email||"")){ setLoginNote("Entre d'abord l'e-mail de ton profil."); showLogin(true); return; }
+    backend.sendPasswordLink(email).then(function(){ try{ localStorage.removeItem("lf.comm.k"); }catch(x){} showLogin(true); var le=$("commLoginEmail"); if(le) le.value=email;
+      setLoginNote("📩 Mail envoyé à "+email+" (regarde aussi les spams). Clique sur le lien, choisis ton mot de passe, puis reviens ici et connecte-toi."); })
+      .catch(function(err){ setLoginNote(loginErr(err&&err.code)); }); }
   function openProfileSheet(){ var s=$("profEditSheet"); if(!s) return; var dp=$("commDmPref"); if(dp) dp.value=dmPref; fillBrand(); $("commPseudo").value=me.pseudo; checkPseudo(); renderVerif(); s.hidden=false; }
   function askProfile(msg){ openProfileSheet();
     setVerifNote(msg || (!me.verified ? "Pour participer, valide ton profil : entre ton e-mail, puis clique sur le lien reçu par mail."
@@ -5234,6 +5278,10 @@
   // le pseudo tapé n'est qu'un brouillon : il devient le vrai pseudo une fois réservé (bouton Enregistrer)
   $("commPseudo").addEventListener("input", checkPseudo);
   var _vs=$("commVerifSend"); if(_vs) _vs.addEventListener("click", sendVerif);
+  var _lt=$("commLoginToggle"); if(_lt) _lt.addEventListener("click", function(){ var f=$("commLoginForm"); showLogin(!!(f&&f.hidden)); });
+  var _lg=$("commLoginGo"); if(_lg) _lg.addEventListener("click", doLogin);
+  var _lr=$("commLoginReset"); if(_lr) _lr.addEventListener("click", function(){ sendPwLink(($("commLoginEmail").value||"").trim()); });
+  var _pws=$("commPwSet"); if(_pws) _pws.addEventListener("click", function(){ sendPwLink(me.email); });
   var _vc=$("commVerifCheck"); if(_vc) _vc.addEventListener("click", function(){ setVerifNote("Vérification…"); refreshVerif().then(function(st){ if(st && !st.verified) setVerifNote("Pas encore validé : clique sur le lien dans le mail (regarde aussi les spams), puis réessaie."); }); });
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible" && !me.verified){ var pend=false; try{ pend=localStorage.getItem("lf.comm.verifsent")==="1"; }catch(e){} if(pend) refreshVerif(); } });
   var _bio=$("commBio"); if(_bio){ _bio.value=me.bio||""; _bio.addEventListener("input", function(){ me.bio=_bio.value.trim().slice(0,200); try{ localStorage.setItem("lf.comm.bio", me.bio); }catch(e){} }); }
@@ -5380,6 +5428,9 @@
     if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
     var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(0); });
     var _vp=$("vidPost"); if(_vp) _vp.addEventListener("click", openVideoUpload);
+    // session expirée (mot de passe changé…) : on propose de se reconnecter
+    var _rl=false; try{ _rl=localStorage.getItem("lf.comm.relogin")==="1"; }catch(e){}
+    if(_rl){ try{ localStorage.removeItem("lf.comm.relogin"); }catch(e){} setTimeout(function(){ openProfileSheet(); showLogin(true); setLoginNote("Ta session a expiré : reconnecte-toi avec ton e-mail et ton mot de passe."); },800); }
     // état de la validation e-mail, puis (si validé) réservation du pseudo actuel
     if(backend.emailState){ var _st=backend.emailState(); me.verified=_st.verified; me.email=_st.email||""; renderVerif(); updateChatGate();
       if(me.verified && me.pseudo) claimProfile(me.pseudo,true); else if(!me.verified){ me.claimed=false; updateChatGate(); var _pd=false; try{ _pd=localStorage.getItem("lf.comm.verifsent")==="1"; }catch(e){} if(_pd) refreshVerif(); } }
