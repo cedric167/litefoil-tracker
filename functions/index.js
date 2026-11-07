@@ -61,9 +61,12 @@ exports.stlAuth = onRequest(
 const DB_INSTANCE = "litefoil-communaute-222fd-default-rtdb";
 const APP_URL = "https://cedric167.github.io/litefoil-tracker/?tab=communaute";
 const CHANS = {
-  general: "Général", efoil: "eFoil", wing: "Wing Foil", kite: "Kitesurf",
-  surf: "Surf", sup: "Paddle", windsurf: "Windsurf", bodyboard: "Bodyboard",
-  skim: "Skimboard", kayak: "Kayak"
+  general: "Général", efoil: "eFoil", wing: "Wing Foil", parawing: "Para wing", windsurf: "Windsurf",
+  pumpfoil: "Pump foil", kite: "Kitesurf", surffoil: "Surf foil", supdownwind: "SUP Downwind",
+  surf: "Surf", bodyboard: "Bodyboard", sup: "Paddle", kayak: "Canoë / Kayak", deriveur: "Dériveur",
+  jetski: "Jetski", skim: "Skimboard", running: "Running", marche: "Marche athlétique", rando: "Randonnée",
+  trail: "Trail", velo: "Vélo", ski: "Ski", snowboard: "Snowboard", skate: "Skateboard", longboard: "Longboard",
+  surfskate: "Surfskate", roller: "Roller", longueur: "Saut en longueur", perche: "Saut à la perche", parapente: "Parapente"
 };
 
 // +1 non-lu pour chaque destinataire sur cette conversation ; renvoie {uid: total non-lus}

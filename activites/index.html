@@ -242,6 +242,7 @@ input[type=file]{display:none}
     <div class="meta" id="detMeta">—</div>
     <div class="statgrid" id="detStats"></div>
     <button class="fly" id="btnFly"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Survol 3D du parcours</button>
+    <button class="btn-ghost" id="btnDel" style="margin-top:12px;width:100%;color:#c0392b;border-color:#f0c4c4">🗑 Supprimer cette sortie</button>
   </div>
 </section>
 
@@ -527,7 +528,10 @@ function mapThumb(pts){
   const d=pts.filter((p,i)=>i%step===0||i===pts.length-1).map((p,i)=>{ const q=proj(p.lat,p.lon,z); return (i?"L":"M")+(q[0]-ox).toFixed(1)+" "+(q[1]-oy).toFixed(1); }).join(" ");
   return tiles+`<svg viewBox="0 0 ${w} ${h}"><path d="${d}" fill="none" stroke="#fff" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/><path d="${d}" fill="none" stroke="#ff5a1f" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
+// sorties supprimées : celles du téléphone sont effacées, les autres (boîtier, montre) sont masquées dans l'appli
+function hiddenIds(){ try{ return new Set(JSON.parse(localStorage.getItem("lf_hidden_sessions")||"[]")); }catch(e){ return new Set(); } }
 function render(){
+  { const H=hiddenIds(); if(H.size) ALL=ALL.filter(a=>!H.has(String(a.id))); }
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-selected", b.dataset.k===filter));
   const items = ALL.filter(a=> filter==="tout" ? true : a.milieu===filter)
                    .sort((a,b)=> (b.startedAt||0)-(a.startedAt||0));
@@ -620,6 +624,15 @@ function drawDetailMap(a){
   detMap.resize();
 }
 document.getElementById("closeSheet").onclick=()=>document.getElementById("sheet").classList.remove("open");
+document.getElementById("btnDel").onclick=()=>{ const a=current; if(!a) return;
+  const phone=a.source==="phone" || String(a.id).indexOf("phone-")===0;
+  if(!confirm(phone ? "Supprimer définitivement cette sortie de ton téléphone ?" : "Masquer cette sortie dans l'appli ? (elle reste sur ton compte SportsTrackLive)")) return;
+  try{
+    if(phone){ const arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(x=>String(x.id)!==String(a.id)); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); }
+    else { const H=hiddenIds(); H.add(String(a.id)); localStorage.setItem("lf_hidden_sessions", JSON.stringify([...H])); }
+    localStorage.removeItem("lf.comm.statsSent");
+  }catch(e){}
+  ALL=ALL.filter(x=>String(x.id)!==String(a.id)); document.getElementById("sheet").classList.remove("open"); render(); };
 
 /* ====================== SURVOL 3D ====================== */
 let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1;

@@ -253,7 +253,8 @@
   .quick > *{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:4px 0; border:0; background:none; font-weight:700; font-size:12.5px; font-family:inherit; color:#22313b; text-decoration:none; cursor:pointer; width:auto; min-height:0; box-shadow:none; }
   .quick i{ font-style:normal; width:58px; height:58px; border-radius:19px; display:flex; align-items:center; justify-content:center; font-size:26px; color:#fff; box-shadow:0 6px 16px rgba(11,58,85,.16); transition:transform .15s ease; }
   .quick > *:active i{ transform:scale(.9); }
-  .quick .q1{ background:linear-gradient(135deg,#2bd4c4,#0f8a93); font-size:22px; } .quick .q2{ background:linear-gradient(135deg,#ffd76a,#e0a12b); } .quick .q3{ background:linear-gradient(135deg,#7fb0ff,#3b6fe0); } .quick .q4{ background:linear-gradient(135deg,#ffae5c,#f0642d); }
+  .quick i svg{ width:28px; height:28px; fill:none; stroke:#fff; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; filter:drop-shadow(0 1px 1px rgba(0,0,0,.15)); }
+  .quick .q1{ background:linear-gradient(135deg,#2bd4c4,#0f8a93); } .quick .q2{ background:linear-gradient(135deg,#ffd76a,#e0a12b); } .quick .q3{ background:linear-gradient(135deg,#7fb0ff,#3b6fe0); } .quick .q4{ background:linear-gradient(135deg,#ffae5c,#f0642d); }
   .quick .q5{ background:linear-gradient(135deg,#ff7aa8,#d6336c); } .quick .q6{ background:linear-gradient(135deg,#b48cff,#7a4fe0); } .quick .q7{ background:linear-gradient(135deg,#6fe3a0,#1a9c55); } .quick .q8{ background:linear-gradient(135deg,#3a4a57,#0b1a24); }
   .tabpane{ animation:paneIn .28s ease both; }
   /* 07/11 : Tracking plus lisible — gros bouton, chiffres importants en avant, infos techniques discrètes */
@@ -1178,14 +1179,14 @@
     <!-- 07/11 : raccourcis pour aller partout en un geste -->
     <div class="m-label" style="margin:20px 6px 10px">Raccourcis</div>
     <div class="quick">
-      <button type="button" data-goto="tracking"><i class="q1">▶</i>Sortie</button>
-      <button type="button" data-qk="cards"><i class="q2">🃏</i>Mes cartes</button>
-      <button type="button" data-qk="friends"><i class="q3">👥</i>Amis</button>
-      <button type="button" data-qk="defi"><i class="q4">🏆</i>Défi</button>
-      <button type="button" data-goto="videos"><i class="q5">🎬</i>Swip</button>
-      <button type="button" data-qk="events"><i class="q6">📅</i>Événements</button>
-      <a href="activites/index.html"><i class="q7">📈</i>Activités</a>
-      <button type="button" data-goto="ultra"><i class="q8">⚡</i>Ultra</button>
+      <button type="button" data-goto="tracking"><i class="q1"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="#fff" stroke="none"/></svg></i>Sortie</button>
+      <button type="button" data-qk="cards"><i class="q2"><svg viewBox="0 0 24 24"><rect x="6.5" y="3.5" width="11" height="15" rx="2.2"/><path d="M4 7v11.5A2.5 2.5 0 0 0 6.5 21H15"/><path d="M12 7.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6L12 13.5l-2.4 1.2.5-2.6-1.9-1.8 2.6-.4z" fill="#fff" stroke="none"/></svg></i>Mes cartes</button>
+      <button type="button" data-qk="friends"><i class="q3"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2A5 5 0 0 1 21 19"/></svg></i>Amis</button>
+      <button type="button" data-qk="defi"><i class="q4"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/><path d="M12 14v3.5M8.5 20.5h7M9.5 17.5h5v3h-5z"/></svg></i>Défi</button>
+      <button type="button" data-goto="videos"><i class="q5"><svg viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M10.5 9.2v5.6l4.4-2.8z" fill="#fff" stroke="none"/></svg></i>Swip</button>
+      <button type="button" data-qk="events"><i class="q6"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9.5 15l1.8 1.8 3.5-3.6"/></svg></i>Événements</button>
+      <a href="activites/index.html"><i class="q7"><svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M5 15l4.2-4.5 3.3 3 6.5-7"/><path d="M15 6.5h4v4"/></svg></i>Activités</a>
+      <button type="button" data-goto="ultra"><i class="q8"><svg viewBox="0 0 24 24"><path d="M13.5 2.5L5 13.5h6l-1 8 8.5-11h-6z" fill="#ffd23f" stroke="none"/></svg></i>Ultra</button>
     </div>
 
     <button class="home-defi" type="button" data-goto="communaute" id="homeDefi">
@@ -3676,8 +3677,15 @@
   let gseen = {}; try{ gseen = JSON.parse(localStorage.getItem("lf.comm.gseen")||"{}")||{}; }catch(e){ gseen={}; }
   const saveGseen = () => { try{ localStorage.setItem("lf.comm.gseen", JSON.stringify(gseen)); }catch(e){} };
   let chatRadius = 50; try{ const r=parseInt(localStorage.getItem("lf.comm.radius"),10); if(r>=5&&r<=1000) chatRadius=r; }catch(e){}
-  const CHANS = { efoil:"eFoil", wing:"Wing Foil", kite:"Kitesurf", surf:"Surf", sup:"Paddle", windsurf:"Windsurf", bodyboard:"Bodyboard", skim:"Skimboard", kayak:"Kayak" };
-  const CHAN_ICON = { efoil:"⚡", wing:"🪂", kite:"🪁", surf:"🏄", sup:"🛶", windsurf:"⛵", bodyboard:"🌊", skim:"🛹", kayak:"🚣" };
+  // salons : un par sport (anciennes clés gardées : wing, kite, kayak, skim) ; CHAN_LAND = sports terrestres (2e groupe de la liste)
+  const CHANS = { efoil:"eFoil", wing:"Wing Foil", parawing:"Para wing", windsurf:"Windsurf", pumpfoil:"Pump foil", kite:"Kitesurf", surffoil:"Surf foil", supdownwind:"SUP Downwind",
+    surf:"Surf", bodyboard:"Bodyboard", sup:"Paddle", kayak:"Canoë / Kayak", deriveur:"Dériveur", jetski:"Jetski", skim:"Skimboard",
+    running:"Running", marche:"Marche athlétique", rando:"Randonnée", trail:"Trail", velo:"Vélo", ski:"Ski", snowboard:"Snowboard", skate:"Skateboard",
+    longboard:"Longboard", surfskate:"Surfskate", roller:"Roller", longueur:"Saut en longueur", perche:"Saut à la perche", parapente:"Parapente" };
+  const CHAN_ICON = { efoil:"⚡", wing:"🪂", parawing:"🪁", windsurf:"⛵", pumpfoil:"🦵", kite:"🪁", surffoil:"🏄", supdownwind:"🌬️", surf:"🏄", bodyboard:"🌊", sup:"🛶", kayak:"🚣",
+    deriveur:"⛵", jetski:"🚤", skim:"🛹", running:"🏃", marche:"🚶", rando:"🥾", trail:"⛰️", velo:"🚴", ski:"🎿", snowboard:"🏂", skate:"🛹", longboard:"🛹", surfskate:"🛹",
+    roller:"🛼", longueur:"🦘", perche:"🤸", parapente:"🪂" };
+  const CHAN_LAND = ["running","marche","rando","trail","velo","ski","snowboard","skate","longboard","surfskate","roller","longueur","perche","parapente"];
   let chatTopic = "efoil"; try{ const tp=localStorage.getItem("lf.comm.topic"); if(CHANS[tp]) chatTopic=tp; }catch(e){}
   if(!CHANS[chatTopic]) chatTopic="efoil";
   let salonMsgs = [], salonUnsub = null;
@@ -4655,12 +4663,14 @@
     var vf=feedEl(), list=$("vfList"); list.innerHTML=vs.map(feedItemHtml).join(""); vf.hidden=false; document.body.style.overflow="hidden";
     list.querySelectorAll(".vf-item").forEach(function(it){ wireFeedItem(it, vs[+it.dataset.i]); });
     // la vidéo à l'écran joue, les autres sont en pause (calculé au défilement)
-    vfActive=-1; var tgt=list.querySelector('.vf-item[data-i="'+(start||0)+'"]'); if(tgt) list.scrollTop=tgt.offsetTop;
+    // la vidéo touchée (depuis le profil ou la grille) démarre directement : on attend que l'écran soit affiché pour s'y placer, puis on la lance
+    vfActive=-1; var st=start||0;
+    var go=function(){ var tgt=list.querySelector('.vf-item[data-i="'+st+'"]'); if(tgt && Math.abs(list.scrollTop-tgt.offsetTop)>2) list.scrollTop=tgt.offsetTop; feedActivate(st); };
     if(!list._wired){ list._wired=true; var tm=null; list.addEventListener("scroll", function(){ clearTimeout(tm); tm=setTimeout(feedActivate,90); }, {passive:true}); }
-    setTimeout(feedActivate,50); }
+    requestAnimationFrame(function(){ requestAnimationFrame(go); }); setTimeout(go,150); }
   let vfActive=-1;
-  function feedActivate(){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
-    var k=Math.max(0, Math.min(its.length-1, Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
+  function feedActivate(force){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
+    var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
     its.forEach(function(it,i){ var vd=it.querySelector("video"); if(i===k){ vd.muted=vfMuted; var p=vd.play(); if(p&&p.catch) p.catch(function(){}); it.classList.remove("paused"); watchCount(it); } else { vd.pause(); } }); }
   function closeFeed(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll("video").forEach(function(x){ x.pause(); }); vfActive=-1; if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } vf.hidden=true; document.body.style.overflow=""; }
   // compteur de commentaires de la vidéo à l'écran
@@ -5480,9 +5490,14 @@
       +(o.nJ?'<div><span>🦘 Sauts</span><b>'+o.nJ+'</b></div><div><span>⬆️ Meilleure hauteur</span><b>'+Math.round((o.jH||0)*100)+' cm</b></div>':'')
       +(o.jD?'<div><span>📏 Meilleure distance'+(raw&&+raw.official>0?' (officielle)':' (estimée)')+'</span><b>'+o.jD.toFixed(2).replace(".",",")+' m</b></div>':'')+'</div>'
       +(mine&&raw&&/longueur|perche/.test(String(o.sport))?'<button class="av-btn" id="sdOfficial" style="margin-top:10px">📏 Entrer ma mesure officielle</button>':'')
+      +(mine&&raw?'<button class="av-btn" id="sdDel" style="margin-top:10px;color:#c0392b">🗑 Supprimer cette session</button>':'')
       +(mine?'<button class="primary" id="sdShare" style="margin-top:14px">'+(o.shared?"Ne plus montrer à mes amis":"Montrer à mes amis sur mon profil")+'</button><div class="note" style="margin-top:8px">Seuls tes amis voient tes sessions partagées. La position exacte n\'est jamais partagée, seulement la forme du parcours.</div>':'')
       +'</div></div>';
     $("sdClose").addEventListener("click", closeOverlay);
+    var sdl=$("sdDel"); if(sdl) sdl.addEventListener("click", function(){ if(!confirm("Supprimer définitivement cette session ?")) return; var id=String(raw.id||("s"+o.t)), key=id.replace(/[.#$\[\]\/]/g,"_");
+      try{ var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(function(x){ return String(x.id)!==id; }); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){}
+      if(mySharedSess[key] && backend && backend.unshareSession){ backend.unshareSession(key).catch(function(){}); delete mySharedSess[key]; }
+      closeOverlay(); publishRatings(); publishMyStats(); renderProfil(); });
     var so=$("sdOfficial"); if(so) so.addEventListener("click", function(){ var v=prompt("Ta meilleure mesure officielle sur cette séance, en mètres (ex. 6,42) :", raw.official?String(raw.official).replace(".",","):"");
       if(v==null) return; var x=parseFloat(String(v).replace(",",".")); if(!(x>0 && x<12)){ alert("Mesure invalide."); return; }
       try{ var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr.forEach(function(s2){ if(s2.id===raw.id) s2.official=x; }); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); }catch(e){}
@@ -5926,7 +5941,9 @@
     try{ localStorage.setItem("lf.comm.radius", chatRadius); }catch(_){}
     updateRadiusUI(); renderChat(); });
   (function(){ var sel=$("chatChannel"); if(!sel) return;
-    sel.innerHTML=Object.keys(CHANS).map(function(k){ return '<option value="'+k+'">'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }).join("");
+    var opt=function(k){ return '<option value="'+k+'">'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }, keys=Object.keys(CHANS);
+    sel.innerHTML='<optgroup label="🌊 Sports nautiques">'+keys.filter(function(k){ return CHAN_LAND.indexOf(k)<0; }).map(opt).join("")+'</optgroup>'
+      +'<optgroup label="⛰️ Sports terrestres">'+keys.filter(function(k){ return CHAN_LAND.indexOf(k)>=0; }).map(opt).join("")+'</optgroup>';
     sel.value=chatTopic;
     sel.addEventListener("change", function(){ if(!CHANS[sel.value]) return; chatTopic=sel.value; chatUserUp=false; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} updateChanUI(); renderChat(); recomputeBadges(); updateChatGate(); });
   })();
