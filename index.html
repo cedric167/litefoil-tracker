@@ -257,6 +257,15 @@
   .quick .q1{ background:linear-gradient(135deg,#2bd4c4,#0f8a93); } .quick .q2{ background:linear-gradient(135deg,#ffd76a,#e0a12b); } .quick .q3{ background:linear-gradient(135deg,#7fb0ff,#3b6fe0); } .quick .q4{ background:linear-gradient(135deg,#ffae5c,#f0642d); }
   .quick .q5{ background:linear-gradient(135deg,#ff7aa8,#d6336c); } .quick .q6{ background:linear-gradient(135deg,#b48cff,#7a4fe0); } .quick .q7{ background:linear-gradient(135deg,#6fe3a0,#1a9c55); } .quick .q8{ background:linear-gradient(135deg,#3a4a57,#0b1a24); }
   .tabpane{ animation:paneIn .28s ease both; }
+  /* 07/11 : outil de cadrage des photos */
+  .crop-ov{ position:fixed; inset:0; z-index:12000; background:rgba(6,20,30,.82); display:flex; align-items:center; justify-content:center; padding:16px; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .crop-card{ background:#fff; border-radius:22px; padding:16px 16px 14px; display:flex; flex-direction:column; align-items:center; gap:10px; max-width:100%; box-shadow:0 20px 50px rgba(0,0,0,.4); }
+  .crop-t{ font-size:17px; } .crop-hint{ font-size:12.5px; color:var(--muted); text-align:center; }
+  .crop-frame{ position:relative; overflow:hidden; border-radius:14px; background:#0b1a24; touch-action:none; cursor:grab; box-shadow:0 0 0 3px #1fb5bd; }
+  .crop-frame.round{ border-radius:50%; } .crop-frame canvas{ display:block; }
+  .crop-zoom{ display:flex; align-items:center; gap:10px; width:100%; } .crop-zoom input{ flex:1; accent-color:#1fb5bd; } .crop-zoom span{ font-weight:800; color:var(--muted); }
+  .crop-acts{ display:flex; gap:10px; width:100%; } .crop-acts button{ flex:1; height:46px; border-radius:13px; border:0; font-weight:800; font-size:15px; cursor:pointer; }
+  .crop-no{ background:#e9eef1; color:#3d4a52; } .crop-ok{ background:linear-gradient(135deg,#2bd4c4,#0b6d72); color:#fff; }
   /* 07/11 : Tracking plus lisible — gros bouton, chiffres importants en avant, infos techniques discrètes */
   #phStart, #phStop{ width:100%; height:58px; border-radius:18px; font-size:17.5px; font-weight:800; letter-spacing:.01em; }
   #phStart{ background:linear-gradient(135deg,#2bd4c4,#0b6d72); color:#fff; border:0; box-shadow:0 10px 24px rgba(11,109,114,.35); }
@@ -5649,11 +5658,13 @@
     var pb=$("rcPhotoBtn"), pf=$("rcPhotoFile");
     if(pb && pf){ pb.addEventListener("click", function(){ pf.click(); });
       pf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; e.target.value="";
+        // d'abord le cadrage (portrait, comme sur la carte), puis le détourage
+        openCropper(f,{aspect:0.75, outW:900, title:"Cadrer la photo de ta carte"}).catch(function(){ return f; }).then(function(cv){ if(!cv) return;
         pb.disabled=true; pb.textContent="Détourage en cours…"; $("rcPhotoNote").textContent="Patiente quelques secondes, on retire le fond de ta photo…";
-        makeCardPhoto(f).then(function(r){ me.cardImg=r.img; try{ localStorage.setItem("lf.comm.cardimg", r.img); }catch(_){}
+        makeCardPhoto(cv).then(function(r){ me.cardImg=r.img; try{ localStorage.setItem("lf.comm.cardimg", r.img); }catch(_){}
           if(backend && backend.saveCard) backend.saveCard(r.img).catch(function(){ var n2=$("rcPhotoNote"); if(n2) n2.textContent="La photo est sur ta carte, mais pas encore partagée avec les autres (connexion). Réessaie plus tard."; });
           openRiderCard(me.uid); var n=$("rcPhotoNote"); if(n) n.textContent = r.cut ? "✓ Fond retiré, ta photo est sur ta carte." : "Le fond n'a pas pu être retiré automatiquement : la photo est fondue dans la carte. Essaie une photo de toi en entier sur fond simple."; })
-        .catch(function(){ pb.disabled=false; pb.textContent="📷 Mettre ma photo sur la carte"; $("rcPhotoNote").textContent="Cette photo ne peut pas être lue (format HEIC ou fichier abîmé). Essaie une autre photo, ou une capture d'écran de ta photo."; }); }); }
+        .catch(function(){ pb.disabled=false; pb.textContent="📷 Mettre ma photo sur la carte"; $("rcPhotoNote").textContent="Cette photo ne peut pas être lue (format HEIC ou fichier abîmé). Essaie une autre photo, ou une capture d'écran de ta photo."; }); }); }); }
     var prm=$("rcPhotoRm"); if(prm) prm.addEventListener("click", function(){ me.cardImg=""; try{ localStorage.removeItem("lf.comm.cardimg"); }catch(_){} if(backend && backend.saveCard) backend.saveCard(null).catch(function(){}); openRiderCard(me.uid); }); }
   // ---------- partage de la carte : image PNG dessinée sur un canvas (WhatsApp, Messenger, SMS, Gmail…) ----------
   const APP_LINK = "https://cedric167.github.io/litefoil-tracker/?tab=communaute";
@@ -5773,7 +5784,7 @@
   function exportCard(cv){ var w=cv.toDataURL("image/webp",0.82); if(w.indexOf("data:image/webp")===0 && w.length<380000) return w;
     var c=cv; for(var k=0;k<8;k++){ var d=c.toDataURL("image/png"); if(d.length<380000) return d; var n=document.createElement("canvas"); n.width=Math.round(c.width*0.82); n.height=Math.round(c.height*0.82); n.getContext("2d").drawImage(c,0,0,n.width,n.height); c=n; }
     return c.toDataURL("image/png"); }
-  function makeCardPhoto(file){ return loadImg(file).then(function(im){
+  function makeCardPhoto(file){ return (file && file.getContext ? Promise.resolve(file) : loadImg(file)).then(function(im){
     var sc=Math.min(1, 720/Math.max(im.width,im.height)), W=Math.round(im.width*sc), H=Math.round(im.height*sc);
     var cv=document.createElement("canvas"); cv.width=W; cv.height=H; var cx=cv.getContext("2d"); cx.drawImage(im,0,0,W,H);
     // détourage : abandon au bout de 20 s (téléphone lent ou réseau faible) → photo fondue dans la carte
@@ -5960,6 +5971,40 @@
   $("chatBack").addEventListener("click", function(){ if(chatMode==="evchat"){ curEvent=null; showEventsList(); } else if(chatMode==="group") showGroupsList(); else if(chatMode==="dm") showDMList(); else closeDM(); });
   var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="evchat" && curEvent) openEventDetail(curEvent.id); else if(chatMode==="dm" && dmPeer) openSheet(dmPeer.uid,dmPeer.pseudo,dmPeer.av,dmPeer.bio); });
   var _mb=$("memBtn"); if(_mb) _mb.addEventListener("click", openMemberPicker);
+  // ---------- 07/11 : cadrage d'une photo (glisser pour déplacer, pincer ou glissière pour zoomer) ----------
+  // o.aspect = largeur/hauteur du cadre, o.round = cadre rond, o.outW = largeur de l'image produite. Renvoie un canvas (ou null si annulé).
+  function openCropper(file, o){ o=o||{}; var aspect=o.aspect||1, outW=o.outW||600;
+    var src = window.createImageBitmap ? createImageBitmap(file,{imageOrientation:"from-image"}) : Promise.reject();
+    return src.catch(function(){ return new Promise(function(res,rej){ var u=URL.createObjectURL(file), im=new Image(); im.onload=function(){ res(im); }; im.onerror=rej; im.src=u; }); }).then(function(img){
+      return new Promise(function(resolve){
+        var iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+        var W=Math.min(300, window.innerWidth-48), H=Math.round(W/aspect), dpr=Math.min(2, window.devicePixelRatio||1);
+        var ov=document.createElement("div"); ov.className="crop-ov";
+        ov.innerHTML='<div class="crop-card"><b class="crop-t">'+esc(o.title||"Cadrer la photo")+'</b><div class="crop-hint">Glisse pour déplacer · pince ou utilise la barre pour zoomer</div>'
+          +'<div class="crop-frame'+(o.round?' round':'')+'" style="width:'+W+'px;height:'+H+'px"><canvas width="'+(W*dpr)+'" height="'+(H*dpr)+'" style="width:'+W+'px;height:'+H+'px"></canvas></div>'
+          +'<div class="crop-zoom"><span>－</span><input type="range" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><span>＋</span></div>'
+          +'<div class="crop-acts"><button type="button" class="crop-no">Annuler</button><button type="button" class="crop-ok">Valider</button></div></div>';
+        document.body.appendChild(ov);
+        var cv=ov.querySelector("canvas"), cx=cv.getContext("2d"), rg=ov.querySelector("input"), frame=ov.querySelector(".crop-frame");
+        var base=Math.max(W/iw, H/ih), z=1, x=(W-iw*base)/2, y=(H-ih*base)/2;
+        var clamp=function(){ var s=base*z, w=iw*s, h=ih*s; x=Math.min(0, Math.max(W-w, x)); y=Math.min(0, Math.max(H-h, y)); };
+        var draw=function(){ clamp(); var s=base*z; cx.setTransform(dpr,0,0,dpr,0,0); cx.clearRect(0,0,W,H); cx.drawImage(img, x, y, iw*s, ih*s); };
+        var zoomAt=function(nz, px, py){ nz=Math.max(1, Math.min(4, nz)); var k=nz/z; x=px-(px-x)*k; y=py-(py-y)*k; z=nz; rg.value=z; draw(); };
+        draw();
+        rg.addEventListener("input", function(){ zoomAt(+rg.value, W/2, H/2); });
+        var pts={}, last=null, pinch=null;
+        frame.addEventListener("pointerdown", function(e){ frame.setPointerCapture(e.pointerId); pts[e.pointerId]={x:e.clientX,y:e.clientY}; last={x:e.clientX,y:e.clientY}; var k=Object.keys(pts); if(k.length===2){ var a=pts[k[0]], b=pts[k[1]]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y), z:z}; } e.preventDefault(); });
+        frame.addEventListener("pointermove", function(e){ if(!pts[e.pointerId]) return; pts[e.pointerId]={x:e.clientX,y:e.clientY}; var k=Object.keys(pts);
+          if(k.length>=2 && pinch){ var a=pts[k[0]], b=pts[k[1]], r=frame.getBoundingClientRect(); zoomAt(pinch.z*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d, (a.x+b.x)/2-r.left, (a.y+b.y)/2-r.top); }
+          else if(last){ x+=e.clientX-last.x; y+=e.clientY-last.y; last={x:e.clientX,y:e.clientY}; draw(); } e.preventDefault(); });
+        var up=function(e){ delete pts[e.pointerId]; pinch=null; var k=Object.keys(pts); last = k.length ? {x:pts[k[0]].x, y:pts[k[0]].y} : null; };
+        frame.addEventListener("pointerup", up); frame.addEventListener("pointercancel", up);
+        frame.addEventListener("wheel", function(e){ var r=frame.getBoundingClientRect(); zoomAt(z*(e.deltaY<0?1.08:0.93), e.clientX-r.left, e.clientY-r.top); e.preventDefault(); }, {passive:false});
+        var done=function(res){ try{ ov.remove(); }catch(e){} resolve(res); };
+        ov.querySelector(".crop-no").addEventListener("click", function(){ done(null); });
+        ov.querySelector(".crop-ok").addEventListener("click", function(){ var oh=Math.round(outW/aspect), out=document.createElement("canvas"); out.width=outW; out.height=oh; var k=outW/W, s=base*z;
+          var c2=out.getContext("2d"); c2.imageSmoothingQuality="high"; c2.drawImage(img, x*k, y*k, iw*s*k, ih*s*k); done(out); });
+      }); }); }
   // réduit une photo en JPEG. createImageBitmap lit plus de formats (et l'orientation EXIF) ; sinon <img> classique
   function compressImage(file, maxDim, quality){
     var draw=function(src,w,h){ var sc=Math.min(1, maxDim/Math.max(w,h)), cw=Math.max(1,Math.round(w*sc)), ch=Math.max(1,Math.round(h*sc)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=ch; cv.getContext("2d").drawImage(src,0,0,cw,ch); return cv.toDataURL("image/jpeg", quality); };
@@ -5968,13 +6013,13 @@
     return viaImg(); }
   function renderAvatarPreview(){ ["commAvPrev","profBtnAv"].forEach(function(idp){ var p=$(idp); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }); renderAbMe(); }
   function renderAbMe(){ var ab=$("abMeAv"); if(!ab) return; ab.innerHTML = me.av ? '<img src="'+me.av+'" alt="">' : (me.pseudo ? esc(me.pseudo.charAt(0).toUpperCase()) : "👤"); }
-  function setAvatar(dataUrl){ me.av=dataUrl; try{ localStorage.setItem("lf.comm.avatar", dataUrl); }catch(e){} renderAvatarPreview(); }
+  function setAvatar(dataUrl){ me.av=dataUrl; try{ localStorage.setItem("lf.comm.avatar", dataUrl); }catch(e){} renderAvatarPreview(); renderProfil(); }
   renderAvatarPreview();
   var _avBtn=$("commAvBtn"); if(_avBtn) _avBtn.addEventListener("click", function(){ var f=$("commAvFile"); if(f) f.click(); });
   // photo de profil : enregistrée tout de suite (plus besoin d'appuyer sur « Enregistrer »), message clair si le format n'est pas lisible
   var _avFile=$("commAvFile"); if(_avFile) _avFile.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f) return;
     var btn=$("commAvBtn"); if(btn){ btn.disabled=true; btn.textContent="Photo en cours…"; }
-    compressImage(f,240,0.8).then(function(d){ setAvatar(d);
+    openCropper(f,{aspect:1, round:true, outW:320, title:"Cadrer ma photo de profil"}).then(function(cv){ if(!cv) return null; return cv.toDataURL("image/jpeg",0.82); }).then(function(d){ if(!d) return; setAvatar(d);
       if(profileReady() && backend && backend.saveProfile) return backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){ setVerifNote("✅ Photo enregistrée."); renderProfil(); });
       setVerifNote(me.verified ? "Photo prête : appuie sur Enregistrer pour la garder." : "Photo prête : elle sera enregistrée quand ton profil sera validé par e-mail."); })
     .catch(function(){ alert("Cette photo ne peut pas être lue (format HEIC ou fichier abîmé). Essaie une autre photo, ou fais une capture d'écran de ta photo et choisis la capture."); })
