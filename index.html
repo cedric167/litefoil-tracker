@@ -3627,7 +3627,7 @@
 
   // ---------- chat ----------
   function currentChannel(){ if(chatMode==="group" && curGroup) return "group:"+curGroup.id; if(chatMode==="evchat" && curEvent) return "ev:"+curEvent.id; return (chatMode==="dm" && dmPeer) ? "dm:"+pairKey(me.uid,dmPeer.uid) : "salon"; }
-  function subscribeChat(){ if(chatUnsub){ chatUnsub(); chatUnsub=null; } if(!backend) return;
+  function subscribeChat(){ chatUserUp=false; if(chatUnsub){ chatUnsub(); chatUnsub=null; } if(!backend) return;
     if((chatMode==="dm" && dmPeer) || (chatMode==="group" && curGroup) || (chatMode==="evchat" && curEvent)){ chatUnsub = backend.watchMessages(currentChannel(), m=>{ curMsgs=m; renderChat(); markOpenConvoRead(); }); }
     else { renderChat(); } }
   // abonnement permanent au salon (toutes disciplines) : alimente l'affichage ET les pastilles non-lus
@@ -3961,8 +3961,16 @@
     box.querySelectorAll(".chat-img").forEach(im=> im.addEventListener("click", ()=>{ const u=im.dataset.full; try{ const w=window.open("","_blank"); if(w){ w.document.write('<title>Photo</title><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="'+u+'" style="max-width:100%;max-height:100vh"></body>'); } else { location.href=u; } }catch(e){} }));
     box.querySelectorAll(".tapp").forEach(el=> el.addEventListener("click", ()=>{ const m=arr[+el.dataset.i]; if(m && m.uid!==me.uid) openSheet(m.uid,m.pseudo,m.av,m.bio); }));
     if(autoTrans){ for(const m of arr){ if(m.uid!==me.uid && m.text && translatable(m.text) && tcache[tl+"|"+m.text]===undefined) translateText(m.text).then(r=>{ if(r!==undefined) scheduleChatRerender(); }); } }
-    box.scrollTop = box.scrollHeight;
+    chatToBottom(box);
   }
+  // toujours ouvrir sur le dernier message : on redescend après le rendu, quand l'onglet devient visible
+  // et quand les photos/cartes finissent de charger (sauf si le rider est remonté lire l'historique)
+  let chatUserUp=false;
+  (function(){ var b=$("chatBox"); if(b) b.addEventListener("scroll", function(){ chatUserUp = (b.scrollHeight - b.scrollTop - b.clientHeight) > 160; }, {passive:true}); })();
+  function chatToBottom(box, force){ box=box||$("chatBox"); if(!box) return; if(chatUserUp && !force) return;
+    var go=function(){ box.scrollTop = box.scrollHeight; };
+    go(); requestAnimationFrame(go); setTimeout(go,120); setTimeout(go,450);
+    box.querySelectorAll("img").forEach(function(im){ if(!im.complete) im.addEventListener("load", function(){ if(!chatUserUp) go(); }, {once:true}); }); }
   function setConvoHeader(name, uidForColor, avUrl, sub){
     var av = avUrl ? '<span class="cp-av"><img src="'+avUrl+'" alt=""></span>'
                    : '<span class="cp-av" style="background:'+avatarColor(uidForColor||"x")+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
@@ -4779,7 +4787,7 @@
   (function(){ var sel=$("chatChannel"); if(!sel) return;
     sel.innerHTML=Object.keys(CHANS).map(function(k){ return '<option value="'+k+'">'+((CHAN_ICON[k]||"")+" "+CHANS[k]).trim()+'</option>'; }).join("");
     sel.value=chatTopic;
-    sel.addEventListener("change", function(){ if(!CHANS[sel.value]) return; chatTopic=sel.value; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} updateChanUI(); renderChat(); recomputeBadges(); updateChatGate(); });
+    sel.addEventListener("change", function(){ if(!CHANS[sel.value]) return; chatTopic=sel.value; chatUserUp=false; try{ localStorage.setItem("lf.comm.topic", chatTopic); }catch(e){} updateChanUI(); renderChat(); recomputeBadges(); updateChatGate(); });
   })();
   $("chatTransBtn").addEventListener("click", ()=>{ autoTrans=!autoTrans; try{ localStorage.setItem("lf.comm.autotrans", autoTrans?"1":"0"); }catch(e){} updateTransBtn(); renderChat(); });
   $("chatBellBtn").addEventListener("click", toggleNotif);
@@ -4859,7 +4867,7 @@
   $("onbLater").addEventListener("click", onbClose);
   $("onbCharter").addEventListener("click", ()=>{ onbClose(); showCharter(); });
 
-  window.commOnShow = function(){ commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); recomputeBadges(); clearDeliveredNotifs(); };
+  window.commOnShow = function(){ setTimeout(function(){ chatUserUp=false; chatToBottom(null,true); },60); commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); recomputeBadges(); clearDeliveredNotifs(); };
 
   // ---------- démarrage ----------
   (async function(){
