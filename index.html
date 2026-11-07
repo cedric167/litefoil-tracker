@@ -312,7 +312,7 @@
   /* 07/11 : onglet Profil façon Instagram */
   .pf-top{ display:flex; align-items:center; gap:18px; margin:6px 2px 10px; }
   .pf-av{ width:86px; height:86px; flex:none; border-radius:50%; background:linear-gradient(135deg,#2bb6c0,#0b3a55); color:#fff; font-weight:700; font-size:32px; font-family:inherit; display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow:0 0 0 3px #fff, 0 0 0 5px #1fb5bd; }
-  .pf-av img{ width:100%; height:100%; object-fit:cover; }
+  .pf-av img{ width:100%; height:100%; object-fit:cover; } .pf-av{ position:relative; overflow:visible !important; } .pf-av img{ border-radius:50%; } .pf-av::after{ content:"📷"; position:absolute; right:-2px; bottom:-2px; width:28px; height:28px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 2px 6px rgba(0,0,0,.2); } .up-wrap .pf-av::after{ display:none; }
   .pf-nums{ flex:1; display:flex; justify-content:space-around; }
   .pf-nums button{ border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:2px; font-family:inherit; cursor:pointer; padding:4px; }
   .pf-nums b{ font-size:19px; color:var(--ink,#0b0d10); } .pf-nums span{ font-size:12.5px; color:var(--muted); font-weight:600; }
@@ -5632,9 +5632,9 @@
       pf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; e.target.value="";
         pb.disabled=true; pb.textContent="Détourage en cours…"; $("rcPhotoNote").textContent="Patiente quelques secondes, on retire le fond de ta photo…";
         makeCardPhoto(f).then(function(r){ me.cardImg=r.img; try{ localStorage.setItem("lf.comm.cardimg", r.img); }catch(_){}
-          if(backend && backend.saveCard) backend.saveCard(r.img).catch(function(){});
+          if(backend && backend.saveCard) backend.saveCard(r.img).catch(function(){ var n2=$("rcPhotoNote"); if(n2) n2.textContent="La photo est sur ta carte, mais pas encore partagée avec les autres (connexion). Réessaie plus tard."; });
           openRiderCard(me.uid); var n=$("rcPhotoNote"); if(n) n.textContent = r.cut ? "✓ Fond retiré, ta photo est sur ta carte." : "Le fond n'a pas pu être retiré automatiquement : la photo est fondue dans la carte. Essaie une photo de toi en entier sur fond simple."; })
-        .catch(function(){ pb.disabled=false; pb.textContent="📷 Mettre ma photo sur la carte"; $("rcPhotoNote").textContent="Photo illisible, essaie une autre image."; }); }); }
+        .catch(function(){ pb.disabled=false; pb.textContent="📷 Mettre ma photo sur la carte"; $("rcPhotoNote").textContent="Cette photo ne peut pas être lue (format HEIC ou fichier abîmé). Essaie une autre photo, ou une capture d'écran de ta photo."; }); }); }
     var prm=$("rcPhotoRm"); if(prm) prm.addEventListener("click", function(){ me.cardImg=""; try{ localStorage.removeItem("lf.comm.cardimg"); }catch(_){} if(backend && backend.saveCard) backend.saveCard(null).catch(function(){}); openRiderCard(me.uid); }); }
   // ---------- partage de la carte : image PNG dessinée sur un canvas (WhatsApp, Messenger, SMS, Gmail…) ----------
   const APP_LINK = "https://cedric167.github.io/litefoil-tracker/?tab=communaute";
@@ -5747,12 +5747,18 @@
       return m.ImageSegmenter.createFromOptions(fs,{ baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/latest/deeplab_v3.tflite", delegate:"CPU" },
         runningMode:"IMAGE", outputConfidenceMasks:true, outputCategoryMask:false }); }); });
     segPromise.catch(function(){ segPromise=null; }); return segPromise; }
-  function loadImg(file){ return new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(){ var im=new Image(); im.onload=function(){ res(im); }; im.onerror=rej; im.src=fr.result; }; fr.onerror=rej; fr.readAsDataURL(file); }); }
-  function exportCard(cv){ var w=cv.toDataURL("image/webp",0.85); return w.indexOf("data:image/webp")===0 ? w : cv.toDataURL("image/png"); }
+  // lecture d'une photo : createImageBitmap (plus de formats, orientation EXIF), sinon <img>
+  function loadImg(file){ var viaImg=function(){ return new Promise(function(res,rej){ var u=URL.createObjectURL(file), im=new Image(); im.onload=function(){ res(im); }; im.onerror=function(e){ URL.revokeObjectURL(u); rej(e); }; im.src=u; }); };
+    return window.createImageBitmap ? createImageBitmap(file,{imageOrientation:"from-image"}).catch(viaImg) : viaImg(); }
+  // image de la carte : WebP si possible ; sinon PNG réduit jusqu'à passer sous la limite de Firebase (400 000 caractères)
+  function exportCard(cv){ var w=cv.toDataURL("image/webp",0.82); if(w.indexOf("data:image/webp")===0 && w.length<380000) return w;
+    var c=cv; for(var k=0;k<8;k++){ var d=c.toDataURL("image/png"); if(d.length<380000) return d; var n=document.createElement("canvas"); n.width=Math.round(c.width*0.82); n.height=Math.round(c.height*0.82); n.getContext("2d").drawImage(c,0,0,n.width,n.height); c=n; }
+    return c.toDataURL("image/png"); }
   function makeCardPhoto(file){ return loadImg(file).then(function(im){
     var sc=Math.min(1, 720/Math.max(im.width,im.height)), W=Math.round(im.width*sc), H=Math.round(im.height*sc);
     var cv=document.createElement("canvas"); cv.width=W; cv.height=H; var cx=cv.getContext("2d"); cx.drawImage(im,0,0,W,H);
-    return loadSegmenter().then(function(seg){
+    // détourage : abandon au bout de 20 s (téléphone lent ou réseau faible) → photo fondue dans la carte
+    return Promise.race([loadSegmenter(), new Promise(function(_,rj){ setTimeout(function(){ rj(new Error("délai")); }, 20000); })]).then(function(seg){
       var r=seg.segment(cv), mk=r.confidenceMasks && r.confidenceMasks[15]; if(!mk) throw new Error("pas de masque");
       var mw=mk.width, mh=mk.height, a=mk.getAsFloat32Array();
       var m=document.createElement("canvas"); m.width=mw; m.height=mh; var mx=m.getContext("2d"), md=mx.createImageData(mw,mh), on=0, x0=mw, y0=mh, x1=0, y1=0;
@@ -5866,7 +5872,6 @@
   var _vs=$("commVerifSend"); if(_vs) _vs.addEventListener("click", sendVerif);
   // onglet Profil, recherche d'amis, carte Événements
   var _pfe=$("pfEdit"); if(_pfe) _pfe.addEventListener("click", function(){ setVerifNote(""); openProfileSheet(); });
-  var _pfa=$("pfAv"); if(_pfa) _pfa.addEventListener("click", function(){ setVerifNote(""); openProfileSheet(); });
   var _pfc=$("pfCard"); if(_pfc) _pfc.addEventListener("click", function(){ openRiderCard(me.uid); });
   var _pff=$("pfFind"); if(_pff) _pff.addEventListener("click", openFriendSearch);
   var _cms=$("cmSearch"); if(_cms) _cms.addEventListener("click", openFriendSearch);
@@ -5934,13 +5939,27 @@
   $("chatBack").addEventListener("click", function(){ if(chatMode==="evchat"){ curEvent=null; showEventsList(); } else if(chatMode==="group") showGroupsList(); else if(chatMode==="dm") showDMList(); else closeDM(); });
   var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="evchat" && curEvent) openEventDetail(curEvent.id); else if(chatMode==="dm" && dmPeer) openSheet(dmPeer.uid,dmPeer.pseudo,dmPeer.av,dmPeer.bio); });
   var _mb=$("memBtn"); if(_mb) _mb.addEventListener("click", openMemberPicker);
-  function compressImage(file, maxDim, quality){ return new Promise(function(resolve,reject){ var fr=new FileReader(); fr.onload=function(){ var img=new Image(); img.onload=function(){ var w=img.width,h=img.height,s=Math.min(1, maxDim/Math.max(w,h)); var cw=Math.max(1,Math.round(w*s)), chh=Math.max(1,Math.round(h*s)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=chh; var ctx=cv.getContext("2d"); ctx.drawImage(img,0,0,cw,chh); try{ resolve(cv.toDataURL("image/jpeg", quality)); }catch(e){ reject(e); } }; img.onerror=reject; img.src=fr.result; }; fr.onerror=reject; fr.readAsDataURL(file); }); }
+  // réduit une photo en JPEG. createImageBitmap lit plus de formats (et l'orientation EXIF) ; sinon <img> classique
+  function compressImage(file, maxDim, quality){
+    var draw=function(src,w,h){ var sc=Math.min(1, maxDim/Math.max(w,h)), cw=Math.max(1,Math.round(w*sc)), ch=Math.max(1,Math.round(h*sc)); var cv=document.createElement("canvas"); cv.width=cw; cv.height=ch; cv.getContext("2d").drawImage(src,0,0,cw,ch); return cv.toDataURL("image/jpeg", quality); };
+    var viaImg=function(){ return new Promise(function(resolve,reject){ var u=URL.createObjectURL(file), img=new Image(); img.onload=function(){ try{ resolve(draw(img, img.naturalWidth||img.width, img.naturalHeight||img.height)); }catch(e){ reject(e); } URL.revokeObjectURL(u); }; img.onerror=function(e){ URL.revokeObjectURL(u); reject(e); }; img.src=u; }); };
+    if(window.createImageBitmap) return createImageBitmap(file, {imageOrientation:"from-image"}).then(function(b){ var r=draw(b,b.width,b.height); try{ b.close(); }catch(e){} return r; }).catch(viaImg);
+    return viaImg(); }
   function renderAvatarPreview(){ ["commAvPrev","profBtnAv"].forEach(function(idp){ var p=$(idp); if(!p) return; if(me.av){ p.innerHTML='<img src="'+me.av+'" alt="">'; } else { p.textContent="+"; } }); renderAbMe(); }
   function renderAbMe(){ var ab=$("abMeAv"); if(!ab) return; ab.innerHTML = me.av ? '<img src="'+me.av+'" alt="">' : (me.pseudo ? esc(me.pseudo.charAt(0).toUpperCase()) : "👤"); }
   function setAvatar(dataUrl){ me.av=dataUrl; try{ localStorage.setItem("lf.comm.avatar", dataUrl); }catch(e){} renderAvatarPreview(); }
   renderAvatarPreview();
   var _avBtn=$("commAvBtn"); if(_avBtn) _avBtn.addEventListener("click", function(){ var f=$("commAvFile"); if(f) f.click(); });
-  var _avFile=$("commAvFile"); if(_avFile) _avFile.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,160,0.72).then(setAvatar).catch(function(){}); e.target.value=""; });
+  // photo de profil : enregistrée tout de suite (plus besoin d'appuyer sur « Enregistrer »), message clair si le format n'est pas lisible
+  var _avFile=$("commAvFile"); if(_avFile) _avFile.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f) return;
+    var btn=$("commAvBtn"); if(btn){ btn.disabled=true; btn.textContent="Photo en cours…"; }
+    compressImage(f,240,0.8).then(function(d){ setAvatar(d);
+      if(profileReady() && backend && backend.saveProfile) return backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){ setVerifNote("✅ Photo enregistrée."); renderProfil(); });
+      setVerifNote(me.verified ? "Photo prête : appuie sur Enregistrer pour la garder." : "Photo prête : elle sera enregistrée quand ton profil sera validé par e-mail."); })
+    .catch(function(){ alert("Cette photo ne peut pas être lue (format HEIC ou fichier abîmé). Essaie une autre photo, ou fais une capture d'écran de ta photo et choisis la capture."); })
+    .then(function(){ if(btn){ btn.disabled=false; btn.textContent="Changer la photo"; } }); });
+  // toucher le rond de la photo ouvre directement la galerie
+  ["commAvPrev","pfAv"].forEach(function(id){ var el=$(id); if(el){ el.style.cursor="pointer"; el.addEventListener("click", function(ev){ ev.stopPropagation(); var f=$("commAvFile"); if(f) f.click(); }); } });
   var _ph=$("chatAttach"); if(_ph) _ph.addEventListener("click", function(){ if(!profileReady()||!charterOk){ if(!profileReady()){ askProfile(); } updateChatGate(); return; } openAttachMenu(); });
   var _phf=$("chatFile"); if(_phf) _phf.addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; compressImage(f,1000,0.6).then(function(d){ var cap=$("chatInput").value.trim(); if(backend) backend.sendMessage(currentChannel(), cap, d, replyTarget); $("chatInput").value=""; clearReply(); }).catch(function(){}); e.target.value=""; });
   var replyTarget=null;
