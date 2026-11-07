@@ -169,11 +169,21 @@ Règles à ajouter (à côté des autres) :
   ".read": "auth != null",
   "$uid": {
     ".write": "auth != null && auth.uid === $uid",
-    ".validate": "newData.child('n').isNumber() && newData.child('km').isNumber() && newData.child('n').val() <= 5000 && newData.child('km').val() <= 200000"
+    ".validate": "newData.child('n').isNumber() && newData.child('km').isNumber() && newData.child('n').val() <= 5000 && newData.child('km').val() <= 200000 && (!newData.child('eKm').exists() || (newData.child('eKm').isNumber() && newData.child('eKm').val() <= 5000))"
   }
 },
 "welcomed": { ".read": false, ".write": false }
 ```
+
+## Cartes de rider et défi eFoil du mois
+
+- Points : 10 par sortie (> 100 m), 2 par km, 20 par événement organisé, 10 par
+  événement rejoint. Note de la carte de 40 à 99, grades N1 Débutant → N6 Légende.
+- Défi du mois : classement des km d'eFoil du mois (`/stats/{uid}.eKm`, mois dans
+  `month`). Sorties retenues : > 100 m, < 150 km, moyenne < 55 km/h.
+- Le lot s'affiche dès que `DEFI_LOT` est rempli dans `index.html`. Règlement :
+  `REGLEMENT_DEFI.md` (brouillon à valider). Vérifier les traces des premiers avant
+  de remettre le lot (les chiffres viennent des téléphones des riders).
 
 ## Structure des données (pour info)
 

@@ -197,6 +197,13 @@
   .home-stats b{ font-size:26px; font-weight:800; letter-spacing:-.5px; font-variant-numeric:tabular-nums; color:var(--text); }
   .home-stats span{ font-size:12px; color:var(--muted); font-weight:600; }
   .home-go{ width:100%; display:flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:16px; padding:15px; font-family:inherit; font-size:16px; font-weight:800; color:#fff; background:#0b0d10; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.18); }
+  .home-defi{ margin-top:12px; width:100%; display:flex; align-items:center; gap:12px; border:0; text-align:left; cursor:pointer; font-family:inherit; color:#fff; border-radius:20px; padding:12px 14px;
+    background:radial-gradient(120% 140% at 100% 0%, #ffb547 0%, #ef7d2e 40%, #b2401a 100%); box-shadow:0 8px 20px rgba(178,64,26,.25); }
+  .hd-note{ flex:0 0 auto; width:46px; height:54px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; background:linear-gradient(160deg,#1b2f6b,#0b1636); box-shadow:0 0 0 2px #7fb0ff inset; }
+  .hd-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .hd-txt b{ font-size:15.5px; font-weight:800; }
+  .hd-txt span{ font-size:13px; opacity:.92; }
+  .hd-cup{ font-size:28px; }
   .home-go svg{ width:18px; height:18px; fill:#fff; }
   .home-go:active{ transform:scale(.98); }
   /* matériel : une liste propre au lieu de 4 grosses tuiles */
@@ -396,6 +403,58 @@
   .comm-stats{ display:flex; flex-wrap:wrap; gap:8px; margin:-6px 2px 14px; }
   .comm-stats span{ display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); background:var(--tile); border-radius:100px; padding:6px 12px; font-weight:600; }
   .comm-stats b{ color:var(--text); font-weight:800; font-variant-numeric:tabular-nums; }
+  /* ===== cartes de rider (style carte de collection) + défi du mois ===== */
+  .rcard{ position:relative; width:300px; max-width:84vw; aspect-ratio:300/430; margin:0 auto; border-radius:26px; overflow:hidden; color:#fff; font-family:inherit;
+    background:radial-gradient(120% 70% at 85% 10%, var(--rc-glow,#2f6fe0) 0%, transparent 60%), linear-gradient(160deg, var(--rc-a,#1b2f6b) 0%, var(--rc-b,#0b1636) 100%);
+    box-shadow:0 0 0 3px var(--rc-edge,#7fb0ff) inset, 0 18px 40px rgba(10,20,60,.45); }
+  .rcard::before{ content:""; position:absolute; inset:0; background:
+      linear-gradient(115deg, transparent 38%, rgba(255,255,255,.10) 39%, rgba(255,255,255,.10) 44%, transparent 45%),
+      linear-gradient(115deg, transparent 50%, rgba(255,255,255,.06) 51%, rgba(255,255,255,.06) 60%, transparent 61%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48' viewBox='0 0 28 48'%3E%3Cpath d='M14 0l14 8v16l-14 8L0 24V8z' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E"); pointer-events:none; }
+  .rcard::after{ content:""; position:absolute; inset:-40%; background:linear-gradient(115deg, transparent 45%, rgba(255,255,255,.22) 50%, transparent 55%); transform:translateX(-60%); animation:rcShine 3.6s ease-in-out infinite; pointer-events:none; }
+  @keyframes rcShine{ 0%,55%{ transform:translateX(-60%); } 100%{ transform:translateX(60%); } }
+  .rc-rar{ position:absolute; top:18px; left:20px; font-size:13px; font-weight:800; letter-spacing:.14em; color:var(--rc-edge,#7fb0ff); }
+  .rc-note{ position:absolute; top:34px; left:18px; font-size:64px; font-weight:800; line-height:1; letter-spacing:-2px; text-shadow:0 3px 12px rgba(0,0,0,.3); }
+  .rc-tags{ position:absolute; top:108px; left:18px; display:flex; flex-direction:column; gap:7px; align-items:flex-start; }
+  .rc-sport{ font-size:13px; font-weight:800; letter-spacing:.06em; background:#ff4f9a; color:#fff; padding:4px 12px; clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%); }
+  .rc-lvl{ font-size:12px; font-weight:800; border:2px solid rgba(255,255,255,.75); padding:2px 10px; clip-path:polygon(12% 0,100% 0,88% 100%,0 100%); }
+  .rc-club{ position:absolute; top:16px; right:16px; background:#fff; color:#0b1636; font-size:12px; font-weight:800; padding:5px 10px; border-radius:100px; letter-spacing:.04em; }
+  .rc-av{ position:absolute; top:58px; right:14px; width:168px; height:200px; border-radius:22px 22px 80px 22px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:84px; font-weight:800; color:rgba(255,255,255,.9); box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .rc-av img{ width:100%; height:100%; object-fit:cover; }
+  .rc-rib{ position:absolute; top:276px; left:0; right:0; background:linear-gradient(90deg, rgba(31,181,189,.0), rgba(31,181,189,.85) 15%, rgba(31,181,189,.85) 85%, rgba(31,181,189,0)); text-align:center; font-size:13px; font-weight:800; letter-spacing:.08em; padding:7px 10px; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rc-name{ position:absolute; top:316px; left:0; right:0; text-align:center; font-size:28px; font-weight:800; letter-spacing:.02em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 16px; }
+  .rc-stat{ position:absolute; top:354px; left:0; right:0; text-align:center; font-size:15px; font-weight:600; opacity:.92; }
+  .rc-foot{ position:absolute; bottom:14px; left:18px; right:18px; display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; opacity:.9; }
+  .rc-foot b{ background:#1a9c55; color:#fff; font-size:11px; padding:2px 7px; border-radius:6px; }
+  .rcard.r-bronze{ --rc-a:#5a3a22; --rc-b:#24160c; --rc-glow:#c07a3c; --rc-edge:#e0a26a; }
+  .rcard.r-rare{ --rc-a:#1b2f6b; --rc-b:#0b1636; --rc-glow:#2f6fe0; --rc-edge:#7fb0ff; }
+  .rcard.r-epic{ --rc-a:#3d1a6e; --rc-b:#160830; --rc-glow:#8a4fe0; --rc-edge:#c79cff; }
+  .rcard.r-legend{ --rc-a:#5c4207; --rc-b:#1e1402; --rc-glow:#f1c24b; --rc-edge:#ffd76a; }
+  .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
+  .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
+  .rc-how b{ color:var(--accent-ink); white-space:nowrap; }
+  .rc-prog{ height:8px; border-radius:100px; background:var(--tile); overflow:hidden; }
+  .rc-prog i{ display:block; height:100%; background:linear-gradient(90deg,#1fb5bd,#5acdd1); border-radius:100px; }
+  .rider-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .card-btn{ display:inline-flex; align-items:center; gap:8px; border:0; border-radius:100px; padding:9px 16px 9px 10px; font-family:inherit; font-size:14px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(135deg,#1b2f6b,#2f6fe0); box-shadow:0 4px 12px rgba(27,47,107,.3); }
+  .card-btn .cb-n{ background:#fff; color:#1b2f6b; border-radius:100px; padding:2px 8px; font-size:13px; }
+  .defi{ margin:4px 0 14px; border-radius:22px; padding:16px; color:#fff; cursor:pointer; position:relative; overflow:hidden;
+    background:radial-gradient(120% 120% at 100% 0%, #ffb547 0%, #ef7d2e 35%, #b2401a 100%); box-shadow:0 10px 26px rgba(178,64,26,.3); }
+  .defi::after{ content:"🏆"; position:absolute; right:-6px; bottom:-14px; font-size:96px; opacity:.18; transform:rotate(-12deg); }
+  .defi-top{ display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92; }
+  .defi h3{ margin:6px 0 4px; font-family:"Instrument Serif", Georgia, serif; font-weight:400; font-size:28px; line-height:1.05; }
+  .defi-lot{ font-size:14px; font-weight:700; background:rgba(255,255,255,.18); display:inline-block; padding:4px 10px; border-radius:100px; margin:4px 0 10px; }
+  .defi-pod{ display:flex; gap:8px; }
+  .defi-pod div{ flex:1; background:rgba(0,0,0,.18); border-radius:14px; padding:8px; text-align:center; font-size:12px; font-weight:700; min-width:0; }
+  .defi-pod div b{ display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .defi-me{ margin-top:10px; font-size:13.5px; font-weight:700; }
+  .lb-row{ display:flex; align-items:center; gap:10px; padding:9px 4px; border-bottom:1px solid var(--line-soft); }
+  .lb-row.me{ background:#fff6ec; border-radius:12px; }
+  .lb-pos{ width:28px; text-align:center; font-weight:800; font-size:15px; color:var(--muted); }
+  .lb-pos.p1{ color:#d4a017; } .lb-pos.p2{ color:#8a99a6; } .lb-pos.p3{ color:#b8733a; }
+  .lb-note{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; background:linear-gradient(135deg,#1b2f6b,#2f6fe0); }
+  .lb-row .pick-ps{ flex:1; min-width:0; }
+  .lb-km{ font-weight:800; font-variant-numeric:tabular-nums; }
   .comm-myid{ margin-top:12px; font-size:11px; color:var(--muted-2); word-break:break-all; user-select:all; -webkit-user-select:all; }
   .mem-adm{ font-size:11px; color:var(--accent-ink); background:var(--tile); padding:2px 8px; border-radius:100px; }
   .mem-rm{ border:0; background:none; color:var(--bad); font-size:12px; cursor:pointer; }
@@ -880,6 +939,12 @@
       <button class="home-go" type="button" data-goto="tracking"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Démarrer une sortie</button>
     </div>
 
+    <button class="home-defi" type="button" data-goto="communaute" id="homeDefi">
+      <span class="hd-note" id="hdNote">40</span>
+      <span class="hd-txt"><b id="hdTitle">Défi eFoil du mois</b><span id="hdSub">Grimpe au classement et fais monter ta carte de rider</span></span>
+      <span class="hd-cup">🏆</span>
+    </button>
+
     <div class="card hero-metric" style="display:none">
       <div class="hm-top"><span class="hm-label">Vitesse</span><span class="hm-max" id="dSpdMax">max —</span></div>
       <div class="hm-value"><span id="dSpd">—</span><span class="hm-unit">km/h</span></div>
@@ -943,9 +1008,10 @@
   <section id="tab-communaute" class="tabpane" hidden>
     <p class="tagline">Les riders connectés près de toi.</p>
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
-    <button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button>
+    <div class="rider-actions"><button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button><button class="card-btn" id="myCardBtn" type="button"><span class="cb-n" id="myCardNote">40</span>Ma carte de rider</button></div>
     <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<button type="button" class="mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span>&nbsp;›</button></div>
     <div class="comm-stats" id="commStats" hidden></div>
+    <div id="defiBox"></div>
 
     <div class="riders-strip-wrap" id="ridersStripWrap">
       <div class="m-label" style="margin:2px 6px 6px">Riders en ligne</div>
@@ -1088,6 +1154,7 @@
           <div class="prof-name" id="sheetTitle"></div>
         </div>
         <div class="wa-prof-act">
+          <button id="sheetCard"><span style="font-size:20px;line-height:1">🃏</span><span>Sa carte</span></button>
           <button id="sheetMsg"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><span>Message</span></button>
         </div>
         <div class="wa-prof-about"><span class="wa-lbl">À propos</span><div class="prof-bio" id="sheetBio"></div></div>
@@ -3298,7 +3365,7 @@
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
       watchOfficial(cb){ return db.onValue(db.ref(d,"official"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
       watchStats(cb){ return db.onValue(db.ref(d,"stats"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
-      saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,t:db.serverTimestamp()}).catch(function(){}); },
+      saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,month:o.month,eKm:o.eKm||0,eo:o.eo||0,ej:o.ej||0,sport:o.sport||"efoil",t:db.serverTimestamp()}).catch(function(){}); },
       watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); },
       // ---------- groupes privés (facon WhatsApp) ----------
@@ -3393,7 +3460,7 @@
       saveProfile(){ return Promise.resolve(); },
       watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
       watchOfficial(cb){ cb({}); return function(){}; },
-      watchStats(cb){ var o={"demo-aurel":{n:42,km:612.4},"demo-marine":{n:17,km:203.9}}; var m=myStats(); if(m) o[uid]=m; cb(o); return function(){}; },
+      watchStats(cb){ var mk=monthKey(); var o={"demo-aurel":{n:42,km:612.4,month:mk,eKm:48.6,eo:3,ej:5,sport:"efoil"},"demo-marine":{n:17,km:203.9,month:mk,eKm:21.2,eo:0,ej:4,sport:"wing"},"demo-leo":{n:6,km:38,month:mk,eKm:9.8,ej:1,sport:"efoil"}}; cb(o); return function(){}; },
       saveStats(){ return Promise.resolve(); },
       watchTyping(){ return function(){}; },
       sendReport(){ return Promise.resolve(); },
@@ -4136,6 +4203,7 @@
       var btn=$("evCreate"); btn.disabled=true; btn.textContent="Création…"; err("");
       var o2={title:title,topic:CHANS[topic]?topic:"efoil",when:when,place:place,desc:desc}; if(max) o2.max=max;
       photo.get().catch(function(){ return null; }).then(function(img){ if(img) o2.img=img; return backend.createEvent(o2); }).then(function(eid){
+        bumpEvCount("eo");
         var ev={id:eid,title:title,when:when,place:place,topic:o2.topic};
         var ch=announceCh||"salon";
         var txt="📅 "+title+" · "+fmtEvWhen(when)+(place?" · "+place:"")+" — inscris-toi dans Événements (Communauté)";
@@ -4192,7 +4260,7 @@
     var refetch=function(){ if(backend&&backend.getEvent&&!myEvents.some(function(x){return x.id===e.id;})) backend.getEvent(e.id).then(function(v){ if(v) renderEventDetail(v); }); };
     var fail=function(err){ alert("Action impossible : "+((err&&(err.code||err.message))||"erreur")); renderEventDetail(e); };
     var j=$("evdJoin"); if(j) j.addEventListener("click", function(){ if(!charterOk){ showCharter(); return; } if(!me.pseudo){ closeOverlay(); $("commPseudo")&&$("commPseudo").focus(); updateChatGate(); alert("Choisis d'abord un pseudo pour t'inscrire."); return; }
-      j.disabled=true; j.textContent="Inscription…"; backend.joinEvent(e.id).then(refetch).catch(fail); });
+      j.disabled=true; j.textContent="Inscription…"; backend.joinEvent(e.id).then(function(){ bumpEvCount("ej"); refetch(); }).catch(fail); });
     var l=$("evdLeave"); if(l) l.addEventListener("click", function(){ if(!confirm("Te désinscrire de « "+e.title+" » ?")) return; l.disabled=true; backend.leaveEvent(e.id).then(refetch).catch(fail); });
     var c=$("evdCancelEv"); if(c) c.addEventListener("click", function(){ if(!confirm("Annuler « "+e.title+" » ? Les inscrits le verront comme annulé.")) return; c.disabled=true;
       backend.cancelEvent(e.id).then(function(){ backend.sendMessage("salon", ("❌ Annulé : "+e.title+" · "+fmtEvWhen(e.when)).slice(0,400), null, null, {topic:e.topic}).catch(function(){}); refetch(); }).catch(fail); });
@@ -4395,11 +4463,89 @@
   function onTyping(map){ typers=map||{}; renderTyping(); }
   function onProfiles(map){ profileMap = map||{}; recomputeMembers(); }
   // mes sorties : calculées par la page Activités (lf_my_stats), sinon depuis les sorties suivies au téléphone
-  function myStats(){ try{ var s=JSON.parse(localStorage.getItem("lf_my_stats")||"null"); if(s && s.n>=0) return {n:+s.n||0, km:Math.round((+s.km||0)*10)/10};
-      var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"), n=0, m=0; arr.forEach(function(a){ var d=+a.distanceM||0; if(d>=100){ n++; m+=d; } }); return {n:n, km:Math.round(m/100)/10}; }catch(e){ return null; } }
+  function isEfoil(a){ return a && (a.activityType==="efoil" || a.activityType==="electric" || /foil [ée]lectrique|e-?foil/i.test(a.categoryName||"")); }
+  function okEfoil(a){ var d=+a.distanceM||0, s=+a.durationSec||0; return d>=100 && d<=150000 && (!s || d/s*3.6<=55); } // anti-triche : < 55 km/h de moyenne
+  function myStats(){ try{
+      var c=evCounts(), mk=monthKey(), s=JSON.parse(localStorage.getItem("lf_my_stats")||"null"), base;
+      if(s && s.n>=0) base={n:+s.n||0, km:+s.km||0, month:s.month, eKm:+s.eKm||0, t:+s.t||0};
+      else base={n:0, km:0, month:mk, eKm:0, t:0};
+      if(base.month!==mk){ base.month=mk; base.eKm=0; }
+      // sorties au téléphone enregistrées après le dernier calcul de la page Activités
+      JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").forEach(function(a){ var st=new Date(a.startedAt||0).getTime(), d=+a.distanceM||0; if(st<=base.t || d<100) return;
+        base.n++; base.km+=d/1000; if(isEfoil(a) && okEfoil(a) && monthKey(new Date(st))===mk) base.eKm+=d/1000; });
+      return {n:base.n, km:Math.round(base.km*10)/10, month:mk, eKm:Math.round(base.eKm*10)/10, eo:+c.eo||0, ej:+c.ej||0, sport:chatTopic};
+    }catch(e){ return null; } }
   function publishMyStats(){ if(!backend||!backend.saveStats||!me.pseudo) return; var m=myStats(); if(!m || !m.n) return;
-    var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=m.n+"|"+m.km; if(prev===cur) return;
+    var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=[m.n,m.km,m.month,m.eKm,m.eo,m.ej,m.sport].join("|"); if(prev===cur) return;
     backend.saveStats(m); try{ localStorage.setItem(k,cur); }catch(e){} }
+  // (les chiffres envoyés incluent le mois, les km d'eFoil du mois et les événements)
+  /* ---------- points, grades et carte de rider ----------
+     Points (XP) : 10 par sortie (> 100 m), 2 par km, 20 par événement organisé, 10 par événement rejoint.
+     Note de la carte : 40 à 99 selon les points. Le défi du mois classe les km d'eFoil du mois. */
+  const GRADES=[[0,"Débutant"],[100,"Rider"],[300,"Confirmé"],[700,"Expert"],[1500,"Pro"],[3000,"Légende"]];
+  const DEFI_LOT = "";   // lot du défi du mois (ex. « Un leash et un t-shirt Lite Foil ») : vide = non affiché
+  function monthKey(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+  function evCounts(){ try{ return JSON.parse(localStorage.getItem("lf.comm.evcount")||"{}")||{}; }catch(e){ return {}; } }
+  function bumpEvCount(k){ var c=evCounts(); c[k]=(+c[k]||0)+1; try{ localStorage.setItem("lf.comm.evcount", JSON.stringify(c)); }catch(e){} try{ localStorage.removeItem("lf.comm.statsSent"); }catch(e){} publishMyStats(); }
+  function riderXP(v){ v=v||{}; return Math.round((+v.n||0)*10 + (+v.km||0)*2 + (+v.eo||0)*20 + (+v.ej||0)*10); }
+  function riderLevel(xp){ var i=0; for(var k=0;k<GRADES.length;k++){ if(xp>=GRADES[k][0]) i=k; } return i; }
+  function riderNote(xp){ return Math.min(99, 40 + Math.floor(59*Math.sqrt(Math.min(xp,6000)/6000))); }
+  function riderRarity(note){ return note>=85?["r-legend","LÉGENDE"]:note>=70?["r-epic","ÉPIQUE"]:note>=55?["r-rare","RARE"]:["r-bronze","BRONZE"]; }
+  function monthEfoilKm(v){ return (v && v.month===monthKey()) ? (+v.eKm||0) : 0; }
+  function riderCardHtml(uid){
+    var mine=uid===me.uid, st=mine?(myStats()||{}):(commStats[uid]||{}), pr=profileMap[uid]||{};
+    var ps=mine?me.pseudo:(pr.pseudo||"Rider"), av=mine?me.av:pr.av, xp=riderXP(st), lv=riderLevel(xp), note=riderNote(xp), rar=riderRarity(note);
+    var topic=(mine?chatTopic:(st.sport||"efoil")); var sport=(CHANS[topic]||"eFoil").toUpperCase();
+    var rank=defiRank(uid), stat=Math.round(+st.km||0).toLocaleString("fr-FR")+" km · "+(+st.n||0)+" sortie"+((+st.n||0)>1?"s":"");
+    var avHtml=av?'<img src="'+av+'" alt="">':esc(((ps||"R").trim()[0]||"R").toUpperCase());
+    return '<div class="rcard '+rar[0]+'"><span class="rc-rar">'+rar[1]+'</span><span class="rc-note">'+note+'</span>'
+      +'<div class="rc-tags"><span class="rc-sport">'+esc(sport.slice(0,9))+'</span><span class="rc-lvl">N'+(lv+1)+'</span></div>'
+      +'<span class="rc-club">LITE FOIL</span>'
+      +'<div class="rc-av" style="background:'+(av?"#000":avatarColor(uid||"x"))+'">'+avHtml+'</div>'
+      +'<div class="rc-rib">★ '+esc(GRADES[lv][1]+" "+(CHANS[topic]||"eFoil"))+'</div>'
+      +'<div class="rc-name">'+esc(ps||"Rider")+'</div>'
+      +'<div class="rc-stat">'+esc(stat)+'</div>'
+      +'<div class="rc-foot"><b>'+xp.toLocaleString("fr-FR")+' pts</b>'+(rank?'<span>🏆 '+rank+(rank===1?"er":"e")+' au défi eFoil du mois</span>':'<span>Communauté Lite Foil</span>')+'</div></div>'; }
+  function openRiderCard(uid){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
+    var st=mine?(myStats()||{}):(commStats[uid]||{}), xp=riderXP(st), lv=riderLevel(xp), nxt=GRADES[lv+1];
+    var prog=nxt?Math.round(100*(xp-GRADES[lv][0])/(nxt[0]-GRADES[lv][0])):100;
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Ma carte de rider":"Carte de rider")+'</b><span></span></div><div class="gc-body">'
+      +riderCardHtml(uid)
+      +(nxt?'<div><div class="gc-count" style="margin-bottom:6px">'+(mine?"Plus que ":"Encore ")+'<b>'+(nxt[0]-xp)+' pts</b> pour passer <b>'+nxt[1]+'</b></div><div class="rc-prog"><i style="width:'+prog+'%"></i></div></div>':'<div class="gc-count">Grade maximum atteint : Légende 👑</div>')
+      +(mine?'<div class="gi-mlabel">Comment gagner des points</div><div class="rc-how"><div><span>🏄 Chaque sortie enregistrée</span><b>+10 pts</b></div><div><span>📍 Chaque km parcouru</span><b>+2 pts</b></div><div><span>📅 Organiser un événement</span><b>+20 pts</b></div><div><span>🤝 Rejoindre un événement</span><b>+10 pts</b></div></div>'
+        +'<div class="gi-mlabel">Grades</div><div class="rc-how">'+GRADES.map(function(g,i){ return '<div><span>N'+(i+1)+' · '+g[1]+'</span><b>'+g[0].toLocaleString("fr-FR")+' pts</b></div>'; }).join("")+'</div>':'')
+      +'</div></div>';
+    $("rcClose").addEventListener("click", closeOverlay); }
+  // ---------- défi eFoil du mois (km d'eFoil enregistrés ce mois-ci) ----------
+  function defiBoard(){ var out=[];
+    for(var u in commStats){ if(u===TEAM_UID || blocked.has(u)) continue; var km=monthEfoilKm(commStats[u]); if(u===me.uid) continue; if(km>0) out.push({uid:u, km:km}); }
+    var mk=monthEfoilKm(myStats()); if(mk>0 && me.pseudo) out.push({uid:me.uid, km:mk});
+    out.sort(function(a,b){ return b.km-a.km; }); return out; }
+  function defiRank(uid){ var b=defiBoard(); for(var i=0;i<b.length;i++){ if(b[i].uid===uid) return i+1; } return 0; }
+  function defiName(uid){ return uid===me.uid ? (me.pseudo||"Moi") : ((profileMap[uid]||{}).pseudo||"Rider"); }
+  function renderDefi(){ var el=$("defiBox"); if(!el) return;
+    var d=new Date(), mois=d.toLocaleDateString("fr-FR",{month:"long"}), end=new Date(d.getFullYear(), d.getMonth()+1, 1), left=Math.ceil((end-d)/86400000);
+    var b=defiBoard(), r=defiRank(me.uid), mk=monthEfoilKm(myStats());
+    var pod=[0,1,2].map(function(i){ var x=b[i]; return '<div>'+["🥇","🥈","🥉"][i]+'<b>'+(x?esc(defiName(x.uid)):"—")+'</b>'+(x?(Math.round(x.km*10)/10).toLocaleString("fr-FR")+" km":"à prendre")+'</div>'; }).join("");
+    el.innerHTML='<div class="defi" id="defiOpen"><div class="defi-top"><span>Défi eFoil du mois</span><span>Fin dans '+left+' j</span></div>'
+      +'<h3>Le plus de km en eFoil en '+mois+'</h3>'+(DEFI_LOT?'<div class="defi-lot">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'<div style="height:6px"></div>')
+      +'<div class="defi-pod">'+pod+'</div>'
+      +'<div class="defi-me">'+(r?('Tu es '+r+(r===1?"er":"e")+' avec '+(Math.round(mk*10)/10).toLocaleString("fr-FR")+' km 🔥'):'Enregistre une sortie eFoil pour entrer dans le classement →')+'</div></div>';
+    $("defiOpen").addEventListener("click", openDefiBoard);
+    var n=$("myCardNote"); if(n) n.textContent=riderNote(riderXP(myStats()||{}));
+    try{ window.LF_RIDER={note:riderNote(riderXP(myStats()||{})), rank:r, km:mk, mois:mois}; document.dispatchEvent(new Event("lf-rider")); }catch(e){} }
+  function openDefiBoard(){ var o=gOverlay(); o.hidden=false; var b=defiBoard();
+    var rows=b.slice(0,50).map(function(x,i){ var pr=profileMap[x.uid]||{}, av=(x.uid===me.uid?me.av:pr.av);
+      var avh=av?'<span class="cav"><img src="'+av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(x.uid)+'">'+esc((defiName(x.uid).trim()[0]||"R").toUpperCase())+'</span>';
+      var st=x.uid===me.uid?(myStats()||{}):(commStats[x.uid]||{});
+      return '<div class="lb-row'+(x.uid===me.uid?" me":"")+'" data-uid="'+esc(x.uid)+'"><span class="lb-pos p'+(i+1)+'">'+(i+1)+'</span>'+avh+'<span class="pick-ps">'+esc(defiName(x.uid))+(x.uid===me.uid?" (toi)":"")+'</span><span class="lb-note">'+riderNote(riderXP(st))+'</span><span class="lb-km">'+(Math.round(x.km*10)/10).toLocaleString("fr-FR")+' km</span></div>'; }).join("");
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>🏆 Défi eFoil du mois</b><span></span></div><div class="gc-body">'
+      +(DEFI_LOT?'<div class="defi-lot" style="background:#fff1d6;color:#8a5a00">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
+      +'<div class="gc-count">Classement des km parcourus en eFoil ce mois-ci, enregistrés avec l\'appli (suivi GPS ou tracker). Les traces des premiers sont vérifiées par l\'équipe Lite Foil avant la remise du lot.</div>'
+      +(rows||'<div class="comm-empty">Personne pour l\'instant : la première sortie eFoil du mois prend la tête !</div>')
+      +'</div></div>';
+    $("dfClose").addEventListener("click", closeOverlay);
+    o.querySelectorAll(".lb-row[data-uid]").forEach(function(rw){ rw.addEventListener("click", function(){ openRiderCard(rw.dataset.uid); }); }); }
   function renderCommStats(){ var el=$("commStats"); if(!el) return; var n=0, km=0;
     for(var u in commStats){ var v=commStats[u]||{}; n+=(+v.n||0); km+=(+v.km||0); }
     if(n<=0){ el.hidden=true; return; }
@@ -4551,7 +4697,10 @@
     if(backend.watchTyping) typingUnsub = backend.watchTyping(onTyping);
     if(backend.watchProfiles) membersUnsub = backend.watchProfiles(onProfiles);
     if(backend.watchOfficial) backend.watchOfficial(function(map){ officialSet=new Set([TEAM_UID].concat(Object.keys(map||{}).filter(function(k){ return map[k]; }))); recomputeBadges(); renderChat(); });
-    if(backend.watchStats) backend.watchStats(function(map){ commStats=map||{}; renderCommStats(); });
+    if(backend.watchStats) backend.watchStats(function(map){ commStats=map||{}; renderCommStats(); renderDefi(); });
+    renderDefi();
+    var _mcb=$("myCardBtn"); if(_mcb) _mcb.addEventListener("click", function(){ openRiderCard(me.uid); });
+    var _shc=$("sheetCard"); if(_shc) _shc.addEventListener("click", function(){ var t=sheetTarget; closeSheet(); if(t&&t.uid) openRiderCard(t.uid); });
     publishMyStats();
     var _mid=$("commMyId"); if(_mid && backend.uid) _mid.textContent="Identifiant : "+backend.uid;
     if(backend.watchMyGroups) groupsUnsub = backend.watchMyGroups(onMyGroups);
@@ -4788,7 +4937,11 @@
           $h("hcTemp").textContent=Math.round(c.temperature_2m||0)+"°C"; }).catch(function(){});
       fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+pos.lat+"&longitude="+lng+"&current=wave_height&timezone=auto")
         .then(function(r){ return r.json(); }).then(function(j){ var w=j.current&&j.current.wave_height; $h("hcWave").textContent=(w!=null?String(Math.round(w*10)/10).replace(".",",")+" m":"—"); }).catch(function(){ $h("hcWave").textContent="—"; }); }
-    hello(); stats(); cond();
+    function defi(){ var r=window.LF_RIDER; if(!r) return;
+      $h("hdNote").textContent=r.note; $h("hdTitle").textContent="Défi eFoil de "+r.mois;
+      $h("hdSub").textContent = r.rank ? ("Tu es "+r.rank+(r.rank===1?"er":"e")+" avec "+(Math.round(r.km*10)/10).toLocaleString("fr-FR")+" km · voir le classement") : "Fais une sortie eFoil pour entrer au classement"; }
+    document.addEventListener("lf-rider", defi);
+    hello(); stats(); cond(); defi();
     // rafraîchit quand on revient sur l'appli (pseudo changé, nouvelle sortie, vent qui tourne)
     var last=Date.now();
     document.addEventListener("visibilitychange", function(){ if(document.hidden) return; hello(); stats(); if(Date.now()-last>10*60000){ last=Date.now(); cond(); } });

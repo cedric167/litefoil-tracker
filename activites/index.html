@@ -533,7 +533,12 @@ function render(){
                    .sort((a,b)=> (b.startedAt||0)-(a.startedAt||0));
   const km = items.reduce((s,a)=>s+a.distanceM,0)/1000;
   // mes vrais chiffres (sorties de plus de 100 m), partagés avec la Communauté (total des riders)
-  try{ const real=ALL.filter(a=>(a.distanceM||0)>=100); localStorage.setItem("lf_my_stats", JSON.stringify({n:real.length, km:Math.round(real.reduce((s,a)=>s+a.distanceM,0)/100)/10, sec:real.reduce((s,a)=>s+(a.durationSec||0),0), t:Date.now()})); }catch(e){}
+  try{ const real=ALL.filter(a=>(a.distanceM||0)>=100); localStorage.setItem("lf_my_stats", JSON.stringify({n:real.length, km:Math.round(real.reduce((s,a)=>s+a.distanceM,0)/100)/10, sec:real.reduce((s,a)=>s+(a.durationSec||0),0), t:Date.now(),
+    // défi eFoil du mois : km d'eFoil du mois en cours (moyenne < 55 km/h, < 150 km par sortie)
+    month:(()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");})(),
+    eKm:Math.round(real.filter(a=>{ const d=new Date(), st=a.startedAt; const ef=a.activityType==="efoil"||a.activityType==="electric"||/foil [ée]lectrique|e-?foil/i.test(a.categoryName||"");
+      const ok=a.distanceM<=150000 && (!a.durationSec || a.distanceM/a.durationSec*3.6<=55);
+      return ef && ok && st && st.getFullYear()===d.getFullYear() && st.getMonth()===d.getMonth(); }).reduce((s,a)=>s+a.distanceM,0)/100)/10})); }catch(e){}
   const time = items.reduce((s,a)=>s+a.durationSec,0);
   document.getElementById("sumCount").textContent=items.length;
   document.getElementById("sumKm").textContent=km.toFixed(1);
