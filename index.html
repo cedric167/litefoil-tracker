@@ -221,6 +221,28 @@
   .hl-ic{ width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#fff; }
   .hl-ic svg{ width:22px; height:22px; }
   .hl-site{ background:#0b0d10; } .hl-yt{ background:#e62117; } .hl-fb{ background:#1877f2; } .hl-ig{ background:linear-gradient(135deg,#f9a23b,#e1306c 55%,#833ab4); }
+  /* ===== barre de menu en bas (style appli) : Accueil · Météo · [Communauté] · Vidéos · Tracking ===== */
+  .tabs{ display:none !important; }
+  body{ padding-bottom:calc(92px + env(safe-area-inset-bottom)) !important; }
+  .bnav{ position:fixed; left:0; right:0; bottom:0; z-index:8000; display:flex; justify-content:space-around; align-items:flex-end; gap:2px;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom)); background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+    border-top:1px solid rgba(0,0,0,.06); box-shadow:0 -6px 24px rgba(0,0,0,.06); }
+  .bnav button{ flex:1; max-width:84px; border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; padding:4px 0 2px; cursor:pointer; font-family:inherit; color:#8a96a0; font-size:11px; font-weight:700; position:relative; -webkit-tap-highlight-color:transparent; }
+  .bnav svg{ width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform .18s; }
+  .bnav button.on{ color:#0b6d72; } .bnav button.on svg{ transform:translateY(-1px) scale(1.08); }
+  .bnav button:active svg{ transform:scale(.88); }
+  .bnav button.on::after{ content:""; position:absolute; top:-8px; width:22px; height:3px; border-radius:0 0 4px 4px; background:#1fb5bd; }
+  .bnav .bn-comm{ margin-top:-26px; }
+  .bnav .bn-comm .bn-big{ width:60px; height:60px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:#fff;
+    background:radial-gradient(120% 120% at 100% 0%, #5acdd1 0%, #1fb5bd 40%, #0b6d72 100%); box-shadow:0 8px 20px rgba(11,109,114,.4), 0 0 0 4px #fff; transition:transform .18s; }
+  .bnav .bn-comm .bn-big svg{ width:28px; height:28px; stroke:#fff; }
+  .bnav .bn-comm.on .bn-big{ transform:translateY(-2px) scale(1.05); } .bnav .bn-comm.on::after{ display:none; } .bnav .bn-comm{ color:#0b6d72; }
+  .bn-badge{ position:absolute; top:-4px; right:calc(50% - 30px); min-width:20px; height:20px; padding:0 5px; border-radius:100px; background:#e8384f; color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid #fff; }
+  .bn-comm .bn-badge{ top:-6px; right:calc(50% - 36px); }
+  .tabpane{ animation:paneIn .28s ease both; } @keyframes paneIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none; } }
+  .home-more{ display:flex; gap:10px; margin-top:12px; }
+  .home-more a, .home-more button{ flex:1; display:flex; align-items:center; gap:10px; padding:12px; border-radius:18px; background:#fff; border:1px solid var(--line-soft); box-shadow:var(--sh-sm); text-decoration:none; color:var(--text); font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; text-align:left; }
+  .home-more i{ font-style:normal; width:36px; height:36px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; background:var(--tile); flex:0 0 auto; }
   .tagline { font-family:"Instrument Serif", Georgia, serif; font-size:26px; line-height:1.15; margin:4px 0 6px; }
   .stlHead{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
   .stlHead #stlLogo{ height:42px; width:auto; flex:none; border-radius:8px; }
@@ -456,7 +478,7 @@
   .vh-play{ background:#fff; color:#0b3a55; } .vh-add{ background:rgba(255,255,255,.16); color:#fff; box-shadow:0 0 0 1.5px rgba(255,255,255,.5) inset !important; }
   .vid-head{ display:flex; justify-content:space-between; align-items:center; margin:20px 6px 10px; } .vid-count{ font-size:12.5px; color:var(--muted); font-weight:600; }
   .vid-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:4px; border-radius:16px; overflow:hidden; }
-  .vg-it{ position:relative; aspect-ratio:9/14; border:0; padding:0; cursor:pointer; background:#0b3a55 center/cover no-repeat; }
+  .vg-it{ position:relative; aspect-ratio:9/14; border:0; padding:0; border-radius:0; box-shadow:none; min-height:0; cursor:pointer; background:#0b3a55 center/cover no-repeat; }
   .vg-like{ position:absolute; left:6px; bottom:6px; color:#fff; font-size:12px; font-weight:800; text-shadow:0 1px 4px rgba(0,0,0,.6); }
   .vg-off{ position:absolute; right:6px; top:6px; background:#1fb5bd; color:#fff; font-size:11px; font-weight:800; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
   .vf{ position:fixed; inset:0; z-index:9000; background:#000; }
@@ -969,6 +991,13 @@
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
+  <nav class="bnav" id="bnav" aria-label="Menu">
+    <button data-nav="dash" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Accueil</button>
+    <button data-nav="meteo"><svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/></svg>Météo</button>
+    <button data-nav="communaute" class="bn-comm"><span class="bn-big"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg></span>Communauté<i class="bn-badge" id="bnCommBadge" hidden></i></button>
+    <button data-nav="videos"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg>Vidéos</button>
+    <button data-nav="tracking"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Tracking</button>
+  </nav>
 
   <section id="tab-dash" class="tabpane">
     <!-- Accueil (refonte 06/11) : bonjour, conditions du moment, mes sorties, appareils, liens Lite Foil -->
@@ -993,6 +1022,11 @@
         <div><b id="hsH">0 h</b><span>sur l'eau</span></div>
       </div>
       <button class="home-go" type="button" data-goto="tracking"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Démarrer une sortie</button>
+    </div>
+
+    <div class="home-more">
+      <a href="activites/index.html"><i>📈</i>Mes activités</a>
+      <button type="button" data-goto="ultra"><i>⚡</i>Lite Foil Ultra</button>
     </div>
 
     <button class="home-defi" type="button" data-goto="communaute" id="homeDefi">
@@ -2597,6 +2631,9 @@
   // X-Frame-Options: DENY — so its pages open in the browser).
   // Sous-écrans regroupés dans l'onglet « Lite Foil Ultra »
   const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote"];
+  // barre du bas : met en avant l'onglet ouvert (les sous-écrans Ultra n'en ont pas)
+  function syncBottomNav(name){ var key = (name==="dash"||name==="meteo"||name==="communaute"||name==="videos"||name==="tracking") ? name : "";
+    document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.toggle("on", b.dataset.nav===key); }); }
   function showTab(name) {
     // Un onglet dédié dans la barre (ex. Tracking) est prioritaire sur le sous-écran Lite Foil Ultra.
     const hasOwnTab = !!document.querySelector(".tab[data-tab=\"" + name + "\"]");
@@ -2610,6 +2647,7 @@
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
     if (name === "videos" && window.videosOnShow) window.videosOnShow();
+    syncBottomNav(name);
   }
   for (const tab of document.querySelectorAll(".tab")) {
     if (!tab.dataset.tab) continue;
@@ -2618,6 +2656,18 @@
       try { localStorage.setItem("lf.tab", tab.dataset.tab); } catch (err) {}
     });
   }
+  for (const b of document.querySelectorAll("#bnav [data-nav]")) b.addEventListener("click", () => {
+    const n = b.dataset.nav, pane = document.getElementById("tab-" + n), already = pane && !pane.hidden;
+    showTab(n); try { localStorage.setItem("lf.tab", n); } catch (err) {}
+    // ouvrir un onglet = repartir de son début (sans repasser sous la vidéo du haut) ; retoucher l'onglet ouvert = remonter
+    const top = pane ? Math.max(0, pane.getBoundingClientRect().top + window.scrollY - 12) : 0;
+    window.scrollTo({ top: already ? 0 : Math.min(window.scrollY, top), behavior: "smooth" });
+    try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
+  });
+  // le badge des messages non lus suit celui de l'onglet Communauté
+  (function(){ const src = document.getElementById("tabCommBadge"), dst = document.getElementById("bnCommBadge"); if (!src || !dst) return;
+    const sync = () => { dst.hidden = src.hidden; dst.textContent = src.textContent; };
+    new MutationObserver(sync).observe(src, { attributes: true, childList: true, characterData: true, subtree: true }); sync(); })();
   for (const b of document.querySelectorAll("[data-goto]")) b.addEventListener("click", () => { showTab(b.dataset.goto); try { localStorage.setItem("lf.tab", b.dataset.goto); } catch (err) {} });
   // Bouton « retour » au menu Lite Foil Ultra en haut de chaque sous-écran
   for (const sub of ULTRA_SUB) {
@@ -4188,7 +4238,18 @@
   function canModerate(uid){ return uid===me.uid || isOfficial(me.uid); }
   function vidLikes(v){ return v && v.likes ? Object.keys(v.likes).length : 0; }
   function vidLiked(v){ return !!(v && v.likes && v.likes[me.uid]); }
-  function vidVisible(){ return videos.filter(function(v){ return v && v.url && !blocked.has(v.uid); }); }
+  // vidéos officielles hébergées avec l'appli (dossier videos/) : visibles même sans stockage Firebase
+  const SEED_VIDEOS = [
+    {id:"lf-seed-5", url:"videos/litefoil-5.mp4", thumb:"videos/litefoil-5.jpg", caption:"Vol au soleil sur l'eau turquoise ☀️", topic:"efoil", t:Date.parse("2026-11-07T12:00:00Z")},
+    {id:"lf-seed-4", url:"videos/litefoil-4.mp4", thumb:"videos/litefoil-4.jpg", caption:"Départ en douceur dans l'eau claire 💧", topic:"efoil", t:Date.parse("2026-11-07T11:00:00Z")},
+    {id:"lf-seed-3", url:"videos/litefoil-3.mp4", thumb:"videos/litefoil-3.jpg", caption:"Sortie en mer, cap sur les criques 🏝️", topic:"efoil", t:Date.parse("2026-11-07T10:00:00Z")},
+    {id:"lf-seed-2", url:"videos/litefoil-2.mp4", thumb:"videos/litefoil-2.jpg", caption:"1 seule planche, 3 façons de voler : eFoil, wing foil, paddle ⚡", topic:"efoil", t:Date.parse("2026-11-07T09:00:00Z")},
+    {id:"lf-seed-1", url:"videos/litefoil-1.mp4", thumb:"videos/litefoil-1.jpg", caption:"Balade en eFoil le long de la côte 🌊", topic:"efoil", t:Date.parse("2026-11-07T08:00:00Z")}
+  ];
+  function vidVisible(){ var ids={}; videos.forEach(function(v){ if(v) ids[v.id]=1; });
+    var seeds=SEED_VIDEOS.filter(function(v){ return !ids[v.id]; }).map(function(v){ return Object.assign({uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,seed:true,likes:seedLikes(v.id)}, v); });
+    return videos.filter(function(v){ return v && v.url && !blocked.has(v.uid); }).concat(seeds).sort(function(a,b){ return (+b.t||0)-(+a.t||0); }); }
+  function seedLikes(id){ try{ return localStorage.getItem("lf.vid.like."+id)==="1" ? (function(){ var o={}; o[me.uid||"moi"]=true; return o; })() : {}; }catch(e){ return {}; } }
   function onVideos(list){ videos=list||[]; renderVideoGrid(); var vf=$("vf"); if(vf && !vf.hidden) refreshFeedCounts(); }
   function fmtCount(n){ return n>=1000 ? (Math.round(n/100)/10).toLocaleString("fr-FR")+" k" : String(n); }
   function renderVideoGrid(){ var g=$("vidGrid"); if(!g) return; var vs=vidVisible();
@@ -4239,10 +4300,12 @@
   function watchCount(it){ if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(!backend||!backend.watchVideoComments) return;
     vfCountUnsub=backend.watchVideoComments(it.dataset.vid, function(cs){ var b=it.querySelector(".vf-nc"); if(b) b.textContent=fmtCount(cs.filter(function(c){ return !blocked.has(c.uid); }).length); }); }
   function refreshFeedCounts(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll(".vf-item").forEach(function(it){ var v=videos.filter(function(x){ return x.id===it.dataset.vid; })[0];
-    if(!v){ it.remove(); return; } var lb=it.querySelector('[data-a="like"]'); lb.classList.toggle("on", vidLiked(v)); lb.querySelector("b").textContent=fmtCount(vidLikes(v)); }); }
+    if(!v){ if(!SEED_VIDEOS.some(function(x){ return x.id===it.dataset.vid; })) it.remove(); return; } var lb=it.querySelector('[data-a="like"]'); lb.classList.toggle("on", vidLiked(v)); lb.querySelector("b").textContent=fmtCount(vidLikes(v)); }); }
   function toggleLike(v, force){ if(!backend||!backend.likeVideo) return; if(!charterOk){ closeFeed(); showCharter(); return; }
     var on = force===true ? true : !vidLiked(v); if(force===true && vidLiked(v)) return;
-    v.likes=v.likes||{}; if(on) v.likes[me.uid]=true; else delete v.likes[me.uid]; refreshFeedCounts(); backend.likeVideo(v.id,on).catch(function(){}); }
+    v.likes=v.likes||{}; if(on) v.likes[me.uid]=true; else delete v.likes[me.uid];
+    if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, on?"1":"0"); }catch(e){} var it=document.querySelector('.vf-item[data-vid="'+v.id+'"] [data-a="like"]'); if(it){ it.classList.toggle("on",on); it.querySelector("b").textContent=fmtCount(vidLikes(v)); } return; }
+    refreshFeedCounts(); backend.likeVideo(v.id,on).catch(function(){}); }
   function wireFeedItem(it, v){ var vd=it.querySelector("video"), last=0;
     vd.addEventListener("loadedmetadata", function(){ vd.style.objectFit = vd.videoHeight>=vd.videoWidth ? "cover" : "contain"; });
     vd.addEventListener("click", function(ev){ var now=Date.now();
@@ -4258,7 +4321,7 @@
     var NS=nativePlug("Share"); if(NS){ NS.share({title:"Vidéo Lite Foil", text:txt, url:v.url, dialogTitle:"Partager la vidéo"}).catch(function(){}); return; }
     if(navigator.share){ navigator.share({title:"Vidéo Lite Foil", text:txt, url:v.url}).catch(function(){}); return; }
     window.open("https://wa.me/?text="+encodeURIComponent(txt+" "+v.url),"_blank"); }
-  function videoMenu(v){ var o=gOverlay(); o.hidden=false; var mod=canModerate(v.uid);
+  function videoMenu(v){ var o=gOverlay(); o.hidden=false; var mod=canModerate(v.uid) && !v.seed;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vmClose">✕</button><b>Vidéo</b><span></span></div><div class="gc-body">'
       +(v.uid!==me.uid?'<button class="gi-act" id="vmReport" style="color:#b3263a">⚑ Signaler cette vidéo</button><button class="gi-act" id="vmBlock">🚫 Bloquer '+esc(v.pseudo||"ce rider")+'</button>':'')
       +(mod?'<button class="gi-act" id="vmDel" style="color:#b3263a">🗑️ Supprimer la vidéo'+(v.uid!==me.uid?" (modération)":"")+'</button>':'')
