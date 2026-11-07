@@ -276,6 +276,45 @@
   .comm-empty{ padding:20px 14px; text-align:center; color:var(--muted); font-size:14px; }
   /* ===== sélecteur de mode ludique (Salon / Près de moi / Groupes) ===== */
   .chat-modes{ display:flex; gap:9px; margin:16px 2px 2px; }
+  /* 07/11 : Communauté — recherche d'amis et carte Événements en haut */
+  .cm-search{ position:relative; width:100%; display:flex; align-items:center; gap:10px; margin:0 0 12px; padding:12px 14px; border:1.5px solid var(--line); border-radius:16px; background:var(--card); color:var(--muted); font:600 14.5px inherit; font-family:inherit; text-align:left; cursor:pointer; }
+  .cm-search svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; flex:none; }
+  .cm-search .bn-badge{ position:static; margin-left:auto; }
+  .cm-evcard{ position:relative; width:100%; display:flex; align-items:center; gap:12px; margin:12px 0 4px; padding:12px 14px; border:1.5px solid var(--line); border-radius:18px; background:var(--card); font-family:inherit; text-align:left; cursor:pointer; }
+  .cm-evcard .cm-ic{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; }
+  .cm-evcard .cm-ic svg{ width:23px; height:23px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .cm-evcard .cme-t{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; } .cm-evcard .cme-t b{ font-size:16px; color:var(--ink,#0b0d10); } .cm-evcard .cme-t small{ font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cm-evcard .cme-go{ font-size:24px; color:var(--muted); } .cm-evcard .cm-ic{ position:relative; } .cm-evcard .cm-badge{ position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 5px; box-sizing:border-box; border-radius:9px; background:#e5484d; color:#fff; font:800 11px/18px inherit; font-family:inherit; font-style:normal; text-align:center; } .cm-evcard .cm-badge[hidden]{ display:none; }
+  /* 07/11 : onglet Profil façon Instagram */
+  .pf-top{ display:flex; align-items:center; gap:18px; margin:6px 2px 10px; }
+  .pf-av{ width:86px; height:86px; flex:none; border-radius:50%; background:linear-gradient(135deg,#2bb6c0,#0b3a55); color:#fff; font:700 32px inherit; font-family:inherit; display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow:0 0 0 3px #fff, 0 0 0 5px #1fb5bd; }
+  .pf-av img{ width:100%; height:100%; object-fit:cover; }
+  .pf-nums{ flex:1; display:flex; justify-content:space-around; }
+  .pf-nums button{ border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:2px; font-family:inherit; cursor:pointer; padding:4px; }
+  .pf-nums b{ font-size:19px; color:var(--ink,#0b0d10); } .pf-nums span{ font-size:12.5px; color:var(--muted); font-weight:600; }
+  .pf-name{ font-size:17px; font-weight:800; margin:0 4px; } .pf-name .pf-off{ color:#1fb5bd; font-size:15px; }
+  .pf-id{ font-size:13px; color:var(--muted); margin:1px 4px 0; } .pf-bio{ font-size:14px; margin:6px 4px 0; white-space:pre-line; }
+  .pf-bio:empty{ display:none; }
+  .pf-acts{ display:flex; gap:8px; margin:12px 0 10px; } .pf-acts button{ flex:1; padding:9px 6px; border:0; border-radius:10px; background:#e9eef1; font:700 13.5px inherit; font-family:inherit; color:var(--ink,#0b0d10); cursor:pointer; }
+  .pf-acts button#pfFind{ flex:0 0 52px; } .pf-acts button.pf-main{ background:#1fb5bd; color:#fff; }
+  .pf-reqs{ margin:0 0 10px; padding:10px 12px; border-radius:14px; background:#eef7f8; border:1px solid #cfe6e8; }
+  .pf-reqs .pf-rq{ display:flex; align-items:center; gap:10px; padding:6px 0; } .pf-reqs .pf-rq b{ flex:1; font-size:14px; }
+  .pf-rq button{ border:0; border-radius:9px; padding:7px 10px; font:700 13px inherit; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; } .pf-rq button.no{ background:#e3e8ec; color:#3d4a52; }
+  .pf-tabs{ display:flex; border-top:1px solid var(--line); margin:0 -16px; } .pf-tabs button{ flex:1; border:0; background:none; padding:11px 0; font:700 14px inherit; font-family:inherit; color:var(--muted); cursor:pointer; border-top:2px solid transparent; margin-top:-1px; }
+  .pf-tabs button.on{ color:var(--ink,#0b0d10); border-top-color:var(--ink,#0b0d10); }
+  .pf-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin:0 -16px; }
+  .pf-grid .comm-empty{ grid-column:1/-1; padding:28px 16px; }
+  .pf-sess{ position:relative; aspect-ratio:1; border:0; padding:0; border-radius:0; box-shadow:none; min-height:0; width:100%; background:linear-gradient(160deg,#0f6f8a,#0b3a55); color:#fff; cursor:pointer; font-family:inherit; overflow:hidden; }
+  .pf-sess svg{ position:absolute; inset:14% 12% 30%; width:76%; height:56%; fill:none; stroke:#5bd8dc; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+  .pf-sess .ps-d{ position:absolute; left:6px; bottom:5px; font:800 13px inherit; font-family:inherit; } .pf-sess .ps-s{ position:absolute; right:6px; top:5px; font-size:15px; }
+  .pf-sess .ps-lock{ position:absolute; left:6px; top:5px; font-size:12px; opacity:.85; }
+  .pf-fr{ grid-column:1/-1; width:100%; box-shadow:none; border-radius:0; min-height:0; display:flex; align-items:center; gap:12px; padding:10px 16px; border:0; border-bottom:1px solid var(--line); background:var(--card); font-family:inherit; text-align:left; cursor:pointer; }
+  .pf-fr .pf-fav{ width:44px; height:44px; border-radius:50%; background:#0f6f8a; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; overflow:hidden; flex:none; } .pf-fr .pf-fav img{ width:100%; height:100%; object-fit:cover; }
+  .pf-fr b{ font-size:15px; } .pf-fr small{ display:block; font-size:12.5px; color:var(--muted); }
+  .fs-in{ width:100%; box-sizing:border-box; padding:12px 14px; border:1.5px solid var(--line); border-radius:14px; font:600 15px inherit; font-family:inherit; }
+  .fs-list{ margin-top:10px; } .fs-list .pf-fr{ border-radius:12px; margin-bottom:6px; border:1px solid var(--line); }
+  .fs-act{ margin-left:auto; border:0; border-radius:9px; padding:8px 11px; font:700 13px inherit; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; white-space:nowrap; } .fs-act.ghost{ background:#e3e8ec; color:#3d4a52; }
+  .up-wrap{ padding:4px 16px 16px; } .up-wrap .pf-grid{ margin:0 -16px; }
   .chat-modes button{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:7px; border:1.5px solid var(--line); background:var(--card); border-radius:18px; padding:12px 4px 10px; cursor:pointer; transition:transform .13s ease, box-shadow .13s ease, border-color .13s ease, background .13s ease; }
   .chat-modes button:active{ transform:scale(.96); }
   .chat-modes .cm-lbl{ font-size:12.5px; font-weight:700; color:var(--muted); white-space:nowrap; }
@@ -645,6 +684,7 @@
   .wa-profile .prof-av{ width:112px; height:112px; font-size:44px; box-shadow:0 6px 18px rgba(0,0,0,.22); background:rgba(255,255,255,.18); }
   .wa-profile .prof-name{ color:#fff; font-size:22px; font-weight:800; text-align:center; }
   .wa-prof-act{ display:flex; justify-content:center; gap:14px; padding:16px; border-bottom:8px solid var(--bg2); }
+  .wa-prof-act button#sheetProf{ width:auto; margin:0; display:flex; align-items:center; gap:8px; background:#e9eef1; color:var(--ink,#0b0d10); border:0; border-radius:14px; padding:12px 16px; font-weight:700; font-size:15px; } .wa-prof-act button#sheetProf svg{ stroke:currentColor; }
   .wa-prof-act button#sheetMsg{ width:auto; margin:0; display:flex; align-items:center; gap:9px; background:var(--accent-ink); color:#fff; border:0; border-radius:14px; padding:12px 26px; font-weight:700; font-size:15px; }
   .wa-prof-act svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .wa-prof-about{ padding:16px 20px; text-align:left; border-bottom:8px solid var(--bg2); }
@@ -1019,7 +1059,8 @@
     <button class="tab" data-tab="tracking">Tracking</button>
     <button class="tab" data-tab="meteo">Météo</button>
     <button class="tab" data-tab="communaute">Communauté<span class="tbadge" id="tabCommBadge" hidden></span></button>
-    <button class="tab" data-tab="videos">Vidéos</button>
+    <button class="tab" data-tab="videos">Swip</button>
+    <button class="tab" data-tab="profil">Profil</button>
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
@@ -1027,8 +1068,9 @@
     <button data-nav="dash" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Accueil</button>
     <button data-nav="meteo"><svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/></svg>Météo</button>
     <button data-nav="communaute" class="bn-comm"><span class="bn-big"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg></span>Communauté<i class="bn-badge" id="bnCommBadge" hidden></i></button>
-    <button data-nav="videos"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg>Vidéos</button>
     <button data-nav="tracking"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Tracking</button>
+    <button data-nav="profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil<i class="bn-badge" id="bnProfBadge" hidden></i></button>
+    <button data-nav="videos"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg>Swip</button>
   </nav>
 
   <section id="tab-dash" class="tabpane">
@@ -1139,8 +1181,10 @@
       </div>
       <div class="cmh-row" id="commOnlineTop"><span class="cmh-chip"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne</span><button type="button" class="cmh-chip mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">Riders Lite Foil</span>&nbsp;›</button></div>
     </div>
+    <button type="button" class="cm-search" id="cmSearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Rechercher des amis (identifiant)</span><i class="bn-badge" id="cmReqBadge" hidden></i></button>
     <div class="comm-stats" id="commStats" hidden></div>
     <div id="defiBox"></div>
+    <button type="button" class="cm-evcard" id="cmEvents"><span class="cm-ic cm-events"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9.5 15l1.8 1.8 3.5-3.6"/></svg><i class="cm-badge" id="cmEvBadge" hidden></i></span><span class="cme-t"><b>Événements</b><small id="cmEvNext">Sorties et rendez-vous des riders</small></span><span class="cme-go">›</span></button>
 
 
     <div class="comm-demo" id="commDemo" hidden>Mode démonstration : les riders affichés sont des exemples. La mise en relation des vrais riders en temps réel sera activée très bientôt.</div>
@@ -1193,7 +1237,7 @@
         <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i></span>
         <span class="cm-lbl">Groupes</span>
       </button>
-      <button data-ch="events" aria-label="Événements">
+      <button data-ch="events" aria-label="Événements" hidden>
         <span class="cm-ic cm-events"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9.5 15l1.8 1.8 3.5-3.6"/></svg><i class="cm-badge" id="evChipBadge" hidden></i></span>
         <span class="cm-lbl">Événements</span>
       </button>
@@ -1314,6 +1358,7 @@
         </div>
         <div class="wa-prof-act">
           <button id="sheetCard"><span style="font-size:20px;line-height:1">🃏</span><span>Sa carte</span></button>
+          <button id="sheetProf"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profil</span></button>
           <button id="sheetMsg"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><span>Message</span></button>
         </div>
         <div class="wa-prof-about"><span class="wa-lbl">À propos</span><div class="prof-bio" id="sheetBio"></div></div>
@@ -1325,6 +1370,33 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <section id="tab-profil" class="tabpane" hidden>
+    <!-- 07/11 : profil façon Instagram (photo, compteurs, carte, vidéos, sessions, amis) -->
+    <div class="pf-top">
+      <div class="pf-av" id="pfAv">+</div>
+      <div class="pf-nums">
+        <button type="button" data-pt="sess"><b id="pfNSess">0</b><span>Sessions</span></button>
+        <button type="button" data-pt="vid"><b id="pfNVid">0</b><span>Vidéos</span></button>
+        <button type="button" data-pt="fr"><b id="pfNFr">0</b><span>Amis</span></button>
+      </div>
+    </div>
+    <div class="pf-name" id="pfName">Mon profil</div>
+    <div class="pf-id" id="pfId"></div>
+    <div class="pf-bio" id="pfBio"></div>
+    <div class="pf-acts">
+      <button type="button" id="pfEdit">Modifier le profil</button>
+      <button type="button" id="pfCard">🃏 Ma carte</button>
+      <button type="button" id="pfFind" aria-label="Ajouter des amis">👥 +</button>
+    </div>
+    <div class="pf-reqs" id="pfReqs" hidden></div>
+    <div class="pf-tabs" id="pfTabs">
+      <button type="button" data-pt="vid" class="on">Vidéos</button>
+      <button type="button" data-pt="sess">Sessions</button>
+      <button type="button" data-pt="fr">Amis</button>
+    </div>
+    <div class="pf-grid" id="pfGrid"></div>
   </section>
 
   <section id="tab-videos" class="tabpane" hidden>
@@ -2698,7 +2770,7 @@
   // Sous-écrans regroupés dans l'onglet « Lite Foil Ultra »
   const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote"];
   // barre du bas : met en avant l'onglet ouvert (les sous-écrans Ultra n'en ont pas)
-  function syncBottomNav(name){ var key = (name==="dash"||name==="meteo"||name==="communaute"||name==="videos"||name==="tracking") ? name : "";
+  function syncBottomNav(name){ var key = (name==="dash"||name==="meteo"||name==="communaute"||name==="videos"||name==="tracking"||name==="profil") ? name : "";
     document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.toggle("on", b.dataset.nav===key); }); }
   function showTab(name) {
     // Un onglet dédié dans la barre (ex. Tracking) est prioritaire sur le sous-écran Lite Foil Ultra.
@@ -2713,6 +2785,7 @@
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
     if (name === "videos" && window.videosOnShow) window.videosOnShow();
+    if (name === "profil" && window.profilOnShow) window.profilOnShow();
     syncBottomNav(name);
   }
   for (const tab of document.querySelectorAll(".tab")) {
@@ -3578,6 +3651,20 @@
         var o={pseudo:p.pseudo,nk:nk,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; if(me.brand && me.brand!=="none") o.brand=String(me.brand).slice(0,32);
         return db.get(db.ref(d,"profiles/"+uid+"/nk")).then(function(s){ var old=s.val(); var up={}; up["names/"+nk]=uid; if(old && old!==nk) up["names/"+old]=null; up["profiles/"+uid]=o; return db.update(db.ref(d),up); }); },
       nameOwner(nk){ return db.get(db.ref(d,"names/"+nk)).then(function(s){ return s.exists()? s.val() : null; }); },
+      // ---------- amis : demande /friendReq/{à}/{de}, liste /friends/{uid}/{ami}=true des deux côtés ----------
+      searchNames(k){ return db.get(db.query(db.ref(d,"names"), db.orderByKey(), db.startAt(k), db.endAt(k+"\uf8ff"), db.limitToFirst(15))).then(function(s){ var out=[]; s.forEach(function(c){ out.push({nk:c.key, uid:c.val()}); }); return out; }); },
+      watchFriends(cb){ return db.onValue(db.ref(d,"friends/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      watchFriendReqs(cb){ return db.onValue(db.ref(d,"friendReq/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      getFriends(u){ return db.get(db.ref(d,"friends/"+u)).then(function(s){ return s.val()||{}; }).catch(function(){ return {}; }); },
+      sendFriendReq(to){ return db.set(db.ref(d,"friendReq/"+to+"/"+uid), {pseudo:me.pseudo, t:db.serverTimestamp()}); },
+      cancelFriendReq(to){ return db.remove(db.ref(d,"friendReq/"+to+"/"+uid)); },
+      acceptFriend(from){ var up={}; up["friends/"+uid+"/"+from]=true; up["friends/"+from+"/"+uid]=true; up["friendReq/"+uid+"/"+from]=null; return db.update(db.ref(d),up); },
+      declineFriend(from){ return db.remove(db.ref(d,"friendReq/"+uid+"/"+from)); },
+      removeFriend(o){ var up={}; up["friends/"+uid+"/"+o]=null; up["friends/"+o+"/"+uid]=null; return db.update(db.ref(d),up); },
+      // ---------- sessions partagées sur le profil (visibles par moi et mes amis) : résumé + forme du tracé, sans coordonnées GPS ----------
+      getSessions(u){ return db.get(db.query(db.ref(d,"sessions/"+u), db.limitToLast(60))).then(function(s){ var out=[]; s.forEach(function(c){ var v=c.val(); if(v){ v.id=c.key; out.push(v); } }); return out.reverse(); }); },
+      shareSession(id,o){ return db.set(db.ref(d,"sessions/"+uid+"/"+id), o); },
+      unshareSession(id){ return db.remove(db.ref(d,"sessions/"+uid+"/"+id)); },
       // validation par e-mail : le compte (anonyme) est rattaché à l'adresse, puis Firebase envoie le lien de validation
       emailState(){ var u=auth.currentUser; return { email:(u&&u.email)||"", verified:!!(u&&u.emailVerified) }; },
       sendVerification(email){ var u=auth.currentUser; if(!u) return Promise.reject(new Error("no-user"));
@@ -3727,6 +3814,14 @@
       sendVerification(){ return Promise.resolve(); },
       refreshVerification(){ return Promise.resolve(this.emailState()); },
       deleteAccount(){ return Promise.resolve("deleted"); },
+      searchNames(k){ var out=[]; Object.keys(demo).forEach(function(u){ var nk=pseudoKey(demo[u].pseudo); if(nk && nk.indexOf(k)===0) out.push({nk:nk, uid:u}); }); return Promise.resolve(out); },
+      watchFriends(cb){ cb({"demo-marine":true}); return function(){}; },
+      watchFriendReqs(cb){ cb({"demo-leo":{pseudo:"Léo.Foil", t:Date.now()-3600000}}); return function(){}; },
+      getFriends(u){ return Promise.resolve(u==="demo-marine"?{"demo-aurel":true}:{}); },
+      sendFriendReq(){ return Promise.resolve(); }, cancelFriendReq(){ return Promise.resolve(); }, acceptFriend(){ return Promise.resolve(); },
+      declineFriend(){ return Promise.resolve(); }, removeFriend(){ return Promise.resolve(); },
+      getSessions(u){ return Promise.resolve(u==="demo-marine"?[{id:"s1",t:Date.now()-86400000,sport:"efoil",d:12400,dur:3300,vmax:31.5,shape:"10,80 25,40 50,20 75,35 90,70 60,85 30,90"}]:[]); },
+      shareSession(){ return Promise.resolve(); }, unshareSession(){ return Promise.resolve(); },
       signInWithPassword(){ return Promise.resolve(); },
       sendPasswordLink(){ return Promise.resolve(); },
       watchProfiles(cb){ var o={}; for(var k in demo) o[k]={pseudo:demo[k].pseudo}; o["demo-aurel"].brand="litefoil"; o["demo-marine"].brand="waydoo"; if(me.pseudo) o[me.uid]={pseudo:me.pseudo}; o[TEAM_UID]={pseudo:TEAM_NAME,av:TEAM_AV}; cb(o); return function(){}; },
@@ -4369,7 +4464,7 @@
     var seeds=SEED_VIDEOS.filter(function(v){ return !ids[v.id]; }).map(function(v){ return Object.assign({uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,seed:true,likes:seedLikes(v.id)}, v); });
     return videos.filter(function(v){ return v && v.url && !blocked.has(v.uid); }).concat(seeds).sort(function(a,b){ return (+b.t||0)-(+a.t||0); }); }
   function seedLikes(id){ try{ return localStorage.getItem("lf.vid.like."+id)==="1" ? (function(){ var o={}; o[me.uid||"moi"]=true; return o; })() : {}; }catch(e){ return {}; } }
-  function onVideos(list){ videos=list||[]; renderVideoGrid(); var vf=$("vf"); if(vf && !vf.hidden) refreshFeedCounts(); }
+  function onVideos(list){ videos=list||[]; renderVideoGrid(); renderProfil(); var vf=$("vf"); if(vf && !vf.hidden) refreshFeedCounts(); }
   function fmtCount(n){ return n>=1000 ? (Math.round(n/100)/10).toLocaleString("fr-FR")+" k" : String(n); }
   function renderVideoGrid(){ var g=$("vidGrid"); if(!g) return; var vs=vidVisible();
     $("vidCount").textContent = vs.length ? (vs.length+" vidéo"+(vs.length>1?"s":"")) : "";
@@ -4609,7 +4704,7 @@
     if(chatMode==="evchat" && curEvent){ var ce=myEvents.filter(function(x){ return x.id===curEvent.id; })[0]; if(ce){ curEvent=ce; setConvoHeader(ce.title, ce.id, ce.img, evAtt(ce).length+" participant"+(evAtt(ce).length>1?"s":"")); } }
     if(chatMode==="events") renderEventsList(); else if(chatMode!=="groups" && $("chatBox") && $("chatBox").querySelector(".ev-card")) renderChat();
     if(evDetailId){ var e=myEvents.filter(function(x){ return x.id===evDetailId; })[0]; if(e) renderEventDetail(e); }
-    recomputeBadges();
+    recomputeBadges(); setTimeout(updEvCard,0);
   }
   function renderEventsList(){
     var box=$("chatBox"); if(!box) return;
@@ -4950,7 +5045,7 @@
     if(!backend || !backend.saveProfile) return Promise.resolve(false);
     return backend.saveProfile({pseudo:pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){
       me.pseudo=pseudo; me.claimed=true; savePseudo(); try{ localStorage.setItem("lf.comm.claimed",k); }catch(e){}
-      updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); return true;
+      updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); renderProfil(); return true;
     }).catch(function(){ me.claimed=false; try{ localStorage.removeItem("lf.comm.claimed"); }catch(e){} updateChatGate();
       if(!silent) alert("Ce pseudo est déjà pris (ou réservé). Choisis-en un autre."); return false; });
   }
@@ -5013,7 +5108,7 @@
   // re-filtre le dernier instantané de présence (après blocage/déblocage)
   function onPresence2(){ onPresence(lastPresenceRaw); }
   function onTyping(map){ typers=map||{}; renderTyping(); }
-  function onProfiles(map){ profileMap = map||{}; recomputeMembers(); }
+  function onProfiles(map){ profileMap = map||{}; recomputeMembers(); renderProfil(); }
   // mes sorties : calculées par la page Activités (lf_my_stats), sinon depuis les sorties suivies au téléphone
   function isEfoil(a){ return a && (a.activityType==="efoil" || a.activityType==="electric" || /foil [ée]lectrique|e-?foil/i.test(a.categoryName||"")); }
   function okEfoil(a){ var d=+a.distanceM||0, s=+a.durationSec||0; return d>=100 && d<=150000 && (!s || d/s*3.6<=55); } // anti-triche : < 55 km/h de moyenne
@@ -5059,6 +5154,124 @@
       +'<div class="rc-name">'+esc(ps||"Rider")+'</div>'
       +'<div class="rc-stat">'+esc(stat)+'</div>'
       +'<div class="rc-foot"><b>'+xp.toLocaleString("fr-FR")+' pts</b>'+(rank?'<span>🏆 '+rank+(rank===1?"er":"e")+' au défi eFoil du mois</span>':'<span>Communauté Lite Foil</span>')+'</div></div></div>'; }
+  // ---------- 07/11 : amis et onglet Profil (façon Instagram) ----------
+  let myFriends={}, friendReqs={}, pfTab="vid", mySharedSess={};
+  let sentReqs={}; try{ sentReqs=JSON.parse(localStorage.getItem("lf.comm.sentreq")||"{}")||{}; }catch(e){ sentReqs={}; }
+  const saveSentReqs=()=>{ try{ localStorage.setItem("lf.comm.sentreq", JSON.stringify(sentReqs)); }catch(e){} };
+  function pName(u){ if(u===me.uid) return me.pseudo||"Moi"; if(u===TEAM_UID) return TEAM_NAME; var p=profileMap[u]; return (p&&p.pseudo)||"Rider"; }
+  function pAv(u){ if(u===me.uid) return me.av||""; if(u===TEAM_UID) return TEAM_AV; var p=profileMap[u]; return (p&&p.av)||""; }
+  function avHtml(u){ var a=pAv(u); return a?'<img src="'+esc(a)+'" alt="">':esc((pName(u)||"R").charAt(0).toUpperCase()); }
+  function friendState(u){ if(myFriends[u]) return "friend"; if(friendReqs[u]) return "incoming"; if(sentReqs[u]) return "sent"; return "none"; }
+  function friendBtnHtml(u, big){ if(!u || u===me.uid || u===TEAM_UID) return ""; var st=friendState(u);
+    var t={friend:"✓ Amis",incoming:"Accepter",sent:"Demande envoyée",none:"Ajouter en ami"}[st];
+    return '<button type="button" class="'+(big?"":"fs-act")+(st==="friend"||st==="sent"?" ghost":"")+(big&&st!=="friend"&&st!=="sent"?" pf-main":"")+'" data-fu="'+esc(u)+'">'+t+'</button>'; }
+  function friendAction(u, after){ if(!backend) return;
+    if(!profileReady()){ closeOverlay(); askProfile("Valide ton profil pour ajouter des amis."); return; }
+    var st=friendState(u), p;
+    if(st==="none") p=backend.sendFriendReq(u).then(function(){ sentReqs[u]=Date.now(); saveSentReqs(); });
+    else if(st==="sent") p=backend.cancelFriendReq(u).then(function(){ delete sentReqs[u]; saveSentReqs(); });
+    else if(st==="incoming") p=backend.acceptFriend(u);
+    else { if(!confirm("Retirer "+pName(u)+" de tes amis ?")) return; p=backend.removeFriend(u); }
+    p.then(function(){ if(after) after(); renderProfil(); }).catch(function(){ alert("Action impossible pour le moment, réessaie."); }); }
+  function bindFriendBtns(root, after){ root.querySelectorAll("[data-fu]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); friendAction(b.dataset.fu, after); }); }); }
+  function onFriends(m){ myFriends=m||{}; var ch=false; for(var u in myFriends){ if(sentReqs[u]){ delete sentReqs[u]; ch=true; } } if(ch) saveSentReqs(); renderProfil(); }
+  function onFriendReqs(m){ friendReqs=m||{}; var n=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }).length;
+    ["cmReqBadge","bnProfBadge"].forEach(function(id){ var b=$(id); if(b){ b.hidden=!n; b.textContent=n||""; } }); renderProfil(); }
+  // forme du tracé (sans coordonnées GPS) : points ramenés dans un carré 0-100
+  function sessShape(pts){ if(!pts || pts.length<2) return ""; var step=Math.max(1,Math.floor(pts.length/40)), sel=[];
+    for(var i=0;i<pts.length;i+=step) sel.push(pts[i]); sel.push(pts[pts.length-1]);
+    var la=sel.map(function(p){return +p.lat;}), lo=sel.map(function(p){return +p.lon;}), mla=Math.min.apply(null,la), xla=Math.max.apply(null,la), mlo=Math.min.apply(null,lo), xlo=Math.max.apply(null,lo);
+    var k=Math.cos(((mla+xla)/2)*Math.PI/180), w=(xlo-mlo)*k, h=(xla-mla), sc=Math.max(w,h)||1;
+    return sel.map(function(p){ var x=5+90*(((+p.lon-mlo)*k)+(sc-w)/2)/sc, y=5+90*((xla-(+p.lat))+(sc-h)/2)/sc; return Math.round(x)+","+Math.round(y); }).join(" "); }
+  function sessIcon(sp){ sp=String(sp||"").toLowerCase(); if(/foil|efoil|electric/.test(sp)) return "⚡"; if(/wing/.test(sp)) return "🪂"; if(/kite/.test(sp)) return "🪁"; if(/surf/.test(sp)) return "🏄"; if(/paddle|sup/.test(sp)) return "🛶"; if(/v[ée]lo|bike/.test(sp)) return "🚴"; if(/ski|snow/.test(sp)) return "🎿"; if(/run|course|trail|marche|rando/.test(sp)) return "🏃"; if(/mer|eau/.test(sp)) return "🌊"; return "📍"; }
+  function localSess(){ try{ return JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(function(a){ return a && (+a.distanceM||0)>=100; }); }catch(e){ return []; } }
+  function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now(), sport:String(a.activityType||a.milieu||"").slice(0,24), cat:String(a.categoryName||"").slice(0,40), d:Math.round(+a.distanceM||0), dur:Math.round(+a.durationSec||0), vmax:+(+a.maxSpeedKmh||0).toFixed(1), shape:sessShape(a.points) }; }
+  function sessTile(o, i, mine){ var km=(o.d/1000); return '<button type="button" class="pf-sess" data-si="'+i+'">'+(o.shape?'<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg>':'')
+      +'<span class="ps-s">'+sessIcon(o.sport||o.cat)+'</span>'+(mine&&!o.shared?'<span class="ps-lock">🔒</span>':'')+'<span class="ps-d">'+(km>=10?km.toFixed(0):km.toFixed(1))+' km</span></button>'; }
+  function pfDur(sec){ sec=+sec||0; var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60); return h? h+" h "+String(m).padStart(2,"0") : m+" min"; }
+  function openSessDetail(o, mine, raw){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
+    g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="sdClose">✕</button><b>'+sessIcon(o.sport||o.cat)+' '+esc(o.cat||"Session")+'</b><span></span></div><div class="gc-body">'
+      +(o.shape?'<div class="pf-sess" style="aspect-ratio:16/10;border-radius:14px;cursor:default"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg></div>':'')
+      +'<div class="rc-how" style="margin-top:12px"><div><span>📅 Date</span><b>'+dt.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})+'</b></div><div><span>📍 Distance</span><b>'+(o.d/1000).toFixed(2)+' km</b></div><div><span>⏱️ Durée</span><b>'+pfDur(o.dur)+'</b></div><div><span>⚡ Vitesse max</span><b>'+(o.vmax||0)+' km/h</b></div></div>'
+      +(mine?'<button class="primary" id="sdShare" style="margin-top:14px">'+(o.shared?"Ne plus montrer à mes amis":"Montrer à mes amis sur mon profil")+'</button><div class="note" style="margin-top:8px">Seuls tes amis voient tes sessions partagées. La position exacte n\'est jamais partagée, seulement la forme du parcours.</div>':'')
+      +'</div></div>';
+    $("sdClose").addEventListener("click", closeOverlay);
+    var sb=$("sdShare"); if(sb) sb.addEventListener("click", function(){ if(!profileReady()){ closeOverlay(); askProfile("Valide ton profil pour partager tes sessions."); return; }
+      sb.disabled=true; var id=String(raw.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_");
+      var pr = o.shared ? backend.unshareSession(id) : backend.shareSession(id, sessSummary(raw));
+      pr.then(function(){ if(o.shared) delete mySharedSess[id]; else mySharedSess[id]=true; closeOverlay(); renderProfil(); }).catch(function(){ sb.disabled=false; alert("Partage impossible pour le moment, réessaie."); }); }); }
+  function vidTiles(list){ var vis=vidVisible(); return list.map(function(v){ var gi=vis.indexOf(v); return '<button class="vg-it" data-gi="'+gi+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span></button>'; }).join(""); }
+  function bindVidTiles(root){ root.querySelectorAll(".vg-it[data-gi]").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.gi; if(i<0) return; closeOverlay(); openFeed(i); }); }); }
+  function friendRows(ids){ return ids.map(function(u){ return '<div class="pf-fr" data-up="'+esc(u)+'"><span class="pf-fav">'+avHtml(u)+'</span><span><b>'+esc(pName(u))+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'</b><small>@'+esc(pseudoKey(pName(u))||"rider")+'</small></span>'+friendBtnHtml(u)+'</div>'; }).join(""); }
+  function bindFriendRows(root, after){ bindFriendBtns(root, after); root.querySelectorAll("[data-up]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.up); }); }); }
+  // mon profil
+  function renderProfil(){ var pane=$("tab-profil"); if(!pane || pane.hidden) return;
+    var av=$("pfAv"); if(av) av.innerHTML = me.av?'<img src="'+esc(me.av)+'" alt="">':(me.pseudo?esc(me.pseudo.charAt(0).toUpperCase()):"+");
+    var ready=profileReady();
+    $("pfName").innerHTML = me.pseudo ? esc(me.pseudo)+(isOfficial(me.uid)?' <span class="pf-off">✓ Équipe Lite Foil</span>':'') : "Crée ton profil";
+    $("pfId").textContent = ready ? "@"+pseudoKey(me.pseudo) : (me.verified ? "Choisis un pseudo pour être trouvé par tes amis" : "Valide ton e-mail pour activer ton profil");
+    $("pfBio").textContent = me.bio||"";
+    $("pfEdit").textContent = ready ? "Modifier le profil" : "Créer mon profil";
+    var sess=localSess(), vids=videos.filter(function(v){ return v && v.uid===me.uid; }), fr=Object.keys(myFriends).filter(function(u){ return !blocked.has(u); });
+    $("pfNSess").textContent=sess.length; $("pfNVid").textContent=vids.length; $("pfNFr").textContent=fr.length;
+    var rq=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }), rb=$("pfReqs");
+    if(rb){ rb.hidden=!rq.length; rb.innerHTML = rq.length ? '<b style="font-size:13px">Demandes d\'amis</b>'+rq.map(function(u){ var ps=(friendReqs[u]&&friendReqs[u].pseudo)||pName(u); return '<div class="pf-rq"><span class="pf-fr" style="padding:0;border:0;background:none" data-up="'+esc(u)+'"><span class="pf-fav" style="width:34px;height:34px">'+avHtml(u)+'</span></span><b>'+esc(ps)+'</b><button data-acc="'+esc(u)+'">Accepter</button><button class="no" data-dec="'+esc(u)+'">Refuser</button></div>'; }).join("") : "";
+      rb.querySelectorAll("[data-acc]").forEach(function(b){ b.addEventListener("click", function(){ friendAction(b.dataset.acc); }); });
+      rb.querySelectorAll("[data-dec]").forEach(function(b){ b.addEventListener("click", function(){ backend.declineFriend(b.dataset.dec).catch(function(){}); }); });
+      rb.querySelectorAll("[data-up]").forEach(function(b){ b.addEventListener("click", function(){ openUserProfile(b.dataset.up); }); }); }
+    document.querySelectorAll("#pfTabs button").forEach(function(b){ b.classList.toggle("on", b.dataset.pt===pfTab); });
+    var g=$("pfGrid");
+    if(pfTab==="vid"){ g.innerHTML = vids.length ? vidTiles(vids) : '<div class="comm-empty">Pas encore de vidéo.<br><button class="primary" id="pfPostVid" style="margin-top:10px">Publier une vidéo</button></div>'; bindVidTiles(g); var pv=$("pfPostVid"); if(pv) pv.addEventListener("click", openVideoUpload); }
+    else if(pfTab==="sess"){ var list=sess.map(function(a){ var o=sessSummary(a); o.shared=!!mySharedSess[String(a.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_")]; return o; });
+      g.innerHTML = list.length ? list.map(function(o,i){ return sessTile(o,i,true); }).join("") : '<div class="comm-empty">Pas encore de session.<br>Lance un enregistrement dans l\'onglet Tracking 📍</div>';
+      g.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.si; openSessDetail(list[i], true, sess[i]); }); }); }
+    else { g.innerHTML = fr.length ? friendRows(fr) : '<div class="comm-empty">Pas encore d\'amis.<br><button class="primary" id="pfFind2" style="margin-top:10px">Rechercher des amis</button></div>'; bindFriendRows(g); var f2=$("pfFind2"); if(f2) f2.addEventListener("click", openFriendSearch); }
+  }
+  window.profilOnShow=function(){ renderProfil(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
+  // rechercher des amis par identifiant (pseudo unique)
+  function openFriendSearch(){ var g=gOverlay(); g.hidden=false;
+    g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="fsClose">✕</button><b>Rechercher des amis</b><span></span></div><div class="gc-body">'
+      +'<input class="fs-in" id="fsIn" placeholder="Identifiant d\'un rider (ex. marine)" autocomplete="off" autocapitalize="off" spellcheck="false">'
+      +'<div class="fs-list" id="fsList"><div class="comm-empty">Tape l\'identifiant (le pseudo) de ton ami.</div></div></div></div>';
+    $("fsClose").addEventListener("click", closeOverlay);
+    var inp=$("fsIn"), list=$("fsList"), t=null;
+    var run=function(){ var v=inp.value.trim(), k=pseudoKey(v)||String(v).toLowerCase().replace(/[^a-z0-9]/g,"");
+      if(k.length<2){ list.innerHTML='<div class="comm-empty">Tape au moins 2 lettres.</div>'; return; }
+      if(!backend || !backend.searchNames){ list.innerHTML='<div class="comm-empty">Communauté hors ligne, réessaie.</div>'; return; }
+      list.innerHTML='<div class="comm-empty">Recherche…</div>';
+      backend.searchNames(k).then(function(r){ if(inp.value.trim()!==v) return; var ids=r.map(function(x){ return x.uid; }).filter(function(u){ return u && u!==me.uid && !blocked.has(u); });
+        list.innerHTML = ids.length ? friendRows(ids) : '<div class="comm-empty">Aucun rider avec cet identifiant.</div>'; bindFriendRows(list, run); }).catch(function(){ list.innerHTML='<div class="comm-empty">Recherche impossible, réessaie.</div>'; }); };
+    inp.addEventListener("input", function(){ if(t) clearTimeout(t); t=setTimeout(run,300); }); setTimeout(function(){ try{ inp.focus(); }catch(e){} },50); }
+  // profil d'un autre rider
+  function openUserProfile(uid){ if(!uid) return; if(uid===me.uid){ closeOverlay(); showTab("profil"); return; }
+    var g=gOverlay(); g.hidden=false; var p=profileMap[uid]||{}, tab="vid", sess=null, nFr="…";
+    var vids=videos.filter(function(v){ return v && v.uid===uid; });
+    var draw=function(){
+      g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="upClose">✕</button><b>@'+esc(pseudoKey(pName(uid))||"rider")+'</b><span></span></div><div class="gc-body up-wrap">'
+        +'<div class="pf-top"><div class="pf-av">'+avHtml(uid)+'</div><div class="pf-nums"><button type="button" data-ut="sess"><b>'+(sess?sess.length:"🔒")+'</b><span>Sessions</span></button><button type="button" data-ut="vid"><b>'+vids.length+'</b><span>Vidéos</span></button><button type="button"><b>'+nFr+'</b><span>Amis</span></button></div></div>'
+        +'<div class="pf-name">'+esc(pName(uid))+(isOfficial(uid)?' <span class="pf-off">✓ Équipe Lite Foil</span>':'')+'</div>'
+        +(p.bio?'<div class="pf-bio">'+esc(p.bio)+'</div>':'')
+        +'<div class="pf-acts">'+friendBtnHtml(uid,true)+(p.dm!=="none"?'<button type="button" id="upMsg">Message</button>':'')+'<button type="button" id="upCard">🃏 Sa carte</button></div>'
+        +'<div class="pf-tabs"><button type="button" data-ut="vid" class="'+(tab==="vid"?"on":"")+'">Vidéos</button><button type="button" data-ut="sess" class="'+(tab==="sess"?"on":"")+'">Sessions</button></div>'
+        +'<div class="pf-grid" id="upGrid"></div></div></div>';
+      $("upClose").addEventListener("click", closeOverlay);
+      bindFriendBtns(g, draw);
+      var um=$("upMsg"); if(um) um.addEventListener("click", function(){ if(!profileReady()){ closeOverlay(); askProfile(); return; } closeOverlay(); goToCommunaute(); openDM(uid, pName(uid)); });
+      $("upCard").addEventListener("click", function(){ openRiderCard(uid); });
+      g.querySelectorAll("[data-ut]").forEach(function(b){ b.addEventListener("click", function(){ tab=b.dataset.ut; draw(); }); });
+      var gr=$("upGrid");
+      if(tab==="vid"){ gr.innerHTML = vids.length ? vidTiles(vids) : '<div class="comm-empty">Pas encore de vidéo.</div>'; bindVidTiles(gr); }
+      else if(!sess){ gr.innerHTML='<div class="comm-empty">🔒 Ses sessions sont visibles par ses amis.</div>'; }
+      else { gr.innerHTML = sess.length ? sess.map(function(o,i){ return sessTile(o,i,false); }).join("") : '<div class="comm-empty">Aucune session partagée.</div>';
+        gr.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ openSessDetail(sess[+b.dataset.si], false); }); }); }
+    };
+    draw();
+    if(backend && backend.getFriends) backend.getFriends(uid).then(function(m){ nFr=Object.keys(m||{}).length; if(!g.hidden) draw(); });
+    if(backend && backend.getSessions) backend.getSessions(uid).then(function(l){ sess=l; if(!g.hidden) draw(); }).catch(function(){}); }
+  // carte Événements en haut de la Communauté : prochain événement + pastille
+  function updEvCard(){ var nx=$("cmEvNext"); if(nx){ var now=Date.now(), up=(myEvents||[]).filter(function(e){ return !e.cancelled && (+e.when||0)>now-3600000; });
+      nx.textContent = up.length ? ("Prochain : "+up[0].title+" · "+fmtEvWhen(up[0].when)) : "Sorties et rendez-vous des riders"; }
+    var src=$("evChipBadge"), b=$("cmEvBadge"); if(src && b){ b.hidden=src.hidden; b.textContent=src.textContent; } }
   function openRiderCard(uid){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
     var st=mine?(myStats()||{}):(commStats[uid]||{}), xp=riderXP(st), lv=riderLevel(xp), nxt=GRADES[lv+1];
     var prog=nxt?Math.round(100*(xp-GRADES[lv][0])/(nxt[0]-GRADES[lv][0])):100;
@@ -5273,11 +5486,20 @@
   $("sheetReport").addEventListener("click", doReportUser);
   $("sheetBlock").addEventListener("click", doBlock);
   $("sheetCancel").addEventListener("click", closeSheet);
+  var _spf=$("sheetProf"); if(_spf) _spf.addEventListener("click", function(){ if(sheetTarget){ var u=sheetTarget.uid; closeSheet(); openUserProfile(u); } });
   var _sm=$("sheetMsg"); if(_sm) _sm.addEventListener("click", function(){ if(sheetTarget){ var u=sheetTarget.uid, p=sheetTarget.ps; closeSheet(); openDM(u,p); } });
   $("commSheet").addEventListener("click", e=>{ if(e.target===$("commSheet")) closeSheet(); });
   // le pseudo tapé n'est qu'un brouillon : il devient le vrai pseudo une fois réservé (bouton Enregistrer)
   $("commPseudo").addEventListener("input", checkPseudo);
   var _vs=$("commVerifSend"); if(_vs) _vs.addEventListener("click", sendVerif);
+  // onglet Profil, recherche d'amis, carte Événements
+  var _pfe=$("pfEdit"); if(_pfe) _pfe.addEventListener("click", function(){ setVerifNote(""); openProfileSheet(); });
+  var _pfa=$("pfAv"); if(_pfa) _pfa.addEventListener("click", function(){ setVerifNote(""); openProfileSheet(); });
+  var _pfc=$("pfCard"); if(_pfc) _pfc.addEventListener("click", function(){ openRiderCard(me.uid); });
+  var _pff=$("pfFind"); if(_pff) _pff.addEventListener("click", openFriendSearch);
+  var _cms=$("cmSearch"); if(_cms) _cms.addEventListener("click", openFriendSearch);
+  var _cme=$("cmEvents"); if(_cme) _cme.addEventListener("click", function(){ var b=document.querySelector('#chatSeg [data-ch="events"]'); if(b) b.click(); var cc=$("chatCard"); if(cc) try{ cc.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){} });
+  document.querySelectorAll("#tab-profil [data-pt]").forEach(function(b){ b.addEventListener("click", function(){ pfTab=b.dataset.pt; renderProfil(); }); });
   var _lt=$("commLoginToggle"); if(_lt) _lt.addEventListener("click", function(){ var f=$("commLoginForm"); showLogin(!!(f&&f.hidden)); });
   var _lg=$("commLoginGo"); if(_lg) _lg.addEventListener("click", doLogin);
   var _lr=$("commLoginReset"); if(_lr) _lr.addEventListener("click", function(){ sendPwLink(($("commLoginEmail").value||"").trim()); });
@@ -5426,6 +5648,8 @@
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
     if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
+    if(backend.watchFriends) backend.watchFriends(onFriends);
+    if(backend.watchFriendReqs) backend.watchFriendReqs(onFriendReqs);
     var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(0); });
     var _vp=$("vidPost"); if(_vp) _vp.addEventListener("click", openVideoUpload);
     // session expirée (mot de passe changé…) : on propose de se reconnecter
