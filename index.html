@@ -1009,7 +1009,7 @@
     <p class="tagline">Les riders connectés près de toi.</p>
     <p class="note" style="font-size:14px;margin-bottom:12px">Active ta visibilité pour apparaître sur la carte, voir qui ride dans ton coin et vous retrouver sur l'eau.</p>
     <div class="rider-actions"><button class="prof-edit-btn" id="profEditBtn" type="button"><span class="prof-edit-av" id="profBtnAv">+</span><span>Mon profil</span></button><button class="card-btn" id="myCardBtn" type="button"><span class="cb-n" id="myCardNote">40</span>Ma carte de rider</button></div>
-    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<button type="button" class="mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">0 membre</span>&nbsp;›</button></div>
+    <div class="comm-online" id="commOnlineTop"><span class="dot-on"></span><b id="commOnlineN">0</b>&nbsp;en ligne&nbsp;·&nbsp;<button type="button" class="mem-btn" id="memBtn" title="Écrire à un rider"><span class="mem-ic">👥</span>&nbsp;<span id="commMembers">Riders Lite Foil</span>&nbsp;›</button></div>
     <div class="comm-stats" id="commStats" hidden></div>
     <div id="defiBox"></div>
 
@@ -4551,7 +4551,7 @@
     if(n<=0){ el.hidden=true; return; }
     var fmt=function(x){ return Math.round(x).toLocaleString("fr-FR"); };
     el.innerHTML='<span>🏄 <b>'+fmt(n)+'</b> sortie'+(n>1?"s":"")+' enregistrée'+(n>1?"s":"")+'</span><span>📍 <b>'+fmt(km)+'</b> km parcourus</span>'; el.hidden=false; }
-  function recomputeMembers(){ var set={}; for(var k in profileMap){ if(!blocked.has(k) && k!==TEAM_UID) set[k]=1; } for(var i=0;i<salonMsgs.length;i++){ var u=salonMsgs[i].uid; if(u && !blocked.has(u)) set[u]=1; } for(var rk in riders){ if(!blocked.has(rk)) set[rk]=1; } var n=Object.keys(set).length; var e=$("commMembers"); if(e) e.textContent = n+" membre"+(n>1?"s":""); }
+  function recomputeMembers(){ var set={}; for(var k in profileMap){ if(!blocked.has(k) && k!==TEAM_UID) set[k]=1; } for(var i=0;i<salonMsgs.length;i++){ var u=salonMsgs[i].uid; if(u && !blocked.has(u)) set[u]=1; } for(var rk in riders){ if(!blocked.has(rk)) set[rk]=1; } var e=$("commMembers"); if(e) e.textContent = "Riders Lite Foil"; } // nombre de membres retiré (06/11, demande de Cédric)
   function renderTyping(){ var el=$("chatTyping"); if(!el) return; var ch=currentChannel(); var names=[]; for(var k in typers){ if(blocked.has(k)) continue; var r=typers[k]; if(!r||r.ch!==ch) continue; names.push(r.pseudo||"Rider"); }
     var txt = !names.length ? "" : (names.length===1 ? (names[0]+" écrit…") : (names.length===2 ? (names[0]+" et "+names[1]+" écrivent…") : (names.length+" riders écrivent…")));
     // En conversation privée / groupe (skin WhatsApp) : on affiche le statut d'écriture
