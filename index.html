@@ -700,16 +700,43 @@
   .rider-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
   .card-btn{ display:inline-flex; align-items:center; gap:8px; border:0; border-radius:100px; padding:9px 16px 9px 10px; font-family:inherit; font-size:14px; font-weight:800; color:#fff; cursor:pointer; background:linear-gradient(135deg,#0f6f8a,#0b3a55); box-shadow:0 4px 12px rgba(11,58,85,.3); }
   .card-btn .cb-n{ background:#fff; color:#0b3a55; border-radius:100px; padding:2px 8px; font-size:13px; }
-  .defi{ margin:4px 0 14px; border-radius:22px; padding:16px; color:#fff; cursor:pointer; position:relative; overflow:hidden;
-    background:radial-gradient(120% 120% at 100% 0%, #ffb547 0%, #ef7d2e 35%, #b2401a 100%); box-shadow:0 10px 26px rgba(178,64,26,.3); }
-  .defi::after{ content:"🏆"; position:absolute; right:-6px; bottom:-14px; font-size:96px; opacity:.18; transform:rotate(-12deg); }
-  .defi-top{ display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92; }
-  .defi h3{ margin:6px 0 4px; font-family:"Instrument Serif", Georgia, serif; font-weight:400; font-size:28px; line-height:1.05; }
-  .defi-lot{ font-size:14px; font-weight:700; background:rgba(255,255,255,.18); display:inline-block; padding:4px 10px; border-radius:100px; margin:4px 0 10px; }
-  .defi-pod{ display:flex; gap:8px; }
-  .defi-pod div{ flex:1; background:rgba(0,0,0,.18); border-radius:14px; padding:8px; text-align:center; font-size:12px; font-weight:700; min-width:0; }
-  .defi-pod div b{ display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .defi-me{ margin-top:10px; font-size:13.5px; font-weight:700; }
+  .defi{ margin:4px 0 14px; border-radius:24px; padding:18px 16px 16px; color:#fff; cursor:pointer; position:relative; overflow:hidden; isolation:isolate;
+    background:radial-gradient(90% 70% at 85% 0%, rgba(255,196,77,.28) 0%, rgba(255,196,77,0) 60%), radial-gradient(80% 60% at 0% 100%, rgba(31,181,189,.35) 0%, rgba(31,181,189,0) 65%), linear-gradient(160deg,#0d2238 0%,#0a3346 55%,#0b4652 100%);
+    box-shadow:0 14px 34px rgba(8,30,48,.35), inset 0 1px 0 rgba(255,255,255,.08); }
+  .defi::before{ content:""; position:absolute; inset:auto -10% -30px -10%; height:120px; z-index:-1; opacity:.18;
+    background:repeating-radial-gradient(ellipse at 50% 140%, transparent 0 14px, rgba(255,255,255,.7) 14px 15px); }
+  .defi:active{ transform:scale(.99); }
+  .defi-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .defi-tag{ display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#ffd36e; white-space:nowrap; }
+  .defi-tag i{ width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,#ffe08a,#e39b12); box-shadow:0 3px 10px rgba(227,155,18,.45); }
+  .defi-tag i svg{ width:17px; height:17px; fill:#5a3500; }
+  .defi-time{ display:flex; align-items:center; gap:6px; font-size:12px; font-weight:800; padding:6px 10px; border-radius:100px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); white-space:nowrap; }
+  .defi-time svg{ width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; }
+  .defi-time.last{ background:rgba(255,77,77,.2); border-color:rgba(255,120,120,.5); color:#ffd0d0; animation:defiPulse 1.6s ease-in-out infinite; }
+  @keyframes defiPulse{ 50%{ box-shadow:0 0 0 5px rgba(255,77,77,.12); } }
+  .defi h3{ margin:14px 0 2px; font-size:24px; font-weight:800; line-height:1.1; letter-spacing:-.02em; }
+  .defi h3 em{ font-style:normal; background:linear-gradient(90deg,#ffd36e,#ffa53a); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .defi-sub{ font-size:13px; color:rgba(255,255,255,.65); font-weight:600; }
+  .defi-lot{ font-size:13.5px; font-weight:800; background:rgba(255,211,110,.16); color:#ffd36e; display:inline-block; padding:5px 11px; border-radius:100px; margin:10px 0 0; }
+  .defi-pod{ display:flex; align-items:flex-end; gap:8px; margin-top:16px; }
+  .dp{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .dp-av{ position:relative; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; background:rgba(255,255,255,.1); border:2px dashed rgba(255,255,255,.3); color:rgba(255,255,255,.6); overflow:visible; }
+  .dp-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; }
+  .dp.on .dp-av{ border:2.5px solid var(--dpc); background:#163a4f; color:#fff; box-shadow:0 0 0 3px rgba(0,0,0,.15), 0 6px 16px rgba(0,0,0,.3); }
+  .dp-1 .dp-av{ width:58px; height:58px; font-size:22px; }
+  .dp-n{ margin-top:6px; font-size:13px; font-weight:800; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dp-k{ font-size:12px; font-weight:700; color:rgba(255,255,255,.65); margin-bottom:6px; }
+  .dp.on .dp-k{ color:var(--dpc); }
+  .dp-b{ width:100%; border-radius:12px 12px 6px 6px; display:flex; align-items:flex-start; justify-content:center; padding-top:6px; font-size:20px; font-weight:900; color:rgba(0,0,0,.45);
+    background:linear-gradient(180deg,var(--dpc),var(--dpd)); box-shadow:inset 0 1px 0 rgba(255,255,255,.5); }
+  .dp-1{ --dpc:#ffd36e; --dpd:#d48a0c; } .dp-1 .dp-b{ height:62px; }
+  .dp-2{ --dpc:#e3e9f0; --dpd:#8c9aab; } .dp-2 .dp-b{ height:44px; }
+  .dp-3{ --dpc:#f0b07c; --dpd:#a5592a; } .dp-3 .dp-b{ height:32px; }
+  .defi-me{ margin-top:14px; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); font-size:13.5px; font-weight:700; }
+  .defi-me .dm-r{ width:36px; height:36px; flex:none; border-radius:11px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; background:linear-gradient(145deg,#2fd0d8,#138b93); }
+  .defi-me .dm-t{ flex:1; min-width:0; line-height:1.25; } .defi-me .dm-t small{ display:block; color:rgba(255,255,255,.6); font-weight:600; font-size:12px; }
+  .defi-me .dm-bar{ height:5px; border-radius:3px; background:rgba(255,255,255,.12); margin-top:5px; overflow:hidden; } .defi-me .dm-bar i{ display:block; height:100%; border-radius:3px; background:linear-gradient(90deg,#2fd0d8,#ffd36e); }
+  .defi-me .dm-go{ flex:none; width:30px; height:30px; border-radius:50%; background:#fff; color:#0a3346; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:16px; }
   .lb-row{ display:flex; align-items:center; gap:10px; padding:9px 4px; border-bottom:1px solid var(--line-soft); }
   .lb-row.me{ background:#fff6ec; border-radius:12px; }
   .lb-pos{ width:28px; text-align:center; font-weight:800; font-size:15px; color:var(--muted); }
@@ -5975,14 +6002,22 @@
     out.sort(function(a,b){ return b.km-a.km; }); return out; }
   function defiRank(uid){ var b=defiBoard(); for(var i=0;i<b.length;i++){ if(b[i].uid===uid) return i+1; } return 0; }
   function defiName(uid){ return uid===me.uid ? (me.pseudo||"Moi") : ((profileMap[uid]||{}).pseudo||"Rider"); }
+  function spSvgBolt(){ return '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>'; }
   function renderDefi(){ var el=$("defiBox"); if(!el) return;
     var d=new Date(), mois=d.toLocaleDateString("fr-FR",{month:"long"}), end=new Date(weekStart(d).getTime()+7*86400000), left=Math.ceil((end-d)/86400000);
     var b=defiBoard(), r=defiRank(me.uid), mk=weekEfoilKm(myStats());
-    var pod=[0,1,2].map(function(i){ var x=b[i]; return '<div>'+["🥇","🥈","🥉"][i]+'<b>'+(x?esc(defiName(x.uid)):"—")+'</b>'+(x?(Math.round(x.km*10)/10).toLocaleString("fr-FR")+" km":"à prendre")+'</div>'; }).join("");
-    el.innerHTML='<div class="defi" id="defiOpen"><div class="defi-top"><span>Défi eFoil de la semaine</span><span>'+(left<=1?"Dernier jour":"Fin dans "+left+" j")+'</span></div>'
-      +'<h3>Le plus de km en eFoil cette semaine</h3>'+(DEFI_LOT?'<div class="defi-lot">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'<div style="height:6px"></div>')
-      +'<div class="defi-pod">'+pod+'</div>'
-      +'<div class="defi-me">'+(r?('Tu es '+r+(r===1?"er":"e")+' avec '+(Math.round(mk*10)/10).toLocaleString("fr-FR")+' km 🔥'):'Enregistre une sortie eFoil pour entrer dans le classement →')+'</div></div>';
+    var hl=Math.max(0,Math.floor((end-d)/3600000)), tl=left<=1?(hl+" h restantes"):("Fin dans "+Math.floor(hl/24)+" j "+(hl%24)+" h");
+    var fk=function(km){ return (Math.round(km*10)/10).toLocaleString("fr-FR")+" km"; };
+    var pod=[1,0,2].map(function(i){ var x=b[i]; return '<div class="dp dp-'+(i+1)+(x?" on":"")+'"><div class="dp-av">'+(x?avHtml(x.uid):"?")+'</div><div class="dp-n">'+(x?esc(defiName(x.uid)):"Place libre")+'</div><div class="dp-k">'+(x?fk(x.km):"à prendre")+'</div><div class="dp-b">'+(i+1)+'</div></div>'; }).join("");
+    var meHtml;
+    if(r){ var nxt=r>1?b[r-2]:null, pct=nxt?Math.max(6,Math.min(100,Math.round(mk/nxt.km*100))):100;
+      meHtml='<div class="dm-r">'+r+(r===1?"er":"e")+'</div><div class="dm-t">Tu as '+fk(mk)+'<small>'+(nxt?("Encore "+fk(Math.max(0.1,nxt.km-mk))+" pour passer "+(r-1)+(r-1===1?"er":"e")):"Tu mènes le classement 🔥")+'</small><div class="dm-bar"><i style="width:'+pct+'%"></i></div></div><div class="dm-go">›</div>'; }
+    else meHtml='<div class="dm-r">'+spSvgBolt()+'</div><div class="dm-t">Entre dans la course<small>Enregistre une sortie eFoil pour être classé</small></div><div class="dm-go">›</div>';
+    el.innerHTML='<div class="defi" id="defiOpen"><div class="defi-top"><span class="defi-tag"><i><svg viewBox="0 -960 960 960"><path d="'+SP_PATH.trophy+'"/></svg></i>Défi de la semaine</span>'
+      +'<span class="defi-time'+(left<=1?" last":"")+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+tl+'</span></div>'
+      +'<h3>Le plus de km en <em>eFoil</em></h3><div class="defi-sub">Du lundi au dimanche · classement en direct</div>'
+      +(DEFI_LOT?'<div class="defi-lot">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
+      +'<div class="defi-pod">'+pod+'</div><div class="defi-me">'+meHtml+'</div></div>';
     $("defiOpen").addEventListener("click", openDefiBoard);
     var n=$("myCardNote"); if(n) n.textContent=riderNote(riderXP(myStats()||{}));
     var mxp=riderXP(myStats()||{}), mlv=riderLevel(mxp), nm=$("cmhName"), gr=$("cmhGrade");
