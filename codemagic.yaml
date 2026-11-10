@@ -32,7 +32,7 @@ workflows:
           # notifications : module Firebase seulement si le fichier de config iOS est fourni
           if [ -f ios-assets/GoogleService-Info.plist ]; then npm install @capacitor-firebase/messaging@6.3.1; fi
           if [ ! -d "ios" ]; then npx cap add ios; fi
-          # permissions, Bluetooth en arriere-plan, chiffrement, iOS 15, icone et ecran de demarrage
+          # permissions, Bluetooth en arriere-plan, chiffrement, iOS 15, icone, ecran de demarrage, module LfTrack (suivi GPS)
           bash scripts/ios-setup.sh
           npx cap sync ios
       - name: Signature automatique
@@ -41,7 +41,7 @@ workflows:
       - name: Numero de build
         script: |
           cd ios/App
-          agvtool new-marketing-version 1.3.0 || true
+          agvtool new-marketing-version 1.4.0 || true
           agvtool new-version -all $(($(date +%s) / 60)) || true
       - name: Build IPA
         script: |
@@ -100,12 +100,14 @@ workflows:
           done
           grep -q 'android.hardware.location.gps' android/app/src/main/AndroidManifest.xml || \
             perl -0pi -e 's#(<uses-permission android:name="android.permission.INTERNET" />)#$1\n    <uses-feature android:name="android.hardware.location.gps" />#' android/app/src/main/AndroidManifest.xml
+          # module natif LfTrack : suivi GPS qui continue appli fermée (native/android, voir SUIVI_ARRIERE_PLAN.md)
+          bash scripts/android-setup.sh
           npx cap sync android
       - name: Numero de version (toujours superieur a l'app actuelle)
         script: |
           VC=$(date +%s)
           sed -i.bak "s/versionCode 1/versionCode $VC/" android/app/build.gradle
-          sed -i.bak 's/versionName "1.0"/versionName "1.3.0"/' android/app/build.gradle
+          sed -i.bak 's/versionName "1.0"/versionName "1.4.0"/' android/app/build.gradle
           echo "versionCode applique : $VC"
       - name: Build de l'app (AAB release)
         script: |

@@ -24,6 +24,7 @@ plutil -replace NSBluetoothPeripheralUsageDescription -string "Lite Foil se conn
 plutil -replace NSLocationWhenInUseUsageDescription -string "Votre position sert à vous situer sur la carte, à enregistrer vos sorties et, si vous l'activez, à apparaître dans la communauté (zone approximative)." "$PLIST"
 plutil -replace NSLocationAlwaysAndWhenInUseUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint ou le téléphone dans la poche. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée, et vous l'arrêtez vous-même." "$PLIST"
 plutil -replace UIBackgroundModes -json '["bluetooth-central","location"]' "$PLIST"
+plutil -replace NSLocationAlwaysUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint, et reprenne si l'appli est fermée. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée." "$PLIST"
 plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
 plutil -lint "$PLIST" >/dev/null
 
@@ -102,6 +103,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 SWIFT
 fi
 plutil -lint "$PLIST" >/dev/null
+
+# 5 bis) Module natif LfTrack (native/ios) : enregistrement GPS des sorties écran verrouillé,
+#    et reprise automatique si l'appli est fermée (relance par iOS sur déplacement important).
+#    Les fichiers Swift sont ajoutés à la cible App ; Main.storyboard utilise LFViewController
+#    (qui enregistre le module) ; AppDelegate relance l'enregistrement au démarrage si une sortie est en cours.
+cp "$ROOT/native/ios/LfTrackRecorder.swift" "$ROOT/native/ios/LfTrackPlugin.swift" "$ROOT/native/ios/LFViewController.swift" "$APP/App/"
+/usr/bin/env ruby -e '
+  require "xcodeproj"
+  p = Xcodeproj::Project.open(ARGV[0])
+  t = p.targets.find { |x| x.name == "App" }
+  g = p.main_group.find_subpath("App", false)
+  %w[LfTrackRecorder.swift LfTrackPlugin.swift LFViewController.swift].each do |n|
+    next if g.files.any? { |f| f.path == n }
+    t.add_file_references([g.new_reference(n)])
+  end
+  p.save
+' "$APP/App.xcodeproj"
+STORY="$APP/App/Base.lproj/Main.storyboard"
+if grep -q 'customClass="CAPBridgeViewController"' "$STORY"; then
+  sed -i '' 's/customClass="CAPBridgeViewController" customModule="Capacitor"/customClass="LFViewController" customModule="App" customModuleProvider="target"/' "$STORY"
+fi
+grep -q 'customClass="LFViewController"' "$STORY" || { echo "Main.storyboard : LFViewController non appliqué" >&2; exit 1; }
+DELEGATE="$APP/App/AppDelegate.swift"
+if ! grep -q "LITEFOIL_TRACK" "$DELEGATE"; then
+  /usr/bin/ruby -E UTF-8 -e '
+    f = ARGV[0]; s = File.read(f)
+    s.sub!(/(didFinishLaunchingWithOptions[^{]*\{\n)/) { $1 + "        // LITEFOIL_TRACK : reprend l\u2019enregistrement d\u2019une sortie en cours (relance par iOS, appli ferm\u00e9e)\n        LfTrackRecorder.shared.resumeIfNeeded()\n" } or abort "didFinishLaunching introuvable"
+    File.write(f, s)
+  ' "$DELEGATE"
+fi
 
 echo "Réglages iOS Lite Foil appliqués (équipe $TEAM). Étape suivante : npx cap sync ios"
 

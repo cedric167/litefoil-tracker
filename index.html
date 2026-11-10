@@ -2594,6 +2594,95 @@
       return null;
     } catch(e){ return null; }
   }
+  // 10/11 : module natif LfTrack (app installée Android/iOS, voir native/). Il enregistre le GPS lui-même,
+  // dans un fichier du téléphone : l'enregistrement continue écran éteint, et appli fermée (Android ;
+  // sur iPhone il reprend au prochain déplacement important). La page relit les points à la réouverture.
+  var phNatOn = false, phNatN = 0, phNatL = null, phNatStopL = null, phNatBusy = false, phStlSkip = 0;
+  function phNat(){
+    try {
+      var C = window.Capacitor; if(!C || !C.isNativePlatform || !C.isNativePlatform()) return null;
+      if(C.isPluginAvailable && !C.isPluginAvailable("LfTrack")) return null;
+      if(C.Plugins && C.Plugins.LfTrack) return C.Plugins.LfTrack;
+      return C.registerPlugin ? C.registerPlugin("LfTrack") : null;
+    } catch(e){ return null; }
+  }
+  function phIsIos(){ try{ return window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform()==="ios"; }catch(e){ return false; } }
+  function phNatConv(p){ return { lat:p.lat, lon:p.lon, acc:p.acc, alt:p.alt, speedMs:p.spd, heading:p.brg, tMs:p.t }; }
+  // Sortie en cours (pour la reprendre si l'appli a été fermée) : début, activité, session SportsTrackLive.
+  function phCurSave(){ try{ localStorage.setItem("lf.ph.cur", JSON.stringify({ t0:phT0, milieu:phMilieu, type:phType, cat:phCat, stlTrack:phStl.trackId||null, stlSent:phStl.sent||0 })); }catch(e){} }
+  function phCurLoad(){ try{ return JSON.parse(localStorage.getItem("lf.ph.cur")||"null"); }catch(e){ return null; } }
+  function phCurClear(){ try{ localStorage.removeItem("lf.ph.cur"); }catch(e){} }
+  function phNatAttach(){
+    var n = phNat(); if(!n || phNatL) return;
+    try { n.addListener("location", function(p){ phNatFeed(p); }).then(function(h){ phNatL = h; }); } catch(e){}
+    try { n.addListener("stopped", function(){ if(phNatOn) phStop(); }).then(function(h){ phNatStopL = h; }); } catch(e){}
+  }
+  function phNatDetach(){
+    try { if(phNatL && phNatL.remove) phNatL.remove(); } catch(e){} phNatL = null;
+    try { if(phNatStopL && phNatStopL.remove) phNatStopL.remove(); } catch(e){} phNatStopL = null;
+  }
+  // Point reçu en direct : traité seulement s'il suit le dernier point connu, sinon on relit le fichier.
+  function phNatFeed(p){
+    if(!phNatOn || !p || p.i==null) return;
+    if(p.i < phNatN) return;
+    if(p.i > phNatN || phNatBusy){ phNatSync(); return; }
+    phNatN++; phOnPos(phNatConv(p));
+  }
+  // Relit les points enregistrés par le module natif depuis le dernier point affiché.
+  function phNatSync(){
+    var n = phNat(); if(!n) return Promise.resolve();
+    if(phNatBusy) return phNatBusy;
+    phNatBusy = n.getPoints({ from: phNatN }).then(function(r){
+      var pts = (r && r.points) || [], k = 0;
+      pts.forEach(function(p){ if(p && p.i===phNatN){ phNatN++; k++; phOnPos(phNatConv(p), true); } });
+      if(k) phUiRefresh();
+    }).catch(function(){}).then(function(){ phNatBusy = false; });
+    return phNatBusy;
+  }
+  // Affichage complet après une relecture en bloc (chiffres + trace sur la carte).
+  function phUiRefresh(){
+    var dist = phDistTotal(), last = phPts[phPts.length-1];
+    $("phPts").textContent = phPts.length;
+    $("phDist").textContent = (dist/1000).toFixed(2).replace(".",",")+" km";
+    $("phSpdMax").textContent = phNum(phMax)+" km/h";
+    if(last){
+      $("phSpd").textContent = phNum(last.speed||0)+" km/h"; $("phAcc").textContent = (last.acc!=null?Math.round(last.acc)+" m":"—");
+      try { mapInit(); if(lfMap){ var ll = phPts.slice(-3000).map(function(q){ return [q.lat,q.lon]; }); lfTrail.setLatLngs(ll);
+        if(!lfMe){ lfMe = L.circleMarker([last.lat,last.lon], { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 }).addTo(lfMap); lfMap.setView([last.lat,last.lon], 16); lfFollow = true; }
+        else { lfMe.setLatLng([last.lat,last.lon]); if(lfFollow) lfMap.panTo([last.lat,last.lon]); } } } catch(e){}
+    }
+  }
+  function phNatNote(){
+    return phIsIos()
+      ? "Enregistrement en cours. Verrouille simplement l'écran : ne ferme pas l'appli (en la balayant), sinon l'iPhone coupe le GPS jusqu'au prochain déplacement important. Choisis « Toujours » pour la localisation."
+      : "Enregistrement en cours. Tu peux verrouiller l'écran ou fermer l'appli : l'enregistrement continue (notification « Lite Foil »).";
+  }
+  // Au lancement : reprend une sortie en cours, ou termine celle arrêtée depuis la notification.
+  function phNatBoot(){
+    var n = phNat(); if(!n) return;
+    n.status().then(function(st){
+      if(!st || !st.meta || !(st.running || st.count>0)){ if(st && !st.running) n.clear().catch(function(){}); return; }
+      var m = {}; try { m = JSON.parse(st.meta)||{}; } catch(e){}
+      var cur = phCurLoad();
+      phMilieu = m.milieu || phMilieu; phType = m.type || phType; phCat = m.cat || phCat;
+      try { phSetMilieu(phMilieu); var sel=$("phAct"); if(sel){ sel.value = phType; phType = sel.value || phType; } phCat = m.cat || phCat; } catch(e){}
+      phPts = []; phMax = 0; phT0 = +m.t0 || Date.now(); phLast = null; phBgId = null; phNatN = 0;
+      phStlReset();
+      if(cur && +cur.t0===phT0 && cur.stlTrack && phStl.wanted && phStl.token){ phStl.trackId = cur.stlTrack; phStl.sent = +cur.stlSent||0; phStlSkip = phStl.sent; }
+      phNatOn = true; phNatAttach();
+      if(st.running){
+        try { $("trkChip").className = "trk-chip rec"; $("trkChipTx").textContent = "Enregistrement"; } catch(e){}
+        $("phStart").hidden = true; $("phStop").hidden = false;
+        if(phTimer) clearInterval(phTimer); phTimer = setInterval(function(){ phTick(); phMotionTick(); }, 1000);
+        $("phNote").textContent = "Sortie en cours reprise.";
+        phNatSync().then(function(){ phTick(); $("phNote").textContent = phNatNote()+" "+phPts.length+" points GPS."; });
+      } else {
+        // arrêtée depuis la notification pendant que l'appli était fermée
+        phNatSync().then(function(){ phStop(); });
+      }
+    }).catch(function(){});
+  }
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible" && phNatOn) phNatSync(); });
   var phMilieu = "mer", phType = "efoil", phCat = "Foil électrique";
   // Activités proposées par milieu : [clé interne, libellé affiché]
   // 07/11 : mêmes sports que les Cartes Rider (les sports choisis dans « Mes sports » passent en premier)
@@ -2621,26 +2710,27 @@
   function phNum(x){ return x.toFixed(1).replace(".",","); }
   function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); }
   // Traite une position normalisée (native OU web) : {lat, lon, acc, alt, speedMs, heading, tMs}
-  function phOnPos(o){
+  function phOnPos(o, bulk){
     if(o.lat==null || o.lon==null || !isFinite(o.lat) || !isFinite(o.lon)) return;
     var t = Math.max(0, ((o.tMs!=null?o.tMs:Date.now()) - phT0)/1000);
     var spd = (o.speedMs!=null && isFinite(o.speedMs) && o.speedMs>=0) ? o.speedMs*3.6 : null;
     var acc = (o.acc!=null && isFinite(o.acc)) ? o.acc : null;
     // au tout début, on écarte un point trop imprécis (fix pas encore stable)
-    if(phPts.length===0 && acc!=null && acc>40){ $("phNote").textContent = "Signal GPS faible ("+Math.round(acc)+" m)… on attend un meilleur fix."; $("phAcc").textContent = Math.round(acc)+" m"; return; }
+    if(phPts.length===0 && acc!=null && acc>40){ if(bulk) return; $("phNote").textContent = "Signal GPS faible ("+Math.round(acc)+" m)… on attend un meilleur fix."; $("phAcc").textContent = Math.round(acc)+" m"; return; }
     var p = { lat:o.lat, lon:o.lon, speed:(spd!=null?spd:0), bearing:(o.heading!=null&&isFinite(o.heading))?o.heading:0, alt:(o.alt!=null&&isFinite(o.alt))?o.alt:0, t:t, acc:acc };
     // si le GPS ne donne pas la vitesse, l'estimer sur la distance entre deux points
     if(spd==null && phLast){ var dt=p.t-phLast.t; if(dt>0.2) spd = phHaversine(phLast,p)/dt*3.6; }
     if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
     phPts.push(p); phLast = p;
     try { phStlPush(p); } catch(e){}
+    if(bulk) return;
     var dist = phDistTotal();
     $("phPts").textContent = phPts.length;
     $("phDist").textContent = (dist/1000).toFixed(2).replace(".",",")+" km";
     $("phSpd").textContent = (spd!=null?phNum(spd):"0,0")+" km/h";
     $("phSpdMax").textContent = phNum(phMax)+" km/h";
     $("phAcc").textContent = (acc!=null?Math.round(acc)+" m":"—");
-    $("phNote").textContent = (phBgId!=null ? "Enregistrement en cours (continue écran éteint) — " : "Enregistrement en cours — ")+phPts.length+" points GPS.";
+    $("phNote").textContent = phNatOn ? phNatNote()+" "+phPts.length+" points GPS." : (phBgId!=null ? "Enregistrement en cours (continue écran éteint) — " : "Enregistrement en cours — ")+phPts.length+" points GPS.";
     try { mapUpdate(o.lat, o.lon, spd); } catch(e){}
   }
   // ---------- 07/11 : capteurs du téléphone (accéléromètre) : podomètre et sauts ----------
@@ -2671,15 +2761,32 @@
   function phMotionTick(){ if(!phMot.on) return; $("phSteps").textContent=phMot.steps.toLocaleString("fr-FR");
     if(phMot.jumps.length){ var b=phMot.jumps.reduce(function(x,j){ return (j.d||j.h)>(x.d||x.h)?j:x; }); $("phJumps").textContent=phMot.jumps.length+" · "+(b.d?(b.d.toFixed(2).replace(".",",")+" m"):(Math.round(b.h*100)+" cm")); } }
   function phStart(){
-    var bg = phBgPlugin();
-    if(!bg && !navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
+    var nat = phNat();
+    var bg = nat ? null : phBgPlugin();
+    if(!nat && !bg && !navigator.geolocation){ $("phNote").textContent = "Géolocalisation non disponible sur cet appareil."; return; }
     phPts = []; phMax = 0; phT0 = Date.now(); phLast = null; phBgId = null;
-    phStlReset();
+    phStlReset(); phStlSkip = 0; phNatN = 0;
     try { $("trkChip").className = "trk-chip rec"; $("trkChipTx").textContent = "Enregistrement"; } catch(e){}
     $("phStart").hidden = true; $("phStop").hidden = false;
     $("phPts").textContent = "0"; $("phDist").textContent = "0,00 km"; $("phSpd").textContent = "— km/h"; $("phSpdMax").textContent = "— km/h"; $("phAcc").textContent = "—"; $("phDur").textContent = "0:00";
     phTimer = setInterval(function(){ phTick(); phMotionTick(); }, 1000);
     phMotionStart();
+    if(nat){
+      // App native (10/11) : module LfTrack, l'enregistrement continue écran éteint et appli fermée.
+      $("phNote").textContent = "Recherche du signal GPS… "+(phIsIos() ? "tu peux verrouiller l'écran (ne ferme pas l'appli)." : "tu peux verrouiller l'écran ou fermer l'appli.");
+      phCurSave();
+      nat.start({ meta: JSON.stringify({ t0:phT0, milieu:phMilieu, type:phType, cat:phCat }), title: "Lite Foil — enregistrement", text: "Ta sortie ("+(phCat||"sortie")+") est en cours d'enregistrement." })
+        .then(function(){ phNatOn = true; phNatAttach(); phNatSync(); })
+        .catch(function(e){
+          phStopCleanup(); phCurClear(); $("phStart").hidden=false; $("phStop").hidden=true;
+          try { $("trkChip").className = "trk-chip"; $("trkChipTx").textContent = "Prêt"; } catch(x){}
+          if(e && e.code==="NOT_AUTHORIZED"){
+            $("phNote").innerHTML = "Localisation refusée. <a href=\"#\" id=\"phOpenSet\" style=\"color:var(--accent-ink);font-weight:800\">Ouvrir les réglages</a> pour l'autoriser"+(phIsIos()?" (choisis « Toujours »)":" (position exacte)")+".";
+            var a=$("phOpenSet"); if(a) a.addEventListener("click", function(ev){ ev.preventDefault(); try{ nat.openSettings(); }catch(x){} });
+          } else { $("phNote").textContent = "Impossible de démarrer le suivi ("+(e&&e.message?e.message:e)+")."; }
+        });
+      return;
+    }
     if(bg){
       // App native : service premier plan → l'enregistrement continue écran éteint / en poche. Arrêt manuel.
       $("phNote").textContent = "Recherche du signal GPS… tu peux verrouiller l'écran, l'enregistrement continue.";
@@ -2713,6 +2820,7 @@
     }, { enableHighAccuracy:true, maximumAge:1000, timeout:20000 });
   }
   function phStopCleanup(){
+    if(phNatOn){ var n=phNat(); if(n){ try{ n.stop(); }catch(e){} } phNatDetach(); phNatOn = false; }
     if(phBgId!=null){ var bg=phBgPlugin(); if(bg){ try{ bg.removeWatcher({ id: phBgId }); }catch(e){} } phBgId = null; }
     if(phWatch!=null && navigator.geolocation) navigator.geolocation.clearWatch(phWatch); phWatch = null;
     if(phTimer) clearInterval(phTimer); phTimer = null;
@@ -2720,6 +2828,18 @@
     try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}
   }
   function phStop(){
+    if(phNatOn){
+      // natif : arrêter l'enregistreur, relire les derniers points, puis enregistrer la sortie
+      var n = phNat(); phNatDetach();
+      $("phNote").textContent = "Fin de la sortie…";
+      (n ? n.stop().catch(function(){}) : Promise.resolve()).then(function(){ return phNatSync(); }).then(function(){
+        phNatOn = false; phStopFinish(); try{ n && n.clear(); }catch(e){} phCurClear();
+      });
+      return;
+    }
+    phStopFinish(); phCurClear();
+  }
+  function phStopFinish(){
     try { $("trkChip").className = "trk-chip"; $("trkChipTx").textContent = "Terminé"; } catch(e){}
     phStopCleanup();
     $("phStart").hidden = false; $("phStop").hidden = true;
@@ -2787,7 +2907,7 @@
   function phStlReset(){ phStl.trackId = null; phStl.queue = []; phStl.sent = 0; phStl.busy = false; phStl.failed = 0; phStl.creating = false; if(phStl.timer) clearInterval(phStl.timer); phStl.timer = null;
     if(phStl.wanted && phStl.token){ phStlBanner("wait","SportsTrackLive : en attente du premier point GPS…"); phStl.timer = setInterval(phStlFlush, 10000); } }
   // Appelée à chaque point GPS retenu.
-  function phStlPush(p){ if(!phStl.wanted || !phStl.token) return; if(!phStl.trackId){ if(!phStl.creating) phStlCreate(p); else phStl.queue.push(p); return; } phStl.queue.push(p); }
+  function phStlPush(p){ if(!phStl.wanted || !phStl.token) return; if(phStlSkip>0){ phStlSkip--; return; } if(!phStl.trackId){ if(!phStl.creating) phStlCreate(p); else phStl.queue.push(p); return; } phStl.queue.push(p); }
   async function phStlCreate(p){
     phStl.creating = true;
     try {
@@ -2800,7 +2920,7 @@
         if(r.status>=400 && r.status<500 && body.track.category_name!=="other"){ body.track.category_name = "other"; r = await fetch(PH_STL_API+"/v1/track", { method:"POST", headers: phStlHeaders(), body: JSON.stringify(body) }); j = await r.json().catch(function(){ return {}; }); }
         if(!r.ok || !j.track || !j.track.id){ phStl.failed++; phStlBanner("bad","SportsTrackLive : création de la session refusée (HTTP "+r.status+"). La sortie reste enregistrée dans le téléphone."); log("STL : création refusée HTTP "+r.status+" "+JSON.stringify(j).slice(0,120), "e"); phStl.creating = false; phStl.wanted = false; return; }
       }
-      phStl.trackId = j.track.id; phStl.sent = 1;
+      phStl.trackId = j.track.id; phStl.sent = 1; phCurSave();
       phStlBanner("ok","En direct sur SportsTrackLive · session n° "+phStl.trackId+" · 1 point envoyé");
       log("STL : session live n° "+phStl.trackId+" créée", "g");
     } catch(e){ phStl.failed++; phStlBanner("wait","SportsTrackLive injoignable pour l'instant, nouvel essai au prochain point…"); }
@@ -2811,7 +2931,7 @@
     phStl.busy = true; var batch = phStl.queue.splice(0, 200);
     try {
       var r = await fetch(PH_STL_API+"/v1/track/"+phStl.trackId+"/points", { method:"PUT", headers: phStlHeaders(), body: JSON.stringify({ points: batch.map(phStlPoint) }) });
-      if(r.ok){ phStl.sent += batch.length; phStl.failed = 0; phStlBanner("ok","En direct sur SportsTrackLive · session n° "+phStl.trackId+" · "+phStl.sent+" points envoyés"); }
+      if(r.ok){ phStl.sent += batch.length; phStl.failed = 0; phCurSave(); phStlBanner("ok","En direct sur SportsTrackLive · session n° "+phStl.trackId+" · "+phStl.sent+" points envoyés"); }
       else { phStl.queue = batch.concat(phStl.queue); phStl.failed++; if(r.status===401){ phStlBanner("bad","SportsTrackLive : session expirée, les points restent dans le téléphone."); } else phStlBanner("wait","SportsTrackLive : envoi en attente ("+phStl.queue.length+" points, HTTP "+r.status+")…"); }
     } catch(e){ phStl.queue = batch.concat(phStl.queue); phStl.failed++; phStlBanner("wait","SportsTrackLive : réseau indisponible, "+phStl.queue.length+" points en attente…"); }
     finally { phStl.busy = false; }
@@ -2840,6 +2960,7 @@
     var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(btn) phSetMilieu(btn.dataset.m); });
     var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; });
     phSetMilieu("mer");
+    phNatBoot();
   }
   if(document.readyState!=="loading") phBind(); else window.addEventListener("DOMContentLoaded", phBind);
 
