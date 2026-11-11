@@ -671,6 +671,10 @@
   .vf-item::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:45%; background:linear-gradient(0deg,rgba(0,0,0,.65),transparent); pointer-events:none; }
   .vf-play{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:64px; color:rgba(255,255,255,.85); display:none; pointer-events:none; }
   .vf-item.paused .vf-play{ display:block; }
+  .vf-spin{ position:absolute; left:50%; top:50%; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; border:3px solid rgba(255,255,255,.25); border-top-color:#fff; animation:vfSpin .8s linear infinite; display:none; pointer-events:none; z-index:1; }
+  .vf-item.loading .vf-spin{ display:block; } .vf-item.loading .vf-play{ display:none; } @keyframes vfSpin{ to{ transform:rotate(360deg); } }
+  .vf-err{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:none; z-index:2; border:0; border-radius:999px; padding:12px 18px; background:rgba(0,0,0,.6); color:#fff; font:inherit; font-weight:800; cursor:pointer; }
+  .vf-item.err .vf-err{ display:block; } .vf-item.err .vf-spin,.vf-item.err .vf-play{ display:none; }
   .vf-heart{ position:absolute; left:50%; top:45%; transform:translate(-50%,-50%) scale(0); font-size:110px; color:#ff3d6e; text-shadow:0 6px 24px rgba(0,0,0,.4); pointer-events:none; opacity:0; z-index:2; }
   .vf-heart.pop{ animation:vfPop .8s ease-out; } @keyframes vfPop{ 0%{ opacity:0; transform:translate(-50%,-50%) scale(.3);} 25%{ opacity:1; transform:translate(-50%,-50%) scale(1.15);} 60%{ opacity:1; transform:translate(-50%,-50%) scale(1);} 100%{ opacity:0; transform:translate(-50%,-60%) scale(1);} }
   .vf-side{ position:absolute; right:10px; bottom:calc(env(safe-area-inset-bottom) + 110px); z-index:2; display:flex; flex-direction:column; align-items:center; gap:16px; }
@@ -4904,8 +4908,8 @@
   function feedItemHtml(v,i){ var off=isOfficial(v.uid), name=(off&&v.uid===TEAM_UID)?TEAM_NAME:(v.pseudo||"Rider");
     var av=v.av||(off&&v.uid===TEAM_UID?TEAM_AV:"");
     return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'">'
-      +'<video playsinline loop muted preload="metadata" src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
-      +'<div class="vf-heart">♥</div><div class="vf-play">▶</div>'
+      +'<video playsinline webkit-playsinline loop muted preload="none" data-src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
+      +'<div class="vf-heart">♥</div><div class="vf-play">▶</div><div class="vf-spin"></div><button class="vf-err" type="button">Vidéo indisponible · Réessayer</button>'
       +'<div class="vf-side">'
         +'<button class="vf-av" data-a="profile">'+(av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>')+'</button>'
         +'<button data-a="like" class="'+(vidLiked(v)?"on":"")+'"><i>♥</i><b>'+fmtCount(vidLikes(v))+'</b></button>'
@@ -4932,12 +4936,32 @@
     vfActive=-1; var st=start||0;
     var go=function(){ var tgt=list.querySelector('.vf-item[data-i="'+st+'"]'); if(tgt && Math.abs(list.scrollTop-tgt.offsetTop)>2) list.scrollTop=tgt.offsetTop; feedActivate(st); };
     if(!list._wired){ list._wired=true; var tm=null; list.addEventListener("scroll", function(){ clearTimeout(tm); tm=setTimeout(feedActivate,90); }, {passive:true}); }
+    // 11/11 : la vidéo démarre dès qu'elle occupe 60 % de l'écran, sans attendre la fin du défilement
+    if(vfIO){ vfIO.disconnect(); vfIO=null; }
+    if(window.IntersectionObserver){ vfIO=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting && e.intersectionRatio>=0.6) feedActivate(+e.target.dataset.i); }); }, { root:list, threshold:[0.6] });
+      list.querySelectorAll(".vf-item").forEach(function(it){ vfIO.observe(it); }); }
     requestAnimationFrame(function(){ requestAnimationFrame(go); }); setTimeout(go,150); }
-  let vfActive=-1;
+  let vfActive=-1, vfIO=null;
+  // 11/11 : fil fluide. Seules la vidéo à l'écran et ses voisines ont une source : la suivante se charge
+  // à l'avance (démarrage immédiat au glissement), les lointaines sont libérées (sinon le téléphone sature
+  // de vidéos en mémoire et le fil saccade, surtout sur iPhone).
+  function vfLoad(it, pre){ var vd=it.querySelector("video"); if(!vd) return;
+    if(!vd.getAttribute("src")){ it.classList.remove("err"); vd.preload=pre; vd.src=vd.dataset.src; }
+    else if(pre==="auto" && vd.preload!=="auto") vd.preload="auto"; }
+  function vfUnload(it){ var vd=it.querySelector("video"); if(!vd || !vd.getAttribute("src")) return;
+    try{ vd.pause(); vd.removeAttribute("src"); vd.load(); }catch(e){} it.classList.remove("loading","err"); }
+  function vfPlay(it){ var vd=it.querySelector("video"); if(!vd) return; vfLoad(it,"auto"); vd.muted=vfMuted;
+    if(vd.readyState<3) it.classList.add("loading"); it.classList.remove("paused");
+    var p=vd.play(); if(p&&p.catch) p.catch(function(){
+      // lecture avec le son refusée par le téléphone : on relance sans le son
+      if(!vd.muted){ vfMuted=true; var mb=$("vfMute"); if(mb) mb.textContent="🔇"; vd.muted=true; vd.play().catch(function(){ it.classList.remove("loading"); it.classList.add("paused"); }); }
+      else { it.classList.remove("loading"); it.classList.add("paused"); } }); }
   function feedActivate(force){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
     var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
-    its.forEach(function(it,i){ var vd=it.querySelector("video"); if(i===k){ vd.muted=vfMuted; var p=vd.play(); if(p&&p.catch) p.catch(function(){}); it.classList.remove("paused"); watchCount(it); } else { vd.pause(); } }); }
-  function closeFeed(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll("video").forEach(function(x){ x.pause(); }); vfActive=-1; if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } vf.hidden=true; document.body.style.overflow=""; }
+    its.forEach(function(it,i){ var vd=it.querySelector("video"), d=i-k;
+      if(d===0){ vfPlay(it); watchCount(it); }
+      else { if(vd && !vd.paused) vd.pause(); if(d===1) vfLoad(it,"auto"); else if(d===-1) vfLoad(it,"metadata"); else if(Math.abs(d)>2) vfUnload(it); } }); }
+  function closeFeed(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll(".vf-item").forEach(vfUnload); if(vfIO){ vfIO.disconnect(); vfIO=null; } vfActive=-1; if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } vf.hidden=true; document.body.style.overflow=""; }
   // compteur de commentaires de la vidéo à l'écran
   let vfCountUnsub=null;
   function watchCount(it){ if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(!backend||!backend.watchVideoComments) return;
@@ -4950,6 +4974,11 @@
     if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, on?"1":"0"); }catch(e){} var it=document.querySelector('.vf-item[data-vid="'+v.id+'"] [data-a="like"]'); if(it){ it.classList.toggle("on",on); it.querySelector("b").textContent=fmtCount(vidLikes(v)); } return; }
     refreshFeedCounts(); backend.likeVideo(v.id,on).catch(function(){}); }
   function wireFeedItem(it, v){ var vd=it.querySelector("video"), last=0;
+    var isOn=function(){ return +it.dataset.i===vfActive; };
+    vd.addEventListener("waiting", function(){ if(isOn()) it.classList.add("loading"); });
+    ["playing","canplay"].forEach(function(ev){ vd.addEventListener(ev, function(){ it.classList.remove("loading"); if(ev==="canplay" && isOn() && vd.paused && !it.classList.contains("paused")){ var p=vd.play(); if(p&&p.catch) p.catch(function(){}); } }); });
+    vd.addEventListener("error", function(){ if(!vd.getAttribute("src")) return; it.classList.remove("loading"); it.classList.add("err"); });
+    var eb=it.querySelector(".vf-err"); if(eb) eb.addEventListener("click", function(ev){ ev.stopPropagation(); it.classList.remove("err"); vfUnload(it); vfPlay(it); });
     vd.addEventListener("loadedmetadata", function(){ vd.style.objectFit = vd.videoHeight>=vd.videoWidth ? "cover" : "contain"; });
     vd.addEventListener("click", function(ev){ var now=Date.now();
       if(now-last<300){ toggleLike(v,true); var h=it.querySelector(".vf-heart"); h.classList.remove("pop"); void h.offsetWidth; h.classList.add("pop"); last=0; return; }
