@@ -18,7 +18,7 @@
       ".read": "auth != null",
       "$uid": {
         ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
-        ".validate": "newData.child('pseudo').isString() && newData.child('pseudo').val().length <= 24 && newData.child('nk').isString() && newData.child('nk').val().matches(/^[a-z0-9]{2,24}$/) && newData.child('nk').val() === newData.child('pseudo').val().toLowerCase().replace('à','a').replace('â','a').replace('ä','a').replace('é','e').replace('è','e').replace('ê','e').replace('ë','e').replace('î','i').replace('ï','i').replace('ô','o').replace('ö','o').replace('ù','u').replace('û','u').replace('ü','u').replace('ç','c').replace('ÿ','y').replace('œ','oe').replace('æ','ae').replace(' ','').replace('.','').replace('-','').replace('_','').replace(\"'\",'') && newData.parent().parent().child('names').child(newData.child('nk').val()).val() === $uid"
+        ".validate": "newData.child('pseudo').isString() && newData.child('pseudo').val().length <= 24 && newData.child('nk').isString() && newData.child('nk').val().matches(/^[a-z0-9]{2,24}$/) && newData.child('nk').val() === newData.child('pseudo').val().toLowerCase().replace('\u00e0','a').replace('\u00e2','a').replace('\u00e4','a').replace('\u00e9','e').replace('\u00e8','e').replace('\u00ea','e').replace('\u00eb','e').replace('\u00ee','i').replace('\u00ef','i').replace('\u00f4','o').replace('\u00f6','o').replace('\u00f9','u').replace('\u00fb','u').replace('\u00fc','u').replace('\u00e7','c').replace('\u00ff','y').replace('\u0153','oe').replace('\u00e6','ae').replace(' ','').replace('.','').replace('-','').replace('_','').replace(\"'\",'') && newData.parent().parent().child('names').child(newData.child('nk').val()).val() === $uid"
       }
     },
     "pushTokens": {
@@ -236,6 +236,15 @@
         "$viewer": {
           ".write": "auth != null && auth.token.email_verified === true && ((auth.uid === $viewer && $viewer !== $owner && root.child('profiles/'+$owner+'/nk').exists()) || (auth.uid === $owner && !newData.exists()))",
           ".validate": "!newData.exists() || (newData.hasChildren(['t','pseudo']) && newData.child('t').val() === now && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())"
+        }
+      }
+    },
+    "favorites": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "$vid": {
+          ".validate": "newData.isNumber() && $vid.length < 100"
         }
       }
     }

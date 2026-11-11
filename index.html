@@ -4400,6 +4400,9 @@
       deleteVideoComment(vid,cid){ return db.remove(db.ref(d,"videoComments/"+vid+"/"+cid)); },
       watchOfficial(cb){ return db.onValue(db.ref(d,"official"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
       watchStats(cb){ return db.onValue(db.ref(d,"stats"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
+      // 12/11 : favoris du Swip sauvegardés sur le compte (/favorites/{uid}/{vid} = date d'ajout), visibles par moi seul
+      watchFavs(cb){ return db.onValue(db.ref(d,"favorites/"+uid), function(sn){ cb(sn.val()||{}); }, function(){}); },
+      setFav(vid,on){ if(!vid) return Promise.resolve(); var r=db.ref(d,"favorites/"+uid+"/"+String(vid).replace(/[.#$\[\]\/]/g,"_")); return (on ? db.set(r, Date.now()) : db.remove(r)).catch(function(){}); },
       saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,month:o.month,eKm:o.eKm||0,week:o.week||"",wKm:o.wKm||0,eo:o.eo||0,ej:o.ej||0,sport:o.sport||"efoil",t:db.serverTimestamp()}).catch(function(){}); },
       watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); },
@@ -4536,6 +4539,7 @@
       getCard(){ return Promise.resolve(null); },
       watchStats(cb){ var mk=monthKey(); var o={"demo-aurel":{n:42,km:612.4,month:mk,week:weekKey(),wKm:18.4,eKm:48.6,eo:3,ej:5,sport:"efoil"},"demo-marine":{n:17,km:203.9,month:mk,week:weekKey(),wKm:9.7,eKm:21.2,eo:0,ej:4,sport:"wing"},"demo-leo":{n:6,km:38,month:mk,eKm:9.8,ej:1,sport:"efoil"}}; cb(o); return function(){}; },
       saveStats(){ return Promise.resolve(); },
+      watchFavs(){ return function(){}; }, setFav(){ return Promise.resolve(); },
       watchTyping(){ return function(){}; },
       sendReport(){ return Promise.resolve(); },
       // ---------- groupes privés (démo, en mémoire) ----------
@@ -5362,6 +5366,7 @@
       else if(a==="com") openVideoComments(v);
       else if(a==="share") shareVideo(v);
       else if(a==="fav"){ var m=vfFavs(), on=!m[v.id]; if(on) m[v.id]=Date.now(); else delete m[v.id]; try{ localStorage.setItem("lf.vf.fav", JSON.stringify(m)); }catch(e){}
+        if(backend && backend.setFav) backend.setFav(v.id, on);
         b.classList.toggle("on",on); b.querySelector("b").textContent=on?"Enregistré":"Favoris"; try{ navigator.vibrate&&navigator.vibrate(8); }catch(e){} vfToast(on?"Ajoutée à tes favoris":"Retirée des favoris"); try{ renderProfil(); }catch(e){} }
       else if(a==="more") videoMenu(v);
       else if(a==="profile"){ if(v.uid!==me.uid){ closeFeed(); var pr=profileMap[v.uid]||{}; openSheet(v.uid, pr.pseudo||v.pseudo, pr.av||v.av, pr.bio); } } }); }); }
@@ -7170,6 +7175,12 @@
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
     if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
+    // favoris : le compte fait foi ; ceux gardés sur ce téléphone avant la sauvegarde en ligne y sont envoyés une fois
+    if(backend.watchFavs){ var favFirst=true; backend.watchFavs(function(srv){
+      if(favFirst){ favFirst=false; try{ if(!localStorage.getItem("lf.vf.favUp")){ var loc=vfFavs(); for(var k in loc){ if(!srv[k]){ srv[k]=loc[k]; backend.setFav(k,true); } } localStorage.setItem("lf.vf.favUp","1"); } }catch(e){} }
+      try{ localStorage.setItem("lf.vf.fav", JSON.stringify(srv||{})); }catch(e){}
+      document.querySelectorAll('.vf-item [data-a="fav"]').forEach(function(b){ var it=b.closest(".vf-item"), on=!!(srv&&srv[it.dataset.vid]); b.classList.toggle("on",on); b.querySelector("b").textContent=on?"Enregistré":"Favoris"; });
+      if(pfTab==="fav"){ try{ renderProfil(); }catch(e){} } }); }
     if(backend.watchRatings) backend.watchRatings(function(m){ ratingsCache=m||{}; });
     if(backend.watchResults) backend.watchResults(function(m){ resultsAll=m||{}; renderProfil(); });
     setTimeout(publishRatings, 4000);
