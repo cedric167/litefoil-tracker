@@ -18,7 +18,7 @@ const www = path.join(root, 'www');
 const DIRS = ['activites', 'bms', 'firmware', 'i18n', 'manuel', 'store', 'vesc'];
 const FILES = [
   'index.html', 'sw.js', 'manifest.json', 'confidentialite.html',
-  'icon-192.png', 'icon-512.png', 'litefoil-logo.png',
+  'icon-192.png', 'icon-512.png', 'litefoil-logo.png', 'onb-logo.png',
 ];
 
 fs.rmSync(www, { recursive: true, force: true });

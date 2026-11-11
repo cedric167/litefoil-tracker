@@ -675,6 +675,78 @@
   .vf-item.loading .vf-spin{ display:block; } .vf-item.loading .vf-play{ display:none; } @keyframes vfSpin{ to{ transform:rotate(360deg); } }
   .vf-err{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:none; z-index:2; border:0; border-radius:999px; padding:12px 18px; background:rgba(0,0,0,.6); color:#fff; font:inherit; font-weight:800; cursor:pointer; }
   .vf-item.err .vf-err{ display:block; } .vf-item.err .vf-spin,.vf-item.err .vf-play{ display:none; }
+  /* ---------- 11/11 : démarrage obligatoire (compte + profil rider), voir lfOnb* ---------- */
+  .lfo{ position:fixed; inset:0; z-index:20000; background:#04121a; color:#0e1417; font-family:inherit; overflow:hidden; }
+  .lfo[hidden]{ display:none !important; }
+  .lfo-s{ position:absolute; inset:0; display:flex; flex-direction:column; background:#f4f6f7; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    padding:calc(env(safe-area-inset-top) + 18px) 24px calc(env(safe-area-inset-bottom) + 24px); animation:lfoIn .32s ease-out; }
+  .lfo-s[hidden]{ display:none !important; }
+  @keyframes lfoIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  .lfo-dark{ background:#04121a; color:#fff; }
+  .lfo-bgv{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:72% 50%; }
+  .lfo-shade{ position:absolute; inset:0; background:linear-gradient(180deg,rgba(4,18,26,.3) 0%,rgba(4,18,26,.05) 32%,rgba(4,18,26,.9) 70%,#04121a 100%); }
+  .lfo-brand{ position:relative; margin-top:auto; text-align:center; color:#fff; }
+  .lfo-brand img{ width:min(52vw,210px); }
+  .lfo-brand b{ display:block; font-weight:700; letter-spacing:.32em; font-size:21px; margin-top:10px; }
+  .lfo-brand i{ display:block; font-family:"Instrument Serif",serif; font-size:38px; margin-top:4px; }
+  .lfo-acts{ position:relative; margin-top:34px; display:flex; flex-direction:column; gap:12px; }
+  .lfo-btn{ display:flex; align-items:center; justify-content:center; gap:10px; min-height:54px; width:100%; border-radius:16px; border:0; font:inherit; font-weight:700; font-size:17px; cursor:pointer; }
+  .lfo-btn:disabled{ opacity:.55; }
+  .lfo-main{ background:linear-gradient(135deg,#19c3cf,#148a90); color:#fff; box-shadow:0 8px 20px rgba(20,138,144,.35); }
+  .lfo-white{ background:#fff; color:#0e1417; }
+  .lfo-ghost{ background:rgba(255,255,255,.14); color:#fff; border:1.5px solid rgba(255,255,255,.6); }
+  .lfo-line{ background:#fff; color:#0e1417; border:1.5px solid #dfe6e9; }
+  .lfo-link{ background:none; border:0; font:inherit; font-weight:800; color:#148a90; cursor:pointer; padding:4px; }
+  .lfo-dark .lfo-link{ color:#fff; }
+  .lfo-back{ width:42px; height:42px; border-radius:50%; background:#fff; border:0; font-size:22px; box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer; flex:0 0 auto; }
+  .lfo-h{ font-family:"Instrument Serif",serif; font-weight:400; font-size:40px; line-height:1.02; margin-top:20px; }
+  .lfo-sub{ font-size:15.5px; color:#5b6b71; margin-top:10px; line-height:1.45; }
+  .lfo-lbl{ font-size:13px; font-weight:700; color:#3c4a50; margin:16px 0 7px; }
+  .lfo-inp{ width:100%; height:54px; border-radius:14px; border:1.5px solid #dfe6e9; background:#fff; padding:0 16px; font:inherit; font-size:16px; color:#0e1417; outline:none; }
+  .lfo-inp:focus{ border-color:#19c3cf; box-shadow:0 0 0 4px rgba(25,195,207,.15); }
+  .lfo-pw{ position:relative; } .lfo-pw .lfo-inp{ padding-right:54px; }
+  .lfo-eye{ position:absolute; right:6px; top:6px; width:42px; height:42px; border:0; background:none; font-size:18px; cursor:pointer; }
+  .lfo-chk{ display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:13.5px; color:#5b6b71; line-height:1.45; }
+  .lfo-chk input{ width:20px; height:20px; accent-color:#148a90; flex:0 0 20px; margin-top:1px; }
+  .lfo-chk a{ color:#148a90; font-weight:700; }
+  .lfo-err{ margin-top:12px; font-size:14px; color:#c0392b; font-weight:600; line-height:1.4; min-height:1px; }
+  .lfo-err.ok{ color:#148a90; }
+  .lfo-foot{ margin-top:auto; padding-top:22px; display:flex; flex-direction:column; gap:10px; }
+  .lfo-small{ font-size:13px; color:#8a989d; text-align:center; line-height:1.5; }
+  .lfo-card{ background:#fff; border-radius:18px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.05); display:flex; gap:12px; align-items:center; font-size:14px; color:#3c4a50; margin-top:20px; }
+  .lfo-ico{ width:84px; height:84px; border-radius:26px; background:#e3f8f9; display:flex; align-items:center; justify-content:center; font-size:40px; margin-top:28px; }
+  .lfo-steps{ display:flex; gap:6px; } .lfo-steps i{ flex:1; height:4px; border-radius:2px; background:#dfe6e9; } .lfo-steps i.on{ background:#19c3cf; }
+  .lfo-chip{ display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:999px; background:#fff; border:1.5px solid #dfe6e9; font:inherit; font-weight:600; font-size:14.5px; margin:0 6px 8px 0; cursor:pointer; color:#0e1417; }
+  .lfo-chip.on{ background:#e3f8f9; border-color:#19c3cf; color:#0d6d72; }
+  .lfo-av{ position:relative; width:84px; height:84px; flex:0 0 84px; border-radius:50%; background:#dfe6e9; box-shadow:0 0 0 3px #19c3cf; overflow:visible; border:0; cursor:pointer; padding:0; }
+  .lfo-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
+  .lfo-av span{ position:absolute; right:-2px; bottom:-2px; width:30px; height:30px; border-radius:50%; background:#0e1417; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .lfo-hint{ font-size:13px; margin-top:6px; min-height:18px; } .lfo-hint.good{ color:#148a90; } .lfo-hint.bad{ color:#c0392b; }
+  .lfo-perm{ display:flex; gap:14px; align-items:center; padding:16px; background:#fff; border-radius:18px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+  .lfo-perm .ic{ width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex:0 0 46px; }
+  .lfo-perm b{ display:block; font-size:16px; } .lfo-perm p{ font-size:13.5px; color:#5b6b71; margin-top:3px; line-height:1.4; }
+  .lfo-tog{ appearance:none; -webkit-appearance:none; width:50px; height:30px; border-radius:15px; background:#dfe6e9; position:relative; flex:0 0 50px; cursor:pointer; transition:background .2s; }
+  .lfo-tog:checked{ background:#19c3cf; } .lfo-tog:after{ content:""; position:absolute; left:4px; top:4px; width:22px; height:22px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 1px 3px rgba(0,0,0,.2); } .lfo-tog:checked:after{ left:24px; }
+  .lfo-slides{ position:absolute; inset:0; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; } .lfo-slides::-webkit-scrollbar{ display:none; }
+  .lfo-slide{ position:relative; flex:0 0 100%; height:100%; scroll-snap-align:start; overflow:hidden; background:#04121a; }
+  .lfo-slide img.bg{ position:absolute; left:0; top:0; width:100%; height:64%; object-fit:cover; }
+  .lfo-slide .fade{ position:absolute; inset:0; background:linear-gradient(180deg,rgba(4,18,26,0) 28%,#04121a 64%); }
+  .lfo-slide .txt{ position:absolute; left:24px; right:24px; bottom:calc(env(safe-area-inset-bottom) + 170px); color:#fff; }
+  .lfo-slide .eb{ font-size:13px; font-weight:700; letter-spacing:.16em; color:#19e3ff; }
+  .lfo-slide h2{ font-family:"Instrument Serif",serif; font-weight:400; font-size:40px; line-height:1.03; margin-top:10px; }
+  .lfo-slide p{ font-size:16px; color:#b9cfd3; margin-top:12px; line-height:1.45; }
+  .lfo-intro-ctl{ position:absolute; left:24px; right:24px; bottom:calc(env(safe-area-inset-bottom) + 28px); }
+  .lfo-dots{ display:flex; gap:7px; justify-content:center; margin-bottom:22px; } .lfo-dots i{ width:8px; height:8px; border-radius:4px; background:rgba(255,255,255,.4); transition:width .2s; } .lfo-dots i.on{ width:24px; background:#fff; }
+  .lfo-skip{ position:absolute; top:calc(env(safe-area-inset-top) + 14px); right:16px; z-index:2; background:rgba(0,0,0,.3); color:#fff; border:0; border-radius:999px; padding:8px 14px; font:inherit; font-weight:700; cursor:pointer; }
+  .lfo-card3{ position:absolute; top:12%; left:50%; width:210px; height:300px; margin-left:-105px; background:linear-gradient(160deg,#f6e2a0,#d8a93a); box-shadow:0 20px 50px rgba(0,0,0,.5); clip-path:polygon(16% 0,84% 0,100% 12%,100% 86%,50% 100%,0 86%,0 12%); }
+  .lfo-card3 b{ position:absolute; left:18px; top:22px; font-weight:800; font-size:48px; color:#2b1e05; } .lfo-card3 small{ position:absolute; left:20px; top:82px; font-weight:700; font-size:12px; color:#2b1e05; }
+  .lfo-card3 img{ position:absolute; right:16px; top:28px; width:110px; height:130px; object-fit:cover; border-radius:4px; }
+  .lfo-card3 em{ position:absolute; left:0; right:0; top:182px; text-align:center; font-style:normal; font-weight:800; font-size:20px; color:#2b1e05; }
+  .lfo-wel{ background:linear-gradient(170deg,#062a33,#0b4552 55%,#0f6a72); color:#fff; text-align:center; }
+  .lfo-wel .avw{ width:120px; height:120px; border-radius:50%; object-fit:cover; margin:14vh auto 0; display:block; box-shadow:0 0 0 4px #19e3ff,0 0 40px rgba(25,227,255,.5); background:#0b4552; }
+  .lfo-wel h2{ font-family:"Instrument Serif",serif; font-weight:400; font-size:44px; line-height:1.03; margin-top:26px; }
+  .lfo-wait{ display:flex; align-items:center; justify-content:center; }
+  .lfo-spin{ width:42px; height:42px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:#19e3ff; animation:vfSpin .8s linear infinite; }
   .vf-heart{ position:absolute; left:50%; top:45%; transform:translate(-50%,-50%) scale(0); font-size:110px; color:#ff3d6e; text-shadow:0 6px 24px rgba(0,0,0,.4); pointer-events:none; opacity:0; z-index:2; }
   .vf-heart.pop{ animation:vfPop .8s ease-out; } @keyframes vfPop{ 0%{ opacity:0; transform:translate(-50%,-50%) scale(.3);} 25%{ opacity:1; transform:translate(-50%,-50%) scale(1.15);} 60%{ opacity:1; transform:translate(-50%,-50%) scale(1);} 100%{ opacity:0; transform:translate(-50%,-60%) scale(1);} }
   .vf-side{ position:absolute; right:10px; bottom:calc(env(safe-area-inset-bottom) + 110px); z-index:2; display:flex; flex-direction:column; align-items:center; gap:16px; }
@@ -4099,6 +4171,12 @@
         var pw=""; var a=new Uint8Array(18); crypto.getRandomValues(a); for(var i=0;i<a.length;i++) pw+=("0"+a[i].toString(16)).slice(-2);
         // mot de passe tiré au hasard, gardé seulement sur ce téléphone : il sert à confirmer la suppression du compte
         return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ try{ localStorage.setItem("lf.comm.k", pw); }catch(e){} return authMod.sendEmailVerification(auth.currentUser); }); },
+      // 11/11 : création du compte au démarrage : le compte anonyme du téléphone est rattaché à l'e-mail et au mot de passe choisis
+      createAccount(email,pw){ var u=auth.currentUser; if(!u) return Promise.reject({code:"auth/network-request-failed"});
+        if(u.email){ if(u.email.toLowerCase()===email.toLowerCase() && !u.emailVerified) return authMod.updatePassword(u,pw).catch(function(){}).then(function(){ return authMod.sendEmailVerification(u); });
+          return Promise.reject({code:"auth/email-already-in-use"}); }
+        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ return authMod.sendEmailVerification(auth.currentUser); }); },
+      unlinkEmail(){ var u=auth.currentUser; if(!u || !u.email || u.emailVerified) return Promise.resolve(); return authMod.unlink(u,"password"); },
       // suppression du profil : données de la communauté puis compte Firebase (l'adresse e-mail redevient libre)
       deleteAccount(){ var u=auth.currentUser; if(!u) return Promise.resolve("none");
         return db.get(db.ref(d,"profiles/"+uid+"/nk")).catch(function(){ return null; }).then(function(s){ var nk=s&&s.val(); var up={};
@@ -4240,6 +4318,7 @@
       nameOwner(){ return Promise.resolve(null); },
       emailState(){ return { email:"demo@litefoil.fr", verified:true }; },
       sendVerification(){ return Promise.resolve(); },
+      createAccount(){ return Promise.resolve(); }, unlinkEmail(){ return Promise.resolve(); },
       refreshVerification(){ return Promise.resolve(this.emailState()); },
       deleteAccount(){ return Promise.resolve("deleted"); },
       searchNames(k){ var out=[]; Object.keys(demo).forEach(function(u){ var nk=pseudoKey(demo[u].pseudo); if(nk && nk.indexOf(k)===0) out.push({nk:nk, uid:u}); }); return Promise.resolve(out); },
@@ -6417,10 +6496,222 @@
 
   window.commOnShow = function(){ setTimeout(function(){ chatUserUp=false; chatToBottom(null,true); },60); commMapInit(); if(commMap) setTimeout(()=>{ commMap.invalidateSize(); renderMap(); $("commRecenter").hidden=false; if(!commCentered) commRecenter(); },80); maybeOnboard(); recomputeBadges(); clearDeliveredNotifs(); };
 
+
+  // ---------- 11/11 (demande de Cédric) : démarrage obligatoire ----------
+  // À l'ouverture, tant que le client n'a pas de compte validé (e-mail confirmé + pseudo réservé),
+  // un parcours plein écran s'affiche : accueil vidéo → présentation (3 écrans) → créer son compte
+  // (e-mail + mot de passe) ou se connecter → confirmation de l'e-mail → profil rider (photo, pseudo,
+  // sports, niveau) → autorisations → bienvenue. Le compte est le compte Firebase de la communauté :
+  // le compte anonyme du téléphone est rattaché à l'e-mail (rien n'est perdu). Une fois fait, le client
+  // reste connecté et ne revoit plus ces écrans. Sans connexion à Firebase (mode démo), pas de blocage.
+  const LFO_FORCE = /[?&]onb=1\b/.test(location.search); // test : forcer le parcours
+  // false : parcours visible seulement avec ?onb=1 (phase de test) ; true : obligatoire pour tous les clients
+  const LFO_ALL = false;
+  let lfoDone = false; try{ lfoDone = localStorage.getItem("lf.onb.ok")==="1"; }catch(e){}
+  let lfoVerifT = null, lfoSports = [], lfoLevel = "";
+  const LFO_MAIN_SPORTS = ["efoil","wingfoil","surffoil","pumpfoil","kitesurf","windsurf","surf","sup","running","velo"];
+  function lfoHtml(){
+    var team = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23dfe6e9'/%3E%3Ccircle cx='32' cy='25' r='11' fill='%2398a7ad'/%3E%3Cpath d='M12 56c2-12 11-18 20-18s18 6 20 18z' fill='%2398a7ad'/%3E%3C/svg%3E";
+    return ''
+    // attente (le temps de retrouver le compte)
+    +'<section class="lfo-s lfo-dark lfo-wait" data-s="wait"><div class="lfo-spin"></div></section>'
+    // 1. accueil
+    +'<section class="lfo-s lfo-dark" data-s="home" hidden><video class="lfo-bgv" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="videos/litefoil-1.jpg" src="videos/litefoil-1.mp4"></video><div class="lfo-shade"></div>'
+    +'<div class="lfo-brand"><img src="onb-logo.png" alt="Lite Foil"><b>LITE FOIL</b><i>L\'appli des riders.</i></div>'
+    +'<div class="lfo-acts"><button class="lfo-btn lfo-main" data-go="intro">Créer mon compte</button><button class="lfo-btn lfo-ghost" data-go="login">J\'ai déjà un compte</button></div></section>'
+    // 2-3. présentation
+    +'<section class="lfo-s lfo-dark" data-s="intro" hidden style="padding:0"><button class="lfo-skip" data-go="signup">Passer</button><div class="lfo-slides" id="lfoSlides">'
+      +'<div class="lfo-slide"><img class="bg" src="videos/litefoil-5.jpg" alt=""><div class="fade"></div><div class="txt"><div class="eb">MÉTÉO · COMMUNAUTÉ</div><h2>Lis la mer, ride avec les autres.</h2><p>Vent, houle et prévisions de ton spot. Tchat, sorties et riders près de toi.</p></div></div>'
+      +'<div class="lfo-slide"><img class="bg" src="videos/litefoil-4.jpg" alt=""><div class="fade"></div><div class="txt"><div class="eb">TRACKING · SURVOL 3D</div><h2>Chaque sortie enregistrée, à revivre en 3D.</h2><p>Vitesse, distance, trace GPS, même téléphone en poche.</p></div></div>'
+      +'<div class="lfo-slide" style="background:radial-gradient(circle at 50% 30%,#f1cd61 0,#7a5a10 32%,#04121a 62%)"><div class="lfo-card3"><b>80</b><small>GLOBAL</small><img src="videos/litefoil-5.jpg" alt=""><em>TOI</em></div><div class="txt"><div class="eb">VIDÉOS · CARTES RIDER</div><h2>Ta carte monte avec toi.</h2><p>Publie tes sessions, gagne des niveaux : Bleu, Bronze, Argent, Or, Icône.</p></div></div>'
+    +'</div><div class="lfo-intro-ctl"><div class="lfo-dots" id="lfoDots"><i class="on"></i><i></i><i></i></div><button class="lfo-btn lfo-white" id="lfoNext">Suivant</button></div></section>'
+    // 4. créer mon compte
+    +'<section class="lfo-s" data-s="signup" hidden><div><button class="lfo-back" data-go="home" aria-label="Retour">‹</button></div>'
+      +'<div class="lfo-h">Crée ton compte</div><div class="lfo-sub">Pour enregistrer tes sorties et rejoindre la communauté Lite Foil.</div>'
+      +'<div class="lfo-lbl">Adresse e-mail</div><input class="lfo-inp" id="lfoSuEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="toi@exemple.fr">'
+      +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoSuPw" type="password" autocomplete="new-password" placeholder="8 caractères minimum"><button class="lfo-eye" type="button" data-eye="lfoSuPw" aria-label="Afficher">👁</button></div>'
+      +'<label class="lfo-chk"><input type="checkbox" id="lfoSuCgu"><span>J\'accepte la <a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a> et la charte de la communauté (respect des autres riders, pas de contenu choquant).</span></label>'
+      +'<div class="lfo-err" id="lfoSuErr"></div>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoSuGo">Créer mon compte</button><div class="lfo-small">Déjà un compte ? <button class="lfo-link" data-go="login">Se connecter</button></div></div></section>'
+    // 5. confirmer l'e-mail
+    +'<section class="lfo-s" data-s="verify" hidden><div class="lfo-ico">📩</div><div class="lfo-h">Vérifie ta boîte mail</div>'
+      +'<div class="lfo-sub">On a envoyé un lien de confirmation à <b id="lfoVfEmail" style="color:#0e1417"></b>. Touche le lien dans le mail, puis reviens ici. Pense à regarder dans les spams.</div>'
+      +'<div class="lfo-card"><span style="font-size:22px">⏳</span><span>En attente de confirmation… l\'appli continue toute seule dès que c\'est fait.</span></div>'
+      +'<div class="lfo-err" id="lfoVfErr"></div>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoVfCheck">J\'ai confirmé</button><div class="lfo-small">Rien reçu ? <button class="lfo-link" id="lfoVfResend">Renvoyer l\'e-mail</button> · <button class="lfo-link" id="lfoVfChange">Changer d\'adresse</button></div></div></section>'
+    // 6. se connecter
+    +'<section class="lfo-s" data-s="login" hidden><div><button class="lfo-back" data-go="home" aria-label="Retour">‹</button></div>'
+      +'<div class="lfo-h">Bon retour !</div><div class="lfo-sub">Connecte-toi pour retrouver tes sorties, ta carte et tes amis.</div>'
+      +'<div class="lfo-lbl">Adresse e-mail</div><input class="lfo-inp" id="lfoLiEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="toi@exemple.fr">'
+      +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoLiPw" type="password" autocomplete="current-password" placeholder="Ton mot de passe"><button class="lfo-eye" type="button" data-eye="lfoLiPw" aria-label="Afficher">👁</button></div>'
+      +'<div style="text-align:right;margin-top:10px"><button class="lfo-link" id="lfoLiForgot">Mot de passe oublié ?</button></div>'
+      +'<div class="lfo-err" id="lfoLiErr"></div>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoLiGo">Se connecter</button><div class="lfo-small">Pas encore de compte ? <button class="lfo-link" data-go="signup">Créer un compte</button></div></div></section>'
+    // 7. profil rider
+    +'<section class="lfo-s" data-s="profile" hidden><div class="lfo-steps"><i class="on"></i><i></i><i></i></div><div class="lfo-h" style="font-size:36px">Ton profil rider</div>'
+      +'<div style="display:flex;align-items:center;gap:16px;margin-top:18px"><button class="lfo-av" id="lfoAv" type="button" aria-label="Choisir une photo"><img id="lfoAvImg" alt="" src="'+team+'"><span>📷</span></button><div class="lfo-sub" style="margin:0">Ta photo apparaît sur ta carte rider et dans la communauté.</div></div>'
+      +'<input type="file" id="lfoAvFile" accept="image/*" hidden>'
+      +'<div class="lfo-lbl">Pseudo</div><input class="lfo-inp" id="lfoPseudo" maxlength="24" autocapitalize="off" spellcheck="false" placeholder="Ex. : LiteRider66"><div class="lfo-hint" id="lfoPseudoHint"></div>'
+      +'<div class="lfo-lbl">Tes sports</div><div id="lfoSports"></div>'
+      +'<div class="lfo-lbl">Ton niveau</div><div id="lfoLevel"><button class="lfo-chip" data-lv="debutant">Débutant</button><button class="lfo-chip" data-lv="confirme">Confirmé</button><button class="lfo-chip" data-lv="expert">Expert</button></div>'
+      +'<div class="lfo-err" id="lfoPrErr"></div>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoPrGo">Continuer</button></div></section>'
+    // 8. autorisations
+    +'<section class="lfo-s" data-s="perms" hidden><div class="lfo-steps"><i class="on"></i><i class="on"></i><i></i></div><div class="lfo-h" style="font-size:36px">Pour profiter de tout</div><div class="lfo-sub">Tu peux changer ces choix à tout moment dans les réglages du téléphone.</div>'
+      +'<label class="lfo-perm"><div class="ic" style="background:#e3f8f9">📍</div><div style="flex:1"><b>Position</b><p>Météo de ton spot, riders près de toi, enregistrement de tes sorties.</p></div><input type="checkbox" class="lfo-tog" id="lfoPmGeo" checked></label>'
+      +'<label class="lfo-perm"><div class="ic" style="background:#fff2df">🔔</div><div style="flex:1"><b>Notifications</b><p>Messages, invitations aux sorties, défi de la semaine.</p></div><input type="checkbox" class="lfo-tog" id="lfoPmNotif" checked></label>'
+      +'<div class="lfo-perm"><div class="ic" style="background:#ece7ff">📶</div><div style="flex:1"><b>Bluetooth</b><p>Demandé seulement quand tu connectes ton tracker, ta télécommande ou ta batterie Lite Foil.</p></div></div>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoPmGo">Continuer</button><button class="lfo-link" id="lfoPmLater" style="color:#8a989d">Plus tard</button></div></section>'
+    // 9. bienvenue
+    +'<section class="lfo-s lfo-wel" data-s="welcome" hidden><img class="avw" id="lfoWAv" alt="" src="'+team+'"><h2 id="lfoWTitle">Bienvenue 🤙</h2>'
+      +'<div class="lfo-sub" style="color:#b9cfd3;font-size:16px">Ta carte rider est créée. Lance ta première sortie pour la faire monter de niveau.</div>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-white" id="lfoWGo">Entrer dans l\'appli</button></div></section>';
+  }
+  function lfoEl(){ var o=$("lfOnb"); if(o) return o;
+    o=document.createElement("div"); o.id="lfOnb"; o.className="lfo"; o.innerHTML=lfoHtml(); document.body.appendChild(o); lfoBind(o); return o; }
+  function lfoShow(step){ var o=lfoEl(); o.hidden=false; document.body.style.overflow="hidden";
+    o.querySelectorAll(".lfo-s").forEach(function(s){ s.hidden = s.dataset.s!==step; });
+    var v=o.querySelector('[data-s="home"] video'); if(v){ if(step==="home"){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); } else v.pause(); }
+    if(lfoVerifT && step!=="verify"){ clearInterval(lfoVerifT); lfoVerifT=null; }
+    if(step==="verify"){ $("lfoVfEmail").textContent=me.email||(function(){ try{ return localStorage.getItem("lf.comm.email")||""; }catch(e){ return ""; } })(); lfoStartPoll(); }
+    if(step==="profile") lfoFillProfile();
+    if(step==="welcome"){ $("lfoWTitle").textContent="Bienvenue,\n"+(me.pseudo||"rider")+" 🤙"; $("lfoWTitle").style.whiteSpace="pre-line"; if(me.av) $("lfoWAv").src=me.av; }
+    var f=o.querySelector('[data-s="'+step+'"] input.lfo-inp'); if(f && step!=="profile" && !f.value) setTimeout(function(){ try{ f.focus(); }catch(e){} },350); }
+  function lfoHide(){ var o=$("lfOnb"); if(o){ o.hidden=true; var v=o.querySelector("video"); if(v) v.pause(); } document.body.style.overflow=""; if(lfoVerifT){ clearInterval(lfoVerifT); lfoVerifT=null; } }
+  function lfoErr(id,t,ok){ var e=$(id); if(e){ e.textContent=t||""; e.className="lfo-err"+(ok?" ok":""); } }
+  const LFO_MAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function lfoAuthMsg(c){ return c==="auth/email-already-in-use"||c==="auth/credential-already-in-use" ? "Cette adresse a déjà un compte Lite Foil : touche « Se connecter »."
+    : c==="auth/weak-password" ? "Mot de passe trop faible : 8 caractères minimum." : c==="auth/invalid-email" ? "Adresse e-mail invalide."
+    : c==="auth/too-many-requests" ? "Trop d'essais : réessaie dans quelques minutes." : c==="auth/network-request-failed" ? "Pas de réseau : vérifie ta connexion et réessaie."
+    : (typeof loginErr==="function" ? loginErr(c) : "Impossible pour le moment, réessaie."); }
+  // où reprendre le parcours, d'après l'état du compte
+  function lfoRoute(){ if(profileReady()){ return lfoDone ? null : "perms"; }
+    var st=backend && backend.emailState ? backend.emailState() : {email:"",verified:false};
+    if(st.email && !st.verified) return "verify";
+    if(st.verified) return "profile";
+    return "home"; }
+  function lfoFinish(){ lfoDone=true; try{ localStorage.setItem("lf.onb.ok","1"); }catch(e){} lfoHide(); try{ var t=document.querySelector('[data-tab="dash"]'); if(t) t.click(); }catch(e){} }
+  function lfoStartPoll(){ if(lfoVerifT) clearInterval(lfoVerifT); lfoVerifT=setInterval(function(){ lfoCheckVerified(true); },4000); }
+  function lfoCheckVerified(quiet){ if(!backend || !backend.refreshVerification) return;
+    var b=$("lfoVfCheck"); if(!quiet && b) b.disabled=true;
+    backend.refreshVerification().then(function(st){ me.verified=!!st.verified; me.email=st.email||me.email; try{ renderVerif(); updateChatGate(); }catch(e){}
+      if(st.verified){ try{ localStorage.removeItem("lf.comm.verifsent"); }catch(e){} lfoShow("profile"); }
+      else if(!quiet) lfoErr("lfoVfErr","Pas encore confirmé : touche bien le lien dans le mail, puis réessaie."); })
+      .catch(function(){ if(!quiet) lfoErr("lfoVfErr","Pas de réseau : réessaie dans un instant."); })
+      .then(function(){ if(b) b.disabled=false; }); }
+  function lfoSignup(){ var e=($("lfoSuEmail").value||"").trim(), pw=$("lfoSuPw").value||"";
+    if(!LFO_MAIL.test(e)){ lfoErr("lfoSuErr","Entre une adresse e-mail valide."); return; }
+    if(pw.length<8){ lfoErr("lfoSuErr","Le mot de passe doit faire au moins 8 caractères."); return; }
+    if(!$("lfoSuCgu").checked){ lfoErr("lfoSuErr","Coche la case pour accepter la politique de confidentialité et la charte."); return; }
+    if(!backend || !backend.createAccount){ lfoErr("lfoSuErr","Connexion au serveur en cours, réessaie dans un instant."); return; }
+    var b=$("lfoSuGo"); b.disabled=true; lfoErr("lfoSuErr","Création du compte…",true);
+    backend.createAccount(e,pw).then(function(){ me.email=e; try{ localStorage.setItem("lf.comm.email",e); localStorage.setItem("lf.comm.verifsent","1"); localStorage.removeItem("lf.comm.k"); }catch(x){}
+      try{ acceptCharter(); }catch(x){} lfoErr("lfoSuErr",""); lfoShow("verify"); })
+      .catch(function(err){ lfoErr("lfoSuErr", lfoAuthMsg(err&&err.code)); }).then(function(){ b.disabled=false; }); }
+  function lfoLogin(){ var e=($("lfoLiEmail").value||"").trim(), pw=$("lfoLiPw").value||"";
+    if(!LFO_MAIL.test(e) || !pw){ lfoErr("lfoLiErr","Entre ton e-mail et ton mot de passe."); return; }
+    if(!backend || !backend.signInWithPassword){ lfoErr("lfoLiErr","Connexion au serveur en cours, réessaie dans un instant."); return; }
+    var b=$("lfoLiGo"); b.disabled=true; lfoErr("lfoLiErr","Connexion…",true);
+    backend.signInWithPassword(e,pw).then(function(){ try{ localStorage.setItem("lf.comm.email",e); localStorage.removeItem("lf.comm.claimed"); if(!charterOk) localStorage.setItem("lf.comm.charter","1"); }catch(x){}
+      lfoErr("lfoLiErr","✅ Connecté, ton compte revient…",true); setTimeout(function(){ location.reload(); },600); })
+      .catch(function(err){ b.disabled=false; lfoErr("lfoLiErr", lfoAuthMsg(err&&err.code)); }); }
+  function lfoForgot(){ var e=($("lfoLiEmail").value||"").trim();
+    if(!LFO_MAIL.test(e)){ lfoErr("lfoLiErr","Entre d'abord l'adresse e-mail de ton compte."); return; }
+    if(!backend || !backend.sendPasswordLink) return;
+    backend.sendPasswordLink(e).then(function(){ lfoErr("lfoLiErr","📩 Mail envoyé à "+e+" (regarde aussi les spams). Choisis ton nouveau mot de passe, puis reviens te connecter ici.",true); })
+      .catch(function(err){ lfoErr("lfoLiErr", lfoAuthMsg(err&&err.code)); }); }
+  function lfoFillProfile(){ var pr=(profileMap&&profileMap[me.uid])||{}, ps=$("lfoPseudo"); if(ps && !ps.value) ps.value=me.pseudo||pr.pseudo||"";
+    if(!me.av && pr.av){ try{ setAvatar(pr.av); }catch(e){ me.av=pr.av; } } if(me.av) $("lfoAvImg").src=me.av;
+    if(!lfoSports.length) lfoSports=(typeof mySports!=="undefined" && mySports.length) ? mySports.slice() : ["efoil"];
+    try{ lfoLevel=localStorage.getItem("lf.comm.level")||lfoLevel; }catch(e){}
+    lfoRenderSports(false); lfoRenderLevel(); lfoCheckPseudo(); }
+  function lfoRenderSports(all){ var box=$("lfoSports"); if(!box || typeof LF_SP==="undefined") return;
+    var keys=all ? Object.keys(LF_SP) : LFO_MAIN_SPORTS.filter(function(k){ return LF_SP[k]; }).concat(lfoSports.filter(function(k){ return LFO_MAIN_SPORTS.indexOf(k)<0 && LF_SP[k]; }));
+    box.innerHTML=keys.map(function(k){ var s=LF_SP[k]; return '<button class="lfo-chip'+(lfoSports.indexOf(k)>=0?" on":"")+'" data-sp="'+k+'">'+s.ic+' '+esc(s.name)+'</button>'; }).join("")+(all?"":'<button class="lfo-chip" data-more="1">+ Autres</button>');
+    box.querySelectorAll("[data-sp]").forEach(function(b){ b.addEventListener("click", function(){ var k=b.dataset.sp, i=lfoSports.indexOf(k); if(i>=0) lfoSports.splice(i,1); else lfoSports.push(k); b.classList.toggle("on"); }); });
+    var m=box.querySelector("[data-more]"); if(m) m.addEventListener("click", function(){ lfoRenderSports(true); }); }
+  function lfoRenderLevel(){ $("lfoLevel").querySelectorAll("[data-lv]").forEach(function(b){ b.classList.toggle("on", b.dataset.lv===lfoLevel); }); }
+  let lfoPseudoT=null;
+  function lfoCheckPseudo(){ var h=$("lfoPseudoHint"), v=($("lfoPseudo").value||"").trim(); if(lfoPseudoT) clearTimeout(lfoPseudoT);
+    var show=function(t,c){ h.textContent=t; h.className="lfo-hint"+(c?" "+c:""); };
+    if(!v){ show(""); return; } var k=pseudoKey(v);
+    if(!k){ show("2 à 24 caractères : lettres, chiffres, espaces et . - _ '","bad"); return; }
+    if(pseudoReserved(k) && !isOfficial(me.uid)){ show("Ce nom est réservé aux comptes officiels Lite Foil.","bad"); return; }
+    if(!backend || !backend.nameOwner){ show(""); return; }
+    lfoPseudoT=setTimeout(function(){ backend.nameOwner(k).then(function(o){ if(($("lfoPseudo").value||"").trim()!==v) return;
+      if(o && o!==me.uid) show("Ce pseudo est déjà pris, choisis-en un autre.","bad"); else show("✓ Pseudo disponible","good"); }).catch(function(){ show(""); }); },350); }
+  function lfoPickPhoto(file){ if(!file) return; var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){
+      var S=256, c=document.createElement("canvas"); c.width=S; c.height=S; var g=c.getContext("2d"), m=Math.min(img.width,img.height);
+      g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S); var u=c.toDataURL("image/jpeg",0.82);
+      try{ setAvatar(u); }catch(e){ me.av=u; try{ localStorage.setItem("lf.comm.avatar",u); }catch(x){} } $("lfoAvImg").src=u; };
+    img.src=r.result; }; r.readAsDataURL(file); }
+  function lfoSaveProfile(){ var v=($("lfoPseudo").value||"").trim();
+    if(!pseudoKey(v)){ lfoErr("lfoPrErr","Choisis un pseudo (2 à 24 caractères)."); return; }
+    if(!lfoSports.length){ lfoErr("lfoPrErr","Choisis au moins un sport."); return; }
+    var b=$("lfoPrGo"); b.disabled=true; lfoErr("lfoPrErr","Enregistrement…",true);
+    try{ mySports=lfoSports.slice(); saveMySports(); if(lfoLevel) localStorage.setItem("lf.comm.level",lfoLevel); }catch(e){}
+    claimProfile(v,true).then(function(ok){ b.disabled=false;
+      if(!ok){ lfoErr("lfoPrErr","Ce pseudo est déjà pris (ou réservé) : choisis-en un autre."); return; }
+      lfoErr("lfoPrErr",""); try{ publishRatings(); renderProfil(); }catch(e){} lfoShow("perms"); }); }
+  function lfoPerms(apply){
+    var go=function(){ lfoShow("welcome"); };
+    if(!apply){ go(); return; }
+    var jobs=[];
+    if($("lfoPmGeo").checked && navigator.geolocation) jobs.push(new Promise(function(res){ try{ navigator.geolocation.getCurrentPosition(function(){ res(); }, function(){ res(); }, {timeout:15000, maximumAge:600000}); }catch(e){ res(); } }));
+    if($("lfoPmNotif").checked){ jobs.push((async function(){ try{
+      if(nativePlug("FirebaseMessaging") || nativePlug("Badge")){ try{ localStorage.setItem("lf.comm.natask","1"); }catch(e){} var ok=await registerNativePush(true); notifOn=!!ok; saveNotif(); try{ updateNotifBtn(true, ok); }catch(e){} }
+      else if("Notification" in window){ var p=await Notification.requestPermission(); if(p==="granted"){ notifOn=true; saveNotif(); try{ await registerPush(); updateNotifBtn(true,true); }catch(e){} } }
+    }catch(e){} })()); }
+    var b=$("lfoPmGo"); b.disabled=true;
+    Promise.all(jobs).then(go, go).then(function(){ b.disabled=false; }); }
+  function lfoBind(o){
+    o.addEventListener("click", function(ev){ var t=ev.target.closest("[data-go]"); if(t){ ev.preventDefault(); lfoShow(t.dataset.go); } });
+    o.querySelectorAll("[data-eye]").forEach(function(b){ b.addEventListener("click", function(){ var i=$(b.dataset.eye); i.type = i.type==="password" ? "text" : "password"; }); });
+    var sl=$("lfoSlides"), dots=$("lfoDots").children, nx=$("lfoNext"), idx=0;
+    var upd=function(){ idx=Math.round(sl.scrollLeft/(sl.clientWidth||1)); for(var i=0;i<dots.length;i++) dots[i].className=i===idx?"on":""; nx.textContent = idx>=2 ? "C'est parti" : "Suivant"; nx.className="lfo-btn "+(idx>=2?"lfo-main":"lfo-white"); };
+    sl.addEventListener("scroll", function(){ clearTimeout(sl._t); sl._t=setTimeout(upd,60); }, {passive:true});
+    nx.addEventListener("click", function(){ if(idx>=2){ lfoShow("signup"); return; } sl.scrollTo({left:(idx+1)*sl.clientWidth, behavior:"smooth"}); });
+    ["lfoSuEmail","lfoSuPw","lfoSuCgu"].forEach(function(i){ $(i).addEventListener("input", function(){ lfoErr("lfoSuErr",""); }); });
+    ["lfoLiEmail","lfoLiPw"].forEach(function(i){ $(i).addEventListener("input", function(){ lfoErr("lfoLiErr",""); }); });
+    $("lfoSuGo").addEventListener("click", lfoSignup); $("lfoSuPw").addEventListener("keydown", function(e){ if(e.key==="Enter") lfoSignup(); });
+    $("lfoLiGo").addEventListener("click", lfoLogin); $("lfoLiPw").addEventListener("keydown", function(e){ if(e.key==="Enter") lfoLogin(); });
+    $("lfoLiForgot").addEventListener("click", lfoForgot);
+    $("lfoVfCheck").addEventListener("click", function(){ lfoCheckVerified(false); });
+    $("lfoVfResend").addEventListener("click", function(){ if(!backend||!backend.sendVerification) return; backend.sendVerification(me.email||$("lfoVfEmail").textContent).then(function(){ lfoErr("lfoVfErr","📩 Nouveau mail envoyé.",true); }).catch(function(err){ lfoErr("lfoVfErr", lfoAuthMsg(err&&err.code)); }); });
+    $("lfoVfChange").addEventListener("click", function(){ var go=function(){ me.email=""; try{ localStorage.removeItem("lf.comm.verifsent"); }catch(e){} $("lfoSuEmail").value=""; lfoShow("signup"); };
+      if(backend && backend.unlinkEmail) backend.unlinkEmail().then(go, go); else go(); });
+    $("lfoAv").addEventListener("click", function(){ $("lfoAvFile").click(); });
+    $("lfoAvFile").addEventListener("change", function(){ lfoPickPhoto(this.files&&this.files[0]); this.value=""; });
+    $("lfoPseudo").addEventListener("input", lfoCheckPseudo);
+    $("lfoLevel").querySelectorAll("[data-lv]").forEach(function(b){ b.addEventListener("click", function(){ lfoLevel=b.dataset.lv; lfoRenderLevel(); }); });
+    $("lfoPrGo").addEventListener("click", lfoSaveProfile);
+    $("lfoPmGo").addEventListener("click", function(){ lfoPerms(true); });
+    $("lfoPmLater").addEventListener("click", function(){ lfoPerms(false); });
+    $("lfoWGo").addEventListener("click", lfoFinish);
+    // retour au premier plan pendant l'attente de l'e-mail : on revérifie tout de suite
+    document.addEventListener("visibilitychange", function(){ if(!document.hidden && !o.hidden){ var s=o.querySelector('.lfo-s:not([hidden])'); if(s && s.dataset.s==="verify") lfoCheckVerified(true); } });
+  }
+  // écran d'attente dès le chargement (pas de flash de l'appli avant le contrôle du compte)
+  if(LIVE && ((LFO_ALL && !lfoDone) || LFO_FORCE)){ lfoShow("wait");
+    // sécurité : si le serveur ne répond jamais, on n'enferme pas le client sur l'écran d'attente
+    setTimeout(function(){ var o=$("lfOnb"), w=o&&o.querySelector('[data-s="wait"]'); if(o && !o.hidden && w && !w.hidden) lfoHide(); },15000); }
+  // appelé à la fin du démarrage, quand le compte Firebase est connu
+  function lfoBoot(isDemo){
+    if((isDemo || !LFO_ALL) && !LFO_FORCE){ lfoHide(); return; }
+    var step = LFO_FORCE ? "home" : lfoRoute();
+    if(!step){ lfoHide(); return; }
+    // compte déjà complet (client existant) : on ne lui remontre pas tout le parcours
+    if(step==="perms" && !LFO_FORCE){ lfoFinish(); return; }
+    // compte validé qui a déjà un pseudo en ligne (reconnexion, nouveau téléphone) : on le reprend sans rien redemander
+    if(step==="profile" && !LFO_FORCE){ var tries=0; (function wait(){ var pr=(profileMap&&profileMap[me.uid])||{}, ps=me.pseudo||pr.pseudo;
+        if(ps){ if(!me.av && pr.av){ try{ setAvatar(pr.av); }catch(e){} } claimProfile(ps,true).then(function(ok){ if(ok) lfoFinish(); else lfoShow("profile"); }); return; }
+        if(++tries<12) setTimeout(wait,250); else lfoShow("profile"); })(); return; }
+    lfoShow(step); }
+
   // ---------- démarrage ----------
   (async function(){
     if(LIVE){ try{ backend = await makeFirebaseBackend(); }catch(err){ console.warn("Firebase indisponible, mode démo :", err); } }
-    if(!backend){ backend = makeDemoBackend(); $("commDemo").hidden=false; }
+    var _lfoDemo=false; if(!backend){ backend = makeDemoBackend(); $("commDemo").hidden=false; _lfoDemo=true; }
     me.uid = backend.uid;
     presenceUnsub = backend.watchPresence(onPresence);
     if(backend.watchOnline) backend.watchOnline(function(m){ onlineIds=Object.keys(m||{}).filter(function(k){ return k!==me.uid && !blocked.has(k); }); var _on=$("commOnlineN"); if(_on) _on.textContent=String(onlineIds.length); });
@@ -6454,6 +6745,7 @@
     // état de la validation e-mail, puis (si validé) réservation du pseudo actuel
     if(backend.emailState){ var _st=backend.emailState(); me.verified=_st.verified; me.email=_st.email||""; renderVerif(); updateChatGate();
       if(me.verified && me.pseudo) claimProfile(me.pseudo,true); else if(!me.verified){ me.claimed=false; updateChatGate(); var _pd=false; try{ _pd=localStorage.getItem("lf.comm.verifsent")==="1"; }catch(e){} if(_pd) refreshVerif(); } }
+    lfoBoot(_lfoDemo);
     // lien d'invitation à un groupe privé : ?join=<gid>&k=<code>
     try{ var usp=new URLSearchParams(location.search); var jg=usp.get("join"); if(jg){ pendingJoin={gid:jg,k:usp.get("k")||""}; } }catch(e){}
     subscribeChat();
