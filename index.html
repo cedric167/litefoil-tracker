@@ -784,7 +784,16 @@
   .vf-av em{ position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); width:20px; height:20px; border-radius:50%; background:#1fb5bd; color:#fff; font-style:normal; font-weight:800; font-size:15px; line-height:20px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.35); }
   .vf-heart svg{ width:120px; height:120px; display:block; color:#ff2d55; filter:drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
   .vf-sp{ width:42px; height:42px; }
-  .df-go{ width:100%; margin-top:16px; } .df-help{ font-size:12.5px; color:var(--muted); text-align:center; margin:8px 6px 4px; line-height:1.45; }
+  .df-go{ width:100%; margin-top:16px; }
+  .sh-card .gc-body{ padding-bottom:calc(14px + var(--lf-sab)); }
+  .sh-vid{ display:flex; gap:12px; align-items:center; padding:4px 2px 14px; border-bottom:1px solid var(--line); }
+  .sh-vid img, .sh-vph{ width:46px; height:62px; border-radius:8px; object-fit:cover; flex:0 0 46px; background:#0b0d10; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .sh-vid b{ display:block; font-size:15px; } .sh-vid small{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color:var(--muted); font-size:13px; margin-top:2px; }
+  .sh-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px 6px; padding:18px 0 6px; }
+  .sh-row button{ display:flex; flex-direction:column; align-items:center; gap:7px; border:0; background:none; padding:0; font:inherit; font-size:12px; font-weight:600; color:var(--text); cursor:pointer; }
+  .sh-row i{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.15); transition:transform .12s; }
+  .sh-row button:active i{ transform:scale(.9); } .sh-row svg{ width:28px; height:28px; }
+  .sh-st{ min-height:20px; text-align:center; font-size:13.5px; font-weight:600; color:var(--muted); padding:6px 4px 0; line-height:1.4; } .sh-st.ok{ color:#148a90; } .df-help{ font-size:12.5px; color:var(--muted); text-align:center; margin:8px 6px 4px; line-height:1.45; }
   .rs-track{ display:block; width:100%; margin-top:10px; padding:11px; border:0; border-radius:12px; background:#148a90; color:#fff; font:inherit; font-weight:700; cursor:pointer; }
   @keyframes lfFlash{ 0%,100%{ box-shadow:0 0 0 0 rgba(25,195,207,0); } 50%{ box-shadow:0 0 0 8px rgba(25,195,207,.45); } } .lf-flash{ animation:lfFlash .8s ease-in-out 3; }
   .vf-info{ position:absolute; left:14px; right:80px; bottom:calc(var(--lf-sab) + 26px); z-index:2; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.6); }
@@ -5074,7 +5083,11 @@
     var seeds=SEED_VIDEOS.filter(function(v){ return !ids[v.id]; }).map(function(v){ return Object.assign({uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,seed:true,likes:seedLikes(v.id)}, v); });
     return videos.filter(function(v){ return v && v.url && !blocked.has(v.uid); }).concat(seeds).sort(function(a,b){ return (+b.t||0)-(+a.t||0); }); }
   function seedLikes(id){ try{ return localStorage.getItem("lf.vid.like."+id)==="1" ? (function(){ var o={}; o[me.uid||"moi"]=true; return o; })() : {}; }catch(e){ return {}; } }
-  function onVideos(list){ videos=list||[]; renderVideoGrid(); renderProfil(); var vf=$("vf"); if(vf && !vf.hidden) refreshFeedCounts(); }
+  let pendingVid=(function(){ try{ return new URLSearchParams(location.search).get("v")||""; }catch(e){ return ""; } })();
+  function onVideos(list){ videos=list||[]; renderVideoGrid(); renderProfil(); var vf=$("vf"); if(vf && !vf.hidden) refreshFeedCounts();
+    // 12/11 : lien de partage d'une vidéo (…/?v=ID) → elle s'ouvre directement dans le Swip
+    if(pendingVid){ var vs=vidVisible(), k=-1; for(var i=0;i<vs.length;i++){ if(vs[i].id===pendingVid){ k=i; break; } }
+      if(k>=0){ pendingVid=""; try{ history.replaceState(null,"",location.pathname); }catch(e){} setTimeout(function(){ openFeed(k); },300); } } }
   function fmtCount(n){ return n>=1000 ? (Math.round(n/100)/10).toLocaleString("fr-FR")+" k" : String(n); }
   function renderVideoGrid(){ var g=$("vidGrid"); if(!g) return; var vs=vidVisible();
     $("vidCount").textContent = vs.length ? (vs.length+" vidéo"+(vs.length>1?"s":"")) : "";
@@ -5178,10 +5191,63 @@
       else if(a==="share") shareVideo(v);
       else if(a==="more") videoMenu(v);
       else if(a==="profile"){ if(v.uid!==me.uid){ closeFeed(); var pr=profileMap[v.uid]||{}; openSheet(v.uid, pr.pseudo||v.pseudo, pr.av||v.av, pr.bio); } } }); }); }
-  function shareVideo(v){ var txt="🎬 Vidéo de "+(v.pseudo||"un rider")+" sur l'appli Lite Foil"+(v.caption?" : « "+v.caption+" »":"")+" 🏄 "+APP_LINK;
-    var NS=nativePlug("Share"); if(NS){ NS.share({title:"Vidéo Lite Foil", text:txt, url:v.url, dialogTitle:"Partager la vidéo"}).catch(function(){}); return; }
-    if(navigator.share){ navigator.share({title:"Vidéo Lite Foil", text:txt, url:v.url}).catch(function(){}); return; }
-    window.open("https://wa.me/?text="+encodeURIComponent(txt+" "+v.url),"_blank"); }
+  // ---------- 12/11 : partage d'une vidéo façon TikTok (Instagram, WhatsApp, Facebook, Messenger…) ----------
+  // Dans l'appli : la vraie vidéo est téléchargée puis envoyée au menu de partage du téléphone (on y choisit l'appli).
+  // Sur le web : partage de fichier si le navigateur sait le faire, sinon lien (WhatsApp, Facebook, Messenger) ou téléchargement.
+  const SH_IC={
+    ig:'<svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.3" fill="#fff"/></svg>',
+    wa:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2.2A9.8 9.8 0 0 0 3.6 17l-1.4 5 5.1-1.3A9.8 9.8 0 1 0 12 2.2zm0 17.9a8.1 8.1 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.1 8.1 0 1 1 12 20.1zm4.5-6c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>',
+    fb:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.4V21z"/></svg>',
+    ms:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2.5C6.6 2.5 2.5 6.4 2.5 11.6c0 2.7 1.1 5.1 3 6.7v3.2l2.9-1.6c1.1.3 2.3.5 3.6.5 5.4 0 9.5-3.9 9.5-9S17.4 2.5 12 2.5zm1 12.2-2.4-2.6-4.7 2.6 5.2-5.5 2.5 2.6 4.6-2.6z"/></svg>',
+    link:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>',
+    dl:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>',
+    more:'<svg viewBox="0 0 24 24" fill="#fff"><circle cx="5.5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18.5" cy="12" r="2"/></svg>'
+  };
+  const SH_APPS=[["ig","Instagram","linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)"],["wa","WhatsApp","#25d366"],["fb","Facebook","#1877f2"],["ms","Messenger","linear-gradient(45deg,#0099ff,#a033ff 60%,#ff5280)"],
+    ["link","Copier le lien","#5b6b71"],["dl","Enregistrer","#0b0d10"],["more","Plus","#8a989d"]];
+  const VID_LINK_BASE="https://cedric167.github.io/litefoil-tracker/";
+  let vidFileCache={};
+  function fetchVideoFile(v, onProg){ if(vidFileCache[v.id]) return Promise.resolve(vidFileCache[v.id]);
+    return fetch(v.url).then(function(r){ if(!r.ok) throw new Error("http "+r.status); var tot=+r.headers.get("Content-Length")||0;
+      if(!r.body || !r.body.getReader) return r.blob();
+      var rd=r.body.getReader(), parts=[], got=0;
+      return (function pump(){ return rd.read().then(function(x){ if(x.done) return new Blob(parts,{type:"video/mp4"}); parts.push(x.value); got+=x.value.length; if(onProg) onProg(tot?got/tot:0); return pump(); }); })(); })
+      .then(function(b){ var f; try{ f=new File([b], "lite-foil-"+String(v.id||"video").replace(/[^\w-]/g,"")+".mp4", {type:"video/mp4"}); }catch(e){ f=b; f.name="lite-foil-video.mp4"; } vidFileCache={}; vidFileCache[v.id]=f; return f; }); }
+  function blobB64(b){ return new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(){ res(String(fr.result).split(",")[1]); }; fr.onerror=rej; fr.readAsDataURL(b); }); }
+  function shareVideo(v){
+    var link=VID_LINK_BASE+"?v="+encodeURIComponent(v.id||"");
+    var txt="🎬 "+(v.uid===me.uid?"Ma vidéo":"Vidéo de "+(v.pseudo||"un rider"))+" sur l'appli Lite Foil"+(v.caption?" : « "+v.caption+" »":"")+" 🏄 "+link;
+    var NS=nativePlug("Share"), NF=nativePlug("Filesystem"), native=!!(NS&&NF);
+    var o=gOverlay(); o.hidden=false;
+    o.innerHTML='<div class="gcard sh-card"><div class="gc-head"><span></span><b>Partager</b><button class="gc-x" id="shvClose">✕</button></div><div class="gc-body">'
+      +'<div class="sh-vid">'+(v.thumb?'<img src="'+v.thumb+'" alt="">':'<span class="sh-vph">🎬</span>')+'<div><b>@'+esc(v.pseudo||"Rider")+'</b><small>'+esc(v.caption||"Vidéo Lite Foil")+'</small></div></div>'
+      +'<div class="sh-row">'+SH_APPS.map(function(a){ return '<button data-t="'+a[0]+'"><i style="background:'+a[2]+'">'+SH_IC[a[0]]+'</i><span>'+a[1]+'</span></button>'; }).join("")+'</div>'
+      +'<div class="sh-st" id="shvSt"></div></div></div>';
+    $("shvClose").addEventListener("click", closeOverlay);
+    var st=$("shvSt"), busy=false;
+    var say=function(t,ok){ if(!st) return; st.textContent=t||""; st.className="sh-st"+(ok?" ok":""); };
+    var appName=function(t){ return ({ig:"Instagram",wa:"WhatsApp",fb:"Facebook",ms:"Messenger"})[t]; };
+    var fallback=function(t, file){
+      if(t==="wa"){ window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank"); return; }
+      if(t==="fb"){ window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(link),"_blank"); return; }
+      if(t==="ms"){ location.href="fb-messenger://share?link="+encodeURIComponent(link); return; }
+      if(file){ var u=URL.createObjectURL(file), a=document.createElement("a"); a.href=u; a.download=file.name||"lite-foil-video.mp4"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(u); },60000);
+        say(t==="ig"?"Vidéo enregistrée ✓ Ouvre Instagram, appuie sur + et choisis-la dans ta galerie.":"Vidéo enregistrée ✓",true); }
+      else say("Impossible de récupérer la vidéo. Réessaie dans un instant."); };
+    o.querySelectorAll(".sh-row button").forEach(function(btn){ btn.addEventListener("click", function(){ var t=btn.dataset.t; if(busy) return;
+      if(t==="link"){ var done=function(){ say("Lien copié ✓ Colle-le où tu veux.",true); };
+        try{ navigator.clipboard.writeText(txt).then(done, function(){ prompt("Copie le lien :", link); }); }catch(e){ prompt("Copie le lien :", link); } return; }
+      busy=true; say("Préparation de la vidéo…");
+      fetchVideoFile(v, function(p){ if(p>0) say("Préparation de la vidéo… "+Math.round(p*100)+" %"); }).then(function(file){
+        var hint=appName(t)?("Choisis « "+appName(t)+" » dans la liste."):"";
+        if(native){ say(hint);
+          return blobB64(file).then(function(b64){ return NF.writeFile({path:file.name||"lite-foil-video.mp4", data:b64, directory:"CACHE"}); })
+            .then(function(w){ return NS.share({title:"Vidéo Lite Foil", text:(t==="ig"?undefined:txt), files:[w.uri], dialogTitle:appName(t)?("Partager sur "+appName(t)):"Partager la vidéo"}); })
+            .then(function(){ say(""); }, function(e){ if(!/cancel/i.test(String(e&&e.message||e))) fallback(t,file); else say(""); }); }
+        if(t!=="dl" && navigator.canShare && navigator.canShare({files:[file]})){ say(hint);
+          return navigator.share({files:[file], title:"Vidéo Lite Foil", text:txt}).then(function(){ say(""); }, function(e){ if(e && e.name==="AbortError") say(""); else fallback(t,file); }); }
+        fallback(t,file);
+      }).catch(function(){ fallback(t,null); }).then(function(){ busy=false; }); }); }); }
   function videoMenu(v){ var o=gOverlay(); o.hidden=false; var mod=canModerate(v.uid) && !v.seed;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vmClose">✕</button><b>Vidéo</b><span></span></div><div class="gc-body">'
       +(v.uid!==me.uid?'<button class="gi-act" id="vmReport" style="color:#b3263a">⚑ Signaler cette vidéo</button><button class="gi-act" id="vmBlock">🚫 Bloquer '+esc(v.pseudo||"ce rider")+'</button>':'')
