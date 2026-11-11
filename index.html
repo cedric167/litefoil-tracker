@@ -783,6 +783,9 @@
   .vf-av em{ position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); width:20px; height:20px; border-radius:50%; background:#1fb5bd; color:#fff; font-style:normal; font-weight:800; font-size:15px; line-height:20px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.35); }
   .vf-heart svg{ width:120px; height:120px; display:block; color:#ff2d55; filter:drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
   .vf-sp{ width:42px; height:42px; }
+  .df-go{ width:100%; margin-top:16px; } .df-help{ font-size:12.5px; color:var(--muted); text-align:center; margin:8px 6px 4px; line-height:1.45; }
+  .rs-track{ display:block; width:100%; margin-top:10px; padding:11px; border:0; border-radius:12px; background:#148a90; color:#fff; font:inherit; font-weight:700; cursor:pointer; }
+  @keyframes lfFlash{ 0%,100%{ box-shadow:0 0 0 0 rgba(25,195,207,0); } 50%{ box-shadow:0 0 0 8px rgba(25,195,207,.45); } } .lf-flash{ animation:lfFlash .8s ease-in-out 3; }
   .vf-info{ position:absolute; left:14px; right:80px; bottom:calc(var(--lf-sab) + 26px); z-index:2; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.6); }
   .vf-info b{ font-size:16.5px; font-weight:800; letter-spacing:.01em; } .vf-info p{ margin:6px 0 8px; font-size:15px; line-height:1.38; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   .vf-info span{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; background:rgba(0,0,0,.28); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); padding:5px 10px; border-radius:999px; text-shadow:none; }
@@ -3000,6 +3003,7 @@
   }
   function phSaveLocal(sess){
     try { var arr = JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr.unshift(sess); if(arr.length>100) arr = arr.slice(0,100); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); } catch(e){}
+    try { document.dispatchEvent(new Event("lf-sess-saved")); } catch(e){}
   }
   // ---------------- Publication en direct sur SportsTrackLive depuis le téléphone ----------------
   // Même session que la page Activités (clés stl_token / stl_uid / stl_name). Connexion via la
@@ -4785,6 +4789,7 @@
     if(!r) return "";
     var dstr = r.date ? (new Date(r.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" · "+timeLabel(r.date)) : "";
     var stats=[];
+    if(r.km!=null) stats.push('<div class="rc-stat"><span class="rc-v">'+(+r.km).toFixed(1).replace(".",",")+'</span><span class="rc-u">km</span></div>');
     if(r.spdmax!=null) stats.push('<div class="rc-stat"><span class="rc-v">'+(+r.spdmax).toFixed(1)+'</span><span class="rc-u">km/h max</span></div>');
     if(r.dur) stats.push('<div class="rc-stat"><span class="rc-v">'+fmtDur(r.dur)+'</span><span class="rc-u">durée</span></div>');
     if(r.soc!=null) stats.push('<div class="rc-stat"><span class="rc-v">'+Math.round(r.soc)+'%</span><span class="rc-u">batterie</span></div>');
@@ -4794,6 +4799,10 @@
   }
   function currentRide(){
     var r={ date:Date.now() };
+    // 12/11 : sortie eFoil enregistrée avec l'appli dans les dernières 24 h → on partage ses vrais chiffres
+    var ls=lastEfoilSess(), lt=ls?new Date(ls.startedAt).getTime():0;
+    if(ls && Date.now()-lt<86400000){ r.date=lt; r.km=(+ls.distanceM||0)/1000; if(ls.durationSec) r.dur=ls.durationSec*1000; if(ls.maxSpeedKmh) r.spdmax=+ls.maxSpeedKmh;
+      if(ls.firstLat!=null){ r.lat=ls.firstLat; r.lng=ls.firstLon; } r.rec=1; return r; }
     try{ if(typeof DASH!=="undefined"){ if(DASH.spdmax!=null) r.spdmax=DASH.spdmax; var soc=(DASH.soc!=null?DASH.soc:DASH.batt); if(soc!=null) r.soc=soc; if(DASH.sessionStart) r.dur=Date.now()-DASH.sessionStart; } }catch(e){}
     if(me.pos){ r.lat=me.pos.lat; r.lng=me.pos.lng; }
     return r;
@@ -4817,12 +4826,13 @@
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="rideOv";
     ov.innerHTML='<div class="mm-card ride-sheet"><div class="rs-h">Partager ma sortie</div>'
       +'<div class="rs-prev">'+rideCardHtml(r)+'</div>'
-      +((r.spdmax==null&&!r.dur)?'<div class="rs-note">Connecte ton tracker ou ton VESC pour ajouter la vitesse max, la durée et la batterie. Tu peux déjà partager ton spot.</div>':'')
+      +(r.rec?'':'<div class="rs-note"><b>Ce partage n\'enregistre pas ta sortie.</b> Pour qu\'elle compte au classement, lance le suivi dans l\'onglet Tracking (bouton « Démarrer la sortie ») et appuie sur Terminer à la fin.<button class="rs-track" id="rsTrack">▶ Enregistrer une sortie eFoil</button></div>')
       +'<input id="rideCap" class="rs-cap" maxlength="200" placeholder="Ajouter un mot (optionnel)…">'
       +'<div class="rs-btns"><button class="mm-act rs-cancel">Annuler</button><button class="primary rs-share">Partager</button></div></div>';
     document.body.appendChild(ov);
     ov.addEventListener("click", function(e){ if(e.target===ov) ov.remove(); });
     ov.querySelector(".rs-cancel").addEventListener("click", function(){ ov.remove(); });
+    var rt=ov.querySelector("#rsTrack"); if(rt) rt.addEventListener("click", function(){ ov.remove(); goTrackEfoil(); });
     ov.querySelector(".rs-share").addEventListener("click", function(){ var cap=(($("rideCap")&&$("rideCap").value)||"").trim(); ov.remove(); if(backend) backend.sendMessage(currentChannel(), cap, null, replyTarget, {ride:r}); clearReply(); });
   }
   // ---- sélecteur de GIF (GIPHY) : actif dès qu'une clé gratuite est configurée (window.LF_GIPHY_KEY) ----
@@ -5089,14 +5099,13 @@
   function timeAgo(t){ var s=(Date.now()-(+t||Date.now()))/1000; if(s<3600) return Math.max(1,Math.round(s/60))+" min"; if(s<86400) return Math.round(s/3600)+" h"; return Math.round(s/86400)+" j"; }
   function feedEl(){ var vf=$("vf"); if(vf) return vf;
     vf=document.createElement("div"); vf.id="vf"; vf.className="vf"; vf.hidden=true;
-    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><span class="vf-sp" aria-hidden="true"></span></div><div class="vf-list" id="vfList"></div><button class="vf-add" id="vfAdd" aria-label="Publier une vidéo">＋</button>';
+    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><span class="vf-sp" aria-hidden="true"></span></div><div class="vf-list" id="vfList"></div>';
     document.body.appendChild(vf);
     $("vfClose").addEventListener("click", closeFeed);
     // 12/11 (demande de Cédric) : son toujours actif, plus de bouton muet. Si le téléphone a quand même
     // forcé le silence (lecture automatique refusée), le premier toucher dans le Swip remet le son.
     var unmute=function(){ if(!vfMuted) return; vfMuted=false; vf.querySelectorAll("video").forEach(function(x){ x.muted=false; }); };
     vf.addEventListener("pointerdown", unmute, true); vf.addEventListener("touchstart", unmute, {capture:true, passive:true});
-    $("vfAdd").addEventListener("click", openVideoUpload);
     return vf; }
   function openFeed(start){ vfMuted=false; var vs=vidVisible(); if(!vs.length){ openVideoUpload(); return; }
     var vf=feedEl(), list=$("vfList"); list.innerHTML=vs.map(feedItemHtml).join(""); vf.hidden=false; document.body.style.overflow="hidden";
@@ -5760,6 +5769,13 @@
   function publishMyStats(){ if(!backend||!backend.saveStats||!me.pseudo) return; var m=myStats(); if(!m || !m.n) return;
     var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=[m.n,m.km,m.month,m.eKm,m.week,m.wKm,m.eo,m.ej,m.sport].join("|"); if(prev===cur) return;
     backend.saveStats(m); try{ localStorage.setItem(k,cur); }catch(e){} }
+  // 12/11 : une sortie vient d'être enregistrée au téléphone → classement mis à jour tout de suite
+  document.addEventListener("lf-sess-saved", function(){ try{ localStorage.removeItem("lf.comm.statsSent"); }catch(e){} publishMyStats(); try{ renderDefi(); }catch(e){} });
+  // aller enregistrer une sortie eFoil (onglet Tracking, activité eFoil choisie, bouton Démarrer mis en avant)
+  function goTrackEfoil(){ try{ closeOverlay(); }catch(e){} var t=document.querySelector('.tab[data-tab="tracking"]'); if(t) t.click();
+    setTimeout(function(){ var sel=$("phAct"); if(sel && sel.querySelector('option[value="efoil"]') && sel.value!=="efoil"){ sel.value="efoil"; sel.dispatchEvent(new Event("change")); }
+      var b=$("phStart"); if(b && !b.hidden){ b.scrollIntoView({block:"center", behavior:"smooth"}); b.classList.add("lf-flash"); setTimeout(function(){ b.classList.remove("lf-flash"); },2400); } },250); }
+  function lastEfoilSess(){ try{ var a=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); for(var i=0;i<a.length;i++){ if(isEfoil(a[i]) && (+a[i].distanceM||0)>=100) return a[i]; } }catch(e){} return null; }
   // (les chiffres envoyés incluent le mois, les km d'eFoil du mois et les événements)
   /* ---------- points, grades et carte de rider ----------
      Points (XP) : 10 par sortie (> 100 m), 2 par km, 20 par événement organisé, 10 par événement rejoint.
@@ -6371,7 +6387,7 @@
       +'<h3>Le plus de km en <em>eFoil</em></h3><div class="defi-sub">Du lundi au dimanche · classement en direct</div>'
       +(DEFI_LOT?'<div class="defi-lot">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
       +'<div class="defi-pod">'+pod+'</div><div class="defi-me">'+meHtml+'</div></div>';
-    $("defiOpen").addEventListener("click", openDefiBoard);
+    $("defiOpen").addEventListener("click", function(e){ if(!defiRank(me.uid) && e.target.closest(".defi-me")) goTrackEfoil(); else openDefiBoard(); });
     var n=$("myCardNote"); if(n) n.textContent=riderNote(riderXP(myStats()||{}));
     var mxp=riderXP(myStats()||{}), mlv=riderLevel(mxp), nm=$("cmhName"), gr=$("cmhGrade");
     if(nm) nm.textContent = me.pseudo || "Créer mon profil";
@@ -6386,8 +6402,9 @@
       +(DEFI_LOT?'<div class="defi-lot" style="background:#fff1d6;color:#8a5a00">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
       +'<div class="gc-count">Classement des km parcourus en eFoil cette semaine (du lundi au dimanche), enregistrés avec l\'appli (suivi GPS ou tracker). Les traces des premiers sont vérifiées par l\'équipe Lite Foil avant la remise du lot.</div>'
       +(rows||'<div class="comm-empty">Personne pour l\'instant : la première sortie eFoil de la semaine prend la tête !</div>')
+      +'<button class="primary df-go" id="dfGo">▶ Enregistrer une sortie eFoil</button><div class="df-help">Lance le suivi dans l\'onglet Tracking avant d\'aller sur l\'eau, puis appuie sur Terminer en sortant : tes km comptent tout de suite pour le classement.</div>'
       +'</div></div>';
-    $("dfClose").addEventListener("click", closeOverlay);
+    $("dfClose").addEventListener("click", closeOverlay); $("dfGo").addEventListener("click", goTrackEfoil);
     o.querySelectorAll(".lb-row[data-uid]").forEach(function(rw){ rw.addEventListener("click", function(){ openRiderCard(rw.dataset.uid); }); }); }
   function renderCommStats(){ var el=$("commStats"); if(!el) return; var n=0, km=0;
     for(var u in commStats){ var v=commStats[u]||{}; n+=(+v.n||0); km+=(+v.km||0); }
