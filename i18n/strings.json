@@ -6070,5 +6070,93 @@
  "Ajouter un commentaire…": {
   "en": "Add a comment…",
   "es": "Añadir un comentario…"
+ },
+ "Abonnements": {
+  "en": "Following",
+  "es": "Siguiendo"
+ },
+ "Pour toi": {
+  "en": "For You",
+  "es": "Para ti"
+ },
+ "Favoris": {
+  "en": "Favorites",
+  "es": "Favoritos"
+ },
+ "Enregistré": {
+  "en": "Saved",
+  "es": "Guardado"
+ },
+ "Glisse vers le haut": {
+  "en": "Swipe up",
+  "es": "Desliza hacia arriba"
+ },
+ "pour la vidéo suivante": {
+  "en": "for the next video",
+  "es": "para el siguiente vídeo"
+ },
+ "Sois le premier à commenter": {
+  "en": "Be the first to comment",
+  "es": "Sé el primero en comentar"
+ },
+ "Dis ce que tu penses de cette session 🤙": {
+  "en": "Say what you think of this session 🤙",
+  "es": "Di lo que piensas de esta sesión 🤙"
+ },
+ "Répondre": {
+  "en": "Reply",
+  "es": "Responder"
+ },
+ "Auteur": {
+  "en": "Creator",
+  "es": "Autor"
+ },
+ "Les vidéos des riders que tu suis": {
+  "en": "Videos from riders you follow",
+  "es": "Vídeos de los riders que sigues"
+ },
+ "Suis des riders pour retrouver leurs sessions ici.": {
+  "en": "Follow riders to see their sessions here.",
+  "es": "Sigue a riders para ver sus sesiones aquí."
+ },
+ "Voir « Pour toi »": {
+  "en": "See “For You”",
+  "es": "Ver «Para ti»"
+ },
+ "Pas encore de vidéo": {
+  "en": "No videos yet",
+  "es": "Aún no hay vídeos"
+ },
+ "Publie la première session de la communauté.": {
+  "en": "Post the community's first session.",
+  "es": "Publica la primera sesión de la comunidad."
+ },
+ "Publier une vidéo": {
+  "en": "Post a video",
+  "es": "Publicar un vídeo"
+ },
+ "Ajoutée à tes favoris": {
+  "en": "Added to your favorites",
+  "es": "Añadido a tus favoritos"
+ },
+ "Retirée des favoris": {
+  "en": "Removed from favorites",
+  "es": "Eliminado de favoritos"
+ },
+ "Commentaires": {
+  "en": "Comments",
+  "es": "Comentarios"
+ },
+ "Partager": {
+  "en": "Share",
+  "es": "Compartir"
+ },
+ "Copier le lien": {
+  "en": "Copy link",
+  "es": "Copiar enlace"
+ },
+ "Plus": {
+  "en": "More",
+  "es": "Más"
  }
 }
