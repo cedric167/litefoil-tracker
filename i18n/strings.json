@@ -6010,5 +6010,29 @@
  "Cette adresse a déjà un compte Lite Foil : touche « Me connecter ».": {
   "en": "This address already has a Lite Foil account: tap “Sign in”.",
   "es": "Esta dirección ya tiene una cuenta Lite Foil: toca «Iniciar sesión»."
+ },
+ "Continuer avec Apple": {
+  "en": "Continue with Apple",
+  "es": "Continuar con Apple"
+ },
+ "Continuer avec Google": {
+  "en": "Continue with Google",
+  "es": "Continuar con Google"
+ },
+ "ou avec ton e-mail": {
+  "en": "or with your email",
+  "es": "o con tu correo"
+ },
+ "Coche d'abord la case pour accepter la politique de confidentialité et la charte.": {
+  "en": "First tick the box to accept the privacy policy and the charter.",
+  "es": "Primero marca la casilla para aceptar la política de privacidad y las normas."
+ },
+ "Cette connexion n'est pas encore activée. Utilise ton e-mail pour l'instant.": {
+  "en": "This sign-in method isn't enabled yet. Use your email for now.",
+  "es": "Este método aún no está activado. Usa tu correo por ahora."
+ },
+ "Fenêtre bloquée par le navigateur : autorise les fenêtres pour ce site, puis réessaie.": {
+  "en": "Window blocked by the browser: allow pop-ups for this site, then try again.",
+  "es": "Ventana bloqueada por el navegador: permite las ventanas emergentes para este sitio y vuelve a intentarlo."
  }
 }

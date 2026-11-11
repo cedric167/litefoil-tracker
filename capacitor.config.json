@@ -17,6 +17,13 @@
         "availableDevices": "Appareils Lite Foil",
         "noDeviceFound": "Aucun appareil trouvé"
       }
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": [
+        "apple.com",
+        "google.com"
+      ]
     }
   },
   "server": {

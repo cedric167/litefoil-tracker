@@ -31,4 +31,10 @@ if ! grep -q 'LfTrackService' "$MANIFEST"; then
 fi
 grep -q 'LfTrackService' "$MANIFEST" || { echo "Service LfTrack non déclaré dans le manifeste" >&2; exit 1; }
 
+# 4) Connexion Google (module @capacitor-firebase/authentication, s'il est installé) : bibliothèque Google incluse
+VARS="$ROOT/android/variables.gradle"
+if [ -f "$VARS" ] && ! grep -q rgcfaIncludeGoogle "$VARS"; then
+  perl -0pi -e 's#ext \{#ext {\n    rgcfaIncludeGoogle = true#' "$VARS"
+fi
+
 echo "Module LfTrack ajouté au projet Android."

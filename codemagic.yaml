@@ -29,12 +29,14 @@ workflows:
         script: npm run build:www
       - name: Generer / synchroniser le projet iOS
         script: |
-          # notifications : module Firebase seulement si le fichier de config iOS est fourni
-          if [ -f ios-assets/GoogleService-Info.plist ]; then npm install @capacitor-firebase/messaging@6.3.1; fi
+          # notifications + connexion Apple/Google : modules Firebase seulement si le fichier de config iOS est fourni
+          if [ -f ios-assets/GoogleService-Info.plist ]; then npm install @capacitor-firebase/messaging@6.3.1 @capacitor-firebase/authentication@6.3.1 firebase@10.12.5; fi
           if [ ! -d "ios" ]; then npx cap add ios; fi
           # permissions, Bluetooth en arriere-plan, chiffrement, iOS 15, icone, ecran de demarrage, module LfTrack (suivi GPS)
           bash scripts/ios-setup.sh
           npx cap sync ios
+          # connexion Google sur iPhone : sous-module Google du module de connexion, puis pods
+          bash scripts/ios-post-sync.sh
       - name: Signature automatique
         script: |
           xcode-project use-profiles
@@ -85,8 +87,8 @@ workflows:
         script: npm run build:www
       - name: Generer / synchroniser le projet Android
         script: |
-          # notifications : module Firebase seulement si le fichier de config Android est fourni
-          if [ -f android-assets/google-services.json ]; then npm install @capacitor-firebase/messaging@6.3.1; fi
+          # notifications + connexion Google : modules Firebase seulement si le fichier de config Android est fourni
+          if [ -f android-assets/google-services.json ]; then npm install @capacitor-firebase/messaging@6.3.1 @capacitor-firebase/authentication@6.3.1 firebase@10.12.5; fi
           if [ ! -d "android" ]; then npx cap add android; fi
           if [ -f android-assets/google-services.json ]; then
             cp android-assets/google-services.json android/app/google-services.json

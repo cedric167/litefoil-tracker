@@ -696,6 +696,9 @@
   .lfo-white{ background:#fff; color:#0e1417; }
   .lfo-ghost{ background:rgba(255,255,255,.14); color:#fff; border:1.5px solid rgba(255,255,255,.6); }
   .lfo-line{ background:#fff; color:#0e1417; border:1.5px solid #dfe6e9; }
+  .lfo-black{ background:#0e1417; color:#fff; }
+  .lfo-soc{ display:flex; flex-direction:column; gap:10px; margin-top:20px; } .lfo-soc:empty{ display:none; }
+  .lfo-sep{ display:flex; align-items:center; gap:12px; color:#8a989d; font-size:13px; margin:8px 0 0; } .lfo-sep:before,.lfo-sep:after{ content:""; flex:1; height:1px; background:#dfe6e9; }
   .lfo-link{ background:none; border:0; font:inherit; font-weight:800; color:#148a90; cursor:pointer; padding:4px; }
   .lfo-dark .lfo-link{ color:#fff; }
   .lfo-back{ width:42px; height:42px; border-radius:50%; background:#fff; border:0; font-size:22px; box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer; flex:0 0 auto; }
@@ -4176,6 +4179,24 @@
         if(u.email){ if(u.email.toLowerCase()===email.toLowerCase() && !u.emailVerified) return authMod.updatePassword(u,pw).catch(function(){}).then(function(){ return authMod.sendEmailVerification(u); });
           return Promise.reject({code:"auth/email-already-in-use"}); }
         return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ return authMod.sendEmailVerification(auth.currentUser); }); },
+      // 11/11 : « Continuer avec Apple / Google ». Appli native : module @capacitor-firebase/authentication (skipNativeAuth),
+      // le jeton est ensuite donné au SDK web. Navigateur : fenêtre Google. Le compte anonyme du téléphone est rattaché
+      // (« linked », même uid) ; si ce compte Apple/Google existe déjà, on s'y connecte (« signedin », la page se recharge).
+      async socialSignIn(pid){
+        const FA=nativePlug("FirebaseAuthentication"); const u=auth.currentUser; let cred=null;
+        const done=async function(r){ try{ await auth.currentUser.getIdToken(true); }catch(e){} return r; };
+        if(FA){ const r = pid==="google.com" ? await FA.signInWithGoogle() : await FA.signInWithApple(); const c=(r&&r.credential)||{};
+          if(!c.idToken) throw {code:"lf/cancelled"};
+          cred = pid==="google.com" ? authMod.GoogleAuthProvider.credential(c.idToken) : new authMod.OAuthProvider("apple.com").credential({idToken:c.idToken, rawNonce:c.nonce}); }
+        if(cred){
+          if(u && u.isAnonymous){ try{ await authMod.linkWithCredential(u, cred); return done("linked"); }
+            catch(e){ if(e && (e.code==="auth/credential-already-in-use"||e.code==="auth/email-already-in-use")){ await authMod.signInWithCredential(auth, cred); return done("signedin"); } throw e; } }
+          await authMod.signInWithCredential(auth, cred); return done("signedin"); }
+        const prov = pid==="google.com" ? new authMod.GoogleAuthProvider() : new authMod.OAuthProvider("apple.com");
+        if(u && u.isAnonymous){ try{ await authMod.linkWithPopup(u, prov); return done("linked"); }
+          catch(e){ if(e && e.code==="auth/credential-already-in-use"){ const c2 = pid==="google.com" ? authMod.GoogleAuthProvider.credentialFromError(e) : authMod.OAuthProvider.credentialFromError(e);
+              if(c2){ await authMod.signInWithCredential(auth, c2); return done("signedin"); } } throw e; } }
+        await authMod.signInWithPopup(auth, prov); return done("signedin"); },
       unlinkEmail(){ var u=auth.currentUser; if(!u || !u.email || u.emailVerified) return Promise.resolve(); return authMod.unlink(u,"password"); },
       // suppression du profil : données de la communauté puis compte Firebase (l'adresse e-mail redevient libre)
       deleteAccount(){ var u=auth.currentUser; if(!u) return Promise.resolve("none");
@@ -4318,7 +4339,7 @@
       nameOwner(){ return Promise.resolve(null); },
       emailState(){ return { email:"demo@litefoil.fr", verified:true }; },
       sendVerification(){ return Promise.resolve(); },
-      createAccount(){ return Promise.resolve(); }, unlinkEmail(){ return Promise.resolve(); },
+      createAccount(){ return Promise.resolve(); }, unlinkEmail(){ return Promise.resolve(); }, socialSignIn(){ return Promise.resolve("linked"); },
       refreshVerification(){ return Promise.resolve(this.emailState()); },
       deleteAccount(){ return Promise.resolve("deleted"); },
       searchNames(k){ var out=[]; Object.keys(demo).forEach(function(u){ var nk=pseudoKey(demo[u].pseudo); if(nk && nk.indexOf(k)===0) out.push({nk:nk, uid:u}); }); return Promise.resolve(out); },
@@ -6528,6 +6549,7 @@
     // 4. créer mon compte
     +'<section class="lfo-s" data-s="signup" hidden><div><button class="lfo-back" data-go="home" aria-label="Retour">‹</button></div>'
       +'<div class="lfo-h">Crée ton compte</div><div class="lfo-sub">Pour enregistrer tes sorties et rejoindre la communauté Lite Foil.</div>'
+      +'<div class="lfo-soc" data-soc="lfoSuErr"></div>'
       +'<div class="lfo-lbl">Adresse e-mail</div><input class="lfo-inp" id="lfoSuEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="toi@exemple.fr">'
       +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoSuPw" type="password" autocomplete="new-password" placeholder="8 caractères minimum"><button class="lfo-eye" type="button" data-eye="lfoSuPw" aria-label="Afficher">👁</button></div>'
       +'<label class="lfo-chk"><input type="checkbox" id="lfoSuCgu"><span>J\'accepte la <a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a> et la charte de la communauté (respect des autres riders, pas de contenu choquant).</span></label>'
@@ -6542,6 +6564,7 @@
     // 6. se connecter
     +'<section class="lfo-s" data-s="login" hidden><div><button class="lfo-back" data-go="home" aria-label="Retour">‹</button></div>'
       +'<div class="lfo-h">Bon retour !</div><div class="lfo-sub">Connecte-toi pour retrouver tes sorties, ta carte et tes amis.</div>'
+      +'<div class="lfo-soc" data-soc="lfoLiErr"></div>'
       +'<div class="lfo-lbl">Adresse e-mail</div><input class="lfo-inp" id="lfoLiEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="toi@exemple.fr">'
       +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoLiPw" type="password" autocomplete="current-password" placeholder="Ton mot de passe"><button class="lfo-eye" type="button" data-eye="lfoLiPw" aria-label="Afficher">👁</button></div>'
       +'<div style="text-align:right;margin-top:10px"><button class="lfo-link" id="lfoLiForgot">Mot de passe oublié ?</button></div>'
@@ -6575,6 +6598,7 @@
     if(lfoVerifT && step!=="verify"){ clearInterval(lfoVerifT); lfoVerifT=null; }
     if(step==="verify"){ $("lfoVfEmail").textContent=me.email||(function(){ try{ return localStorage.getItem("lf.comm.email")||""; }catch(e){ return ""; } })(); lfoStartPoll(); }
     if(step==="profile") lfoFillProfile();
+    if(step==="signup" || step==="login") lfoRenderSocial();
     if(step==="welcome"){ $("lfoWTitle").innerHTML='<span>Bienvenue,</span><br><span data-no-i18n>'+esc(me.pseudo||"rider")+' 🤙</span>'; if(me.av) $("lfoWAv").src=me.av; }
     var f=o.querySelector('[data-s="'+step+'"] input.lfo-inp'); if(f && step!=="profile" && !f.value) setTimeout(function(){ try{ f.focus(); }catch(e){} },350); }
   function lfoHide(){ var o=$("lfOnb"); if(o){ o.hidden=true; var v=o.querySelector("video"); if(v) v.pause(); } document.body.style.overflow=""; if(lfoVerifT){ clearInterval(lfoVerifT); lfoVerifT=null; } }
@@ -6664,6 +6688,35 @@
     }catch(e){} })()); }
     var b=$("lfoPmGo"); b.disabled=true;
     Promise.all(jobs).then(go, go).then(function(){ b.disabled=false; }); }
+  // Apple : iPhone (appli) seulement ; Google : appli Android/iPhone avec le module, et navigateur
+  // navigateur : bouton Google affiché quand la connexion Google est activée dans la console Firebase
+  const LFO_SOC_WEB = false;
+  function lfoSocialList(){ var C=window.Capacitor, nat=!!(C && C.isNativePlatform && C.isNativePlatform()), plat=nat && C.getPlatform ? C.getPlatform() : "web";
+    var FA=nat ? nativePlug("FirebaseAuthentication") : null, out=[];
+    if(!backend || !backend.socialSignIn) return out;
+    if(plat==="ios" && FA) out.push("apple.com");
+    if(FA || (!nat && LFO_SOC_WEB)) out.push("google.com");
+    return out; }
+  const LFO_SOC_SVG={ "apple.com":'<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.72-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.06 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.41 1.2-2.47-.03-.01-2.3-.88-2.33-3.53zM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.64-1.05 1.67-.92 2.66.97.07 1.96-.5 2.56-1.21z"/></svg>',
+    "google.com":'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h5.9a5.05 5.05 0 0 1-2.19 3.31v2.75h3.54c2.07-1.91 3.25-4.72 3.25-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.54-2.75c-.98.66-2.24 1.06-3.74 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.12A6.6 6.6 0 0 1 5.5 12c0-.74.13-1.45.34-2.12V7.04H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.96l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A10.96 10.96 0 0 0 12 1 11 11 0 0 0 2.18 7.04l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>' };
+  function lfoRenderSocial(){ var list=lfoSocialList(); document.querySelectorAll("#lfOnb [data-soc]").forEach(function(box){
+      if(!list.length){ box.innerHTML=""; return; }
+      box.innerHTML=list.map(function(pid){ return '<button class="lfo-btn '+(pid==="apple.com"?"lfo-black":"lfo-line")+'" data-pid="'+pid+'" type="button">'+LFO_SOC_SVG[pid]+'<span>'+(pid==="apple.com"?"Continuer avec Apple":"Continuer avec Google")+'</span></button>'; }).join("")
+        +'<div class="lfo-sep"><span>ou avec ton e-mail</span></div>';
+      box.querySelectorAll("[data-pid]").forEach(function(b){ b.addEventListener("click", function(){ lfoSocial(b.dataset.pid, box.dataset.soc, b); }); }); }); }
+  function lfoSocial(pid, errId, btn){
+    if(errId==="lfoSuErr" && !$("lfoSuCgu").checked){ lfoErr(errId,"Coche d'abord la case pour accepter la politique de confidentialité et la charte."); return; }
+    var all=document.querySelectorAll("#lfOnb [data-pid]"); all.forEach(function(b){ b.disabled=true; }); lfoErr(errId,"Connexion…",true);
+    backend.socialSignIn(pid).then(function(r){ try{ if(!charterOk) acceptCharter(); }catch(e){}
+      if(r==="signedin"){ try{ localStorage.removeItem("lf.comm.claimed"); }catch(e){} lfoErr(errId,"✅ Connecté, ton compte revient…",true); setTimeout(function(){ location.reload(); },600); return; }
+      var st=backend.emailState(); me.verified=!!st.verified; me.email=st.email||""; try{ localStorage.setItem("lf.comm.email",me.email); renderVerif(); updateChatGate(); }catch(e){}
+      lfoErr(errId,""); lfoShow(me.verified ? "profile" : "verify"); })
+    .catch(function(err){ var c=err&&(err.code||err.message)||"";
+      if(c==="lf/cancelled" || /cancel|popup-closed|12501|1001/i.test(String(c))) lfoErr(errId,"");
+      else if(c==="auth/operation-not-allowed") lfoErr(errId,"Cette connexion n'est pas encore activée. Utilise ton e-mail pour l'instant.");
+      else if(c==="auth/popup-blocked") lfoErr(errId,"Fenêtre bloquée par le navigateur : autorise les fenêtres pour ce site, puis réessaie.");
+      else lfoErr(errId, lfoAuthMsg(c)); })
+    .then(function(){ all.forEach(function(b){ b.disabled=false; }); }); }
   function lfoBind(o){
     o.addEventListener("click", function(ev){ var t=ev.target.closest("[data-go]"); if(t){ ev.preventDefault(); lfoShow(t.dataset.go); } });
     o.querySelectorAll("[data-eye]").forEach(function(b){ b.addEventListener("click", function(){ var i=$(b.dataset.eye); i.type = i.type==="password" ? "text" : "password"; }); });

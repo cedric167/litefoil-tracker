@@ -162,6 +162,10 @@ if [ -f "$GSI" ]; then
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
 </dict>
 </plist>
 PLIST
@@ -199,8 +203,15 @@ PLIST
       File.write(f, s)
     ' "$DELEGATE"
   fi
+  # connexion Google : l'appli doit s'ouvrir sur le schéma REVERSED_CLIENT_ID (retour de la page Google)
+  RCID=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" "$GSI" 2>/dev/null || true)
+  if [ -n "$RCID" ]; then
+    plutil -replace CFBundleURLTypes -json "[{\"CFBundleURLName\":\"google\",\"CFBundleURLSchemes\":[\"$RCID\"]}]" "$PLIST"
+  else
+    echo "Attention : REVERSED_CLIENT_ID absent de GoogleService-Info.plist (activer Google dans Firebase puis retélécharger le fichier)."
+  fi
   plutil -lint "$PLIST" >/dev/null
-  echo "Notifications iOS activées (GoogleService-Info.plist présent)."
+  echo "Notifications et connexion Apple/Google iOS activées (GoogleService-Info.plist présent)."
 else
   echo "Notifications iOS non activées : ios-assets/GoogleService-Info.plist absent."
 fi
