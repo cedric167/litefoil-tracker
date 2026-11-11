@@ -5130,7 +5130,18 @@
     var unmute=function(){ if(!vfMuted) return; vfMuted=false; vf.querySelectorAll("video").forEach(function(x){ x.muted=false; }); };
     vf.addEventListener("pointerdown", unmute, true); vf.addEventListener("touchstart", unmute, {capture:true, passive:true});
     return vf; }
-  function openFeed(start){ vfMuted=false; var vs=vidVisible(); if(!vs.length){ openVideoUpload(); return; }
+  // 12/11 : ordre aléatoire façon TikTok à chaque ouverture : d'abord les vidéos pas encore vues
+  // (les récentes un peu plus souvent devant), puis les déjà vues. La vidéo touchée reste la première.
+  function vfSeenGet(){ try{ return JSON.parse(localStorage.getItem("lf.vf.seen")||"{}")||{}; }catch(e){ return {}; } }
+  function vfSeenAdd(id){ if(!id) return; var m=vfSeenGet(); m[id]=Date.now(); var ks=Object.keys(m); if(ks.length>600){ ks.sort(function(a,b){ return m[a]-m[b]; }).slice(0,ks.length-600).forEach(function(k){ delete m[k]; }); } try{ localStorage.setItem("lf.vf.seen", JSON.stringify(m)); }catch(e){} }
+  function vfShuffle(list){ var seen=vfSeenGet(), now=Date.now();
+    var key=function(v){ var age=(now-(+v.t||0))/86400000, w=age<2?3:(age<7?2:1); return Math.pow(Math.random(),1/w); };
+    var a=list.filter(function(v){ return !seen[v.id]; }), b=list.filter(function(v){ return seen[v.id]; });
+    var sortR=function(l){ return l.map(function(v){ return [key(v),v]; }).sort(function(x,y){ return y[0]-x[0]; }).map(function(x){ return x[1]; }); };
+    return sortR(a).concat(sortR(b)); }
+  function openFeed(start){ vfMuted=false; var vs0=vidVisible(); if(!vs0.length){ openVideoUpload(); return; }
+    var first=(typeof start==="number" && vs0[start]) ? vs0[start] : null;
+    var vs=vfShuffle(vs0.filter(function(v){ return v!==first; })); if(first) vs.unshift(first); start=0;
     var vf=feedEl(), list=$("vfList"); list.innerHTML=vs.map(feedItemHtml).join(""); vf.hidden=false; document.body.style.overflow="hidden";
     list.querySelectorAll(".vf-item").forEach(function(it){ wireFeedItem(it, vs[+it.dataset.i]); });
     // la vidéo à l'écran joue, les autres sont en pause (calculé au défilement)
@@ -5161,7 +5172,7 @@
   function feedActivate(force){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
     var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
     its.forEach(function(it,i){ var vd=it.querySelector("video"), d=i-k;
-      if(d===0){ vfPlay(it); watchCount(it); }
+      if(d===0){ vfPlay(it); watchCount(it); vfSeenAdd(it.dataset.vid); }
       else { if(vd && !vd.paused) vd.pause(); if(d===1) vfLoad(it,"auto"); else if(d===-1) vfLoad(it,"metadata"); else if(Math.abs(d)>2) vfUnload(it); } }); }
   function closeFeed(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll(".vf-item").forEach(vfUnload); if(vfIO){ vfIO.disconnect(); vfIO=null; } vfActive=-1; if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } vf.hidden=true; document.body.style.overflow=""; }
   // compteur de commentaires de la vidéo à l'écran
@@ -6988,7 +6999,7 @@
     if(backend.watchFriends) backend.watchFriends(onFriends);
     if(backend.watchFriendReqs) backend.watchFriendReqs(onFriendReqs);
     pvWatch();
-    var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(0); });
+    var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(); });
     var _vp=$("vidPost"); if(_vp) _vp.addEventListener("click", openVideoUpload);
     // session expirée (mot de passe changé…) : on propose de se reconnecter
     var _rl=false; try{ _rl=localStorage.getItem("lf.comm.relogin")==="1"; }catch(e){}
