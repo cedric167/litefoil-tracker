@@ -420,6 +420,7 @@
   .cm-near{ background:linear-gradient(135deg,#f9b65a,#ef7d2e); }
   .cm-groups{ background:linear-gradient(135deg,#43d66a,#1a9c55); }
   .cm-dms{ background:linear-gradient(135deg,#6ea8ff,#3f6fe0); }
+  .cm-badge[hidden]{ display:none !important; } .chat-modes .cm-badge:not([hidden]) ~ .cm-plus, .cm-plus:has(+ .cm-badge:not([hidden])){ display:none; }
   .cm-badge{ position:absolute; right:-5px; top:-5px; min-width:19px; height:19px; padding:0 5px; border-radius:100px; background:#e8384f; color:#fff; border:2.5px solid var(--card); font-size:11px; font-weight:800; line-height:15px; font-style:normal; display:flex; align-items:center; justify-content:center; }
   .chat-modes button.on[data-ch="dms"]{ background:#e9f0ff; }
   .cm-plus{ position:absolute; right:-4px; bottom:-4px; width:19px; height:19px; border-radius:50%; background:#13a04a; color:#fff; border:2.5px solid var(--card); font-size:14px; font-weight:900; line-height:1; display:flex; align-items:center; justify-content:center; font-style:normal; box-shadow:0 2px 5px rgba(0,0,0,.2); }
@@ -1540,7 +1541,7 @@
 
     <div class="chat-modes" id="chatSeg">
       <button data-ch="salon" class="on" aria-label="Salon public">
-        <span class="cm-ic cm-salon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></span>
+        <span class="cm-ic cm-salon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><i class="cm-badge" id="salonChipBadge" hidden></i></span>
         <span class="cm-lbl">Salon</span>
       </button>
       <button data-ch="near" aria-label="Riders près de moi">
@@ -1552,7 +1553,7 @@
         <span class="cm-lbl">Messages</span>
       </button>
       <button data-ch="groups" aria-label="Groupes privés">
-        <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i></span>
+        <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i><i class="cm-badge" id="grpChipBadge" hidden></i></span>
         <span class="cm-lbl">Groupes</span>
       </button>
       <button data-ch="events" aria-label="Événements" hidden>
@@ -4577,13 +4578,15 @@
   function recomputeBadges(){
     const commVisible = (()=>{ const t=$("tab-communaute"); return t && !t.hidden; })();
     const active = (commVisible && (chatMode==="salon"||chatMode==="near")) ? chatTopic : null;
-    let total=0;
+    let total=0, salonN=0;
     for(const tp in CHANS){
       let n=0;
       if(tp===active){ const mx=latestTs(tp); if(mx>(seen[tp]||0)){ seen[tp]=mx; saveSeen(); } }
       else { const s=seen[tp]||0;
         for(const m of salonMsgs){ if((m.topic||"general")===tp && m.uid!==me.uid && !blocked.has(m.uid) && (+m.t||0)>s) n++; } }
-      total += n;
+      total += n; salonN += n;
+      // 12/11 : liste des salons → « eFoil · 3 nouveaux »
+      const op=document.querySelector('#chatChannel option[value="'+tp+'"]'); if(op){ const lbl=CHANS[tp]+(n>0?("  🔴 "+(n>9?"9+":n)+(n>1?" nouveaux":" nouveau")):""); if(op.textContent!==lbl) op.textContent=lbl; }
       const btn=document.querySelector('#chatChannels button[data-tp="'+tp+'"]'); if(!btn) continue;
       const cb=btn.querySelector(".cb"); if(cb){ if(n>0){ cb.textContent = n>9?"9+":String(n); cb.hidden=false; } else cb.hidden=true; }
     }
@@ -4594,6 +4597,9 @@
       const gc=(g.unread&&+g.unread[me.uid])||0;
       if(gc>0) gtotal+=gc; else if(lt>(gseen[g.id]||0) && g.last.by!==me.uid) gtotal++; }
     total += gtotal;
+    // 12/11 : pastilles sur les tuiles Salon et Groupes
+    var setB=function(id,n){ var e=$(id); if(e){ if(n>0){ e.textContent=n>9?"9+":String(n); e.hidden=false; } else e.hidden=true; } };
+    setB("salonChipBadge", salonN); setB("grpChipBadge", gtotal);
     // non-lus des messages privés
     var dmn=dmUnreadCount(); total += dmn;
     var dcb=$("dmChipBadge"); if(dcb){ if(dmn>0){ dcb.textContent = dmn>9?"9+":String(dmn); dcb.hidden=false; } else dcb.hidden=true; }
