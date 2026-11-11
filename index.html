@@ -782,7 +782,7 @@
   .vf-av img,.vf-av span{ width:48px; height:48px; border-radius:50%; object-fit:cover; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; color:#fff; border:2px solid #fff; box-sizing:border-box; }
   .vf-av em{ position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); width:20px; height:20px; border-radius:50%; background:#1fb5bd; color:#fff; font-style:normal; font-weight:800; font-size:15px; line-height:20px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.35); }
   .vf-heart svg{ width:120px; height:120px; display:block; color:#ff2d55; filter:drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
-  .vf-mute svg{ display:block; margin:auto; }
+  .vf-sp{ width:42px; height:42px; }
   .vf-info{ position:absolute; left:14px; right:80px; bottom:calc(var(--lf-sab) + 26px); z-index:2; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.6); }
   .vf-info b{ font-size:16.5px; font-weight:800; letter-spacing:.01em; } .vf-info p{ margin:6px 0 8px; font-size:15px; line-height:1.38; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   .vf-info span{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; background:rgba(0,0,0,.28); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); padding:5px 10px; border-radius:999px; text-shadow:none; }
@@ -5038,7 +5038,7 @@
   // 60 s maximum par vidéo (coût du stockage et de la lecture) ; au-delà on propose de choisir un extrait.
   // Les vidéos lourdes (> 40 Mo) sont recompressées dans le téléphone (720p, ~2,5 Mbit/s) avant l'envoi.
   const VID_MAX_S = 60, VID_MAX_MB = 150, VID_COMPRESS_MB = 40;
-  let videos = [], vidUnsub = null, vfMuted = true, vfComUnsub = null;
+  let videos = [], vidUnsub = null, vfMuted = false, vfComUnsub = null;
   function canModerate(uid){ return uid===me.uid || isOfficial(me.uid); }
   function vidLikes(v){ return v && v.likes ? Object.keys(v.likes).length : 0; }
   function vidLiked(v){ return !!(v && v.likes && v.likes[me.uid]); }
@@ -5075,7 +5075,7 @@
   function feedItemHtml(v,i){ var off=isOfficial(v.uid), name=(off&&v.uid===TEAM_UID)?TEAM_NAME:(v.pseudo||"Rider");
     var av=v.av||(off&&v.uid===TEAM_UID?TEAM_AV:"");
     return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'">'
-      +'<video playsinline webkit-playsinline loop muted preload="none" data-src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
+      +'<video playsinline webkit-playsinline loop preload="none" data-src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
       +'<div class="vf-heart">'+VF_IC.like+'</div><div class="vf-play">▶</div><div class="vf-spin"></div><button class="vf-err" type="button">Vidéo indisponible · Réessayer</button>'
       +'<div class="vf-side">'
         +'<button class="vf-av" data-a="profile" aria-label="Profil">'+(av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>')+(v.uid!==me.uid?'<em>+</em>':'')+'</button>'
@@ -5089,13 +5089,16 @@
   function timeAgo(t){ var s=(Date.now()-(+t||Date.now()))/1000; if(s<3600) return Math.max(1,Math.round(s/60))+" min"; if(s<86400) return Math.round(s/3600)+" h"; return Math.round(s/86400)+" j"; }
   function feedEl(){ var vf=$("vf"); if(vf) return vf;
     vf=document.createElement("div"); vf.id="vf"; vf.className="vf"; vf.hidden=true;
-    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><button class="vf-mute" id="vfMute" aria-label="Son">'+VF_IC.mute+'</button></div><div class="vf-list" id="vfList"></div><button class="vf-add" id="vfAdd" aria-label="Publier une vidéo">＋</button>';
+    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><span class="vf-sp" aria-hidden="true"></span></div><div class="vf-list" id="vfList"></div><button class="vf-add" id="vfAdd" aria-label="Publier une vidéo">＋</button>';
     document.body.appendChild(vf);
     $("vfClose").addEventListener("click", closeFeed);
-    $("vfMute").addEventListener("click", function(){ vfMuted=!vfMuted; this.innerHTML=vfMuted?VF_IC.mute:VF_IC.sound; vf.querySelectorAll("video").forEach(function(x){ x.muted=vfMuted; }); });
+    // 12/11 (demande de Cédric) : son toujours actif, plus de bouton muet. Si le téléphone a quand même
+    // forcé le silence (lecture automatique refusée), le premier toucher dans le Swip remet le son.
+    var unmute=function(){ if(!vfMuted) return; vfMuted=false; vf.querySelectorAll("video").forEach(function(x){ x.muted=false; }); };
+    vf.addEventListener("pointerdown", unmute, true); vf.addEventListener("touchstart", unmute, {capture:true, passive:true});
     $("vfAdd").addEventListener("click", openVideoUpload);
     return vf; }
-  function openFeed(start){ var vs=vidVisible(); if(!vs.length){ openVideoUpload(); return; }
+  function openFeed(start){ vfMuted=false; var vs=vidVisible(); if(!vs.length){ openVideoUpload(); return; }
     var vf=feedEl(), list=$("vfList"); list.innerHTML=vs.map(feedItemHtml).join(""); vf.hidden=false; document.body.style.overflow="hidden";
     list.querySelectorAll(".vf-item").forEach(function(it){ wireFeedItem(it, vs[+it.dataset.i]); });
     // la vidéo à l'écran joue, les autres sont en pause (calculé au défilement)
@@ -5121,7 +5124,7 @@
     if(vd.readyState<3) it.classList.add("loading"); it.classList.remove("paused");
     var p=vd.play(); if(p&&p.catch) p.catch(function(){
       // lecture avec le son refusée par le téléphone : on relance sans le son
-      if(!vd.muted){ vfMuted=true; var mb=$("vfMute"); if(mb) mb.innerHTML=VF_IC.mute; vd.muted=true; vd.play().catch(function(){ it.classList.remove("loading"); it.classList.add("paused"); }); }
+      if(!vd.muted){ vfMuted=true; vd.muted=true; vd.play().catch(function(){ it.classList.remove("loading"); it.classList.add("paused"); }); }
       else { it.classList.remove("loading"); it.classList.add("paused"); } }); }
   function feedActivate(force){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
     var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
