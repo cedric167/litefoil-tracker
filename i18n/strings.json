@@ -6034,5 +6034,41 @@
  "Fenêtre bloquée par le navigateur : autorise les fenêtres pour ce site, puis réessaie.": {
   "en": "Window blocked by the browser: allow pop-ups for this site, then try again.",
   "es": "Ventana bloqueada por el navegador: permite las ventanas emergentes para este sitio y vuelve a intentarlo."
+ },
+ "Nouvelle publication": {
+  "en": "New post",
+  "es": "Nueva publicación"
+ },
+ "Décris ta session… Ajoute des #hashtags": {
+  "en": "Describe your session… Add #hashtags",
+  "es": "Describe tu sesión… Añade #hashtags"
+ },
+ "Activité": {
+  "en": "Activity",
+  "es": "Actividad"
+ },
+ "Qui peut voir": {
+  "en": "Who can watch",
+  "es": "Quién puede verlo"
+ },
+ "Toute la communauté": {
+  "en": "Everyone in the community",
+  "es": "Toda la comunidad"
+ },
+ "Publier": {
+  "en": "Post",
+  "es": "Publicar"
+ },
+ "Vues du profil": {
+  "en": "Profile views",
+  "es": "Visitas al perfil"
+ },
+ "Activer": {
+  "en": "Turn on",
+  "es": "Activar"
+ },
+ "Ajouter un commentaire…": {
+  "en": "Add a comment…",
+  "es": "Añadir un comentario…"
  }
 }

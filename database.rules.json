@@ -228,6 +228,16 @@
         ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true",
         ".validate": "!newData.exists() || newData.hasChildren(['t'])"
       }
+    },
+    "profileViews": {
+      "$owner": {
+        ".read": "auth != null && auth.uid === $owner",
+        ".write": "auth != null && auth.uid === $owner && !newData.exists()",
+        "$viewer": {
+          ".write": "auth != null && auth.token.email_verified === true && ((auth.uid === $viewer && $viewer !== $owner && root.child('profiles/'+$owner+'/nk').exists()) || (auth.uid === $owner && !newData.exists()))",
+          ".validate": "!newData.exists() || (newData.hasChildren(['t','pseudo']) && newData.child('t').val() === now && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())"
+        }
+      }
     }
   }
 }

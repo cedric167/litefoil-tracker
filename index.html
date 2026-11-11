@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="fr">
 <head>
+<style>:root{ --lf-sab: env(safe-area-inset-bottom, 0px); }</style>
+<script>
+/* 12/11 (demande de Cédric) : sur certains Android, l'appli s'affiche sous la barre de navigation du téléphone
+   (boutons ◁ ○ ▢) sans que le système donne sa hauteur : les boutons du bas (Publier…) tombaient dessous.
+   Si la page occupe tout l'écran sans marge connue, on réserve 48 px en bas (variable --lf-sab). */
+(function(){ function fit(){ try{
+  var ua=navigator.userAgent||"", android=/Android/i.test(ua); if(!android) return;
+  var p=document.createElement("div"); p.style.cssText="position:fixed;bottom:0;height:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden";
+  (document.body||document.documentElement).appendChild(p); var sab=p.offsetHeight; p.remove();
+  var full = window.innerHeight >= (screen.height - 8);
+  document.documentElement.style.setProperty("--lf-sab", (sab>0 ? sab : (full ? 48 : 0))+"px");
+ }catch(e){} }
+ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",fit); else fit();
+ window.addEventListener("resize",fit); window.addEventListener("orientationchange",function(){ setTimeout(fit,300); }); })();
+</script>
   <script src="ble-bridge.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -223,9 +238,9 @@
   .hl-site{ background:#0b0d10; } .hl-yt{ background:#e62117; } .hl-fb{ background:#1877f2; } .hl-ig{ background:linear-gradient(135deg,#f9a23b,#e1306c 55%,#833ab4); }
   /* ===== barre de menu en bas (style appli) : Accueil · Météo · [Communauté] · Vidéos · Tracking ===== */
   .tabs{ display:none !important; }
-  body{ padding-bottom:calc(92px + env(safe-area-inset-bottom)) !important; }
+  body{ padding-bottom:calc(92px + var(--lf-sab)) !important; }
   .bnav{ position:fixed; left:0; right:0; bottom:0; z-index:8000; display:flex; justify-content:space-around; align-items:flex-end; gap:2px;
-    padding:8px 8px calc(8px + env(safe-area-inset-bottom)); background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+    padding:8px 8px calc(8px + var(--lf-sab)); background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
     border-top:1px solid rgba(0,0,0,.06); box-shadow:0 -6px 24px rgba(0,0,0,.06); }
   .bnav button{ flex:1; max-width:84px; border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; padding:4px 0 2px; cursor:pointer; font-family:inherit; color:#8a96a0; font-size:11px; font-weight:700; position:relative; -webkit-tap-highlight-color:transparent; }
   .bnav svg{ width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform .18s; }
@@ -334,7 +349,11 @@
   .pf-id{ font-size:13px; color:var(--muted); margin:1px 4px 0; } .pf-bio{ font-size:14px; margin:6px 4px 0; white-space:pre-line; }
   .pf-bio:empty{ display:none; }
   .pf-acts{ display:flex; gap:8px; margin:12px 0 10px; } .pf-acts button{ flex:1; padding:9px 6px; border:0; border-radius:10px; background:#e9eef1; font-weight:700; font-size:13.5px; font-family:inherit; color:var(--ink,#0b0d10); cursor:pointer; }
-  .pf-acts button#pfFind{ flex:0 0 52px; } .pf-ovr{ display:inline-block; min-width:26px; padding:1px 5px; border-radius:6px; font-size:12.5px; margin-left:3px; } .pf-ovr.t-blue{ background:#1e5bd6; color:#fff; } .pf-ovr.t-bronze{ background:#c98d55; color:#2b1708; } .pf-ovr.t-silver{ background:#d5dde2; } .pf-ovr.t-gold{ background:#f1cd61; } .pf-ovr.t-icon{ background:#fffdf3; border:1.5px solid #c9a227; } .pf-acts button.pf-main{ background:#fe2c55; color:#fff; } .fs-act:not(.ghost){ background:#fe2c55; }
+  .pf-acts button#pfFind{ flex:0 0 52px; } .pf-acts button#pfViews{ flex:0 0 52px; position:relative; font-size:17px; } #pfViewsN{ position:absolute; top:-6px; right:-4px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#ff2d55; color:#fff; font-style:normal; font-size:11px; font-weight:800; line-height:18px; }
+  .pv-hero{ text-align:center; padding:18px 8px 6px; } .pv-hero .ic{ width:72px; height:72px; border-radius:50%; background:#e3f8f9; display:flex; align-items:center; justify-content:center; font-size:34px; margin:0 auto 12px; } .pv-hero h3{ font-size:20px; margin:0 0 8px; } .pv-hero p{ font-size:14px; color:var(--muted); line-height:1.5; margin:0; }
+  .pv-sw{ display:flex; align-items:center; gap:12px; padding:12px 2px; border-bottom:1px solid var(--line); font-weight:700; } .pv-sw span{ flex:1; } .pv-sw small{ display:block; font-weight:500; color:var(--muted); font-size:12.5px; margin-top:2px; }
+  .pv-row{ display:flex; align-items:center; gap:12px; padding:10px 2px; border:0; background:none; width:100%; text-align:left; font:inherit; cursor:pointer; color:var(--text); } .pv-av{ width:48px; height:48px; flex:0 0 48px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:18px; } .pv-av img{ width:100%; height:100%; object-fit:cover; } .pv-row b{ display:block; font-size:15px; } .pv-row small{ color:var(--muted); font-size:12.5px; } .pv-row.new b:after{ content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background:#ff2d55; margin-left:6px; vertical-align:middle; }
+  .pv-count{ font-size:13px; color:var(--muted); margin:10px 2px 2px; font-weight:600; } .pf-ovr{ display:inline-block; min-width:26px; padding:1px 5px; border-radius:6px; font-size:12.5px; margin-left:3px; } .pf-ovr.t-blue{ background:#1e5bd6; color:#fff; } .pf-ovr.t-bronze{ background:#c98d55; color:#2b1708; } .pf-ovr.t-silver{ background:#d5dde2; } .pf-ovr.t-gold{ background:#f1cd61; } .pf-ovr.t-icon{ background:#fffdf3; border:1.5px solid #c9a227; } .pf-acts button.pf-main{ background:#fe2c55; color:#fff; } .fs-act:not(.ghost){ background:#fe2c55; }
   .pf-reqs{ margin:0 0 10px; padding:10px 12px; border-radius:14px; background:#eef7f8; border:1px solid #cfe6e8; }
   .pf-reqs .pf-rq{ display:flex; align-items:center; gap:10px; padding:6px 0; } .pf-reqs .pf-rq b{ flex:1; font-size:14px; }
   .pf-rq button{ border:0; border-radius:9px; padding:7px 10px; font-weight:700; font-size:13px; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; } .pf-rq button.no{ background:#e3e8ec; color:#3d4a52; }
@@ -525,7 +544,7 @@
   .pick-row .cav img,.mem-row .cav img{ width:100%; height:100%; object-fit:cover; }
   .pick-ps{ flex:1; min-width:0; font-size:14px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pick-row input{ width:20px; height:20px; accent-color:var(--accent-ink); flex:0 0 auto; }
-  .gc-foot{ display:flex; gap:10px; padding:12px 16px; border-top:1px solid var(--line); }
+  .gc-foot{ display:flex; gap:10px; padding:12px 16px calc(12px + var(--lf-sab)); border-top:1px solid var(--line); }
   .btn-main{ flex:1; border:0; background:var(--accent-ink); color:#fff; font-weight:700; padding:12px; border-radius:12px; cursor:pointer; }
   .btn-main:disabled{ opacity:.45; }
   .btn-ghost2{ border:1px solid var(--line); background:none; color:var(--text); padding:12px 16px; border-radius:12px; cursor:pointer; }
@@ -607,7 +626,7 @@
   .sps-btn .spi{ font-size:19px; } .sps-btn b{ flex:1; min-width:0; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .sps-chev{ color:var(--muted); font-size:13px; }
   .sps-ov{ position:fixed; inset:0; z-index:9800; background:rgba(0,0,0,0); transition:background .22s; display:flex; align-items:flex-end; }
   .sps-ov.in{ background:rgba(0,0,0,.45); }
-  .sps-sh{ width:100%; max-width:560px; margin:0 auto; max-height:80vh; background:var(--card); color:var(--text); border-radius:24px 24px 0 0; transform:translateY(100%); transition:transform .24s cubic-bezier(.2,.8,.2,1); display:flex; flex-direction:column; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -10px 40px rgba(0,0,0,.25); }
+  .sps-sh{ width:100%; max-width:560px; margin:0 auto; max-height:80vh; background:var(--card); color:var(--text); border-radius:24px 24px 0 0; transform:translateY(100%); transition:transform .24s cubic-bezier(.2,.8,.2,1); display:flex; flex-direction:column; padding-bottom:var(--lf-sab); box-shadow:0 -10px 40px rgba(0,0,0,.25); }
   .sps-ov.in .sps-sh{ transform:none; }
   .sps-grab{ width:40px; height:5px; border-radius:3px; background:var(--line); margin:9px auto 4px; }
   .sps-hd{ text-align:center; font-weight:800; font-size:16px; padding:6px 16px 8px; border-bottom:1px solid var(--line); }
@@ -668,7 +687,7 @@
   .vf-list{ height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; } .vf-list::-webkit-scrollbar{ display:none; }
   .vf-item{ position:relative; height:100%; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; background:#000; }
   .vf-item video{ width:100%; height:100%; object-fit:cover; display:block; }
-  .vf-item::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:45%; background:linear-gradient(0deg,rgba(0,0,0,.65),transparent); pointer-events:none; }
+  .vf-item::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:48%; background:linear-gradient(0deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.35) 40%,transparent 100%); pointer-events:none; }
   .vf-play{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:64px; color:rgba(255,255,255,.85); display:none; pointer-events:none; }
   .vf-item.paused .vf-play{ display:block; }
   .vf-spin{ position:absolute; left:50%; top:50%; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; border:3px solid rgba(255,255,255,.25); border-top-color:#fff; animation:vfSpin .8s linear infinite; display:none; pointer-events:none; z-index:1; }
@@ -679,7 +698,7 @@
   .lfo{ position:fixed; inset:0; z-index:20000; background:#04121a; color:#0e1417; font-family:inherit; overflow:hidden; }
   .lfo[hidden]{ display:none !important; }
   .lfo-s{ position:absolute; inset:0; display:flex; flex-direction:column; background:#f4f6f7; overflow-y:auto; -webkit-overflow-scrolling:touch;
-    padding:calc(env(safe-area-inset-top) + 18px) 24px calc(env(safe-area-inset-bottom) + 24px); animation:lfoIn .32s ease-out; }
+    padding:calc(env(safe-area-inset-top) + 18px) 24px calc(var(--lf-sab) + 24px); animation:lfoIn .32s ease-out; }
   .lfo-s[hidden]{ display:none !important; }
   @keyframes lfoIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
   .lfo-dark{ background:#04121a; color:#fff; }
@@ -734,11 +753,11 @@
   .lfo-slide{ position:relative; flex:0 0 100%; height:100%; scroll-snap-align:start; overflow:hidden; background:#04121a; }
   .lfo-slide img.bg{ position:absolute; left:0; top:0; width:100%; height:64%; object-fit:cover; }
   .lfo-slide .fade{ position:absolute; inset:0; background:linear-gradient(180deg,rgba(4,18,26,0) 28%,#04121a 64%); }
-  .lfo-slide .txt{ position:absolute; left:24px; right:24px; bottom:calc(env(safe-area-inset-bottom) + 170px); color:#fff; }
+  .lfo-slide .txt{ position:absolute; left:24px; right:24px; bottom:calc(var(--lf-sab) + 170px); color:#fff; }
   .lfo-slide .eb{ font-size:13px; font-weight:700; letter-spacing:.16em; color:#19e3ff; }
   .lfo-slide h2{ font-family:"Instrument Serif",serif; font-weight:400; font-size:40px; line-height:1.03; margin-top:10px; }
   .lfo-slide p{ font-size:16px; color:#b9cfd3; margin-top:12px; line-height:1.45; }
-  .lfo-intro-ctl{ position:absolute; left:24px; right:24px; bottom:calc(env(safe-area-inset-bottom) + 28px); }
+  .lfo-intro-ctl{ position:absolute; left:24px; right:24px; bottom:calc(var(--lf-sab) + 28px); }
   .lfo-dots{ display:flex; gap:7px; justify-content:center; margin-bottom:22px; } .lfo-dots i{ width:8px; height:8px; border-radius:4px; background:rgba(255,255,255,.4); transition:width .2s; } .lfo-dots i.on{ width:24px; background:#fff; }
   .lfo-skip{ position:absolute; top:calc(env(safe-area-inset-top) + 14px); right:16px; z-index:2; background:rgba(0,0,0,.3); color:#fff; border:0; border-radius:999px; padding:8px 14px; font:inherit; font-weight:700; cursor:pointer; }
   .lfo-card3{ position:absolute; top:12%; left:50%; width:210px; height:300px; margin-left:-105px; background:linear-gradient(160deg,#f6e2a0,#d8a93a); box-shadow:0 20px 50px rgba(0,0,0,.5); clip-path:polygon(16% 0,84% 0,100% 12%,100% 86%,50% 100%,0 86%,0 12%); }
@@ -752,13 +771,21 @@
   .lfo-spin{ width:42px; height:42px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:#19e3ff; animation:vfSpin .8s linear infinite; }
   .vf-heart{ position:absolute; left:50%; top:45%; transform:translate(-50%,-50%) scale(0); font-size:110px; color:#ff3d6e; text-shadow:0 6px 24px rgba(0,0,0,.4); pointer-events:none; opacity:0; z-index:2; }
   .vf-heart.pop{ animation:vfPop .8s ease-out; } @keyframes vfPop{ 0%{ opacity:0; transform:translate(-50%,-50%) scale(.3);} 25%{ opacity:1; transform:translate(-50%,-50%) scale(1.15);} 60%{ opacity:1; transform:translate(-50%,-50%) scale(1);} 100%{ opacity:0; transform:translate(-50%,-60%) scale(1);} }
-  .vf-side{ position:absolute; right:10px; bottom:calc(env(safe-area-inset-bottom) + 110px); z-index:2; display:flex; flex-direction:column; align-items:center; gap:16px; }
-  .vf-side button{ border:0; background:none; color:#fff; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; font-family:inherit; text-shadow:0 1px 6px rgba(0,0,0,.5); }
-  .vf-side i{ font-style:normal; font-size:30px; line-height:1; } .vf-side b{ font-size:12.5px; font-weight:800; }
-  .vf-side button.on i{ color:#ff3d6e; } .vf-side button[data-a="like"] i{ transition:transform .15s; } .vf-side button.on i{ transform:scale(1.12); }
-  .vf-av{ width:50px; height:50px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 2px #fff !important; } .vf-av img,.vf-av span{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; color:#fff; }
-  .vf-info{ position:absolute; left:14px; right:80px; bottom:calc(env(safe-area-inset-bottom) + 26px); z-index:2; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.6); }
-  .vf-info b{ font-size:16px; font-weight:800; } .vf-info p{ margin:6px 0; font-size:14.5px; line-height:1.35; } .vf-info span{ font-size:12.5px; opacity:.85; font-weight:600; }
+  .vf-side{ position:absolute; right:8px; bottom:calc(var(--lf-sab) + 96px); z-index:2; display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .vf-side button{ border:0; background:none; color:#fff; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-family:inherit; padding:0; -webkit-tap-highlight-color:transparent; }
+  .vf-side i{ display:block; width:36px; height:36px; filter:drop-shadow(0 1px 3px rgba(0,0,0,.45)) drop-shadow(0 0 1px rgba(0,0,0,.3)); transition:transform .15s ease, color .15s; } .vf-side i svg{ width:100%; height:100%; display:block; }
+  .vf-side i.sm{ width:30px; height:30px; opacity:.95; }
+  .vf-side b{ font-size:12.5px; font-weight:700; letter-spacing:.01em; text-shadow:0 1px 3px rgba(0,0,0,.55); }
+  .vf-side button:active i{ transform:scale(.88); }
+  .vf-side button.on i{ color:#ff2d55; animation:vfLike .45s cubic-bezier(.2,1.6,.4,1); } @keyframes vfLike{ 0%{ transform:scale(.6);} 60%{ transform:scale(1.22);} 100%{ transform:scale(1);} }
+  .vf-av{ position:relative; width:48px; height:48px; border-radius:50%; overflow:visible !important; box-shadow:none !important; margin-bottom:8px; }
+  .vf-av img,.vf-av span{ width:48px; height:48px; border-radius:50%; object-fit:cover; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; color:#fff; border:2px solid #fff; box-sizing:border-box; }
+  .vf-av em{ position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); width:20px; height:20px; border-radius:50%; background:#1fb5bd; color:#fff; font-style:normal; font-weight:800; font-size:15px; line-height:20px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.35); }
+  .vf-heart svg{ width:120px; height:120px; display:block; color:#ff2d55; filter:drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
+  .vf-mute svg{ display:block; margin:auto; }
+  .vf-info{ position:absolute; left:14px; right:80px; bottom:calc(var(--lf-sab) + 26px); z-index:2; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.6); }
+  .vf-info b{ font-size:16.5px; font-weight:800; letter-spacing:.01em; } .vf-info p{ margin:6px 0 8px; font-size:15px; line-height:1.38; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .vf-info span{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; background:rgba(0,0,0,.28); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); padding:5px 10px; border-radius:999px; text-shadow:none; }
   .vf-add{ position:absolute; right:14px; top:calc(env(safe-area-inset-top) + 64px); z-index:3; width:46px; height:46px; border-radius:14px; border:0; background:#1fb5bd; color:#fff; font-size:26px; font-weight:800; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.35); }
   .vc-row{ display:flex; gap:10px; align-items:flex-start; padding:8px 2px; } .vc-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; font-size:14.5px; }
   .vc-txt b{ font-size:13px; } .vc-txt small{ font-weight:500; color:var(--muted); } .vc-txt span{ word-break:break-word; }
@@ -767,6 +794,31 @@
   .vu-pick small{ font-weight:400; font-size:12px; color:var(--muted); } .vu-pick.has{ border-style:solid; padding:0; min-height:220px; background:#000; }
   .vu-pick img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.85; } .vu-ok{ position:relative; background:rgba(0,0,0,.6); color:#fff; padding:6px 12px; border-radius:100px; font-size:13px; }
   .vu-trim{ display:flex; flex-direction:column; gap:8px; background:var(--tile); border-radius:14px; padding:10px; }
+  /* 12/11 : publication façon TikTok */
+  .gcard.vu-tt{ max-width:560px; }
+  @media(max-width:559px){ .gcard.vu-tt{ height:100%; max-height:100%; border-radius:0; } }
+  .vu-tt .gc-head b{ font-size:17px; }
+  .vu-tt .gc-body{ gap:14px; padding:16px; flex:1; }
+  .vu-top{ display:flex; gap:12px; align-items:stretch; }
+  .vu-capw{ position:relative; flex:1; min-width:0; display:flex; }
+  .vu-capw textarea{ flex:1; width:100%; min-height:150px; resize:none; border:0; outline:none; font:inherit; font-size:16px; line-height:1.4; color:var(--text); background:transparent; padding:2px 0 22px; }
+  .vu-cnt{ position:absolute; right:2px; bottom:0; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .vu-tt .vu-pick{ width:112px; flex:0 0 112px; min-height:0; height:150px; border-radius:12px; padding:6px; font-size:13.5px; gap:2px; }
+  .vu-tt .vu-pick.has{ min-height:0; height:150px; padding:0; }
+  .vu-tt .vu-pick .evp-ic{ font-size:24px; } .vu-tt .vu-pick small{ font-size:11px; }
+  .vu-tt .vu-ok{ position:absolute; left:6px; right:6px; bottom:6px; font-size:10.5px; padding:4px 6px; line-height:1.25; text-align:center; }
+  .vu-tags{ display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin:-4px 0 0; } .vu-tags::-webkit-scrollbar{ display:none; }
+  .vu-tags button{ flex:0 0 auto; border:0; border-radius:999px; background:var(--tile); color:var(--text); font:inherit; font-size:13.5px; font-weight:700; padding:7px 12px; cursor:pointer; }
+  .vu-tags button.on{ background:#e3f8f9; color:#0d6d72; }
+  .ev-form label.vu-line,.vu-line{ display:flex; flex-direction:row; align-items:center; gap:12px; padding:14px 2px; border-top:1px solid var(--line); font-size:15.5px; font-weight:600; color:var(--text); }
+  .vu-line .vu-ico{ font-size:20px; width:26px; text-align:center; } .vu-line .vu-lab{ flex:1; }
+  .vu-line select{ border:0; background:transparent; font:inherit; font-size:15px; font-weight:600; color:var(--muted); text-align:right; -webkit-appearance:none; appearance:none; max-width:55%; padding:0; }
+  .vu-line .vu-chev{ color:var(--muted); font-size:22px; line-height:1; } .vu-line .vu-val{ color:var(--muted); font-size:14.5px; font-weight:600; }
+  .vu-note{ font-size:12.5px; color:var(--muted); line-height:1.45; }
+  .vu-tt .gc-foot{ border-top:0; box-shadow:0 -6px 18px rgba(0,0,0,.05); }
+  .vu-tt .gc-foot .btn-ghost2{ flex:0 0 34%; border-radius:12px; padding:14px; font-weight:700; }
+  .vu-tt .vu-go{ display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; font-size:16px; border-radius:12px; background:linear-gradient(135deg,#19c3cf,#148a90); }
+  .vu-tt .vu-go:disabled{ opacity:.45; }
   .vu-trim video{ width:100%; max-height:220px; border-radius:10px; background:#000; object-fit:contain; }
   .vu-trim-l{ display:flex; justify-content:space-between; gap:8px; font-size:13px; } .vu-trim-l span{ color:var(--muted); font-variant-numeric:tabular-nums; }
   .vu-trim input[type=range]{ width:100%; accent-color:#1fb5bd; }
@@ -1017,7 +1069,7 @@
   .card.wchat .who2{ margin:0 0 2px; font-size:12.5px; font-weight:700; color:var(--accent-ink); }
   .card.wchat .ctime{ margin:1px 6px 2px; gap:14px; opacity:.6; }
   .card.wchat .chat-reply, .card.wchat .chat-emojis, .card.wchat .chat-typing{ margin-left:10px; margin-right:10px; }
-  .card.wchat .chat-input{ margin:0; padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px)); background:#dfeced; gap:7px; }
+  .card.wchat .chat-input{ margin:0; padding:8px 8px calc(8px + var(--lf-sab)); background:#dfeced; gap:7px; }
   .card.wchat .chat-input input{ background:#fff; border:0; border-radius:22px; padding:11px 16px; }
   .card.wchat .chat-photo, .card.wchat #chatEmoji{ background:transparent; border:0; color:var(--accent-ink); }
   .card.wchat #chatNote{ margin:0; padding:6px 12px; background:#dfeced; }
@@ -1030,7 +1082,7 @@
   /* menu d'options message (facon WhatsApp) */
   .mm-ov{ position:fixed; inset:0; z-index:10001; background:rgba(8,12,14,.42); display:flex; align-items:flex-end; justify-content:center; animation:sheetFade .18s ease; }
   @media(min-width:560px){ .mm-ov{ align-items:center; } }
-  .mm-card{ background:var(--card); width:100%; max-width:380px; border-radius:20px 20px 0 0; padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 30px rgba(0,0,0,.28); animation:sheetUp .24s cubic-bezier(.22,.61,.36,1); }
+  .mm-card{ background:var(--card); width:100%; max-width:380px; border-radius:20px 20px 0 0; padding:6px 8px calc(8px + var(--lf-sab)); box-shadow:0 -8px 30px rgba(0,0,0,.28); animation:sheetUp .24s cubic-bezier(.22,.61,.36,1); }
   @media(min-width:560px){ .mm-card{ border-radius:18px; } }
   .mm-react{ display:flex; justify-content:space-around; gap:2px; padding:8px 4px 10px; border-bottom:1px solid var(--line); }
   .mm-emo{ border:0; background:none; font-size:27px; line-height:1; padding:6px; border-radius:50%; cursor:pointer; transition:transform .1s ease; }
@@ -1529,7 +1581,7 @@
       <div class="chat-input">
         <button class="chat-photo chat-emoji-btn" id="chatEmoji" type="button" title="Emoji" aria-label="Emoji">😀</button>
         <button class="chat-photo" id="chatAttach" type="button" title="Joindre" aria-label="Joindre"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
-        <input id="chatInput" maxlength="400" placeholder="Écrire un message…" autocomplete="off">
+        <input id="chatInput" maxlength="400" placeholder="Écrire un message…" spellcheck="true" autocorrect="on" autocapitalize="sentences" enterkeyhint="send">
         <button class="chat-send-btn" id="chatSend" type="button" aria-label="Envoyer" title="Envoyer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
         <input id="chatFile" type="file" accept="image/*" hidden>
       </div>
@@ -1602,7 +1654,7 @@
         <button type="button" class="av-btn" id="commAvBtn">Changer la photo</button>
         <input id="commAvFile" type="file" accept="image/*" hidden>
         <label for="commBio" style="margin-top:10px">Présentation</label>
-        <textarea id="commBio" class="comm-bio" maxlength="200" rows="3" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
+        <textarea id="commBio" class="comm-bio" maxlength="200" rows="3" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Rider eFoil à Leucate, dispo le week-end…"></textarea>
         <label style="margin-top:10px">Mes sports (une Carte Rider par sport)</label>
         <div id="commSportsPick"></div>
         <label for="commBrand" style="margin-top:10px">Mon eFoil</label>
@@ -1654,6 +1706,7 @@
       <button type="button" id="pfEdit">Modifier le profil</button>
       <button type="button" id="pfCard">🃏 Ma carte</button>
       <button type="button" id="pfFind" aria-label="Ajouter des amis">👥 +</button>
+      <button type="button" id="pfViews" aria-label="Vues du profil">👁<i id="pfViewsN" hidden></i></button>
     </div>
     <div class="pf-reqs" id="pfReqs" hidden></div>
     <div class="pf-tabs" id="pfTabs">
@@ -4149,6 +4202,10 @@
       searchNames(k){ return db.get(db.query(db.ref(d,"names"), db.orderByKey(), db.startAt(k), db.endAt(k+"\uf8ff"), db.limitToFirst(15))).then(function(s){ var out=[]; s.forEach(function(c){ out.push({nk:c.key, uid:c.val()}); }); return out; }); },
       watchFriends(cb){ return db.onValue(db.ref(d,"friends/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       watchFriendReqs(cb){ return db.onValue(db.ref(d,"friendReq/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      // 12/11 : vues du profil (façon TikTok) : /profileViews/{profil vu}/{visiteur} = {t, pseudo}
+      recordProfileView(to){ if(!to || to===uid) return Promise.resolve(); return db.set(db.ref(d,"profileViews/"+to+"/"+uid),{t:db.serverTimestamp(),pseudo:me.pseudo||"Rider"}); },
+      watchProfileViews(cb){ return db.onValue(db.ref(d,"profileViews/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      clearProfileViews(){ return db.remove(db.ref(d,"profileViews/"+uid)); },
       getFriends(u){ return db.get(db.ref(d,"friends/"+u)).then(function(s){ return s.val()||{}; }).catch(function(){ return {}; }); },
       sendFriendReq(to){ return db.set(db.ref(d,"friendReq/"+to+"/"+uid), {pseudo:me.pseudo, t:db.serverTimestamp()}); },
       cancelFriendReq(to){ return db.remove(db.ref(d,"friendReq/"+to+"/"+uid)); },
@@ -4344,6 +4401,8 @@
       deleteAccount(){ return Promise.resolve("deleted"); },
       searchNames(k){ var out=[]; Object.keys(demo).forEach(function(u){ var nk=pseudoKey(demo[u].pseudo); if(nk && nk.indexOf(k)===0) out.push({nk:nk, uid:u}); }); return Promise.resolve(out); },
       watchFriends(cb){ cb({"demo-marine":true}); return function(){}; },
+      recordProfileView(){ return Promise.resolve(); }, clearProfileViews(){ return Promise.resolve(); },
+      watchProfileViews(cb){ cb({"demo-marine":{t:Date.now()-2*3600000,pseudo:"Marine"},"demo-aurel":{t:Date.now()-26*3600000,pseudo:"Aurel66"},"demo-leo":{t:Date.now()-4*86400000,pseudo:"Léo.Foil"}}); return function(){}; },
       watchFriendReqs(cb){ cb({"demo-leo":{pseudo:"Léo.Foil", t:Date.now()-3600000}}); return function(){}; },
       getFriends(u){ return Promise.resolve(u==="demo-marine"?{"demo-aurel":true}:{}); },
       sendFriendReq(){ return Promise.resolve(); }, cancelFriendReq(){ return Promise.resolve(); }, acceptFriend(){ return Promise.resolve(); },
@@ -5005,27 +5064,35 @@
   window.videosOnShow = function(){ renderVideoGrid(); };
 
   // ---------- fil plein écran ----------
+  // 12/11 (demande de Cédric) : icônes du fil dessinées (SVG) façon applis de vidéos courtes, à la place des émojis
+  const VF_IC={
+    like:'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21.35 10.55 20C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+    com:'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.48 3 2 6.94 2 11.8c0 2.6 1.29 4.93 3.33 6.54-.13 1.4-.66 2.64-1.6 3.66 2.18-.1 4-.86 5.33-1.98.94.22 1.92.34 2.94.34 5.52 0 10-3.94 10-8.8S17.52 3 12 3z"/><circle cx="7.6" cy="11.8" r="1.35" fill="#000" fill-opacity=".38"/><circle cx="12" cy="11.8" r="1.35" fill="#000" fill-opacity=".38"/><circle cx="16.4" cy="11.8" r="1.35" fill="#000" fill-opacity=".38"/></svg>',
+    share:'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 4.2v4.3C7.2 9.1 3.4 13 2.5 19.8c2.3-3.4 5.6-5 11-5v4.4l8-7.5-8-7.5z"/></svg>',
+    more:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.3" fill="currentColor"/><circle cx="12" cy="12" r="2.3" fill="currentColor"/><circle cx="19" cy="12" r="2.3" fill="currentColor"/></svg>',
+    mute:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>',
+    sound:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.48 4.48 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>' };
   function feedItemHtml(v,i){ var off=isOfficial(v.uid), name=(off&&v.uid===TEAM_UID)?TEAM_NAME:(v.pseudo||"Rider");
     var av=v.av||(off&&v.uid===TEAM_UID?TEAM_AV:"");
     return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'">'
       +'<video playsinline webkit-playsinline loop muted preload="none" data-src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
-      +'<div class="vf-heart">♥</div><div class="vf-play">▶</div><div class="vf-spin"></div><button class="vf-err" type="button">Vidéo indisponible · Réessayer</button>'
+      +'<div class="vf-heart">'+VF_IC.like+'</div><div class="vf-play">▶</div><div class="vf-spin"></div><button class="vf-err" type="button">Vidéo indisponible · Réessayer</button>'
       +'<div class="vf-side">'
-        +'<button class="vf-av" data-a="profile">'+(av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>')+'</button>'
-        +'<button data-a="like" class="'+(vidLiked(v)?"on":"")+'"><i>♥</i><b>'+fmtCount(vidLikes(v))+'</b></button>'
-        +'<button data-a="com"><i>💬</i><b class="vf-nc">·</b></button>'
-        +'<button data-a="share"><i>↗</i><b>Partager</b></button>'
-        +'<button data-a="more"><i>⋯</i></button>'
+        +'<button class="vf-av" data-a="profile" aria-label="Profil">'+(av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>')+(v.uid!==me.uid?'<em>+</em>':'')+'</button>'
+        +'<button data-a="like" class="'+(vidLiked(v)?"on":"")+'" aria-label="J\'aime"><i>'+VF_IC.like+'</i><b>'+fmtCount(vidLikes(v))+'</b></button>'
+        +'<button data-a="com" aria-label="Commentaires"><i>'+VF_IC.com+'</i><b class="vf-nc">·</b></button>'
+        +'<button data-a="share" aria-label="Partager"><i>'+VF_IC.share+'</i><b>Partager</b></button>'
+        +'<button data-a="more" aria-label="Plus"><i class="sm">'+VF_IC.more+'</i></button>'
       +'</div>'
       +'<div class="vf-info"><b>@'+esc(name)+(off?' <span class="off-badge">✓ Officiel</span>':'')+'</b>'+(v.caption?'<p>'+esc(v.caption)+'</p>':'')+'<span>'+(spIco(v.topic)+" "+(CHANS[v.topic]||"Glisse"))+' · '+esc(timeAgo(v.t))+'</span></div>'
     +'</section>'; }
   function timeAgo(t){ var s=(Date.now()-(+t||Date.now()))/1000; if(s<3600) return Math.max(1,Math.round(s/60))+" min"; if(s<86400) return Math.round(s/3600)+" h"; return Math.round(s/86400)+" j"; }
   function feedEl(){ var vf=$("vf"); if(vf) return vf;
     vf=document.createElement("div"); vf.id="vf"; vf.className="vf"; vf.hidden=true;
-    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><button class="vf-mute" id="vfMute" aria-label="Son">🔇</button></div><div class="vf-list" id="vfList"></div><button class="vf-add" id="vfAdd" aria-label="Publier une vidéo">＋</button>';
+    vf.innerHTML='<div class="vf-top"><button class="vf-x" id="vfClose" aria-label="Fermer">✕</button><b>Vidéos des riders</b><button class="vf-mute" id="vfMute" aria-label="Son">'+VF_IC.mute+'</button></div><div class="vf-list" id="vfList"></div><button class="vf-add" id="vfAdd" aria-label="Publier une vidéo">＋</button>';
     document.body.appendChild(vf);
     $("vfClose").addEventListener("click", closeFeed);
-    $("vfMute").addEventListener("click", function(){ vfMuted=!vfMuted; this.textContent=vfMuted?"🔇":"🔊"; vf.querySelectorAll("video").forEach(function(x){ x.muted=vfMuted; }); });
+    $("vfMute").addEventListener("click", function(){ vfMuted=!vfMuted; this.innerHTML=vfMuted?VF_IC.mute:VF_IC.sound; vf.querySelectorAll("video").forEach(function(x){ x.muted=vfMuted; }); });
     $("vfAdd").addEventListener("click", openVideoUpload);
     return vf; }
   function openFeed(start){ var vs=vidVisible(); if(!vs.length){ openVideoUpload(); return; }
@@ -5054,7 +5121,7 @@
     if(vd.readyState<3) it.classList.add("loading"); it.classList.remove("paused");
     var p=vd.play(); if(p&&p.catch) p.catch(function(){
       // lecture avec le son refusée par le téléphone : on relance sans le son
-      if(!vd.muted){ vfMuted=true; var mb=$("vfMute"); if(mb) mb.textContent="🔇"; vd.muted=true; vd.play().catch(function(){ it.classList.remove("loading"); it.classList.add("paused"); }); }
+      if(!vd.muted){ vfMuted=true; var mb=$("vfMute"); if(mb) mb.innerHTML=VF_IC.mute; vd.muted=true; vd.play().catch(function(){ it.classList.remove("loading"); it.classList.add("paused"); }); }
       else { it.classList.remove("loading"); it.classList.add("paused"); } }); }
   function feedActivate(force){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
     var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
@@ -5105,7 +5172,7 @@
       backend.deleteVideo(v).then(function(){ closeOverlay(); var it=document.querySelector('.vf-item[data-vid="'+v.id+'"]'); if(it) it.remove(); if(!document.querySelector(".vf-item")) closeFeed(); }).catch(function(e){ dl.disabled=false; alert("Suppression impossible : "+((e&&(e.code||e.message))||"erreur")); }); }); }
   function openVideoComments(v){ var o=gOverlay(); o.hidden=false;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vcClose">✕</button><b>Commentaires</b><span></span></div><div class="gc-body" id="vcList"><div class="comm-empty">Chargement…</div></div>'
-      +'<div class="gc-foot vc-foot"><input id="vcInput" maxlength="300" placeholder="Ajouter un commentaire…" autocomplete="off"><button class="btn-main" id="vcSend">Envoyer</button></div></div>';
+      +'<div class="gc-foot vc-foot"><input id="vcInput" maxlength="300" placeholder="Ajouter un commentaire…" spellcheck="true" autocorrect="on" autocapitalize="sentences" enterkeyhint="send"><button class="btn-main" id="vcSend">Envoyer</button></div></div>';
     var close=function(){ if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } closeOverlay(); };
     $("vcClose").addEventListener("click", close);
     vfComUnsub = backend.watchVideoComments(v.id, function(cs){ var box=$("vcList"); if(!box) return; cs=cs.filter(function(c){ return !blocked.has(c.uid); });
@@ -5115,7 +5182,7 @@
       box.querySelectorAll(".vc-del").forEach(function(b){ b.addEventListener("click", function(){ if(confirm("Supprimer ce commentaire ?")) backend.deleteVideoComment(v.id, b.dataset.cid).catch(function(){}); }); });
       box.scrollTop=box.scrollHeight; });
     var send=function(){ var i=$("vcInput"), t=(i.value||"").trim(); if(!t) return; if(!charterOk){ close(); closeFeed(); showCharter(); return; } if(!profileReady()){ close(); closeFeed(); askProfile(); return; } backend.addVideoComment(v.id,t).catch(function(){}); i.value=""; };
-    $("vcSend").addEventListener("click", send); $("vcInput").addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); send(); } }); }
+    $("vcSend").addEventListener("click", send); $("vcInput").addEventListener("keydown", function(e){ if(e.key==="Enter"&&!e.isComposing&&e.keyCode!==229){ e.preventDefault(); send(); } }); }
 
   // ---------- publier une vidéo ----------
   function videoThumb(file, at){ return new Promise(function(res){ var url=URL.createObjectURL(file), v=document.createElement("video"); v.muted=true; v.playsInline=true; v.preload="auto"; v.src=url;
@@ -5150,14 +5217,20 @@
   function fmtSec(t){ t=Math.max(0,Math.round(t)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); }
   function openVideoUpload(){ if(!charterOk){ closeFeed(); showCharter(); return; } if(!profileReady()){ closeFeed(); askProfile(); return; }
     var o=gOverlay(); o.hidden=false; var picked=null, meta=null;
-    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="vuClose">✕</button><b>Publier une vidéo</b><span></span></div><div class="gc-body ev-form">'
-      +'<div class="vu-pick" id="vuPick"><span class="evp-ic">🎬</span>Choisir une vidéo<small>'+VID_MAX_S+' secondes maximum (sinon vous choisissez l\'extrait) · format vertical conseillé</small></div><input id="vuFile" type="file" accept="video/*" hidden>'
-      +'<div class="vu-trim" id="vuTrim" hidden><video id="vuPrev" playsinline muted preload="metadata"></video><div class="vu-trim-l"><b>Choisissez l\'extrait de '+VID_MAX_S+' s</b><span id="vuTrimLbl"></span></div><input type="range" id="vuStart" min="0" max="0" step="0.5" value="0"></div>'
-      +'<label>Légende<input id="vuCap" maxlength="150" placeholder="Ex. : Session du matin, mer d\'huile 🌅"></label>'
-      +'<label>Activité<select id="vuTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+CHANS[k]+'</option>'; }).join("")+'</select></label>'
-      +'<div class="gc-count">En publiant, vous confirmez être l\'auteur de la vidéo et respecter la charte de la communauté. Les vidéos inappropriées sont supprimées par l\'équipe Lite Foil.</div>'
+    // 12/11 (demande de Cédric) : écran de publication façon TikTok : aperçu de la vidéo à droite de la légende,
+    // hashtags en un geste, activité en ligne de réglage, bouton Publier au-dessus de la barre du téléphone.
+    o.innerHTML='<div class="gcard vu-tt"><div class="gc-head"><button class="gc-x" id="vuClose" aria-label="Fermer">✕</button><b>Nouvelle publication</b><span></span></div><div class="gc-body ev-form">'
+      +'<div class="vu-top"><div class="vu-capw"><textarea id="vuCap" maxlength="150" rows="5" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Décris ta session… Ajoute des #hashtags"></textarea><div class="vu-cnt" id="vuCnt">0/150</div></div>'
+      +'<div class="vu-pick" id="vuPick"><span class="evp-ic">🎬</span>Choisir<small>'+VID_MAX_S+' s max</small></div></div><input id="vuFile" type="file" accept="video/*" hidden>'
+      +'<div class="vu-tags" id="vuTags">'+["#efoil","#litefoil","#wingfoil","#foil","#session","#sunset"].map(function(t){ return '<button type="button" data-t="'+t+'">'+t+'</button>'; }).join("")+'</div>'
+      +'<div class="vu-trim" id="vuTrim" hidden><video id="vuPrev" playsinline muted preload="metadata"></video><div class="vu-trim-l"><b>Choisis l\'extrait de '+VID_MAX_S+' s</b><span id="vuTrimLbl"></span></div><input type="range" id="vuStart" min="0" max="0" step="0.5" value="0"></div>'
+      +'<label class="vu-line"><span class="vu-ico">🏄</span><span class="vu-lab">Activité</span><select id="vuTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+CHANS[k]+'</option>'; }).join("")+'</select></label>'
+      +'<div class="vu-line vu-static"><span class="vu-ico">🌍</span><span class="vu-lab">Qui peut voir</span><span class="vu-val">Toute la communauté</span></div>'
+      +'<div class="vu-note">En publiant, tu confirmes être l\'auteur de la vidéo et respecter la charte de la communauté. Les vidéos inappropriées sont supprimées par l\'équipe Lite Foil.</div>'
       +'<div class="vu-prog" id="vuProg" hidden><i></i></div><div class="ev-err" id="vuErr" hidden></div>'
-      +'</div><div class="gc-foot"><button class="btn-ghost2" id="vuCancel">Annuler</button><button class="btn-main" id="vuGo" disabled>Publier</button></div></div>';
+      +'</div><div class="gc-foot"><button class="btn-ghost2" id="vuCancel">Annuler</button><button class="btn-main vu-go" id="vuGo" disabled><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>Publier</button></div></div>';
+    var cap=$("vuCap"), cnt=function(){ $("vuCnt").textContent=cap.value.length+"/150"; }; cap.addEventListener("input", cnt);
+    $("vuTags").querySelectorAll("[data-t]").forEach(function(b){ b.addEventListener("click", function(){ var t=b.dataset.t; if(cap.value.indexOf(t)>=0) return; var v=cap.value.replace(/\s+$/,""); var nv=(v?v+" ":"")+t+" "; if(nv.length<=150){ cap.value=nv; cnt(); b.classList.add("on"); } }); });
     var err=function(s){ var e=$("vuErr"); e.textContent=s; e.hidden=!s; };
     $("vuClose").addEventListener("click", closeOverlay); $("vuCancel").addEventListener("click", closeOverlay);
     $("vuPick").addEventListener("click", function(){ $("vuFile").click(); });
@@ -5165,9 +5238,9 @@
     function showPicked(m,f){ var mb=Math.round(f.size/1048576*10)/10, info=(m.dur?Math.round(m.dur)+" s · ":"")+mb+" Mo";
       $("vuPick").innerHTML=(m.thumb?'<img src="'+m.thumb+'" alt="">':'')+'<span class="vu-ok">✓ '+info+(needTrim?' · extrait de '+VID_MAX_S+' s':(needCompress?' · sera compressée':''))+'</span>'; $("vuPick").classList.add("has"); }
     $("vuFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; err(""); picked=null; $("vuGo").disabled=true; $("vuTrim").hidden=true;
-      $("vuPick").innerHTML='<span class="evp-ic">⏳</span>Lecture de la vidéo…';
+      $("vuPick").innerHTML='<span class="evp-ic">⏳</span>Lecture…';
       videoThumb(f).then(function(m){ var tooLong = m.dur && m.dur > VID_MAX_S+0.9, heavy = f.size > VID_COMPRESS_MB*1048576;
-        if((tooLong || f.size > VID_MAX_MB*1048576) && !canTranscode()){ $("vuPick").innerHTML='<span class="evp-ic">🎬</span>Choisir une autre vidéo'; err(tooLong ? ("Vidéo trop longue ("+Math.round(m.dur)+" s) et ce téléphone ne sait pas la couper : maximum "+VID_MAX_S+" secondes.") : ("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo), maximum "+VID_MAX_MB+" Mo.")); return; }
+        if((tooLong || f.size > VID_MAX_MB*1048576) && !canTranscode()){ $("vuPick").innerHTML='<span class="evp-ic">🎬</span>Choisir'; err(tooLong ? ("Vidéo trop longue ("+Math.round(m.dur)+" s) et ce téléphone ne sait pas la couper : maximum "+VID_MAX_S+" secondes.") : ("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo), maximum "+VID_MAX_MB+" Mo.")); return; }
         needTrim=!!tooLong; needCompress=!tooLong && heavy && canTranscode(); picked=f; meta=m; trimStart=0; showPicked(m,f); $("vuGo").disabled=false;
         if(needTrim){ var tr=$("vuTrim"), pv=$("vuPrev"), sl=$("vuStart"); if(prevUrl) URL.revokeObjectURL(prevUrl); prevUrl=URL.createObjectURL(f); pv.src=prevUrl; tr.hidden=false;
           sl.max=Math.max(0, Math.floor((m.dur-VID_MAX_S)*2)/2); sl.value=0;
@@ -5312,7 +5385,7 @@
         +'<div class="ev-2"><label>Date<input id="evDate" type="date" min="'+minD+'" value="'+dflt+'"></label><label>Heure<input id="evTime" type="time" value="10:00"></label></div>'
         +'<label>Lieu / spot<input id="evPlace" maxlength="80" placeholder="Ex. : Plage sud, Port-Barcarès"></label>'
         +'<label>Places (optionnel)<input id="evMax" type="number" min="2" max="500" inputmode="numeric" placeholder="Illimité"></label>'
-        +'<label>Description (optionnel)<textarea id="evDesc" maxlength="400" placeholder="Niveau, matériel, point de rendez-vous…"></textarea></label>'
+        +'<label>Description (optionnel)<textarea id="evDesc" maxlength="400" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Niveau, matériel, point de rendez-vous…"></textarea></label>'
         +'<div class="gc-count">L\'événement sera annoncé dans '+where+' et tu seras inscrit automatiquement.</div>'
         +'<div class="ev-err" id="evErr" hidden></div>'
       +'</div>'
@@ -5982,7 +6055,34 @@
     inp.addEventListener("input", function(){ clearTimeout(tmr); tmr=setTimeout(run,180); });
     run(); setTimeout(function(){ try{ inp.focus(); }catch(e){} },80); }
   // profil d'un autre rider
+  // ---------- 12/11 (demande de Cédric) : « Vues du profil » façon TikTok ----------
+  // Réglage à activer soi-même (comme TikTok) : quand il est activé, ma visite est notée sur le profil que je
+  // consulte, et je vois qui a consulté le mien ces 30 derniers jours. Désactivé : rien n'est noté ni affiché.
+  let pvOn=false; try{ pvOn=localStorage.getItem("lf.comm.pviews")==="1"; }catch(e){}
+  let pvSeen=0; try{ pvSeen=+localStorage.getItem("lf.comm.pvseen")||0; }catch(e){}
+  let pvMap={}, pvUnsub=null; const PV_DAYS=30;
+  function pvList(){ var lim=Date.now()-PV_DAYS*86400000; return Object.keys(pvMap).filter(function(u){ var v=pvMap[u]; return v && +v.t>lim && !blocked.has(u) && u!==me.uid; })
+      .map(function(u){ return {uid:u, t:+pvMap[u].t, ps:pvMap[u].pseudo}; }).sort(function(a,b){ return b.t-a.t; }); }
+  function pvBadge(){ var n=$("pfViewsN"); if(!n) return; var k=pvOn ? pvList().filter(function(v){ return v.t>pvSeen; }).length : 0; n.hidden=!k; n.textContent=k>99?"99+":String(k); }
+  function pvWatch(){ if(pvUnsub){ try{ pvUnsub(); }catch(e){} pvUnsub=null; } pvMap={}; if(pvOn && backend && backend.watchProfileViews) pvUnsub=backend.watchProfileViews(function(m){ pvMap=m||{}; pvBadge(); var l=$("pvList"); if(l) pvRender(); }); pvBadge(); }
+  function pvAgo(t){ var s=(Date.now()-t)/1000; if(s<3600) return "il y a "+Math.max(1,Math.round(s/60))+" min"; if(s<86400) return "il y a "+Math.round(s/3600)+" h"; var d=Math.round(s/86400); return "il y a "+d+" j"; }
+  function pvRender(){ var box=$("pvBody"); if(!box) return;
+    if(!pvOn){ box.innerHTML='<div class="pv-hero"><div class="ic">👁</div><h3>Vois qui a consulté ton profil</h3><p>Active l\'historique des vues du profil pour voir les riders qui ont consulté ton profil ces '+PV_DAYS+' derniers jours.<br><br>En l\'activant, les riders qui l\'ont aussi activé pourront voir que tu as consulté leur profil. Tu peux le désactiver à tout moment.</p></div><button class="btn-main" id="pvOnBtn" style="width:100%;margin-top:14px;padding:14px">Activer</button>';
+      $("pvOnBtn").addEventListener("click", function(){ pvSet(true); }); return; }
+    var l=pvList();
+    box.innerHTML='<label class="pv-sw"><span>Historique des vues du profil<small>Visible seulement des riders qui l\'ont aussi activé</small></span><input type="checkbox" class="lfo-tog" id="pvTog" checked></label>'
+      +'<div class="pv-count">'+(l.length ? l.length+" rider"+(l.length>1?"s ont":" a")+" consulté ton profil ces "+PV_DAYS+" derniers jours" : "")+'</div>'
+      +'<div id="pvList">'+(l.length ? l.map(function(v){ return '<button class="pv-row'+(v.t>pvSeen?" new":"")+'" data-up="'+esc(v.uid)+'"><span class="pv-av" style="background:'+avatarColor(v.uid)+'">'+avHtml(v.uid)+'</span><span style="flex:1;min-width:0"><b>'+esc(profileMap[v.uid]&&profileMap[v.uid].pseudo||v.ps||"Rider")+'</b><small>'+pvAgo(v.t)+'</small></span></button>'; }).join("")
+        : '<div class="comm-empty" style="margin-top:18px">Personne pour l\'instant.<br>Partage tes sessions et tes vidéos pour te faire connaître 🤙</div>')+'</div>';
+    $("pvTog").addEventListener("change", function(){ if(!this.checked) pvSet(false); });
+    box.querySelectorAll("[data-up]").forEach(function(b){ b.addEventListener("click", function(){ openUserProfile(b.dataset.up); }); }); }
+  function pvSet(on){ pvOn=!!on; try{ localStorage.setItem("lf.comm.pviews", on?"1":"0"); }catch(e){} if(!on && backend && backend.clearProfileViews) backend.clearProfileViews().catch(function(){}); pvWatch(); pvRender(); }
+  function openProfileViews(){ if(!profileReady()){ askProfile(); return; } var g=gOverlay(); g.hidden=false;
+    g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="pvClose">✕</button><b>Vues du profil</b><span></span></div><div class="gc-body" id="pvBody"></div></div>';
+    $("pvClose").addEventListener("click", function(){ closeOverlay(); }); pvRender();
+    pvSeen=Date.now(); try{ localStorage.setItem("lf.comm.pvseen", String(pvSeen)); }catch(e){} setTimeout(pvBadge, 1500); }
   function openUserProfile(uid){ if(!uid) return; if(uid===me.uid){ closeOverlay(); showTab("profil"); return; }
+    if(pvOn && profileReady() && backend && backend.recordProfileView) backend.recordProfileView(uid).catch(function(){});
     var g=gOverlay(); g.hidden=false; var p=profileMap[uid]||{}, tab="vid", sess=null, nFr="…";
     var vids=videos.filter(function(v){ return v && v.uid===uid; });
     var draw=function(){
@@ -6334,6 +6434,7 @@
   var _pfe=$("pfEdit"); if(_pfe) _pfe.addEventListener("click", function(){ setVerifNote(""); openProfileSheet(); });
   var _pfc=$("pfCard"); if(_pfc) _pfc.addEventListener("click", function(){ openRiderCard(me.uid); });
   var _pff=$("pfFind"); if(_pff) _pff.addEventListener("click", openFriendSearch);
+  var _pfv=$("pfViews"); if(_pfv) _pfv.addEventListener("click", openProfileViews);
   var _cms=$("cmSearch"); if(_cms) _cms.addEventListener("click", openFriendSearch);
   var _cme=$("cmEvents"); if(_cme) _cme.addEventListener("click", function(){ var b=document.querySelector('#chatSeg [data-ch="events"]'); if(b) b.click(); var cc=$("chatCard"); if(cc) try{ cc.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){} });
   document.querySelectorAll("#tab-profil [data-pt]").forEach(function(b){ b.addEventListener("click", function(){ pfTab=b.dataset.pt; renderProfil(); }); });
@@ -6498,7 +6599,7 @@
   (function(){ var box=$("chatEmojis"); if(!box) return; box.innerHTML=EMOJIS.map(function(e){return '<button type="button">'+e+'</button>';}).join(""); box.querySelectorAll("button").forEach(function(b){ b.addEventListener("click", function(){ var i=$("chatInput"); if(i){ i.value+=b.textContent; i.focus(); } }); }); })();
   var _em=$("chatEmoji"); if(_em) _em.addEventListener("click", function(){ var p=$("chatEmojis"); if(p) p.hidden=!p.hidden; });
   $("chatSend").addEventListener("click", doSend);
-  $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); doSend(); } });
+  $("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter"&&!e.isComposing&&e.keyCode!==229){ e.preventDefault(); doSend(); } });
   var typingSentAt=0, typingIdle=null;
   $("chatInput").addEventListener("input", function(){ if(!profileReady()||!charterOk||!backend||!backend.setTyping) return; var now=Date.now(); if(now-typingSentAt>2500){ typingSentAt=now; backend.setTyping(currentChannel()); } if(typingIdle) clearTimeout(typingIdle); typingIdle=setTimeout(function(){ if(backend&&backend.clearTyping) backend.clearTyping(); typingSentAt=0; },3000); });
   $("commRecenter").addEventListener("click", commRecenter);
@@ -6790,6 +6891,7 @@
     setTimeout(publishRatings, 4000);
     if(backend.watchFriends) backend.watchFriends(onFriends);
     if(backend.watchFriendReqs) backend.watchFriendReqs(onFriendReqs);
+    pvWatch();
     var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(0); });
     var _vp=$("vidPost"); if(_vp) _vp.addEventListener("click", openVideoUpload);
     // session expirée (mot de passe changé…) : on propose de se reconnecter
