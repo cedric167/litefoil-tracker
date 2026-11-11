@@ -4192,7 +4192,7 @@
         const u1=db.onChildAdded(q, s=>{ if(!(s.key in map)) order.push(s.key); var v=s.val()||{}; v.id=s.key; map[s.key]=v; flush(); });
         const u2=db.onChildChanged(q, s=>{ var v=s.val()||{}; v.id=s.key; map[s.key]=v; flush(); });
         const u3=db.onChildRemoved(q, s=>{ if(s.key in map){ delete map[s.key]; const i=order.indexOf(s.key); if(i>=0) order.splice(i,1); flush(); } });
-        return ()=>{ try{u1&&u1();u2&&u2();u3&&u3();}catch(e){} }; },
+        return ()=>{ if(timer){ clearTimeout(timer); timer=null; } try{u1&&u1();u2&&u2();u3&&u3();}catch(e){} }; },
       addReaction(ch,msgId,emoji){ if(!msgId) return Promise.resolve(); const base = pathFor(ch); const rpath = base+"/"+msgId+"/reactions/"+uid; return emoji ? db.set(db.ref(d,rpath),emoji) : db.remove(db.ref(d,rpath)); },
       deleteMessage(ch,msgId){ if(!msgId) return Promise.resolve(); const base = pathFor(ch); return db.remove(db.ref(d,base+"/"+msgId)); },
       setTyping(ch){ return db.set(db.ref(d,"typing/"+uid),{ch:ch,pseudo:me.pseudo,t:db.serverTimestamp()}); },
@@ -4569,7 +4569,11 @@
   // ---------- chat ----------
   function currentChannel(){ if(chatMode==="group" && curGroup) return "group:"+curGroup.id; if(chatMode==="evchat" && curEvent) return "ev:"+curEvent.id; return (chatMode==="dm" && dmPeer) ? "dm:"+pairKey(me.uid,dmPeer.uid) : "salon"; }
   function subscribeChat(){ chatUserUp=false; if(chatUnsub){ chatUnsub(); chatUnsub=null; } if(!backend) return;
-    if((chatMode==="dm" && dmPeer) || (chatMode==="group" && curGroup) || (chatMode==="evchat" && curEvent)){ chatUnsub = backend.watchMessages(currentChannel(), m=>{ curMsgs=m; renderChat(); markOpenConvoRead(); }); }
+    if((chatMode==="dm" && dmPeer) || (chatMode==="group" && curGroup) || (chatMode==="evchat" && curEvent)){
+      // 12/11 : on vide d'abord l'écran (une conversation encore vide n'envoie aucun message : sans ça,
+      // la conversation précédente restait affichée) et on ignore les réponses d'une ancienne conversation
+      var ch=currentChannel(); curMsgs=[]; renderChat();
+      chatUnsub = backend.watchMessages(ch, m=>{ if(currentChannel()!==ch) return; curMsgs=m; renderChat(); markOpenConvoRead(); }); }
     else { renderChat(); } }
   // abonnement permanent au salon (toutes disciplines) : alimente l'affichage ET les pastilles non-lus
   function subscribeSalon(){ if(!backend || salonUnsub) return;
