@@ -422,3 +422,73 @@ exports.videoCleanup = onValueDeleted({ ref: "/videos/{vid}", instance: DB_INSTA
   if (!v.path || !/^videos\//.test(v.path)) return;
   try { await getStorage().bucket(VIDEO_BUCKET).file(v.path).delete(); } catch (e) { console.warn("videoCleanup :", e.message); }
 });
+
+/* ===================== Vidéos fluides (11/11) =====================
+ * Les vidéos publiées arrivent telles que filmées : 4K, 60 i/s, HEVC (iPhone), 20 à 40 Mo,
+ * parfois avec l'index du fichier à la fin. Sur beaucoup d'Android, elles démarrent lentement,
+ * saccadent, ou ne se lisent pas du tout. Chaque vidéo est donc réencodée au format des
+ * applis de vidéos courtes : H.264 720p, 30 i/s, environ 2,5 Mbit/s, son AAC, index au début
+ * (« faststart » : la lecture démarre dès les premiers octets). La fiche /videos/{vid} pointe
+ * ensuite vers cette version ; l'original est supprimé pour ne pas payer deux fois le stockage.
+ *  - videoOptimize : à chaque nouvelle vidéo.
+ *  - videoOptimizeBacklog : toutes les heures, rattrape les vidéos déjà en ligne et les échecs.
+ */
+const { execFile } = require("child_process");
+const os = require("os");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
+const ffmpegPath = require("ffmpeg-static");
+const VIDEO_OPTS = { memory: "2GiB", cpu: 2, timeoutSeconds: 540 };
+
+function runFfmpeg(args) {
+  return new Promise((resolve, reject) => {
+    execFile(ffmpegPath, args, { maxBuffer: 1 << 24 }, (err, stdout, stderr) => err ? reject(new Error(String(stderr || err.message).slice(-600))) : resolve());
+  });
+}
+// Arguments ffmpeg (exportés pour les tester en local avec le même réglage).
+function ffmpegArgs(src, dst) {
+  return ["-y", "-i", src, "-map", "0:v:0", "-map", "0:a:0?",
+    "-vf", "scale='if(gte(iw,ih),min(1280,iw),-2)':'if(gte(iw,ih),-2,min(1280,ih))',fps=30,format=yuv420p",
+    "-c:v", "libx264", "-profile:v", "main", "-level", "4.0", "-preset", "veryfast", "-crf", "25",
+    "-maxrate", "2800k", "-bufsize", "5600k", "-g", "60",
+    "-c:a", "aac", "-b:a", "96k", "-ac", "2",
+    "-movflags", "+faststart", "-t", "65", dst];
+}
+async function optimizeVideo(vid, v) {
+  const db = getDatabase();
+  const ref = db.ref("/videos/" + vid);
+  if (!v || !v.path || !/^videos\//.test(v.path) || v.opt === 1) return;
+  if (/_lf\.mp4$/.test(v.path)) { await ref.update({ opt: 1 }); return; }
+  const bucket = getStorage().bucket(VIDEO_BUCKET);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "lfv-"));
+  const src = path.join(tmp, "src"), dst = path.join(tmp, "out.mp4");
+  try {
+    await bucket.file(v.path).download({ destination: src });
+    await runFfmpeg(ffmpegArgs(src, dst));
+    const newPath = v.path.replace(/\.[^./]+$/, "") + "_lf.mp4";
+    const token = crypto.randomUUID();
+    await bucket.upload(dst, { destination: newPath, metadata: { contentType: "video/mp4", cacheControl: "public, max-age=31536000", metadata: { firebaseStorageDownloadTokens: token } } });
+    const url = "https://firebasestorage.googleapis.com/v0/b/" + VIDEO_BUCKET + "/o/" + encodeURIComponent(newPath) + "?alt=media&token=" + token;
+    // la vidéo a pu être supprimée pendant le traitement : on ne recrée pas sa fiche
+    const still = await ref.child("uid").get();
+    if (!still.exists()) { await bucket.file(newPath).delete().catch(() => {}); return; }
+    await ref.update({ url, path: newPath, opt: 1, optSize: fs.statSync(dst).size });
+    await bucket.file(v.path).delete().catch(() => {});
+    console.log("vidéo optimisée", vid, v.path, "->", newPath);
+  } catch (e) {
+    console.warn("optimizeVideo", vid, e.message);
+    await ref.update({ optTries: (+v.optTries || 0) + 1 }).catch(() => {});
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+}
+exports.videoOptimize = onValueCreated({ ref: "/videos/{vid}", instance: DB_INSTANCE, ...VIDEO_OPTS }, async (event) => {
+  await optimizeVideo(event.params.vid, event.data.val());
+});
+exports.videoOptimizeBacklog = onSchedule({ schedule: "every 60 minutes", region: "europe-west1", ...VIDEO_OPTS }, async () => {
+  const snap = await getDatabase().ref("/videos").get();
+  const todo = [];
+  snap.forEach((c) => { const v = c.val(); if (v && v.path && v.opt !== 1 && (+v.optTries || 0) < 3) todo.push([c.key, v]); });
+  for (const [vid, v] of todo.slice(0, 6)) await optimizeVideo(vid, v);
+});

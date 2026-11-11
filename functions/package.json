@@ -1,11 +1,14 @@
 {
   "name": "litefoil-communaute-functions",
-  "description": "Notifications push du chat Communauté Lite Foil",
+  "description": "Notifications push du chat Communaut\u00e9 Lite Foil",
   "main": "index.js",
-  "engines": { "node": "22" },
+  "engines": {
+    "node": "22"
+  },
   "dependencies": {
     "firebase-admin": "^12.6.0",
-    "firebase-functions": "^6.1.0"
+    "firebase-functions": "^6.1.0",
+    "ffmpeg-static": "^5.2.0"
   },
   "private": true
 }
