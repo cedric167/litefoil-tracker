@@ -6158,5 +6158,21 @@
  "Plus": {
   "en": "More",
   "es": "Más"
+ },
+ "🔒 Visible par toi seul": {
+  "en": "🔒 Only visible to you",
+  "es": "🔒 Solo visible para ti"
+ },
+ "Pas encore de favori.": {
+  "en": "No favorites yet.",
+  "es": "Aún no hay favoritos."
+ },
+ "Dans le Swip, appuie sur le marque-page pour garder une vidéo ici.": {
+  "en": "In Swip, tap the bookmark to keep a video here.",
+  "es": "En Swip, toca el marcador para guardar un vídeo aquí."
+ },
+ "Ouvrir le Swip": {
+  "en": "Open Swip",
+  "es": "Abrir Swip"
  }
 }

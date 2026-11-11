@@ -359,6 +359,8 @@
   .pf-rq button{ border:0; border-radius:9px; padding:7px 10px; font-weight:700; font-size:13px; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; } .pf-rq button.no{ background:#e3e8ec; color:#3d4a52; }
   .pf-tabs{ display:flex; border-top:1px solid var(--line); margin:0 -16px; } .pf-tabs button{ flex:1; border:0; background:none; padding:11px 0; font-weight:700; font-size:14px; font-family:inherit; color:var(--muted); cursor:pointer; border-top:2px solid transparent; margin-top:-1px; }
   .pf-tabs button.on{ color:var(--ink,#0b0d10); border-top-color:var(--ink,#0b0d10); }
+  .pf-tabs button{ display:flex; align-items:center; justify-content:center; gap:4px; border-radius:0 !important; } .pf-favic{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round; } .pf-tabs button.on .pf-favic{ fill:currentColor; }
+  .pf-favnote{ grid-column:1/-1; font-size:12.5px; color:var(--muted); font-weight:600; padding:2px 2px 6px; }
   .pf-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin:0 -16px; }
   .pf-grid .comm-empty{ grid-column:1/-1; padding:28px 16px; }
   .pf-sess{ position:relative; aspect-ratio:1; border:0; padding:0; border-radius:0; box-shadow:none; min-height:0; width:100%; background:linear-gradient(160deg,#0f6f8a,#0b3a55); color:#fff; cursor:pointer; font-family:inherit; overflow:hidden; }
@@ -1810,6 +1812,7 @@
     <div class="pf-reqs" id="pfReqs" hidden></div>
     <div class="pf-tabs" id="pfTabs">
       <button type="button" data-pt="vid" class="on">Vidéos</button>
+      <button type="button" data-pt="fav" aria-label="Favoris"><svg class="pf-favic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12a1 1 0 0 1 1 1v16l-7-4.6L5 20.5v-16a1 1 0 0 1 1-1z"/></svg>Favoris</button>
       <button type="button" data-pt="sess">Sessions</button>
       <button type="button" data-pt="fr">Amis</button>
       <button type="button" data-pt="pal">🏆</button>
@@ -5359,7 +5362,7 @@
       else if(a==="com") openVideoComments(v);
       else if(a==="share") shareVideo(v);
       else if(a==="fav"){ var m=vfFavs(), on=!m[v.id]; if(on) m[v.id]=Date.now(); else delete m[v.id]; try{ localStorage.setItem("lf.vf.fav", JSON.stringify(m)); }catch(e){}
-        b.classList.toggle("on",on); b.querySelector("b").textContent=on?"Enregistré":"Favoris"; try{ navigator.vibrate&&navigator.vibrate(8); }catch(e){} vfToast(on?"Ajoutée à tes favoris":"Retirée des favoris"); }
+        b.classList.toggle("on",on); b.querySelector("b").textContent=on?"Enregistré":"Favoris"; try{ navigator.vibrate&&navigator.vibrate(8); }catch(e){} vfToast(on?"Ajoutée à tes favoris":"Retirée des favoris"); try{ renderProfil(); }catch(e){} }
       else if(a==="more") videoMenu(v);
       else if(a==="profile"){ if(v.uid!==me.uid){ closeFeed(); var pr=profileMap[v.uid]||{}; openSheet(v.uid, pr.pseudo||v.pseudo, pr.av||v.av, pr.bio); } } }); }); }
   function vfToast(t){ var vf=$("vf"); if(!vf) return; var d=document.createElement("div"); d.className="vf-toast"; d.textContent=t; vf.appendChild(d); setTimeout(function(){ d.classList.add("out"); },1400); setTimeout(function(){ d.remove(); },1800); }
@@ -6278,6 +6281,10 @@
       g.innerHTML = list.length ? list.map(function(o,i){ return sessTile(o,i,true); }).join("") : '<div class="comm-empty">Pas encore de session.<br>Lance un enregistrement dans l\'onglet Tracking 📍</div>';
       g.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.si; openSessDetail(list[i], true, sess[i]); }); }); }
     else if(pfTab==="pal"){ g.innerHTML = (isOfficial(me.uid)?reviewHtml():"")+palmaresHtml(me.uid, true); bindPalmares(g); bindReview(g); }
+    else if(pfTab==="fav"){ // 12/11 : vidéos enregistrées avec le bouton Favoris du Swip (gardées sur ce téléphone, visibles par moi seul)
+      var fm=vfFavs(), fv=vidVisible().filter(function(v){ return fm[v.id]; }).sort(function(a,b){ return fm[b.id]-fm[a.id]; });
+      g.innerHTML = (fv.length ? '<div class="pf-favnote">🔒 Visible par toi seul</div>'+vidTiles(fv) : '<div class="comm-empty">Pas encore de favori.<br>Dans le Swip, appuie sur le marque-page pour garder une vidéo ici.<br><button class="primary" id="pfGoSwip" style="margin-top:10px">Ouvrir le Swip</button></div>');
+      bindVidTiles(g); var gs=$("pfGoSwip"); if(gs) gs.addEventListener("click", function(){ var t=document.querySelector('#bnav [data-nav="videos"]'); if(t) t.click(); }); }
     else { g.innerHTML = fr.length ? friendRows(fr) : '<div class="comm-empty">Pas encore d\'amis.<br><button class="primary" id="pfFind2" style="margin-top:10px">Rechercher des amis</button></div>'; bindFriendRows(g); var f2=$("pfFind2"); if(f2) f2.addEventListener("click", openFriendSearch); }
   }
   window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
