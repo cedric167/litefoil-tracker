@@ -5666,5 +5666,349 @@
  "● en cours": {
   "en": "● in progress",
   "es": "● en curso"
+ },
+ "L'appli des riders.": {
+  "en": "The riders' app.",
+  "es": "La app de los riders."
+ },
+ "Créer mon compte": {
+  "en": "Create my account",
+  "es": "Crear mi cuenta"
+ },
+ "J'ai déjà un compte": {
+  "en": "I already have an account",
+  "es": "Ya tengo una cuenta"
+ },
+ "Passer": {
+  "en": "Skip",
+  "es": "Saltar"
+ },
+ "MÉTÉO · COMMUNAUTÉ": {
+  "en": "WEATHER · COMMUNITY",
+  "es": "METEO · COMUNIDAD"
+ },
+ "Lis la mer, ride avec les autres.": {
+  "en": "Read the sea, ride with others.",
+  "es": "Lee el mar, navega con los demás."
+ },
+ "Vent, houle et prévisions de ton spot. Tchat, sorties et riders près de toi.": {
+  "en": "Wind, swell and forecasts for your spot. Chat, sessions and riders near you.",
+  "es": "Viento, oleaje y previsiones de tu spot. Chat, salidas y riders cerca de ti."
+ },
+ "TRACKING · SURVOL 3D": {
+  "en": "TRACKING · 3D FLYOVER",
+  "es": "TRACKING · VUELO 3D"
+ },
+ "Chaque sortie enregistrée, à revivre en 3D.": {
+  "en": "Every session recorded, to relive in 3D.",
+  "es": "Cada salida grabada, para revivirla en 3D."
+ },
+ "Vitesse, distance, trace GPS, même téléphone en poche.": {
+  "en": "Speed, distance, GPS track, even with your phone in your pocket.",
+  "es": "Velocidad, distancia, trazado GPS, incluso con el móvil en el bolsillo."
+ },
+ "TOI": {
+  "en": "YOU",
+  "es": "TÚ"
+ },
+ "VIDÉOS · CARTES RIDER": {
+  "en": "VIDEOS · RIDER CARDS",
+  "es": "VÍDEOS · CARTAS RIDER"
+ },
+ "Ta carte monte avec toi.": {
+  "en": "Your card levels up with you.",
+  "es": "Tu carta sube contigo."
+ },
+ "Publie tes sessions, gagne des niveaux : Bleu, Bronze, Argent, Or, Icône.": {
+  "en": "Post your sessions, earn levels: Blue, Bronze, Silver, Gold, Icon.",
+  "es": "Publica tus sesiones, gana niveles: Azul, Bronce, Plata, Oro, Icono."
+ },
+ "Suivant": {
+  "en": "Next",
+  "es": "Siguiente"
+ },
+ "C'est parti": {
+  "en": "Let's go",
+  "es": "¡Vamos!"
+ },
+ "Crée ton compte": {
+  "en": "Create your account",
+  "es": "Crea tu cuenta"
+ },
+ "Pour enregistrer tes sorties et rejoindre la communauté Lite Foil.": {
+  "en": "To record your sessions and join the Lite Foil community.",
+  "es": "Para guardar tus salidas y unirte a la comunidad Lite Foil."
+ },
+ "Adresse e-mail": {
+  "en": "Email address",
+  "es": "Correo electrónico"
+ },
+ "J'accepte la": {
+  "en": "I accept the",
+  "es": "Acepto la"
+ },
+ "politique de confidentialité": {
+  "en": "privacy policy",
+  "es": "política de privacidad"
+ },
+ "et la charte de la communauté (respect des autres riders, pas de contenu choquant).": {
+  "en": "and the community charter (respect other riders, no offensive content).",
+  "es": "y las normas de la comunidad (respeto a los demás riders, sin contenido ofensivo)."
+ },
+ "Déjà un compte ?": {
+  "en": "Already have an account?",
+  "es": "¿Ya tienes una cuenta?"
+ },
+ "Vérifie ta boîte mail": {
+  "en": "Check your inbox",
+  "es": "Revisa tu correo"
+ },
+ "On a envoyé un lien de confirmation à": {
+  "en": "We sent a confirmation link to",
+  "es": "Hemos enviado un enlace de confirmación a"
+ },
+ ". Touche le lien dans le mail, puis reviens ici. Pense à regarder dans les spams.": {
+  "en": ". Tap the link in the email, then come back here. Check your spam folder too.",
+  "es": ". Toca el enlace del correo y vuelve aquí. Mira también en la carpeta de spam."
+ },
+ "En attente de confirmation… l'appli continue toute seule dès que c'est fait.": {
+  "en": "Waiting for confirmation… the app continues on its own as soon as it's done.",
+  "es": "Esperando la confirmación… la app sigue sola en cuanto esté hecho."
+ },
+ "J'ai confirmé": {
+  "en": "I've confirmed",
+  "es": "Ya he confirmado"
+ },
+ "Rien reçu ?": {
+  "en": "Nothing received?",
+  "es": "¿No has recibido nada?"
+ },
+ "Renvoyer l'e-mail": {
+  "en": "Resend the email",
+  "es": "Reenviar el correo"
+ },
+ "Changer d'adresse": {
+  "en": "Change address",
+  "es": "Cambiar de dirección"
+ },
+ "Bon retour !": {
+  "en": "Welcome back!",
+  "es": "¡Bienvenido de nuevo!"
+ },
+ "Connecte-toi pour retrouver tes sorties, ta carte et tes amis.": {
+  "en": "Sign in to get back your sessions, your card and your friends.",
+  "es": "Inicia sesión para recuperar tus salidas, tu carta y tus amigos."
+ },
+ "Mot de passe oublié ?": {
+  "en": "Forgot password?",
+  "es": "¿Has olvidado la contraseña?"
+ },
+ "Pas encore de compte ?": {
+  "en": "No account yet?",
+  "es": "¿Aún no tienes cuenta?"
+ },
+ "Créer un compte": {
+  "en": "Create an account",
+  "es": "Crear una cuenta"
+ },
+ "Ton profil rider": {
+  "en": "Your rider profile",
+  "es": "Tu perfil de rider"
+ },
+ "Ta photo apparaît sur ta carte rider et dans la communauté.": {
+  "en": "Your photo appears on your rider card and in the community.",
+  "es": "Tu foto aparece en tu carta de rider y en la comunidad."
+ },
+ "Pseudo": {
+  "en": "Username",
+  "es": "Nombre de usuario"
+ },
+ "Tes sports": {
+  "en": "Your sports",
+  "es": "Tus deportes"
+ },
+ "Ton niveau": {
+  "en": "Your level",
+  "es": "Tu nivel"
+ },
+ "Débutant": {
+  "en": "Beginner",
+  "es": "Principiante"
+ },
+ "Confirmé": {
+  "en": "Intermediate",
+  "es": "Intermedio"
+ },
+ "Expert": {
+  "en": "Expert",
+  "es": "Experto"
+ },
+ "+ Autres": {
+  "en": "+ More",
+  "es": "+ Otros"
+ },
+ "Continuer": {
+  "en": "Continue",
+  "es": "Continuar"
+ },
+ "Pour profiter de tout": {
+  "en": "To enjoy everything",
+  "es": "Para disfrutar de todo"
+ },
+ "Tu peux changer ces choix à tout moment dans les réglages du téléphone.": {
+  "en": "You can change these choices at any time in your phone settings.",
+  "es": "Puedes cambiar estas opciones en cualquier momento en los ajustes del móvil."
+ },
+ "Position": {
+  "en": "Location",
+  "es": "Ubicación"
+ },
+ "Météo de ton spot, riders près de toi, enregistrement de tes sorties.": {
+  "en": "Weather at your spot, riders near you, recording your sessions.",
+  "es": "Meteo de tu spot, riders cerca de ti, grabación de tus salidas."
+ },
+ "Notifications": {
+  "en": "Notifications",
+  "es": "Notificaciones"
+ },
+ "Messages, invitations aux sorties, défi de la semaine.": {
+  "en": "Messages, session invitations, weekly challenge.",
+  "es": "Mensajes, invitaciones a salidas, reto de la semana."
+ },
+ "Demandé seulement quand tu connectes ton tracker, ta télécommande ou ta batterie Lite Foil.": {
+  "en": "Only asked when you connect your Lite Foil tracker, remote or battery.",
+  "es": "Solo se pide cuando conectas tu tracker, tu mando o tu batería Lite Foil."
+ },
+ "Plus tard": {
+  "en": "Later",
+  "es": "Más tarde"
+ },
+ "Bienvenue,": {
+  "en": "Welcome,",
+  "es": "¡Bienvenido,"
+ },
+ "Ta carte rider est créée. Lance ta première sortie pour la faire monter de niveau.": {
+  "en": "Your rider card is ready. Start your first session to level it up.",
+  "es": "Tu carta de rider está creada. Haz tu primera salida para subir de nivel."
+ },
+ "Entrer dans l'appli": {
+  "en": "Enter the app",
+  "es": "Entrar en la app"
+ },
+ "Retour": {
+  "en": "Back",
+  "es": "Atrás"
+ },
+ "toi@exemple.fr": {
+  "en": "you@example.com",
+  "es": "tu@ejemplo.com"
+ },
+ "8 caractères minimum": {
+  "en": "8 characters minimum",
+  "es": "8 caracteres mínimo"
+ },
+ "Afficher": {
+  "en": "Show",
+  "es": "Mostrar"
+ },
+ "Ton mot de passe": {
+  "en": "Your password",
+  "es": "Tu contraseña"
+ },
+ "Choisir une photo": {
+  "en": "Choose a photo",
+  "es": "Elegir una foto"
+ },
+ "Ex. : LiteRider66": {
+  "en": "E.g. LiteRider66",
+  "es": "Ej.: LiteRider66"
+ },
+ "Pas encore confirmé : touche bien le lien dans le mail, puis réessaie.": {
+  "en": "Not confirmed yet: tap the link in the email, then try again.",
+  "es": "Aún no confirmado: toca el enlace del correo y vuelve a intentarlo."
+ },
+ "Pas de réseau : réessaie dans un instant.": {
+  "en": "No network: try again in a moment.",
+  "es": "Sin conexión: vuelve a intentarlo en un momento."
+ },
+ "Entre une adresse e-mail valide.": {
+  "en": "Enter a valid email address.",
+  "es": "Introduce un correo electrónico válido."
+ },
+ "Le mot de passe doit faire au moins 8 caractères.": {
+  "en": "The password must be at least 8 characters.",
+  "es": "La contraseña debe tener al menos 8 caracteres."
+ },
+ "Coche la case pour accepter la politique de confidentialité et la charte.": {
+  "en": "Tick the box to accept the privacy policy and the charter.",
+  "es": "Marca la casilla para aceptar la política de privacidad y las normas."
+ },
+ "Connexion au serveur en cours, réessaie dans un instant.": {
+  "en": "Connecting to the server, try again in a moment.",
+  "es": "Conectando con el servidor, vuelve a intentarlo en un momento."
+ },
+ "Création du compte…": {
+  "en": "Creating your account…",
+  "es": "Creando la cuenta…"
+ },
+ "Entre ton e-mail et ton mot de passe.": {
+  "en": "Enter your email and password.",
+  "es": "Introduce tu correo y tu contraseña."
+ },
+ "✅ Connecté, ton compte revient…": {
+  "en": "✅ Signed in, loading your account…",
+  "es": "✅ Conectado, cargando tu cuenta…"
+ },
+ "Entre d'abord l'adresse e-mail de ton compte.": {
+  "en": "First enter your account's email address.",
+  "es": "Primero introduce el correo de tu cuenta."
+ },
+ "📩 Mail envoyé : touche le lien (regarde aussi les spams), choisis ton nouveau mot de passe, puis reviens te connecter ici.": {
+  "en": "📩 Email sent: tap the link (check spam too), choose your new password, then come back and sign in here.",
+  "es": "📩 Correo enviado: toca el enlace (mira también en spam), elige tu nueva contraseña y vuelve a iniciar sesión aquí."
+ },
+ "Choisis un pseudo (2 à 24 caractères).": {
+  "en": "Choose a username (2 to 24 characters).",
+  "es": "Elige un nombre de usuario (de 2 a 24 caracteres)."
+ },
+ "Choisis au moins un sport.": {
+  "en": "Choose at least one sport.",
+  "es": "Elige al menos un deporte."
+ },
+ "Enregistrement…": {
+  "en": "Saving…",
+  "es": "Guardando…"
+ },
+ "Ce pseudo est déjà pris (ou réservé) : choisis-en un autre.": {
+  "en": "This username is already taken (or reserved): choose another one.",
+  "es": "Este nombre ya está cogido (o reservado): elige otro."
+ },
+ "📩 Nouveau mail envoyé.": {
+  "en": "📩 New email sent.",
+  "es": "📩 Nuevo correo enviado."
+ },
+ "Mot de passe trop faible : 8 caractères minimum.": {
+  "en": "Password too weak: 8 characters minimum.",
+  "es": "Contraseña demasiado débil: 8 caracteres mínimo."
+ },
+ "Pas de réseau : vérifie ta connexion et réessaie.": {
+  "en": "No network: check your connection and try again.",
+  "es": "Sin conexión: comprueba tu conexión y vuelve a intentarlo."
+ },
+ "✓ Pseudo disponible": {
+  "en": "✓ Username available",
+  "es": "✓ Nombre disponible"
+ },
+ "Impossible pour le moment, réessaie.": {
+  "en": "Not possible right now, try again.",
+  "es": "No es posible por ahora, vuelve a intentarlo."
+ },
+ "Me connecter": {
+  "en": "Sign in",
+  "es": "Iniciar sesión"
+ },
+ "Cette adresse a déjà un compte Lite Foil : touche « Me connecter ».": {
+  "en": "This address already has a Lite Foil account: tap “Sign in”.",
+  "es": "Esta dirección ya tiene una cuenta Lite Foil: toca «Iniciar sesión»."
  }
 }

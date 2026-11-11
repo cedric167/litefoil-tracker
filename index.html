@@ -6506,7 +6506,7 @@
   // reste connecté et ne revoit plus ces écrans. Sans connexion à Firebase (mode démo), pas de blocage.
   const LFO_FORCE = /[?&]onb=1\b/.test(location.search); // test : forcer le parcours
   // false : parcours visible seulement avec ?onb=1 (phase de test) ; true : obligatoire pour tous les clients
-  const LFO_ALL = false;
+  const LFO_ALL = true;
   let lfoDone = false; try{ lfoDone = localStorage.getItem("lf.onb.ok")==="1"; }catch(e){}
   let lfoVerifT = null, lfoSports = [], lfoLevel = "";
   const LFO_MAIN_SPORTS = ["efoil","wingfoil","surffoil","pumpfoil","kitesurf","windsurf","surf","sup","running","velo"];
@@ -6532,7 +6532,7 @@
       +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoSuPw" type="password" autocomplete="new-password" placeholder="8 caractères minimum"><button class="lfo-eye" type="button" data-eye="lfoSuPw" aria-label="Afficher">👁</button></div>'
       +'<label class="lfo-chk"><input type="checkbox" id="lfoSuCgu"><span>J\'accepte la <a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a> et la charte de la communauté (respect des autres riders, pas de contenu choquant).</span></label>'
       +'<div class="lfo-err" id="lfoSuErr"></div>'
-      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoSuGo">Créer mon compte</button><div class="lfo-small">Déjà un compte ? <button class="lfo-link" data-go="login">Se connecter</button></div></div></section>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoSuGo">Créer mon compte</button><div class="lfo-small">Déjà un compte ? <button class="lfo-link" data-go="login">Me connecter</button></div></div></section>'
     // 5. confirmer l'e-mail
     +'<section class="lfo-s" data-s="verify" hidden><div class="lfo-ico">📩</div><div class="lfo-h">Vérifie ta boîte mail</div>'
       +'<div class="lfo-sub">On a envoyé un lien de confirmation à <b id="lfoVfEmail" style="color:#0e1417"></b>. Touche le lien dans le mail, puis reviens ici. Pense à regarder dans les spams.</div>'
@@ -6546,7 +6546,7 @@
       +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoLiPw" type="password" autocomplete="current-password" placeholder="Ton mot de passe"><button class="lfo-eye" type="button" data-eye="lfoLiPw" aria-label="Afficher">👁</button></div>'
       +'<div style="text-align:right;margin-top:10px"><button class="lfo-link" id="lfoLiForgot">Mot de passe oublié ?</button></div>'
       +'<div class="lfo-err" id="lfoLiErr"></div>'
-      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoLiGo">Se connecter</button><div class="lfo-small">Pas encore de compte ? <button class="lfo-link" data-go="signup">Créer un compte</button></div></div></section>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoLiGo">Me connecter</button><div class="lfo-small">Pas encore de compte ? <button class="lfo-link" data-go="signup">Créer un compte</button></div></div></section>'
     // 7. profil rider
     +'<section class="lfo-s" data-s="profile" hidden><div class="lfo-steps"><i class="on"></i><i></i><i></i></div><div class="lfo-h" style="font-size:36px">Ton profil rider</div>'
       +'<div style="display:flex;align-items:center;gap:16px;margin-top:18px"><button class="lfo-av" id="lfoAv" type="button" aria-label="Choisir une photo"><img id="lfoAvImg" alt="" src="'+team+'"><span>📷</span></button><div class="lfo-sub" style="margin:0">Ta photo apparaît sur ta carte rider et dans la communauté.</div></div>'
@@ -6575,12 +6575,12 @@
     if(lfoVerifT && step!=="verify"){ clearInterval(lfoVerifT); lfoVerifT=null; }
     if(step==="verify"){ $("lfoVfEmail").textContent=me.email||(function(){ try{ return localStorage.getItem("lf.comm.email")||""; }catch(e){ return ""; } })(); lfoStartPoll(); }
     if(step==="profile") lfoFillProfile();
-    if(step==="welcome"){ $("lfoWTitle").textContent="Bienvenue,\n"+(me.pseudo||"rider")+" 🤙"; $("lfoWTitle").style.whiteSpace="pre-line"; if(me.av) $("lfoWAv").src=me.av; }
+    if(step==="welcome"){ $("lfoWTitle").innerHTML='<span>Bienvenue,</span><br><span data-no-i18n>'+esc(me.pseudo||"rider")+' 🤙</span>'; if(me.av) $("lfoWAv").src=me.av; }
     var f=o.querySelector('[data-s="'+step+'"] input.lfo-inp'); if(f && step!=="profile" && !f.value) setTimeout(function(){ try{ f.focus(); }catch(e){} },350); }
   function lfoHide(){ var o=$("lfOnb"); if(o){ o.hidden=true; var v=o.querySelector("video"); if(v) v.pause(); } document.body.style.overflow=""; if(lfoVerifT){ clearInterval(lfoVerifT); lfoVerifT=null; } }
   function lfoErr(id,t,ok){ var e=$(id); if(e){ e.textContent=t||""; e.className="lfo-err"+(ok?" ok":""); } }
   const LFO_MAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  function lfoAuthMsg(c){ return c==="auth/email-already-in-use"||c==="auth/credential-already-in-use" ? "Cette adresse a déjà un compte Lite Foil : touche « Se connecter »."
+  function lfoAuthMsg(c){ return c==="auth/email-already-in-use"||c==="auth/credential-already-in-use" ? "Cette adresse a déjà un compte Lite Foil : touche « Me connecter »."
     : c==="auth/weak-password" ? "Mot de passe trop faible : 8 caractères minimum." : c==="auth/invalid-email" ? "Adresse e-mail invalide."
     : c==="auth/too-many-requests" ? "Trop d'essais : réessaie dans quelques minutes." : c==="auth/network-request-failed" ? "Pas de réseau : vérifie ta connexion et réessaie."
     : (typeof loginErr==="function" ? loginErr(c) : "Impossible pour le moment, réessaie."); }
@@ -6618,7 +6618,7 @@
   function lfoForgot(){ var e=($("lfoLiEmail").value||"").trim();
     if(!LFO_MAIL.test(e)){ lfoErr("lfoLiErr","Entre d'abord l'adresse e-mail de ton compte."); return; }
     if(!backend || !backend.sendPasswordLink) return;
-    backend.sendPasswordLink(e).then(function(){ lfoErr("lfoLiErr","📩 Mail envoyé à "+e+" (regarde aussi les spams). Choisis ton nouveau mot de passe, puis reviens te connecter ici.",true); })
+    backend.sendPasswordLink(e).then(function(){ lfoErr("lfoLiErr","📩 Mail envoyé : touche le lien (regarde aussi les spams), choisis ton nouveau mot de passe, puis reviens te connecter ici.",true); })
       .catch(function(err){ lfoErr("lfoLiErr", lfoAuthMsg(err&&err.code)); }); }
   function lfoFillProfile(){ var pr=(profileMap&&profileMap[me.uid])||{}, ps=$("lfoPseudo"); if(ps && !ps.value) ps.value=me.pseudo||pr.pseudo||"";
     if(!me.av && pr.av){ try{ setAvatar(pr.av); }catch(e){ me.av=pr.av; } } if(me.av) $("lfoAvImg").src=me.av;
