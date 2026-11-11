@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "698343293796",
+    "firebase_url": "https://litefoil-communaute-222fd-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "litefoil-communaute-222fd",
+    "storage_bucket": "litefoil-communaute-222fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698343293796:android:69135975eddfe169e4f071",
+        "android_client_info": {
+          "package_name": "fr.litefoil.tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "698343293796-mhl9fk03fme5tsej729ilqcisdo5f10r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fr.litefoil.tracker",
+            "certificate_hash": "3704c1fb431156e00be03125b2233d33336faef4"
+          }
+        },
+        {
+          "client_id": "698343293796-q881fj1on749iess151k2fritkb1c4em.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBXaZqmiGDz5KAJpZdycIEcainEiKZUt8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "698343293796-q881fj1on749iess151k2fritkb1c4em.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "698343293796-kn5ik4n48guj7a8a6vgko8g0tviq7oub.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "fr.litefoil.tracker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>698343293796-kn5ik4n48guj7a8a6vgko8g0tviq7oub.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.698343293796-kn5ik4n48guj7a8a6vgko8g0tviq7oub</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCXL7mc2quFaJh8plWZPyk1xbHSdE64Pqo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>698343293796</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>fr.litefoil.tracker</string>
+	<key>PROJECT_ID</key>
+	<string>litefoil-communaute-222fd</string>
+	<key>STORAGE_BUCKET</key>
+	<string>litefoil-communaute-222fd.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:698343293796:ios:8319ce4bcea5d80be4f071</string>
+	<key>DATABASE_URL</key>
+	<string>https://litefoil-communaute-222fd-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>
