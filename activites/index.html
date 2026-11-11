@@ -254,7 +254,7 @@ input[type=file]{display:none}
     <div class="aname" id="flyName">—</div>
     <div class="stats">
       <div class="st"><div class="u">Vitesse</div><div class="v tnum"><span id="flySpeed">0</span><small> km/h</small></div></div>
-      <div class="st"><div class="u" id="flyAltU">Altitude</div><div class="v tnum"><span id="flyAlt">0</span><small> m</small></div></div>
+      <div class="st"><div class="u" id="flyAltU">Altitude</div><div class="v tnum"><span id="flyAlt">0</span><small id="flyAltSfx"> m</small></div></div>
       <div class="st"><div class="u">Distance</div><div class="v tnum"><span id="flyDist">0</span><small> km</small></div></div>
     </div>
   </div>
@@ -653,6 +653,7 @@ async function startFly(a){
   const ov=document.getElementById("flyover"); ov.classList.add("open");
   document.getElementById("flyName").textContent=a.name;
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
+  document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : " m";
   if(!flyMap){
     flyMap=new maplibregl.Map({container:"flyMap",style:mapStyle,attributionControl:false,interactive:true,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
   }
