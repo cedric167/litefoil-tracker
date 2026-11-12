@@ -1418,7 +1418,7 @@
   .onb-steps .n{ flex:0 0 22px; width:22px; height:22px; border-radius:50%; background:rgba(91,216,220,.18); color:var(--accent-ink); font-weight:700; font-size:12.5px; display:grid; place-items:center; margin-top:1px; }
   .comm-enable{ width:100%; margin-top:12px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
   .comm-enable svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .sheet{ position:fixed; inset:0; z-index:8500; background:rgba(8,12,14,.45); display:flex; align-items:center; justify-content:center; padding:14px; animation:sheetFade .22s ease; }
+  .sheet{ position:fixed; inset:0; z-index:10000; background:rgba(8,12,14,.45); display:flex; align-items:center; justify-content:center; padding:14px; animation:sheetFade .22s ease; }
   .sheet-card{ background:#fff; border-radius:22px; width:100%; max-width:420px; padding:10px 14px 16px; box-shadow:0 20px 60px rgba(0,0,0,.35); max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; animation:sheetUp .3s cubic-bezier(.22,.61,.36,1); }
   @keyframes sheetFade{ from{opacity:0;} to{opacity:1;} }
   @keyframes sheetUp{ from{opacity:0; transform:translateY(44px);} to{opacity:1; transform:none;} }
@@ -5165,7 +5165,7 @@
     box.querySelectorAll(".bubble[data-i]").forEach(b=> b.addEventListener("click", (ev)=>{ if(ev.target.closest("a,img,.tr-tog,.react-chip,.evc-go")) return; const m=arr[+b.dataset.i]; if(m) openMsgMenu(m); }));
     box.querySelectorAll(".tr-tog").forEach(a=> a.addEventListener("click", ()=>{ const h=a.dataset.h; if(transShowOrig.has(h)) transShowOrig.delete(h); else transShowOrig.add(h); renderChat(); }));
     box.querySelectorAll(".chat-img").forEach(im=> im.addEventListener("click", ()=>{ const u=im.dataset.full; try{ const w=window.open("","_blank"); if(w){ w.document.write('<title>Photo</title><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="'+u+'" style="max-width:100%;max-height:100vh"></body>'); } else { location.href=u; } }catch(e){} }));
-    box.querySelectorAll(".tapp").forEach(el=> el.addEventListener("click", ()=>{ const m=arr[+el.dataset.i]; if(m && m.uid!==me.uid) openSheet(m.uid,m.pseudo,m.av,m.bio); }));
+    box.querySelectorAll(".tapp").forEach(el=> el.addEventListener("click", ()=>{ const m=arr[+el.dataset.i]; if(m && m.uid!==me.uid){ if(m.uid===TEAM_UID) openSheet(m.uid,m.pseudo,m.av,m.bio); else openUserProfile(m.uid); } }));
     if(autoTrans){ for(const m of arr){ if(m.uid!==me.uid && m.text && translatable(m.text) && tcache[tl+"|"+m.text]===undefined) translateText(m.text).then(r=>{ if(r!==undefined) scheduleChatRerender(); }); } }
     chatToBottom(box);
   }
@@ -7053,7 +7053,7 @@
     }
   });
   $("chatBack").addEventListener("click", function(){ if(chatMode==="evchat"){ curEvent=null; showEventsList(); } else if(chatMode==="group") showGroupsList(); else if(chatMode==="dm") showDMList(); else closeDM(); });
-  var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="evchat" && curEvent) openEventDetail(curEvent.id); else if(chatMode==="dm" && dmPeer) openSheet(dmPeer.uid,dmPeer.pseudo,dmPeer.av,dmPeer.bio); });
+  var _ct=$("chatTitle"); if(_ct) _ct.addEventListener("click", function(){ if(chatMode==="group" && curGroup) openGroupInfo(); else if(chatMode==="evchat" && curEvent) openEventDetail(curEvent.id); else if(chatMode==="dm" && dmPeer) openUserProfile(dmPeer.uid); });
   var _mb=$("memBtn"); if(_mb) _mb.addEventListener("click", openMemberPicker);
   // ---------- 07/11 : cadrage d'une photo (glisser pour déplacer, pincer ou glissière pour zoomer) ----------
   // o.aspect = largeur/hauteur du cadre, o.round = cadre rond, o.outW = largeur de l'image produite. Renvoie un canvas (ou null si annulé).
