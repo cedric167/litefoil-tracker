@@ -46,6 +46,20 @@ public class LfTrackPlugin extends Plugin implements LfTrackService.Listener {
         super.handleOnDestroy();
     }
 
+    // Sortie en cours mais service arrêté (processus tué par le téléphone, redémarrage…) : on le relance
+    // dès que l'appli est de nouveau à l'écran, sinon la page afficherait « en cours » sans rien enregistrer.
+    private void ensureService() {
+        try {
+            if (LfTrackStore.isRunning(getContext()) && !LfTrackService.alive && hasFine()) LfTrackService.start(getContext());
+        } catch (Exception ignored) {}
+    }
+
+    @Override
+    protected void handleOnResume() {
+        super.handleOnResume();
+        ensureService();
+    }
+
     private boolean hasFine() {
         return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
@@ -104,6 +118,7 @@ public class LfTrackPlugin extends Plugin implements LfTrackService.Listener {
 
     @PluginMethod
     public void status(PluginCall call) {
+        ensureService();
         JSONObject m = LfTrackStore.readMeta(getContext());
         JSObject r = new JSObject();
         r.put("running", m != null && m.optBoolean("running", false));

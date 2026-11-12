@@ -42,6 +42,8 @@ public class LfTrackService extends Service implements LocationListener {
     }
 
     static volatile Listener listener;
+    // vrai tant que le service tourne dans ce processus (sert à le relancer si Android l'a tué)
+    static volatile boolean alive = false;
 
     private LocationManager lm;
     private PowerManager.WakeLock wakeLock;
@@ -78,6 +80,7 @@ public class LfTrackService extends Service implements LocationListener {
             stopSelf();
             return START_NOT_STICKY;
         }
+        alive = true;
         startLocation();
         return START_STICKY;
     }
@@ -245,6 +248,7 @@ public class LfTrackService extends Service implements LocationListener {
 
     @Override
     public void onDestroy() {
+        alive = false;
         release();
         super.onDestroy();
     }
