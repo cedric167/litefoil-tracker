@@ -24,6 +24,34 @@
           "functionId": "stlAuth",
           "region": "europe-west1"
         }
+      },
+      {
+        "source": "/v/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/u/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/t/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/a/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
       }
     ]
   },

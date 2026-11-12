@@ -6310,5 +6310,9 @@
  "Seule une zone d'environ 1 km est partagée, jamais ta position exacte.": {
   "en": "Only an area of about 1 km is shared, never your exact position.",
   "es": "Solo se comparte una zona de 1 km aprox., nunca tu posición exacta."
+ },
+ "Lien copié ✓ Colle-le où tu veux.": {
+  "en": "Link copied ✓ Paste it anywhere.",
+  "es": "Enlace copiado ✓ Pégalo donde quieras."
  }
 }

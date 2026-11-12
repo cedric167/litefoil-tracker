@@ -513,3 +513,107 @@ exports.videoOptimizeBacklog = onSchedule({ schedule: "every 60 minutes", region
   snap.forEach((c) => { const v = c.val(); if (v && v.path && v.opt !== 1 && (+v.optTries || 0) < 3) todo.push([c.key, v]); });
   for (const [vid, v] of todo.slice(0, 6)) await optimizeVideo(vid, v);
 });
+
+/* ===================== Pages publiques de partage (12/11) =====================
+ * Lien d'une vidéo ou d'un profil partagé sur WhatsApp, Instagram, Facebook… : la personne qui le reçoit
+ * voit la vidéo / le profil tout de suite, sans compte, avec un bouton « Rejoindre Lite Foil ».
+ * Hébergement Firebase : /v/{id} (vidéo), /u/{pseudo} (profil), /t/{id} (miniature), /a/{uid} (photo de profil).
+ * Les aperçus WhatsApp / Facebook / Messenger affichent la miniature et la légende (balises Open Graph).
+ * Seules les infos déjà visibles dans le Swip sont montrées (pseudo, photo, légende, vidéo, J'aime) : jamais
+ * de position, d'e-mail ni de message. */
+const SHARE_APP = "https://cedric167.github.io/litefoil-tracker/";
+const SHARE_PLAY = ""; // lien Google Play une fois l'appli publique (ex. https://play.google.com/store/apps/details?id=fr.litefoil.tracker)
+const SHARE_IOS = "";  // lien App Store une fois l'appli publique
+function escH(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function sendDataUrl(res, du) {
+  const m = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(String(du || ""));
+  if (!m) { if (/^https?:\/\//.test(String(du || ""))) return res.redirect(302, du); return res.status(404).send("introuvable"); }
+  res.set("Cache-Control", "public, max-age=86400"); res.type(m[1]); return res.send(Buffer.from(m[2], "base64"));
+}
+function likesN(v) { return Object.keys((v && v.likes) || {}).filter((k) => v.likes[k]).length; }
+function fmtN(n) { return n >= 1e6 ? (Math.round(n / 1e5) / 10 + " M") : n >= 1e4 ? (Math.round(n / 100) / 10 + " k") : String(n); }
+const SHARE_CSS = `*{box-sizing:border-box;margin:0;padding:0}html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:inherit;text-decoration:none}.top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent)}
+.brand{font-weight:800;letter-spacing:.18em;font-size:15px}.brand i{font-style:normal;color:#19e3ff}.open{background:#fff;color:#000;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px}
+.vid{position:relative;height:100svh;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}.vid video{width:100%;height:100%;object-fit:cover}
+.info{position:absolute;left:14px;right:14px;bottom:150px;z-index:3;text-shadow:0 1px 4px rgba(0,0,0,.6)}.info b{font-size:17px}.info p{margin-top:6px;font-size:15px;line-height:1.38}.info .likes{display:inline-block;margin-top:8px;font-weight:700;font-size:14px;background:rgba(0,0,0,.35);padding:5px 10px;border-radius:999px}
+.snd{position:absolute;top:70px;left:50%;transform:translateX(-50%);z-index:4;background:rgba(0,0,0,.55);border:0;color:#fff;font:inherit;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px}
+.shade{position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);z-index:2;pointer-events:none}
+.cta{position:fixed;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));z-index:6;background:rgba(255,255,255,.97);color:#0e1417;border-radius:20px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cta .ic{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#19c3cf,#0b4552);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}.cta .t{flex:1;min-width:0}.cta b{display:block;font-size:15px}.cta small{display:block;color:#5b6b71;font-size:12.5px;margin-top:2px}
+.go{flex:none;background:linear-gradient(135deg,#1fc3cd,#118b92);color:#fff;font-weight:800;font-size:14.5px;padding:12px 16px;border-radius:12px}
+.stores{display:flex;gap:8px;margin-top:8px}.stores a{font-size:12px;font-weight:700;color:#118b92}
+.pf{max-width:560px;margin:0 auto;padding:72px 16px 170px}.pf-h{display:flex;flex-direction:column;align-items:center;text-align:center}.pf-av{width:104px;height:104px;border-radius:50%;object-fit:cover;background:#1d2b30;box-shadow:0 0 0 3px #19c3cf;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800}
+.pf-h h1{font-size:21px;margin-top:12px}.pf-h .nk{color:#9aa6b0;font-size:14px;margin-top:2px}.pf-h .bio{margin-top:10px;font-size:15px;line-height:1.4;white-space:pre-line;color:#dbe4e7}
+.nums{display:flex;justify-content:center;gap:28px;margin:16px 0 18px}.nums div{text-align:center}.nums b{display:block;font-size:19px}.nums span{font-size:12.5px;color:#9aa6b0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.grid a{position:relative;aspect-ratio:3/4;background:#1d2b30 center/cover no-repeat}.grid a span{position:absolute;left:6px;bottom:5px;font-size:12.5px;font-weight:700;text-shadow:0 1px 3px #000}
+.empty{text-align:center;color:#9aa6b0;padding:40px 0}`;
+function sharePageHtml(o) {
+  const store = (SHARE_PLAY || SHARE_IOS) ? `<div class="stores">${SHARE_PLAY ? `<a href="${escH(SHARE_PLAY)}">Google Play</a>` : ""}${SHARE_IOS ? `<a href="${escH(SHARE_IOS)}">App Store</a>` : ""}</div>` : "";
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>${escH(o.title)}</title><meta name="description" content="${escH(o.desc)}">
+<meta property="og:site_name" content="Lite Foil"><meta property="og:title" content="${escH(o.title)}"><meta property="og:description" content="${escH(o.desc)}">
+<meta property="og:url" content="${escH(o.url)}">${o.img ? `<meta property="og:image" content="${escH(o.img)}"><meta property="og:image:width" content="360"><meta property="og:image:height" content="640">` : ""}
+${o.video ? `<meta property="og:type" content="video.other"><meta property="og:video" content="${escH(o.video)}"><meta property="og:video:secure_url" content="${escH(o.video)}"><meta property="og:video:type" content="video/mp4"><meta property="og:video:width" content="720"><meta property="og:video:height" content="1280">` : `<meta property="og:type" content="profile">`}
+<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#000000"><style>${SHARE_CSS}</style></head><body>
+<div class="top"><a class="brand" href="${escH(o.app)}">LITE <i>FOIL</i></a><a class="open" href="${escH(o.app)}">Ouvrir l'appli</a></div>
+${o.body}
+<div class="cta"><div class="ic">🏄</div><div class="t"><b>Rejoins les riders Lite Foil</b><small>Vidéos, chat, météo, suivi GPS, défis… gratuit</small>${store}</div><a class="go" href="${escH(o.app)}">Rejoindre</a></div>
+</body></html>`;
+}
+exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxInstances: 10 }, async (req, res) => {
+  const parts = String(req.path || "").split("/").filter(Boolean);
+  const kind = parts[0], key = decodeURIComponent(parts[1] || "").replace(/[.#$\[\]\/]/g, "");
+  const host = req.get("x-forwarded-host") || req.hostname || "litefoil-communaute-222fd.web.app";
+  const base = "https://" + host;
+  const db = getDatabase();
+  try {
+    if (!key) return res.redirect(302, SHARE_APP);
+    if (kind === "t") { const v = (await db.ref("videos/" + key).get()).val(); return sendDataUrl(res, v && v.thumb); }
+    if (kind === "a") { const av = (await db.ref("profiles/" + key + "/av").get()).val(); return sendDataUrl(res, av); }
+    res.set("Cache-Control", "public, max-age=300, s-maxage=300");
+    if (kind === "v") {
+      const v = (await db.ref("videos/" + key).get()).val();
+      if (!v || !v.url) {
+        return res.status(404).send(sharePageHtml({ title: "Vidéo introuvable · Lite Foil", desc: "Cette vidéo n'existe plus.", url: base + "/v/" + key, app: SHARE_APP,
+          body: `<div class="pf"><div class="empty">Cette vidéo a été supprimée.<br>Découvre les autres sessions des riders dans l'appli Lite Foil.</div></div>` }));
+      }
+      const pr = (await db.ref("profiles/" + v.uid).get()).val() || {};
+      const ps = pr.pseudo || v.pseudo || "Rider", nk = pr.nk || "";
+      const title = "Vidéo de @" + ps + " sur Lite Foil";
+      const desc = (v.caption ? v.caption + " · " : "") + fmtN(likesN(v)) + " J'aime · L'appli des riders eFoil, wing, surf…";
+      const body = `<div class="vid"><video id="v" src="${escH(v.url)}" poster="${escH(base + "/t/" + key)}" autoplay muted loop playsinline webkit-playsinline preload="auto"></video><div class="shade"></div>
+<button class="snd" id="snd">🔊 Touche pour le son</button>
+<div class="info">${nk ? `<a href="/u/${escH(nk)}"><b>@${escH(ps)}</b></a>` : `<b>@${escH(ps)}</b>`}${v.caption ? `<p>${escH(v.caption)}</p>` : ""}<span class="likes">❤️ ${fmtN(likesN(v))} J'aime</span></div></div>
+<script>var v=document.getElementById("v"),b=document.getElementById("snd");function on(){v.muted=false;v.play();b.remove();}b.onclick=on;v.onclick=function(){if(v.muted)on();else if(v.paused)v.play();else v.pause();};</script>`;
+      return res.send(sharePageHtml({ title, desc, url: base + "/v/" + key, img: base + "/t/" + key, video: v.url, app: SHARE_APP + "?v=" + encodeURIComponent(key), body }));
+    }
+    if (kind === "u") {
+      const nk = key.toLowerCase();
+      let uid = (await db.ref("names/" + nk).get()).val();
+      if (typeof uid !== "string") uid = null;
+      const pr = uid ? ((await db.ref("profiles/" + uid).get()).val() || {}) : null;
+      if (!pr) {
+        return res.status(404).send(sharePageHtml({ title: "Rider introuvable · Lite Foil", desc: "Ce profil n'existe pas.", url: base + "/u/" + nk, app: SHARE_APP,
+          body: `<div class="pf"><div class="empty">Ce rider n'existe pas ou a supprimé son profil.</div></div>` }));
+      }
+      const all = (await db.ref("videos").get()).val() || {};
+      const vids = Object.keys(all).map((k) => Object.assign({ id: k }, all[k])).filter((x) => x && x.uid === uid && x.url).sort((a, b) => (+b.t || 0) - (+a.t || 0));
+      const fol = (await db.ref("follows").get()).val() || {};
+      let followers = 0; for (const f in fol) { if (f !== uid && fol[f] && fol[f][uid]) followers++; }
+      const following = Object.keys(fol[uid] || {}).length;
+      const likes = vids.reduce((n, x) => n + likesN(x), 0);
+      const ps = pr.pseudo || "Rider";
+      const av = pr.av ? `<img class="pf-av" src="${escH(base + "/a/" + uid)}" alt="">` : `<div class="pf-av">${escH((ps.trim()[0] || "R").toUpperCase())}</div>`;
+      const body = `<div class="pf"><div class="pf-h">${av}<h1>${escH(ps)}</h1><div class="nk">@${escH(nk)}</div>${pr.bio ? `<div class="bio">${escH(pr.bio)}</div>` : ""}</div>
+<div class="nums"><div><b>${fmtN(following)}</b><span>Abonnements</span></div><div><b>${fmtN(followers)}</b><span>Abonnés</span></div><div><b>${fmtN(likes)}</b><span>J'aime</span></div></div>
+${vids.length ? `<div class="grid">${vids.slice(0, 30).map((x) => `<a href="/v/${escH(x.id)}" style="background-image:url('${escH(base + "/t/" + x.id)}')"><span>❤️ ${fmtN(likesN(x))}</span></a>`).join("")}</div>` : `<div class="empty">Pas encore de vidéo.</div>`}</div>`;
+      return res.send(sharePageHtml({ title: ps + " (@" + nk + ") sur Lite Foil", desc: fmtN(followers) + " abonnés · " + fmtN(likes) + " J'aime · " + (pr.bio || "Rider sur l'appli Lite Foil"),
+        url: base + "/u/" + nk, img: pr.av ? base + "/a/" + uid : (vids[0] ? base + "/t/" + vids[0].id : ""), app: SHARE_APP + "?u=" + encodeURIComponent(uid), body }));
+    }
+    return res.redirect(302, SHARE_APP);
+  } catch (e) {
+    console.error("sharePage", e);
+    return res.status(500).send("Erreur, réessaie dans un instant.");
+  }
+});

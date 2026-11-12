@@ -1977,6 +1977,7 @@
       <button type="button" id="pfEdit">Modifier le profil</button>
       <button type="button" id="pfCard">🃏 Ma carte</button>
       <button type="button" id="pfFind" aria-label="Ajouter des amis">👥 +</button>
+      <button type="button" id="pfShare" aria-label="Partager mon profil"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button>
       <button type="button" id="pfViews" aria-label="Vues du profil">👁<i id="pfViewsN" hidden></i></button>
     </div>
     <div class="pf-reqs" id="pfReqs" hidden></div>
@@ -5581,7 +5582,8 @@
   };
   const SH_APPS=[["ig","Instagram","linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)"],["wa","WhatsApp","#25d366"],["fb","Facebook","#1877f2"],["ms","Messenger","linear-gradient(45deg,#0099ff,#a033ff 60%,#ff5280)"],
     ["link","Copier le lien","#5b6b71"],["dl","Enregistrer","#0b0d10"],["more","Plus","#8a989d"]];
-  const VID_LINK_BASE="https://cedric167.github.io/litefoil-tracker/";
+  const VID_LINK_BASE="https://litefoil-communaute-222fd.web.app/v/"; // page publique (vidéo visible sans compte)
+  const PROFILE_LINK_BASE="https://litefoil-communaute-222fd.web.app/u/";
   let vidFileCache={};
   function fetchVideoFile(v, onProg){ if(vidFileCache[v.id]) return Promise.resolve(vidFileCache[v.id]);
     return fetch(v.url).then(function(r){ if(!r.ok) throw new Error("http "+r.status); var tot=+r.headers.get("Content-Length")||0;
@@ -5590,8 +5592,16 @@
       return (function pump(){ return rd.read().then(function(x){ if(x.done) return new Blob(parts,{type:"video/mp4"}); parts.push(x.value); got+=x.value.length; if(onProg) onProg(tot?got/tot:0); return pump(); }); })(); })
       .then(function(b){ var f; try{ f=new File([b], "lite-foil-"+String(v.id||"video").replace(/[^\w-]/g,"")+".mp4", {type:"video/mp4"}); }catch(e){ f=b; f.name="lite-foil-video.mp4"; } vidFileCache={}; vidFileCache[v.id]=f; return f; }); }
   function blobB64(b){ return new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(){ res(String(fr.result).split(",")[1]); }; fr.onerror=rej; fr.readAsDataURL(b); }); }
+  // 12/11 : partager un lien (profil) : menu du téléphone, sinon copie
+  function shareLink(url, title, text){ var NS=nativePlug("Share");
+    if(NS){ NS.share({title:title, text:text, url:url, dialogTitle:title}).catch(function(){}); return; }
+    if(navigator.share){ navigator.share({title:title, text:text, url:url}).catch(function(){}); return; }
+    try{ navigator.clipboard.writeText(text+" "+url).then(function(){ alert("Lien copié ✓ Colle-le où tu veux."); }, function(){ prompt("Copie le lien :", url); }); }catch(e){ prompt("Copie le lien :", url); } }
+  function shareProfile(uid){ var nk=uid===me.uid?pseudoKey(me.pseudo||""):((profileMap[uid]||{}).nk||pseudoKey(pName(uid))); if(!nk) return;
+    var mine=uid===me.uid, ps=mine?me.pseudo:pName(uid);
+    shareLink(PROFILE_LINK_BASE+encodeURIComponent(nk), "Profil Lite Foil", mine?("Suis-moi sur l'appli Lite Foil 🏄 @"+nk):("Découvre @"+nk+" sur l'appli Lite Foil 🏄")); }
   function shareVideo(v){
-    var link=VID_LINK_BASE+"?v="+encodeURIComponent(v.id||"");
+    var link=VID_LINK_BASE+encodeURIComponent(v.id||"");
     var txt="🎬 "+(v.uid===me.uid?"Ma vidéo":"Vidéo de "+(v.pseudo||"un rider"))+" sur l'appli Lite Foil"+(v.caption?" : « "+v.caption+" »":"")+" 🏄 "+link;
     var NS=nativePlug("Share"), NF=nativePlug("Filesystem"), native=!!(NS&&NF);
     var o=gOverlay(); o.hidden=false;
@@ -6281,7 +6291,9 @@
   // re-filtre le dernier instantané de présence (après blocage/déblocage)
   function onPresence2(){ onPresence(lastPresenceRaw); }
   function onTyping(map){ typers=map||{}; renderTyping(); }
-  function onProfiles(map){ profileMap = map||{}; recomputeMembers(); renderProfil(); }
+  let pendingU=(function(){ try{ return new URLSearchParams(location.search).get("u")||""; }catch(e){ return ""; } })();
+  function onProfiles(map){ profileMap = map||{}; recomputeMembers(); renderProfil();
+    if(pendingU && profileMap[pendingU]){ var u=pendingU; pendingU=""; try{ history.replaceState(null,"",location.pathname); }catch(e){} setTimeout(function(){ openUserProfile(u); },500); } }
   // mes sorties : calculées par la page Activités (lf_my_stats), sinon depuis les sorties suivies au téléphone
   function isEfoil(a){ return a && (a.activityType==="efoil" || a.activityType==="electric" || /foil [ée]lectrique|e-?foil/i.test(a.categoryName||"")); }
   function okEfoil(a){ var d=+a.distanceM||0, s=+a.durationSec||0; return d>=100 && d<=150000 && (!s || d/s*3.6<=55); } // anti-triche : < 55 km/h de moyenne
@@ -6680,7 +6692,7 @@
     var g=gOverlay(); g.hidden=false; var p=profileMap[uid]||{}, tab="vid", sess=null, nFr="…";
     var vids=videos.filter(function(v){ return v && v.uid===uid; });
     var draw=function(){
-      g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="upClose">✕</button><b>@'+esc(pseudoKey(pName(uid))||"rider")+'</b><span></span></div><div class="gc-body up-wrap">'
+      g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="upClose">✕</button><b>@'+esc(pseudoKey(pName(uid))||"rider")+'</b><button class="gc-x up-share" id="upShare" aria-label="Partager ce profil"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button></div><div class="gc-body up-wrap">'
         +'<div class="pf-top"><div class="pf-av">'+avHtml(uid)+'</div><div class="pf-nums"><button type="button" data-ufl="following"><b>'+fmtCount(followingOf(uid).length)+'</b><span>Abonnements</span></button><button type="button" data-ufl="followers"><b>'+fmtCount(followersOf(uid).length)+'</b><span>Abonnés</span></button><button type="button"><b>'+fmtCount(likesOf(uid))+'</b><span>J\'aime</span></button></div></div>'
         +'<div class="pf-name">'+esc(pName(uid))+(isOfficial(uid)?' <span class="pf-off">✓ Équipe Lite Foil</span>':'')+'</div>'
         +(p.bio?'<div class="pf-bio">'+esc(p.bio)+'</div>':'')
@@ -6689,7 +6701,7 @@
         +'<div class="pf-tabs"><button type="button" data-ut="vid" class="'+(tab==="vid"?"on":"")+'">Vidéos</button><button type="button" data-ut="sess" class="'+(tab==="sess"?"on":"")+'">Sessions</button><button type="button" data-ut="pal" class="'+(tab==="pal"?"on":"")+'">🏆 Palmarès</button></div>'
         +'<div class="pf-grid" id="upGrid"></div></div></div>';
       $("upClose").addEventListener("click", closeOverlay);
-      bindFriendBtns(g, draw); bindFollowBtns(g); var fw=$("upFolWrap"); if(fw) fw._redraw=draw;
+      bindFriendBtns(g, draw); bindFollowBtns(g); var us=$("upShare"); if(us) us.addEventListener("click", function(){ shareProfile(uid); }); var fw=$("upFolWrap"); if(fw) fw._redraw=draw;
       g.querySelectorAll("[data-ufl]").forEach(function(b){ b.addEventListener("click", function(){ openFollowList(uid, b.dataset.ufl); }); });
       var um=$("upMsg"); if(um) um.addEventListener("click", function(){ if(!profileReady()){ closeOverlay(); askProfile(); return; } closeOverlay(); goToCommunaute(); openDM(uid, pName(uid)); });
       $("upCard").addEventListener("click", function(){ openRiderCard(uid); });
@@ -7035,6 +7047,7 @@
   var _cms=$("cmSearch"); if(_cms) _cms.addEventListener("click", openFriendSearch);
   var _cme=$("cmEvents"); if(_cme) _cme.addEventListener("click", function(){ var b=document.querySelector('#chatSeg [data-ch="events"]'); if(b) b.click(); var cc=$("chatCard"); if(cc) try{ cc.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){} });
   document.querySelectorAll("#tab-profil [data-pt]").forEach(function(b){ b.addEventListener("click", function(){ pfTab=b.dataset.pt; renderProfil(); }); });
+  var _pfs=$("pfShare"); if(_pfs) _pfs.addEventListener("click", function(){ if(!profileReady()){ askProfile(); return; } shareProfile(me.uid); });
   document.querySelectorAll("#tab-profil [data-fl]").forEach(function(b){ b.addEventListener("click", function(){ var w=b.dataset.fl;
     if(w==="likes"){ var n=likesOf(me.uid); alert((n?("Tes vidéos ont reçu "+n.toLocaleString("fr-FR")+" J'aime au total ❤️"):"Tes vidéos n'ont pas encore de J'aime. Publie ta prochaine session dans le Swip !")); return; }
     openFollowList(me.uid, w); }); });
