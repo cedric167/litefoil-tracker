@@ -442,6 +442,7 @@ exports.videoCleanup = onValueDeleted({ ref: "/videos/{vid}", instance: DB_INSTA
   const v = event.data.val() || {};
   if (!v.path || !/^videos\//.test(v.path)) return;
   try { await getStorage().bucket(VIDEO_BUCKET).file(v.path).delete(); } catch (e) { console.warn("videoCleanup :", e.message); }
+  if (v.posterPath && /^videos\//.test(v.posterPath)) { try { await getStorage().bucket(VIDEO_BUCKET).file(v.posterPath).delete(); } catch (e) { /* déjà supprimée */ } }
 });
 
 /* ===================== Vidéos fluides (11/11) =====================
@@ -476,6 +477,51 @@ function ffmpegArgs(src, dst) {
     "-c:a", "aac", "-b:a", "96k", "-ac", "2",
     "-movflags", "+faststart", "-t", "65", dst];
 }
+/* Affiche de la vidéo (13/11) : une image JPEG de 720 px de large tirée de la vidéo, pour les aperçus de lien
+ * (Facebook, WhatsApp, Messenger…). La miniature de l'appli (360 px) est trop petite : Facebook l'affiche en
+ * vignette. Avec une grande image, le lien partagé s'affiche en grand, et un toucher ouvre la vidéo. */
+function jpegSize(buf) {
+  let i = 2;
+  while (i + 9 < buf.length) {
+    if (buf[i] !== 0xFF) return null;
+    const m = buf[i + 1], len = buf.readUInt16BE(i + 2);
+    if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
+    i += 2 + len;
+  }
+  return null;
+}
+async function posterFrom(bucket, file, videoPath, tmp) {
+  const jpg = path.join(tmp, "poster.jpg");
+  const args = (ss) => ["-y"].concat(ss ? ["-ss", ss] : [], ["-i", file, "-frames:v", "1", "-vf", "scale=720:-2", "-q:v", "4", jpg]);
+  try { await runFfmpeg(args("1")); } catch (e) { /* vidéo de moins d'une seconde : première image */ }
+  if (!fs.existsSync(jpg) || !fs.statSync(jpg).size) await runFfmpeg(args(""));
+  const sz = jpegSize(fs.readFileSync(jpg)) || {};
+  const posterPath = videoPath.replace(/\.[^./]+$/, "") + ".jpg";
+  const token = crypto.randomUUID();
+  await bucket.upload(jpg, { destination: posterPath, metadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000", metadata: { firebaseStorageDownloadTokens: token } } });
+  return { poster: "https://firebasestorage.googleapis.com/v0/b/" + VIDEO_BUCKET + "/o/" + encodeURIComponent(posterPath) + "?alt=media&token=" + token, posterPath, pw: sz.w || 0, ph: sz.h || 0 };
+}
+// vidéos déjà optimisées avant le 13/11 : on ajoute seulement l'affiche
+async function posterOnly(vid, v) {
+  if (!v || !v.path || !/^videos\//.test(v.path) || v.poster) return;
+  const ref = getDatabase().ref("/videos/" + vid);
+  const bucket = getStorage().bucket(VIDEO_BUCKET);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "lfp-"));
+  try {
+    const src = path.join(tmp, "src");
+    await bucket.file(v.path).download({ destination: src });
+    const post = await posterFrom(bucket, src, v.path, tmp);
+    const still = await ref.child("uid").get();
+    if (!still.exists()) { await bucket.file(post.posterPath).delete().catch(() => {}); return; }
+    await ref.update(post);
+    console.log("affiche créée", vid);
+  } catch (e) {
+    console.warn("posterOnly", vid, e.message);
+    await ref.update({ posterTries: (+v.posterTries || 0) + 1 }).catch(() => {});
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+}
 async function optimizeVideo(vid, v) {
   const db = getDatabase();
   const ref = db.ref("/videos/" + vid);
@@ -492,9 +538,11 @@ async function optimizeVideo(vid, v) {
     await bucket.upload(dst, { destination: newPath, metadata: { contentType: "video/mp4", cacheControl: "public, max-age=31536000", metadata: { firebaseStorageDownloadTokens: token } } });
     const url = "https://firebasestorage.googleapis.com/v0/b/" + VIDEO_BUCKET + "/o/" + encodeURIComponent(newPath) + "?alt=media&token=" + token;
     // la vidéo a pu être supprimée pendant le traitement : on ne recrée pas sa fiche
+    let post = {};
+    try { post = await posterFrom(bucket, dst, newPath, tmp); } catch (e) { console.warn("affiche", vid, e.message); }
     const still = await ref.child("uid").get();
-    if (!still.exists()) { await bucket.file(newPath).delete().catch(() => {}); return; }
-    await ref.update({ url, path: newPath, opt: 1, optSize: fs.statSync(dst).size });
+    if (!still.exists()) { await bucket.file(newPath).delete().catch(() => {}); if (post.posterPath) await bucket.file(post.posterPath).delete().catch(() => {}); return; }
+    await ref.update(Object.assign({ url, path: newPath, opt: 1, optSize: fs.statSync(dst).size }, post));
     await bucket.file(v.path).delete().catch(() => {});
     console.log("vidéo optimisée", vid, v.path, "->", newPath);
   } catch (e) {
@@ -512,6 +560,10 @@ exports.videoOptimizeBacklog = onSchedule({ schedule: "every 60 minutes", region
   const todo = [];
   snap.forEach((c) => { const v = c.val(); if (v && v.path && v.opt !== 1 && (+v.optTries || 0) < 3) todo.push([c.key, v]); });
   for (const [vid, v] of todo.slice(0, 6)) await optimizeVideo(vid, v);
+  // affiches manquantes des vidéos déjà optimisées (rapide : une image par vidéo)
+  const noPoster = [];
+  snap.forEach((c) => { const v = c.val(); if (v && v.path && v.opt === 1 && !v.poster && (+v.posterTries || 0) < 3) noPoster.push([c.key, v]); });
+  for (const [vid, v] of noPoster.slice(0, 20)) await posterOnly(vid, v);
 });
 
 /* ===================== Pages publiques de partage (12/11) =====================
@@ -554,7 +606,7 @@ function sharePageHtml(o) {
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${escH(o.title)}</title><meta name="description" content="${escH(o.desc)}">
 <meta property="og:site_name" content="Lite Foil"><meta property="og:title" content="${escH(o.title)}"><meta property="og:description" content="${escH(o.desc)}">
-<meta property="og:url" content="${escH(o.url)}">${o.img ? `<meta property="og:image" content="${escH(o.img)}"><meta property="og:image:width" content="360"><meta property="og:image:height" content="640">` : ""}
+<meta property="og:url" content="${escH(o.url)}">${o.img ? `<meta property="og:image" content="${escH(o.img)}"><meta property="og:image:secure_url" content="${escH(o.img)}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="${+o.iw || 360}"><meta property="og:image:height" content="${+o.ih || 640}"><meta name="twitter:image" content="${escH(o.img)}">` : ""}
 ${o.video ? `<meta property="og:type" content="video.other"><meta property="og:video" content="${escH(o.video)}"><meta property="og:video:secure_url" content="${escH(o.video)}"><meta property="og:video:type" content="video/mp4"><meta property="og:video:width" content="720"><meta property="og:video:height" content="1280">` : `<meta property="og:type" content="profile">`}
 <meta name="twitter:card" content="summary_large_image"><link rel="icon" href="${SHARE_ICON}"><link rel="apple-touch-icon" href="${SHARE_ICON}"><meta name="theme-color" content="#000000"><style>${SHARE_CSS}</style></head><body>
 <div class="top"><a class="brand" href="${escH(o.app)}">LITE <i>FOIL</i></a><a class="open" href="${escH(o.app)}">Ouvrir l'appli</a></div>
@@ -597,7 +649,8 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
 <button class="snd" id="snd">🔊 Touche pour le son</button>
 <div class="info">${nk ? `<a href="/u/${escH(nk)}"><b>@${escH(ps)}</b></a>` : `<b>@${escH(ps)}</b>`}${v.caption ? `<p>${escH(v.caption)}</p>` : ""}<span class="likes">❤️ ${fmtN(likesN(v))} J'aime</span></div></div>
 <script>var v=document.getElementById("v"),b=document.getElementById("snd");function on(){v.muted=false;v.play();b.remove();}b.onclick=on;v.onclick=function(){if(v.muted)on();else if(v.paused)v.play();else v.pause();};</script>`;
-      return res.send(sharePageHtml({ title, desc, url: base + "/v/" + key, img: base + "/t/" + key, video: v.url, app: SHARE_APP + "?v=" + encodeURIComponent(key), body }));
+      const big = v.poster && +v.pw > 0 && +v.ph > 0; // affiche 720 px : aperçu de lien en grand (Facebook, WhatsApp…)
+      return res.send(sharePageHtml({ title, desc, url: base + "/v/" + key, img: big ? v.poster : base + "/t/" + key, iw: big ? v.pw : 0, ih: big ? v.ph : 0, video: v.url, app: SHARE_APP + "?v=" + encodeURIComponent(key), body }));
     }
     if (kind === "u") {
       const nk = key.toLowerCase();
