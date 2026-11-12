@@ -6222,5 +6222,37 @@
  "Ne suit personne pour l'instant.": {
   "en": "Not following anyone yet.",
   "es": "Aún no sigue a nadie."
+ },
+ "Partage ta session": {
+  "en": "Share your session",
+  "es": "Comparte tu sesión"
+ },
+ "Couper": {
+  "en": "Trim",
+  "es": "Recortar"
+ },
+ "Couverture": {
+  "en": "Cover",
+  "es": "Portada"
+ },
+ "Modifier": {
+  "en": "Edit",
+  "es": "Editar"
+ },
+ "Ta vidéo entière sera publiée": {
+  "en": "Your whole video will be posted",
+  "es": "Se publicará el vídeo completo"
+ },
+ "Fais glisser pour choisir l'image de couverture": {
+  "en": "Drag to choose the cover image",
+  "es": "Desliza para elegir la portada"
+ },
+ "Lecture de la vidéo…": {
+  "en": "Reading video…",
+  "es": "Leyendo vídeo…"
+ },
+ "Ta vidéo est publiée 🎉": {
+  "en": "Your video is posted 🎉",
+  "es": "Tu vídeo está publicado 🎉"
  }
 }

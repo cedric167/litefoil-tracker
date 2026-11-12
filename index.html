@@ -880,6 +880,49 @@
   @keyframes vfSwipe{ 0%{ transform:translateY(0); opacity:0; } 20%{ opacity:1; } 100%{ transform:translateY(-44px); opacity:0; } } @keyframes vfFade{ from{ opacity:0; } }
   .vf-hint b{ font-size:19px; } .vf-hint small{ font-size:14px; opacity:.8; }
   .vf-toast{ position:absolute; left:50%; top:42%; transform:translate(-50%,-50%); z-index:7; background:rgba(40,40,40,.88); color:#fff; padding:12px 18px; border-radius:8px; font-weight:600; font-size:14.5px; pointer-events:none; animation:vfFade .2s ease; transition:opacity .4s; } .vf-toast.out{ opacity:0; }
+  /* ajout de vidéo façon TikTok (#vu) */
+  .vu{ position:fixed; inset:0; z-index:10050; background:#000; color:#fff; display:flex; flex-direction:column; font-family:inherit; overflow:hidden; }
+  .vu svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .vu-bar{ position:absolute; left:0; right:0; top:0; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 6px) 8px 8px; }
+  .vu-ib svg{ width:26px !important; height:26px !important; min-width:26px; flex:none; display:block; }
+  .vu-ib{ width:44px; height:44px; border:0; background:none; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; filter:drop-shadow(0 1px 3px rgba(0,0,0,.6)); }
+  .vu-create{ background:radial-gradient(120% 70% at 50% 30%,#0f3b44 0%,#061a20 55%,#000 100%); }
+  .vu-hero{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 36px; gap:10px; }
+  .vu-hero-i{ width:96px; height:96px; border-radius:30px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; font-size:46px; margin-bottom:8px; }
+  .vu-hero b{ font-size:22px; } .vu-hero p{ margin:0; color:rgba(255,255,255,.7); font-size:14.5px; line-height:1.5; }
+  .vu-durs{ display:flex; justify-content:center; gap:6px; margin-bottom:22px; } .vu-durs button{ border:0; background:rgba(255,255,255,.12); color:rgba(255,255,255,.75); font:inherit; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; cursor:pointer; } .vu-durs button.on{ background:#fff; color:#000; }
+  .vu-rec-row{ display:flex; align-items:center; justify-content:space-around; padding:0 20px 14px; }
+  .vu-side{ width:64px; display:flex; flex-direction:column; align-items:center; gap:5px; border:0; background:none; color:#fff; font:inherit; font-size:12px; font-weight:600; cursor:pointer; padding:0; }
+  .vu-imp span{ width:46px; height:46px; border-radius:10px; border:2px solid #fff; display:flex; align-items:center; justify-content:center; } .vu-imp span svg{ width:26px; height:26px; }
+  .vu-rec{ width:86px; height:86px; border-radius:50%; border:6px solid rgba(254,44,85,.45); background:none; padding:6px; cursor:pointer; transition:transform .12s; } .vu-rec i{ display:block; width:100%; height:100%; border-radius:50%; background:#fe2c55; } .vu-rec:active{ transform:scale(.92); }
+  .vu-tip{ text-align:center; font-size:12.5px; color:rgba(255,255,255,.55); padding:0 20px calc(var(--lf-sab) + 18px); }
+  .vu-err{ position:absolute; left:16px; right:16px; bottom:calc(var(--lf-sab) + 150px); background:#fe2c55; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; text-align:center; z-index:5; } .vu-err[hidden]{ display:none; }
+  .vu-spin{ display:flex; gap:6px; margin-bottom:6px; } .vu-spin i{ width:14px; height:14px; border-radius:50%; } .vu-spin i:first-child{ background:#25f4ee; animation:vfDotA .9s ease-in-out infinite; } .vu-spin i:last-child{ background:#fe2c55; animation:vfDotB .9s ease-in-out infinite; }
+  .vu-edit video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; }
+  .vu-tools{ position:absolute; right:8px; top:calc(env(safe-area-inset-top) + 64px); z-index:3; display:flex; flex-direction:column; gap:16px; }
+  .vu-tools button{ border:0; background:none; color:#fff; font:inherit; font-size:11.5px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; text-shadow:0 1px 3px rgba(0,0,0,.6); opacity:.8; }
+  .vu-tools button i{ width:42px; height:42px; border-radius:50%; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; } .vu-tools button.on{ opacity:1; } .vu-tools button.on i{ background:#fe2c55; }
+  .vu-panel{ position:absolute; left:0; right:0; bottom:0; z-index:3; padding:40px 14px calc(var(--lf-sab) + 14px); background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,.55) 70%,transparent); }
+  .vu-hint{ text-align:center; font-size:13px; font-weight:600; color:rgba(255,255,255,.85); margin-bottom:10px; text-shadow:0 1px 3px rgba(0,0,0,.6); }
+  .vu-strip{ position:relative; height:58px; border-radius:6px; overflow:visible; touch-action:none; cursor:pointer; }
+  .vu-frames{ position:absolute; inset:0; display:flex; border-radius:6px; overflow:hidden; background:#222; } .vu-frames span{ flex:1; background-size:cover; background-position:center; opacity:.55; }
+  .vu-win{ position:absolute; top:0; bottom:0; border:3px solid #fe2c55; border-radius:6px; box-shadow:0 0 0 9999px rgba(0,0,0,.45); pointer-events:none; } .vu-strip{ overflow:hidden; } .vu-win[hidden]{ display:none; }
+  .vu-win i{ position:absolute; top:50%; width:4px; height:22px; margin-top:-11px; border-radius:2px; background:#fff; } .vu-win i:first-child{ left:3px; } .vu-win i:last-child{ right:3px; }
+  .vu-head{ position:absolute; top:0; bottom:0; width:3px; margin-left:-1.5px; background:#fff; border-radius:2px; pointer-events:none; box-shadow:0 0 4px rgba(0,0,0,.5); }
+  .vu-head.cov{ width:40px; margin-left:-20px; top:0; bottom:0; background:none; border:3px solid #fff; border-radius:6px; box-shadow:0 0 0 9999px rgba(0,0,0,.35); }
+  .vu-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:14px; } .vu-len{ font-size:13.5px; font-weight:700; color:rgba(255,255,255,.85); }
+  .vu-next{ border:0; border-radius:6px; background:#fe2c55; color:#fff; font:inherit; font-weight:700; font-size:15.5px; padding:12px 34px; cursor:pointer; }
+  .vu-post{ background:#fff; color:#161823; }
+  .vu-pbar{ display:flex; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 4px) 6px 4px; border-bottom:1px solid rgba(22,24,35,.08); } .vu-pbar b{ font-size:17px; } .vu-post .vu-ib{ color:#161823; filter:none; }
+  .vu-pbody{ flex:1; overflow-y:auto; padding:14px 16px 20px; }
+  .vu-top2{ display:flex; gap:12px; } .vu-capw2{ flex:1; position:relative; } .vu-capw2 textarea{ width:100%; min-height:130px; border:0; outline:none; resize:none; font:inherit; font-size:16px; line-height:1.4; color:#161823; background:none; padding:2px 0 22px; box-shadow:none; }
+  .vu-cov{ position:relative; width:96px; height:128px; flex:0 0 96px; border:0; border-radius:6px; overflow:hidden; background:#111; padding:0; cursor:pointer; } .vu-cov img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .vu-cov span{ position:absolute; left:0; right:0; bottom:0; padding:6px 0; background:rgba(0,0,0,.55); color:#fff; font-size:12px; font-weight:700; }
+  .vu-post .vu-tags{ border-top:1px solid rgba(22,24,35,.08); padding-top:10px; }
+  .vu-pfoot{ display:flex; gap:10px; padding:10px 16px calc(var(--lf-sab) + 12px); border-top:1px solid rgba(22,24,35,.08); background:#fff; }
+  .vu-draft{ flex:1; border:0; border-radius:6px; background:#f1f1f2; color:#161823; font:inherit; font-weight:700; font-size:15.5px; padding:13px; cursor:pointer; }
+  .vu-go2{ flex:1.4; border:0; border-radius:6px; background:#fe2c55; color:#fff; font:inherit; font-weight:700; font-size:15.5px; padding:13px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; } .vu-go2 svg{ width:18px; height:18px; stroke:none; } .vu-go2:disabled{ opacity:.7; }
+  .vu-post .vu-err{ position:static; margin-top:10px; }
   /* commentaires façon TikTok */
   .vc-card{ height:72vh; max-height:72vh; border-radius:14px 14px 0 0; background:#fff; color:#161823; }
   .vc-head{ position:relative; display:flex; align-items:center; justify-content:center; height:48px; flex:0 0 48px; } .vc-head b{ font-size:14px; font-weight:700; } .vc-head .gc-x{ position:absolute; right:8px; top:6px; width:36px; height:36px; font-size:17px; color:#161823; }
@@ -5509,48 +5552,117 @@
       v.currentTime=start; });
     v.load(); }); }
   function fmtSec(t){ t=Math.max(0,Math.round(t)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); }
+  // 12/11 (demande de Cédric) : ajout d'une vidéo façon TikTok, en 3 écrans plein écran
+  //   1. Créer : filmer (appareil photo du téléphone) ou importer depuis la galerie, durée 15 / 30 / 60 s
+  //   2. Modifier : aperçu en grand, bande d'images pour choisir l'extrait, choix de la couverture
+  //   3. Publier : légende + hashtags, couverture, activité, « Publier »
+  function vuFrames(file, dur, n){ return new Promise(function(res){ var url=URL.createObjectURL(file), v=document.createElement("video"), out=[], k=0;
+    v.muted=true; v.playsInline=true; v.preload="auto"; v.src=url; var c=document.createElement("canvas"); c.width=60; c.height=96; var cx=c.getContext("2d");
+    var next=function(){ if(k>=n){ URL.revokeObjectURL(url); res(out); return; } try{ v.currentTime=Math.min(dur-0.05,(k+0.5)*dur/n); }catch(e){ res(out); } };
+    v.addEventListener("seeked", function(){ try{ var r=Math.max(60/(v.videoWidth||60),96/(v.videoHeight||96)), w=(v.videoWidth||60)*r, h=(v.videoHeight||96)*r; cx.drawImage(v,(60-w)/2,(96-h)/2,w,h); out.push(c.toDataURL("image/jpeg",0.6)); }catch(e){ out.push(""); } k++; next(); });
+    v.addEventListener("loadedmetadata", next); v.addEventListener("error", function(){ res(out); }); setTimeout(function(){ res(out); },15000); }); }
   function openVideoUpload(){ if(!charterOk){ closeFeed(); showCharter(); return; } if(!profileReady()){ closeFeed(); askProfile(); return; }
-    var o=gOverlay(); o.hidden=false; var picked=null, meta=null;
-    // 12/11 (demande de Cédric) : écran de publication façon TikTok : aperçu de la vidéo à droite de la légende,
-    // hashtags en un geste, activité en ligne de réglage, bouton Publier au-dessus de la barre du téléphone.
-    o.innerHTML='<div class="gcard vu-tt"><div class="gc-head"><button class="gc-x" id="vuClose" aria-label="Fermer">✕</button><b>Nouvelle publication</b><span></span></div><div class="gc-body ev-form">'
-      +'<div class="vu-top"><div class="vu-capw"><textarea id="vuCap" maxlength="150" rows="5" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Décris ta session… Ajoute des #hashtags"></textarea><div class="vu-cnt" id="vuCnt">0/150</div></div>'
-      +'<div class="vu-pick" id="vuPick"><span class="evp-ic">🎬</span>Choisir<small>'+VID_MAX_S+' s max</small></div></div><input id="vuFile" type="file" accept="video/*" hidden>'
-      +'<div class="vu-tags" id="vuTags">'+["#efoil","#litefoil","#wingfoil","#foil","#session","#sunset"].map(function(t){ return '<button type="button" data-t="'+t+'">'+t+'</button>'; }).join("")+'</div>'
-      +'<div class="vu-trim" id="vuTrim" hidden><video id="vuPrev" playsinline muted preload="metadata"></video><div class="vu-trim-l"><b>Choisis l\'extrait de '+VID_MAX_S+' s</b><span id="vuTrimLbl"></span></div><input type="range" id="vuStart" min="0" max="0" step="0.5" value="0"></div>'
-      +'<label class="vu-line"><span class="vu-ico">🏄</span><span class="vu-lab">Activité</span><select id="vuTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+CHANS[k]+'</option>'; }).join("")+'</select></label>'
-      +'<div class="vu-line vu-static"><span class="vu-ico">🌍</span><span class="vu-lab">Qui peut voir</span><span class="vu-val">Toute la communauté</span></div>'
-      +'<div class="vu-note">En publiant, tu confirmes être l\'auteur de la vidéo et respecter la charte de la communauté. Les vidéos inappropriées sont supprimées par l\'équipe Lite Foil.</div>'
-      +'<div class="vu-prog" id="vuProg" hidden><i></i></div><div class="ev-err" id="vuErr" hidden></div>'
-      +'</div><div class="gc-foot"><button class="btn-ghost2" id="vuCancel">Annuler</button><button class="btn-main vu-go" id="vuGo" disabled><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>Publier</button></div></div>';
-    var cap=$("vuCap"), cnt=function(){ $("vuCnt").textContent=cap.value.length+"/150"; }; cap.addEventListener("input", cnt);
-    $("vuTags").querySelectorAll("[data-t]").forEach(function(b){ b.addEventListener("click", function(){ var t=b.dataset.t; if(cap.value.indexOf(t)>=0) return; var v=cap.value.replace(/\s+$/,""); var nv=(v?v+" ":"")+t+" "; if(nv.length<=150){ cap.value=nv; cnt(); b.classList.add("on"); } }); });
-    var err=function(s){ var e=$("vuErr"); e.textContent=s; e.hidden=!s; };
-    $("vuClose").addEventListener("click", closeOverlay); $("vuCancel").addEventListener("click", closeOverlay);
-    $("vuPick").addEventListener("click", function(){ $("vuFile").click(); });
-    var trimStart=0, needTrim=false, needCompress=false, prevUrl=null;
-    function showPicked(m,f){ var mb=Math.round(f.size/1048576*10)/10, info=(m.dur?Math.round(m.dur)+" s · ":"")+mb+" Mo";
-      $("vuPick").innerHTML=(m.thumb?'<img src="'+m.thumb+'" alt="">':'')+'<span class="vu-ok">✓ '+info+(needTrim?' · extrait de '+VID_MAX_S+' s':(needCompress?' · sera compressée':''))+'</span>'; $("vuPick").classList.add("has"); }
-    $("vuFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; err(""); picked=null; $("vuGo").disabled=true; $("vuTrim").hidden=true;
-      $("vuPick").innerHTML='<span class="evp-ic">⏳</span>Lecture…';
-      videoThumb(f).then(function(m){ var tooLong = m.dur && m.dur > VID_MAX_S+0.9, heavy = f.size > VID_COMPRESS_MB*1048576;
-        if((tooLong || f.size > VID_MAX_MB*1048576) && !canTranscode()){ $("vuPick").innerHTML='<span class="evp-ic">🎬</span>Choisir'; err(tooLong ? ("Vidéo trop longue ("+Math.round(m.dur)+" s) et ce téléphone ne sait pas la couper : maximum "+VID_MAX_S+" secondes.") : ("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo), maximum "+VID_MAX_MB+" Mo.")); return; }
-        needTrim=!!tooLong; needCompress=!tooLong && heavy && canTranscode(); picked=f; meta=m; trimStart=0; showPicked(m,f); $("vuGo").disabled=false;
-        if(needTrim){ var tr=$("vuTrim"), pv=$("vuPrev"), sl=$("vuStart"); if(prevUrl) URL.revokeObjectURL(prevUrl); prevUrl=URL.createObjectURL(f); pv.src=prevUrl; tr.hidden=false;
-          sl.max=Math.max(0, Math.floor((m.dur-VID_MAX_S)*2)/2); sl.value=0;
-          var upd=function(){ trimStart=+sl.value; $("vuTrimLbl").textContent="de "+fmtSec(trimStart)+" à "+fmtSec(trimStart+VID_MAX_S)+" (sur "+fmtSec(m.dur)+")"; try{ pv.currentTime=trimStart+0.3; }catch(_){} };
-          sl.oninput=upd; sl.onchange=function(){ upd(); videoThumb(f, trimStart).then(function(m2){ if(m2.thumb){ meta.thumb=m2.thumb; showPicked(meta,f); } }); }; upd(); } }); });
-    $("vuGo").addEventListener("click", function(){ if(!picked||!backend||!backend.publishVideo) return; var btn=$("vuGo"); btn.disabled=true; err("");
-      var pr=$("vuProg"), bar=pr.querySelector("i"); pr.hidden=false; bar.style.width="0%";
-      var prep = (needTrim||needCompress) ? (function(){ btn.textContent="Préparation…"; $("vuTrim").hidden=true;
-          var d = needTrim ? VID_MAX_S : (meta.dur||VID_MAX_S);
-          return transcodeVideo(picked, needTrim?trimStart:0, d, function(p){ bar.style.width=Math.round(p*50)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; })
-            .then(function(out){ if(out.size > VID_MAX_MB*1048576) throw new Error("vidéo encore trop lourde après compression"); return out; }); })()
-        : Promise.resolve(picked);
-      prep.then(function(file){ var base=(needTrim||needCompress)?50:0;
-        return backend.publishVideo(file, {thumb:meta.thumb, dur:Math.round(needTrim?VID_MAX_S:(meta.dur||0)), caption:$("vuCap").value.trim(), topic:$("vuTopic").value}, function(p){ bar.style.width=Math.round(base+p*(100-base))+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; }); })
-        .then(function(){ closeOverlay(); showTabVideos(); setTimeout(function(){ openFeed(0); },300); })
-        .catch(function(e){ btn.disabled=false; btn.textContent="Publier"; pr.hidden=true; err("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")+(/storage|unauthorized|permission/i.test(String(e&&(e.code||e.message)))?" (le stockage des vidéos doit être activé dans Firebase)":"")); }); }); }
+    var old=$("vu"); if(old) old.remove();
+    var st={ max:+(localStorage.getItem("lf.vu.max")||60)||60, file:null, meta:null, dur:0, start:0, cover:0, url:null, mode:"trim" };
+    if([15,30,60].indexOf(st.max)<0) st.max=60;
+    var vu=document.createElement("div"); vu.id="vu"; vu.className="vu"; document.body.appendChild(vu); document.body.style.overflow="hidden";
+    var vid=null, loopT=null;
+    var close=function(){ if(loopT) clearInterval(loopT); if(st.url) URL.revokeObjectURL(st.url); vu.remove(); var vf=$("vf"); if(!vf||vf.hidden) document.body.style.overflow=""; };
+    var IC={ x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>', back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+      gal:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>',
+      cut:'<svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.6"/><circle cx="6" cy="17" r="2.6"/><path d="M8.2 8.4 20 17M8.2 15.6 20 7"/></svg>',
+      cov:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="m4 16 5-5 4 4 2-2 5 5"/></svg>' };
+    var fmt=function(t){ t=Math.max(0,Math.round(t||0)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); };
+    // ---------- 1. Créer ----------
+    function stepCreate(){ if(loopT) clearInterval(loopT); vu.className="vu vu-create";
+      vu.innerHTML='<div class="vu-bar"><button class="vu-ib" id="vuX" aria-label="Fermer">'+IC.x+'</button><b></b><span class="vu-ib"></span></div>'
+        +'<div class="vu-hero"><div class="vu-hero-i">🏄</div><b>Partage ta session</b><p>Filme maintenant ou importe une vidéo de ta galerie.<br>Elle passera dans le Swip de toute la communauté.</p></div>'
+        +'<div class="vu-durs">'+[15,30,60].map(function(d){ return '<button data-d="'+d+'" class="'+(d===st.max?"on":"")+'">'+d+' s</button>'; }).join("")+'</div>'
+        +'<div class="vu-rec-row"><span class="vu-side"></span><button class="vu-rec" id="vuRec" aria-label="Filmer"><i></i></button><button class="vu-side vu-imp" id="vuImp"><span>'+IC.gal+'</span>Importer</button></div>'
+        +'<div class="vu-tip">Astuce : filme à la verticale, la vidéo remplit tout l\'écran 📱</div>'
+        +'<input id="vuCam" type="file" accept="video/*" capture="environment" hidden><input id="vuFile" type="file" accept="video/*" hidden><div class="vu-err" id="vuErr" hidden></div>';
+      $("vuX").addEventListener("click", close);
+      vu.querySelectorAll(".vu-durs button").forEach(function(b){ b.addEventListener("click", function(){ st.max=+b.dataset.d; try{ localStorage.setItem("lf.vu.max",String(st.max)); }catch(e){} vu.querySelectorAll(".vu-durs button").forEach(function(x){ x.classList.toggle("on",x===b); }); }); });
+      $("vuRec").addEventListener("click", function(){ $("vuCam").click(); }); $("vuImp").addEventListener("click", function(){ $("vuFile").click(); });
+      ["vuCam","vuFile"].forEach(function(id){ $(id).addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(f) loadFile(f); }); }); }
+    function err(s){ var e=$("vuErr"); if(e){ e.textContent=s||""; e.hidden=!s; } }
+    function loadFile(f){ err(""); var h=vu.querySelector(".vu-hero"); if(h) h.innerHTML='<div class="vu-spin"><i></i><i></i></div><b>Lecture de la vidéo…</b>';
+      videoThumb(f).then(function(m){ var tooLong=m.dur && m.dur>st.max+0.9;
+        if(m.err && !m.dur){ stepCreate(); err("Impossible de lire cette vidéo. Essaie une autre."); return; }
+        if((tooLong || f.size>VID_MAX_MB*1048576) && !canTranscode()){ stepCreate(); err(tooLong?("Vidéo trop longue ("+Math.round(m.dur)+" s) et ce téléphone ne sait pas la couper : maximum "+st.max+" secondes."):("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo), maximum "+VID_MAX_MB+" Mo.")); return; }
+        st.file=f; st.meta=m; st.dur=m.dur||0; st.start=0; st.cover=Math.min(0.6,st.dur/3); if(st.url) URL.revokeObjectURL(st.url); st.url=URL.createObjectURL(f); st.mode="trim"; stepEdit(); }); }
+    function win(){ return Math.min(st.max, st.dur||st.max); }
+    // ---------- 2. Modifier ----------
+    function stepEdit(){ vu.className="vu vu-edit";
+      vu.innerHTML='<video id="vuV" playsinline webkit-playsinline loop preload="auto"></video>'
+        +'<div class="vu-bar"><button class="vu-ib" id="vuBack" aria-label="Retour">'+IC.back+'</button><b></b><span class="vu-ib"></span></div>'
+        +'<div class="vu-tools"><button data-m="trim" class="'+(st.mode==="trim"?"on":"")+'"><i>'+IC.cut+'</i>Couper</button><button data-m="cover" class="'+(st.mode==="cover"?"on":"")+'"><i>'+IC.cov+'</i>Couverture</button></div>'
+        +'<div class="vu-panel"><div class="vu-hint" id="vuHint"></div><div class="vu-strip" id="vuStrip"><div class="vu-frames" id="vuFrames"></div><div class="vu-win" id="vuWin"><i></i><i></i></div><div class="vu-head" id="vuHead"></div></div>'
+        +'<div class="vu-foot"><span class="vu-len" id="vuLen"></span><button class="vu-next" id="vuNext">Suivant</button></div></div>';
+      vid=$("vuV"); vid.src=st.url; vid.muted=false;
+      var play=function(){ var p=vid.play(); if(p&&p.catch) p.catch(function(){ vid.muted=true; vid.play().catch(function(){}); }); };
+      vid.addEventListener("loadedmetadata", function(){ vid.style.objectFit = vid.videoHeight>=vid.videoWidth ? "cover" : "contain"; vid.currentTime=st.mode==="cover"?st.cover:st.start; if(st.mode==="trim") play(); });
+      vid.addEventListener("click", function(){ if(st.mode!=="trim") return; if(vid.paused) play(); else vid.pause(); });
+      $("vuBack").addEventListener("click", function(){ st.file=null; stepCreate(); });
+      vu.querySelectorAll(".vu-tools button").forEach(function(b){ b.addEventListener("click", function(){ st.mode=b.dataset.m; vu.querySelectorAll(".vu-tools button").forEach(function(x){ x.classList.toggle("on",x===b); }); paint(); if(st.mode==="cover"){ vid.pause(); vid.currentTime=st.cover; } else { vid.currentTime=st.start; play(); } }); });
+      $("vuNext").addEventListener("click", stepPost);
+      var strip=$("vuStrip"), wEl=$("vuWin"), head=$("vuHead");
+      vuFrames(st.file, st.dur||1, 10).then(function(fr){ var f=$("vuFrames"); if(f) f.innerHTML=fr.map(function(u){ return '<span style="background-image:url('+u+')"></span>'; }).join(""); });
+      function paint(){ var D=st.dur||1, W=win();
+        if(st.mode==="trim"){ wEl.hidden=false; wEl.style.left=(st.start/D*100)+"%"; wEl.style.width=(W/D*100)+"%"; head.className="vu-head";
+          $("vuHint").textContent = st.dur>st.max+0.9 ? ("Fais glisser le cadre pour choisir tes "+st.max+" secondes") : "Ta vidéo entière sera publiée";
+          $("vuLen").textContent = fmt(st.start)+" – "+fmt(st.start+W)+" · "+Math.round(W)+" s"; }
+        else { wEl.hidden=true; head.className="vu-head cov"; head.style.left=(st.cover/D*100)+"%"; $("vuHint").textContent="Fais glisser pour choisir l'image de couverture"; $("vuLen").textContent="Couverture à "+fmt(st.cover); } }
+      paint();
+      // glisser sur la bande : déplace l'extrait (Couper) ou l'image (Couverture)
+      var drag=null;
+      var at=function(e){ var r=strip.getBoundingClientRect(); return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*(st.dur||1); };
+      strip.addEventListener("pointerdown", function(e){ try{ strip.setPointerCapture(e.pointerId); }catch(x){} var t=at(e); drag={off: st.mode==="trim" ? (t>=st.start&&t<=st.start+win() ? t-st.start : win()/2) : 0}; move(e); });
+      strip.addEventListener("pointermove", function(e){ if(drag) move(e); });
+      ["pointerup","pointercancel"].forEach(function(n){ strip.addEventListener(n, function(){ if(!drag) return; drag=null; if(st.mode==="trim"){ vid.currentTime=st.start; play(); } }); });
+      function move(e){ var t=at(e);
+        if(st.mode==="trim"){ st.start=Math.max(0,Math.min((st.dur||0)-win(), t-drag.off)); st.start=Math.round(st.start*2)/2; vid.pause(); vid.currentTime=st.start; }
+        else { st.cover=Math.min(Math.max(0,(st.dur||0)-0.1), t); vid.currentTime=st.cover; }
+        paint(); }
+      // lecture en boucle dans l'extrait choisi + tête de lecture
+      if(loopT) clearInterval(loopT);
+      loopT=setInterval(function(){ if(!vid||!document.body.contains(vid)) { clearInterval(loopT); return; }
+        if(st.mode==="trim"){ if(vid.currentTime>st.start+win()-0.05 || vid.currentTime<st.start-0.3){ vid.currentTime=st.start; } head.style.left=(vid.currentTime/(st.dur||1)*100)+"%"; } },60); }
+    // ---------- 3. Publier ----------
+    function stepPost(){ if(loopT) clearInterval(loopT); if(vid) vid.pause();
+      var needTrim=st.dur>st.max+0.9, heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode();
+      vu.className="vu vu-post";
+      vu.innerHTML='<div class="vu-pbar"><button class="vu-ib" id="vuBack2" aria-label="Retour">'+IC.back+'</button><b>Publier</b><span class="vu-ib"></span></div>'
+        +'<div class="vu-pbody"><div class="vu-top2"><div class="vu-capw2"><textarea id="vuCap" maxlength="150" rows="5" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Décris ta session… Ajoute des #hashtags"></textarea><div class="vu-cnt" id="vuCnt">0/150</div></div>'
+        +'<button class="vu-cov" id="vuCov"><img id="vuCovImg" alt=""><span>Couverture</span></button></div>'
+        +'<div class="vu-tags" id="vuTags">'+["#efoil","#litefoil","#wingfoil","#foil","#session","#sunset"].map(function(t){ return '<button type="button" data-t="'+t+'">'+t+'</button>'; }).join("")+'</div>'
+        +'<label class="vu-line"><span class="vu-ico">🏄</span><span class="vu-lab">Activité</span><select id="vuTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+CHANS[k]+'</option>'; }).join("")+'</select></label>'
+        +'<div class="vu-line vu-static"><span class="vu-ico">🌍</span><span class="vu-lab">Qui peut voir</span><span class="vu-val">Toute la communauté</span></div>'
+        +'<div class="vu-line vu-static"><span class="vu-ico">⏱️</span><span class="vu-lab">Durée</span><span class="vu-val">'+Math.round(win())+' s'+(needTrim?' (extrait)':'')+'</span></div>'
+        +'<div class="vu-note">En publiant, tu confirmes être l\'auteur de la vidéo et respecter la charte de la communauté. Les vidéos inappropriées sont supprimées par l\'équipe Lite Foil.</div>'
+        +'<div class="vu-prog" id="vuProg" hidden><i></i></div><div class="vu-err" id="vuErr" hidden></div></div>'
+        +'<div class="vu-pfoot"><button class="vu-draft" id="vuEditAgain">Modifier</button><button class="vu-go2" id="vuGo"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>Publier</button></div>';
+      var cap=$("vuCap"), cnt=function(){ $("vuCnt").textContent=cap.value.length+"/150"; }; cap.addEventListener("input", cnt);
+      if(st.caption){ cap.value=st.caption; cnt(); }
+      cap.addEventListener("input", function(){ st.caption=cap.value; });
+      $("vuTags").querySelectorAll("[data-t]").forEach(function(b){ if(cap.value.indexOf(b.dataset.t)>=0) b.classList.add("on"); b.addEventListener("click", function(){ var t=b.dataset.t; if(cap.value.indexOf(t)>=0) return; var v=cap.value.replace(/\s+$/,""); var nv=(v?v+" ":"")+t+" "; if(nv.length<=150){ cap.value=nv; st.caption=nv; cnt(); b.classList.add("on"); } }); });
+      var back=function(m){ st.caption=cap.value; st.mode=m; stepEdit(); };
+      $("vuBack2").addEventListener("click", function(){ back("trim"); }); $("vuEditAgain").addEventListener("click", function(){ back("trim"); }); $("vuCov").addEventListener("click", function(){ back("cover"); });
+      // couverture : image à l'instant choisi (dans l'extrait si la vidéo est coupée)
+      var covAt=Math.max(0, st.cover-0.6); if(needTrim && (st.cover<st.start || st.cover>st.start+win())) covAt=Math.max(0,st.start);
+      videoThumb(st.file, covAt).then(function(m2){ if(m2.thumb){ st.meta.thumb=m2.thumb; var im=$("vuCovImg"); if(im) im.src=m2.thumb; } });
+      if(st.meta.thumb) $("vuCovImg").src=st.meta.thumb;
+      $("vuGo").addEventListener("click", function(){ if(!backend||!backend.publishVideo) return; var btn=$("vuGo"); btn.disabled=true; err("");
+        var pr=$("vuProg"), bar=pr.querySelector("i"); pr.hidden=false; bar.style.width="0%";
+        var prep=(needTrim||needCompress) ? (function(){ btn.textContent="Préparation…";
+            return transcodeVideo(st.file, needTrim?st.start:0, needTrim?win():(st.dur||VID_MAX_S), function(p){ bar.style.width=Math.round(p*50)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; })
+              .then(function(out){ if(out.size>VID_MAX_MB*1048576) throw new Error("vidéo encore trop lourde après compression"); return out; }); })()
+          : Promise.resolve(st.file);
+        prep.then(function(file){ var base=(needTrim||needCompress)?50:0;
+          return backend.publishVideo(file, {thumb:st.meta.thumb, dur:Math.round(needTrim?win():(st.dur||0)), caption:cap.value.trim(), topic:$("vuTopic").value}, function(p){ bar.style.width=Math.round(base+p*(100-base))+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; }); })
+          .then(function(){ close(); showTabVideos(); setTimeout(function(){ openFeed(0); vfToast("Ta vidéo est publiée 🎉"); },400); })
+          .catch(function(e){ btn.disabled=false; btn.innerHTML='Publier'; pr.hidden=true; err("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")+(/storage|unauthorized|permission/i.test(String(e&&(e.code||e.message)))?" (le stockage des vidéos doit être activé dans Firebase)":"")); }); }); }
+    stepCreate(); }
   function showTabVideos(){ var t=document.querySelector('.tab[data-tab="videos"]'); if(t) t.click(); }
 
   /* ================= ÉVÉNEMENTS (agenda : créer une sortie, s'inscrire) ================= */
