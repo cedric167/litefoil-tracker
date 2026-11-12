@@ -59,6 +59,20 @@
           "functionId": "sharePage",
           "region": "europe-west1"
         }
+      },
+      {
+        "source": "/l/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/api/live/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
       }
     ]
   },

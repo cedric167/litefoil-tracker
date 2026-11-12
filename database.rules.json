@@ -256,6 +256,17 @@
           ".validate": "newData.isNumber() && newData.val() === now"
         }
       }
+    },
+    "live": {
+      "$sid": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && data.child('uid').val() === auth.uid))",
+        ".validate": "!newData.exists() || (newData.child('k').isString() && newData.child('k').val().length >= 16 && newData.child('uid').val() === auth.uid)"
+      }
+    },
+    "liveTrk": {
+      ".read": false,
+      ".write": false
     }
   }
 }

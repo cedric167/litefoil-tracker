@@ -998,6 +998,37 @@
   .nm-pa::after{ content:""; position:absolute; left:50%; bottom:-9px; margin-left:-6px; border:6px solid transparent; border-top-color:#fff; }
   .nm-pn i{ font-style:normal; color:#7fe6ec; } .nm-pn{ display:block; margin:12px auto 0; width:max-content; max-width:150px; padding:4px 11px; border-radius:999px; background:rgba(14,20,23,.85); color:#fff; font-size:14px; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transform:translateX(-50%); margin-left:50%; }
   .nm-pin.me .nm-pa{ animation:nmPulse 2s ease-out infinite; } @keyframes nmPulse{ 0%{ box-shadow:0 0 0 3px #19c3cf, 0 0 0 3px rgba(25,195,207,.5), 0 6px 16px rgba(0,0,0,.4); } 100%{ box-shadow:0 0 0 3px #19c3cf, 0 0 0 22px rgba(25,195,207,0), 0 6px 16px rgba(0,0,0,.4); } }
+  /* ===== 12/11 : sécurité en mer ===== */
+  .sec-card{ margin-top:14px; border-radius:18px; background:linear-gradient(160deg,#eaf8f9,#f6fbfb); border:1.5px solid #cdeef0; padding:12px 14px 6px; }
+  .sec-h{ display:flex; align-items:center; gap:8px; margin-bottom:4px; } .sec-h b{ flex:1; font-size:16px; } .sec-ic{ font-size:20px; }
+  .sec-sos{ border:0; border-radius:999px; background:#e8384f; color:#fff; font:inherit; font-weight:900; font-size:13px; letter-spacing:.06em; padding:7px 14px; cursor:pointer; box-shadow:0 3px 10px rgba(232,56,79,.35); }
+  .sec-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-top:1px solid rgba(20,138,144,.12); margin:0; font-weight:400; color:var(--text); }
+  .sec-row:first-of-type{ border-top:0; } .sec-row > span:first-child{ flex:1; min-width:0; } .sec-row b{ display:block; font-size:14.5px; } .sec-row small{ display:block; font-size:12.5px; color:var(--muted); margin-top:2px; line-height:1.35; }
+  .sec-sub{ padding-top:0; border-top:0; } .sec-sub small{ color:#e8384f !important; font-weight:700; }
+  .sec-btn{ flex:none; border:0; border-radius:10px; background:#fff; color:#118b92; font:inherit; font-weight:700; font-size:13.5px; padding:8px 12px; box-shadow:0 1px 3px rgba(0,0,0,.08); cursor:pointer; }
+  .sec-sel{ flex:none; width:auto !important; border-radius:10px; padding:7px 8px; font:inherit; font-size:14px; } .sec-ok{ flex:none; font-size:12.5px; font-weight:800; color:#13a04a; background:#e3f8ec; padding:5px 10px; border-radius:999px; }
+  .sec-fab{ position:fixed; right:16px; bottom:calc(var(--lf-sab) + 96px); z-index:8100; width:64px; height:64px; border-radius:50%; border:4px solid #fff; background:#e8384f; color:#fff; font:inherit; font-weight:900; font-size:15px; letter-spacing:.04em; box-shadow:0 6px 18px rgba(232,56,79,.5); cursor:pointer; }
+  .sec-fab[hidden]{ display:none !important; } body:not([data-tab="tracking"]) .sec-fab{ display:none !important; }
+  .sec-pick{ max-height:80vh; overflow-y:auto; } .sec-p{ font-size:13.5px; color:var(--muted); line-height:1.45; margin:4px 8px 10px; text-align:center; } .sec-list{ display:flex; flex-direction:column; }
+  .sec-li{ display:flex; align-items:center; gap:12px; padding:9px 8px; margin:0; font-weight:400; } .sec-li b{ flex:1; font-size:15px; color:var(--text); }
+  .sec-av{ width:42px; height:42px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; flex:none; } .sec-av img{ width:100%; height:100%; object-fit:cover; }
+  .sec-ok2{ width:100%; margin-top:10px; }
+  .sec-ask{ position:fixed; inset:0; z-index:12000; background:rgba(4,18,26,.92); display:flex; align-items:center; justify-content:center; padding:20px; animation:sheetFade .2s ease; }
+  .sec-ask-c{ width:100%; max-width:380px; background:#fff; border-radius:26px; padding:24px 20px 18px; text-align:center; color:#0e1417; }
+  .sec-ask-ic{ font-size:46px; } .sec-ask h2{ font-size:26px; margin:6px 0 4px; } .sec-ask p{ font-size:15px; color:#3c4a50; line-height:1.45; margin:0; }
+  .sec-cnt{ width:96px; height:96px; margin:16px auto; border-radius:50%; border:6px solid #ffb020; display:flex; align-items:center; justify-content:center; font-size:38px; font-weight:900; color:#9a5b00; }
+  .sec-p2{ font-size:13px !important; color:#6b7a80 !important; margin:4px 0 14px !important; line-height:1.4; }
+  .sec-big{ display:block; width:100%; border:0; border-radius:16px; padding:15px; font:inherit; font-weight:800; font-size:16.5px; margin-top:10px; cursor:pointer; background:#f1f3f4; color:#0e1417; text-decoration:none; }
+  .sec-big.ok{ background:linear-gradient(135deg,#1fc3cd,#118b92); color:#fff; } .sec-big.sos{ background:#e8384f; color:#fff; } .sec-big:disabled{ opacity:.8; }
+  .sec-ask.bat .sec-ask-c{ border-top:6px solid #ffb020; }
+  .sec-sosv{ position:fixed; inset:0; z-index:12000; background:#fff; display:flex; flex-direction:column; animation:cfIn .2s ease-out; }
+  .sec-sos-h{ display:flex; align-items:center; justify-content:space-between; background:#e8384f; color:#fff; padding:calc(env(safe-area-inset-top) + 14px) 16px 14px; } .sec-sos-h b{ font-size:22px; letter-spacing:.04em; }
+  .sec-x{ width:40px; height:40px; border:0; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; font-size:18px; cursor:pointer; }
+  .sec-sos-b{ flex:1; overflow-y:auto; padding:16px 16px calc(var(--lf-sab) + 20px); }
+  .sec-call{ display:block; text-decoration:none; background:#e8384f; color:#fff; border-radius:18px; padding:16px 18px; margin-bottom:10px; box-shadow:0 6px 16px rgba(232,56,79,.3); } .sec-call b{ display:block; font-size:21px; } .sec-call small{ font-size:13.5px; opacity:.9; }
+  .sec-call.alt{ background:#0e1417; box-shadow:none; }
+  .sec-pos{ background:#f3f6f7; border-radius:16px; padding:14px; margin:6px 0 4px; text-align:center; } .sec-pos small{ display:block; font-size:12.5px; color:#6b7a80; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .sec-pos b{ display:block; font-family:ui-monospace,Menlo,monospace; font-size:19px; margin-top:6px; color:#0e1417; } .sec-pos span{ display:block; font-size:12.5px; color:#6b7a80; margin-top:4px; }
   /* ajout de vidéo façon TikTok (#vu) */
   .vu{ position:fixed; inset:0; z-index:10050; background:#000; color:#fff; display:flex; flex-direction:column; font-family:inherit; overflow:hidden; }
   .vu svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
@@ -2150,6 +2181,15 @@
       </div>
       <div id="phStlState" class="stl-banner" hidden></div>
     </div>
+    <div class="sec-card" id="secCard">
+      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité en mer</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
+      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
+      <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
+      <div class="sec-row"><span><b>Contacts de sécurité</b><small id="secContactsTxt">Riders Lite Foil prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
+      <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
+        <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
+      <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
+    </div>
     <div class="row" style="margin-top:14px">
       <button class="primary" id="phStart">▶ Démarrer la sortie</button>
       <button class="danger" id="phStop" hidden>⏹ Terminer</button>
@@ -2807,6 +2847,7 @@
   function pushH(k, v){ if (v == null || isNaN(v)) return; const a = HIST[k]; a.push(v); if (a.length > 48) a.shift(); }
   const DASH = { spd:null, spdmax:null, sats:null, fix:false, net:false, track:false, batt:null,
                  soc:null, batPow:null, vescPow:null, sessionStart:null, conn:{ tracker:false, bat:false, vesc:false, remote:false } };
+  window.__lfDash = DASH; // 12/11 : lu par le module « sécurité en mer » (batterie)
 
   function sparkSVG(a, color){
     if (!a || a.length < 2) return "";
@@ -3080,6 +3121,7 @@
         $("phStart").hidden = true; $("phStop").hidden = false;
         if(phTimer) clearInterval(phTimer); phTimer = setInterval(function(){ phTick(); phMotionTick(); }, 1000);
         $("phNote").textContent = "Sortie en cours reprise.";
+        try { document.dispatchEvent(new CustomEvent("lf-trk-resume", { detail:{ t0:phT0, milieu:phMilieu, cat:phCat, live:m.live||null } })); } catch(e){}
         phNatSync().then(function(){ phTick(); $("phNote").textContent = phNatNote()+" "+phPts.length+" points GPS."; });
       } else {
         // arrêtée depuis la notification pendant que l'appli était fermée
@@ -3128,6 +3170,7 @@
     if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
     phPts.push(p); phLast = p;
     try { phStlPush(p); } catch(e){}
+    try { document.dispatchEvent(new CustomEvent("lf-trk-pos", { detail:{ lat:p.lat, lon:p.lon, speed:p.speed, t:phT0+p.t*1000, i:phPts.length, first:phPts[0], dist:0, milieu:phMilieu, cat:phCat } })); } catch(e){}
     if(bulk) return;
     var dist = phDistTotal();
     $("phPts").textContent = phPts.length;
@@ -3180,7 +3223,8 @@
       // App native (10/11) : module LfTrack, l'enregistrement continue écran éteint et appli fermée.
       $("phNote").textContent = "Recherche du signal GPS… "+(phIsIos() ? "tu peux verrouiller l'écran (ne ferme pas l'appli)." : "tu peux verrouiller l'écran ou fermer l'appli.");
       phCurSave();
-      nat.start({ meta: JSON.stringify({ t0:phT0, milieu:phMilieu, type:phType, cat:phCat }), title: "Lite Foil — enregistrement", text: "Ta sortie ("+(phCat||"sortie")+") est en cours d'enregistrement." })
+      var secLive = window.__secBeforeStart ? window.__secBeforeStart({ t0:phT0, milieu:phMilieu, cat:phCat }) : null;
+      nat.start({ meta: JSON.stringify({ t0:phT0, milieu:phMilieu, type:phType, cat:phCat, live:secLive }), title: "Lite Foil — enregistrement", text: "Ta sortie ("+(phCat||"sortie")+") est en cours d'enregistrement." })
         .then(function(){ phNatOn = true; phNatAttach(); phNatSync(); })
         .catch(function(e){
           phStopCleanup(); phCurClear(); $("phStart").hidden=false; $("phStop").hidden=true;
@@ -3192,6 +3236,7 @@
         });
       return;
     }
+    if(window.__secBeforeStart && !nat) window.__secBeforeStart({ t0:phT0, milieu:phMilieu, cat:phCat });
     if(bg){
       // App native : service premier plan → l'enregistrement continue écran éteint / en poche. Arrêt manuel.
       $("phNote").textContent = "Recherche du signal GPS… tu peux verrouiller l'écran, l'enregistrement continue.";
@@ -3245,6 +3290,7 @@
     phStopFinish(); phCurClear();
   }
   function phStopFinish(){
+    try { document.dispatchEvent(new CustomEvent("lf-trk-stop")); } catch(e){}
     try { $("trkChip").className = "trk-chip"; $("trkChipTx").textContent = "Terminé"; } catch(e){}
     phStopCleanup();
     $("phStart").hidden = false; $("phStop").hidden = true;
@@ -4480,6 +4526,7 @@
       searchNames(k){ return db.get(db.query(db.ref(d,"names"), db.orderByKey(), db.startAt(k), db.endAt(k+"\uf8ff"), db.limitToFirst(15))).then(function(s){ var out=[]; s.forEach(function(c){ out.push({nk:c.key, uid:c.val()}); }); return out; }); },
       watchFriends(cb){ return db.onValue(db.ref(d,"friends/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       // 12/11 : abonnements façon TikTok (/follows/{moi}/{rider} = date) ; les abonnés se déduisent de la même liste
+      liveCreate(sid,o){ return db.set(db.ref(d,"live/"+sid), Object.assign({uid:uid, t0:Date.now(), status:"active"}, o)); },
       watchFollows(cb){ return db.onValue(db.ref(d,"follows"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       setFollow(to,on){ var r=db.ref(d,"follows/"+uid+"/"+to); return on ? db.set(r, db.serverTimestamp()) : db.remove(r); },
       watchFriendReqs(cb){ return db.onValue(db.ref(d,"friendReq/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
@@ -4685,6 +4732,7 @@
       deleteAccount(){ return Promise.resolve("deleted"); },
       searchNames(k){ var out=[]; Object.keys(demo).forEach(function(u){ var nk=pseudoKey(demo[u].pseudo); if(nk && nk.indexOf(k)===0) out.push({nk:nk, uid:u}); }); return Promise.resolve(out); },
       watchFriends(cb){ cb({"demo-marine":true}); return function(){}; },
+      liveCreate(){ return Promise.resolve(); },
       watchFollows(cb){ var now=Date.now(), m={"demo-aurel":{},"demo-marine":{},"demo-leo":{}}; m["demo-aurel"][uid]=now-7200000; m["demo-marine"][uid]=now-86400000; m["demo-leo"]["demo-aurel"]=now; m["demo-marine"]["demo-aurel"]=now; m[uid]={"demo-marine":now-3600000};
         this._fcb=cb; this._fm=m; cb(JSON.parse(JSON.stringify(m))); return function(){}; },
       setFollow(to,on){ var m=this._fm||{}; m[uid]=m[uid]||{}; if(on) m[uid][to]=Date.now(); else delete m[uid][to]; if(this._fcb) this._fcb(JSON.parse(JSON.stringify(m))); return Promise.resolve(); },
@@ -6509,6 +6557,14 @@
     var vf=$("vf"); if(vf && !vf.hidden) vf.querySelectorAll('.vf-av [data-a="follow"]').forEach(function(em){ var it=em.closest(".vf-item"), u=it&&it.dataset.uid; if(!u) return; var on=iFollow(u); em.classList.toggle("done",on); em.textContent=on?"✓":"+"; });
     var ul=$("folList"); if(ul && ul._redraw) ul._redraw(); var up=$("upFolWrap"); if(up && up._redraw) up._redraw(); }
   // liste Abonnements / Abonnés (façon TikTok)
+  // 12/11 : accès du module « sécurité en mer » (contacts = riders que je suis ou amis)
+  window.__secApi = {
+    me: function(){ return { uid:me.uid, pseudo:me.pseudo||"Rider", ready:profileReady() }; },
+    contacts: function(){ var set={}; Object.keys(myFriends||{}).forEach(function(u){ set[u]=1; }); followingOf(me.uid).forEach(function(u){ set[u]=1; });
+      return Object.keys(set).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }).map(function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; }); },
+    liveCreate: function(sid,o){ return backend && backend.liveCreate ? backend.liveCreate(sid,o) : Promise.reject(new Error("hors ligne")); },
+    share: function(url,title,text){ shareLink(url,title,text); }
+  };
   function openFollowList(uid, which){ var o=gOverlay(); o.hidden=false; var tab=which||"followers";
     if(uid===me.uid && tab==="followers"){ followSeen=Date.now(); try{ localStorage.setItem("lf.fol.seen", String(followSeen)); }catch(e){} try{ renderProfil(); }catch(e){} }
     var draw=function(){ var ids=tab==="following"?followingOf(uid):followersOf(uid);
@@ -7863,6 +7919,129 @@
       setTimeout(function(){ closeCard(s.c); s.c.style.transform=""; s.c.style.transition=""; if(ov&&ov.style) ov.style.backgroundColor=""; },190); }
     else { s.c.style.transition="transform .22s cubic-bezier(.2,.9,.3,1.2)"; s.c.style.transform=""; if(ov&&ov.style) ov.style.backgroundColor=""; setTimeout(function(){ s.c.style.transition=""; },240); } }
   document.addEventListener("touchend", end, {passive:true}); document.addEventListener("touchcancel", end, {passive:true});
+})();
+</script>
+<script>
+/* ===================== 12/11 (demande de Cédric) : SÉCURITÉ EN MER =====================
+   - Partage de la sortie en direct : lien /l/{id} pour un proche (carte, vitesse, trace), sans appli.
+     L'appli envoie la position toutes les ~20 s ; le module natif (nouvelle version) l'envoie aussi écran éteint.
+   - Alerte si je ne bouge plus : « Tout va bien ? » + compte à rebours ; sans réponse → alerte sur la page de suivi
+     et notification aux contacts de sécurité.
+   - SOS : appel du 196 (CROSS, secours en mer) / 112, position GPS lisible, envoi de la position, alerte aux contacts.
+   - Batterie retour : avec une batterie connectée, prévient quand il ne reste plus assez pour revenir au départ. */
+(function(){
+  var BASE="https://litefoil-communaute-222fd.web.app";
+  var $=function(id){ return document.getElementById(id); };
+  function api(){ return window.__secApi||null; }
+  function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){ return null; } }
+  function rnd(n){ var a="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789", o="", r=new Uint32Array(n); try{ crypto.getRandomValues(r); }catch(e){ for(var i=0;i<n;i++) r[i]=Math.random()*4e9; } for(var j=0;j<n;j++) o+=a[r[j]%a.length]; return o; }
+  function hav(a,b){ var R=6371000,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r,x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)*Math.sin(dLo/2); return 2*R*Math.asin(Math.sqrt(x)); }
+  function dms(v,p,n){ var a=Math.abs(v),d=Math.floor(a),m=(a-d)*60; return d+"°"+m.toFixed(3).replace(".",",")+"' "+(v>=0?p:n); }
+  function vib(p){ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} }
+  function beep(f){ try{ var c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain(); o.frequency.value=f||880; o.connect(g); g.connect(c.destination); g.gain.value=.25; o.start(); setTimeout(function(){ o.stop(); c.close(); },450); }catch(e){} }
+  var S={ running:false, live:null, buf:[], lastPost:0, hist:[], first:null, last:null, trav:0, t0:0, milieu:"mer", cat:"", alert:null, socStart:null, travAtSoc:0, batWarn:null, timer:null };
+  // ---------- réglages ----------
+  var cLive=$("secLive"), cIdle=$("secIdle");
+  if(!cLive) return;
+  cLive.checked = ls("lf.sec.live")==="1"; cIdle.value = ls("lf.sec.idle")||"0";
+  cLive.addEventListener("change", function(){ ls("lf.sec.live", cLive.checked?"1":"0"); if(cLive.checked && !(api()&&api().me().ready)){ cLive.checked=false; alert("Crée ton profil (onglet Profil) pour partager ta sortie en direct."); ls("lf.sec.live","0"); } });
+  cIdle.addEventListener("change", function(){ ls("lf.sec.idle", cIdle.value); });
+  function contacts(){ try{ return JSON.parse(ls("lf.sec.contacts")||"[]")||[]; }catch(e){ return []; } }
+  function paintContacts(){ var n=contacts().length, t=$("secContactsTxt"); if(t) t.textContent = n ? (n+" contact"+(n>1?"s":"")+" prévenu"+(n>1?"s":"")+" en cas d'alerte ou de SOS") : "Riders Lite Foil prévenus en cas d'alerte ou de SOS."; }
+  paintContacts();
+  $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), sel=contacts();
+    var ov=document.createElement("div"); ov.className="mm-ov"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Contacts de sécurité</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi les riders que tu suis.</p>'
+      +(list.length? '<div class="sec-list">'+list.map(function(c){ return '<label class="sec-li"><span class="sec-av" style="background:'+c.col+'">'+(c.av?'<img src="'+c.av+'" alt="">':(c.ps.trim()[0]||"R").toUpperCase())+'</span><b>'+c.ps.replace(/[<>&]/g,"")+'</b><input type="checkbox" class="lfo-tog" value="'+c.uid+'"'+(sel.indexOf(c.uid)>=0?" checked":"")+'></label>'; }).join("")+'</div>'
+        : '<p class="sec-p"><b>Tu ne suis encore personne.</b> Suis tes proches riders (bouton Suivre sur leur profil) pour pouvoir les choisir ici. Pour quelqu\'un qui n\'a pas l\'appli, utilise « Partager ma sortie en direct ».</p>')
+      +'<button class="primary sec-ok2">OK</button></div>';
+    document.body.appendChild(ov);
+    var done=function(){ var v=[].slice.call(ov.querySelectorAll("input:checked")).map(function(i){ return i.value; }); ls("lf.sec.contacts", JSON.stringify(v)); paintContacts(); ov.remove(); if(S.running && S.live) alert("C'est noté : tes contacts seront pris en compte à ta prochaine sortie."); };
+    ov.querySelector(".sec-ok2").addEventListener("click", done); ov.addEventListener("click", function(e){ if(e.target===ov) done(); }); });
+  // ---------- partage en direct ----------
+  function shareLive(){ var A=api(); if(!A||!S.live) return; A.share(S.live.url, "Suis ma sortie Lite Foil", "Je pars en sortie"+(S.cat?" ("+S.cat+")":"")+" 🏄 Suis-moi en direct (position, vitesse, alerte sécurité) :"); }
+  $("secLiveShare").addEventListener("click", shareLive);
+  function paintLive(){ var on=$("secLiveOn"); if(on) on.hidden=!(S.running&&S.live); var f=$("secFab"); if(f) f.hidden=!S.running; }
+  window.__secBeforeStart=function(o){ S.running=true; S.t0=o.t0||Date.now(); S.milieu=o.milieu||"mer"; S.cat=o.cat||""; S.buf=[]; S.hist=[]; S.first=null; S.last=null; S.trav=0; S.alert=null; S.socStart=null; S.batWarn=null; S.lastPost=0; S.live=null;
+    var A=api();
+    if(cLive.checked && A && A.me().ready){ var sid=rnd(12), k=rnd(24), me=A.me(), ct={}; contacts().forEach(function(u){ ct[u]=true; });
+      S.live={ sid:sid, k:k, url:BASE+"/l/"+sid, api:BASE+"/api/live/"+sid };
+      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:S.cat, contacts:ct }).catch(function(){});
+      ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:S.live, cat:S.cat, milieu:S.milieu }));
+      setTimeout(shareLive, 900); }
+    else ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:null, cat:S.cat, milieu:S.milieu }));
+    startTimer(); paintLive();
+    return S.live ? { u:S.live.api, k:S.live.k } : null; };
+  document.addEventListener("lf-trk-resume", function(e){ var d=e.detail||{}, cur=null; try{ cur=JSON.parse(ls("lf.sec.cur")||"null"); }catch(x){}
+    S.running=true; S.t0=d.t0||Date.now(); S.milieu=d.milieu||"mer"; S.cat=d.cat||""; S.live=(cur && +cur.t0===+S.t0 && cur.live) ? cur.live : null; startTimer(); paintLive(); });
+  document.addEventListener("lf-trk-pos", function(e){ var p=e.detail; if(!p||!S.running) return;
+    var pt={ lat:p.lat, lon:p.lon, t:p.t||Date.now(), spd:p.speed||0 };
+    if(!S.first) S.first=pt; if(S.last){ var d=hav(S.last,pt); if(d<5000) S.trav+=d; } S.last=pt;
+    S.hist.push(pt); var lim=Date.now()-35*60000; while(S.hist.length && S.hist[0].t<lim) S.hist.shift();
+    S.buf.push({ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60);
+    if(Date.now()-S.lastPost>20000) post(); });
+  document.addEventListener("lf-trk-stop", function(){ if(S.live) post("ended"); S.running=false; stopTimer(); closeAsk(); ls("lf.sec.cur", null); paintLive(); });
+  function socNow(){ var D=window.__lfDash; return (D && D.soc!=null && isFinite(+D.soc)) ? +D.soc : null; }
+  function post(status){ if(!S.live) return Promise.resolve(); var body={ k:S.live.k, pts:S.buf.slice(), soc:socNow() }; if(status) body.status=status;
+    S.lastPost=Date.now(); var sent=S.buf.length;
+    return fetch(S.live.api, { method:"POST", headers:{ "Content-Type":"text/plain" }, body:JSON.stringify(body), keepalive:true })
+      .then(function(r){ if(r.ok) S.buf=S.buf.slice(sent); }).catch(function(){}); }
+  function startTimer(){ stopTimer(); S.timer=setInterval(tick, 15000); }
+  function stopTimer(){ if(S.timer) clearInterval(S.timer); S.timer=null; }
+  function tick(){ if(!S.running) return; if(S.live && (S.buf.length || Date.now()-S.lastPost>60000)) post(); checkIdle(); checkBattery(); }
+  // ---------- immobilité ----------
+  function checkIdle(){ var min=+cIdle.value||0; if(!min || S.alert || S.milieu!=="mer") return; var now=Date.now(), win=min*60000;
+    if(now-S.t0 < win || !S.last) return;
+    var pts=S.hist.filter(function(q){ return q.t>=now-win; }); if(pts.length<2 || (pts[pts.length-1].t-pts[0].t) < win*0.75) return;
+    var far=0; pts.forEach(function(q){ far=Math.max(far, hav(q,S.last)); });
+    if(far<40) askOk(min); }
+  var askT=null, askOv=null;
+  function closeAsk(){ if(askT) clearInterval(askT); askT=null; if(askOv) askOv.remove(); askOv=null; }
+  function askOk(min){ S.alert="ask"; closeAsk(); var left=60;
+    askOv=document.createElement("div"); askOv.className="sec-ask";
+    askOv.innerHTML='<div class="sec-ask-c"><div class="sec-ask-ic">🛟</div><h2>Tout va bien ?</h2><p>Tu ne bouges plus depuis '+min+' min.</p><div class="sec-cnt" id="secCnt">60</div><p class="sec-p2" id="secAskTxt">'+(S.live?'Sans réponse, tes proches qui suivent ta sortie seront alertés.':'Aucun proche ne suit ta sortie : active « Partager ma sortie en direct » pour qu\'ils soient prévenus.')+'</p>'
+      +'<button class="sec-big ok" id="secImOk">👍 Je vais bien</button><button class="sec-big sos" id="secNeed">🆘 J\'ai besoin d\'aide</button></div>';
+    document.body.appendChild(askOv);
+    $("secImOk").addEventListener("click", function(){ var was=S.alert; S.alert=null; S.hist=S.hist.slice(-1); closeAsk(); if(was==="alerted") post("ok"); });
+    $("secNeed").addEventListener("click", function(){ closeAsk(); S.alert=null; openSos(); });
+    vib([500,200,500]); beep(990);
+    askT=setInterval(function(){ left--; var c=$("secCnt"); if(c) c.textContent=String(Math.max(0,left)); if(left%4===0){ vib([400,150,400]); beep(left<15?1200:990); }
+      if(left<=0){ clearInterval(askT); askT=null; S.alert="alerted"; if(S.live) post("alert");
+        var t=$("secAskTxt"); if(t) t.innerHTML = S.live ? '<b>Alerte envoyée.</b> Tes proches voient que tu ne bouges plus. Si tout va bien, appuie sur « Je vais bien » pour annuler.' : '<b>Pas de réponse.</b> Si tu as besoin d\'aide, appelle le 196.';
+        var c2=$("secCnt"); if(c2) c2.textContent="!"; } },1000); }
+  // ---------- batterie retour ----------
+  function checkBattery(){ var soc=socNow(); if(soc==null || !S.first || !S.last) return;
+    if(S.socStart==null){ S.socStart=soc; S.travAtSoc=S.trav; return; }
+    var used=S.socStart-soc; if(used<4) return;
+    var kmPerPct=((S.trav-S.travAtSoc)/1000)/used; if(!(kmPerPct>0)) return;
+    var home=hav(S.last,S.first)/1000, need=Math.ceil(home/kmPerPct*1.3+5);
+    if(soc<=need && (S.batWarn==null || soc<=S.batWarn-5)){ S.batWarn=soc; vib([300,150,300,150,300]); beep(700);
+      var ov=document.createElement("div"); ov.className="sec-ask bat"; ov.innerHTML='<div class="sec-ask-c"><div class="sec-ask-ic">🔋</div><h2>Rentre maintenant</h2><p>Il te reste <b>'+Math.round(soc)+' %</b>. Pour revenir à ton point de départ ('+home.toFixed(1).replace(".",",")+' km), il faut environ <b>'+Math.min(100,need)+' %</b>.</p><button class="sec-big ok">OK, je rentre</button></div>';
+      document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); }); } }
+  // ---------- SOS ----------
+  function openSos(){ var A=api(), ov=document.createElement("div"); ov.className="sec-sosv";
+    ov.innerHTML='<div class="sec-sos-h"><b>🆘 SOS</b><button class="sec-x" aria-label="Fermer">✕</button></div><div class="sec-sos-b">'
+      +'<a class="sec-call" href="tel:196"><b>Appeler le 196</b><small>CROSS · secours en mer (gratuit, 24 h/24)</small></a>'
+      +'<a class="sec-call alt" href="tel:112"><b>Appeler le 112</b><small>Numéro d\'urgence européen</small></a>'
+      +'<div class="sec-pos"><small>Ta position à donner aux secours</small><b id="secPos">Recherche de ta position…</b><span id="secPos2"></span></div>'
+      +'<button class="sec-big" id="secSendPos">📤 Envoyer ma position (SMS, WhatsApp…)</button>'
+      +(S.live?'<button class="sec-big sos" id="secAlertAll">🔴 Prévenir mes proches (SOS)</button>':'')
+      +'<p class="sec-p2">Reste avec ta planche : elle flotte et se voit de loin. Garde ton téléphone au sec et allumé.</p></div>';
+    document.body.appendChild(ov); vib(200);
+    ov.querySelector(".sec-x").addEventListener("click", function(){ ov.remove(); });
+    var pos=S.last?{lat:S.last.lat,lon:S.last.lon,acc:null}:null;
+    function paint(){ if(!pos) return; $("secPos").textContent=dms(pos.lat,"N","S")+"   "+dms(pos.lon,"E","O"); $("secPos2").textContent=pos.lat.toFixed(5)+", "+pos.lon.toFixed(5)+(pos.acc?" · ±"+Math.round(pos.acc)+" m":""); }
+    paint();
+    try{ navigator.geolocation.getCurrentPosition(function(p){ pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy}; paint(); }, function(){ if(!pos) $("secPos").textContent="Position indisponible (active la localisation)"; }, {enableHighAccuracy:true,timeout:15000,maximumAge:30000}); }catch(e){}
+    $("secSendPos").addEventListener("click", function(){ if(!pos){ alert("Position pas encore trouvée, patiente quelques secondes."); return; }
+      var map="https://www.google.com/maps/search/?api=1&query="+pos.lat.toFixed(5)+","+pos.lon.toFixed(5);
+      var txt="🆘 J'ai besoin d'aide en mer. Ma position : "+dms(pos.lat,"N","S")+" "+dms(pos.lon,"E","O")+(S.live?" · Suivi en direct : "+S.live.url:"");
+      if(A) A.share(map,"SOS Lite Foil",txt); else location.href="sms:?&body="+encodeURIComponent(txt+" "+map); });
+    var aa=$("secAlertAll"); if(aa) aa.addEventListener("click", function(){ if(!confirm("Déclencher le SOS ? Tes proches qui suivent ta sortie et tes contacts de sécurité seront alertés.")) return;
+      post("sos"); aa.textContent="✓ SOS envoyé à tes proches"; aa.disabled=true; vib([300,100,300]); }); }
+  $("secSosBtn").addEventListener("click", openSos);
+  var fab=document.createElement("button"); fab.id="secFab"; fab.className="sec-fab"; fab.hidden=true; fab.textContent="SOS"; fab.setAttribute("aria-label","SOS"); document.body.appendChild(fab);
+  fab.addEventListener("click", openSos);
+  window.__secOpenSos=openSos;
 })();
 </script>
 </body>

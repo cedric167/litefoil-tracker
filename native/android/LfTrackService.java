@@ -21,7 +21,10 @@ import android.os.PowerManager;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Lite Foil : service de premier plan qui enregistre le GPS du téléphone pendant une sortie.
@@ -160,8 +163,55 @@ public class LfTrackService extends Service implements LocationListener {
             p.put("t", l.getTime());
             LfTrackStore.append(this, p);
             count++;
+            liveOffer(l);
             Listener li = listener;
             if (li != null) li.onPoint(p);
+        } catch (Exception ignored) {}
+    }
+
+    // 12/11 : suivi en direct (sécurité en mer). Si la sortie est partagée (meta.live = {u, k}), la position est
+    // envoyée au serveur Lite Foil toutes les ~20 s, même écran éteint / appli fermée.
+    private long liveLast = 0;
+    private String liveUrl = null, liveKey = null;
+    private boolean liveRead = false;
+    private final JSONArray liveBuf = new JSONArray();
+    private void liveOffer(Location l) {
+        try {
+            if (!liveRead) {
+                liveRead = true;
+                JSONObject m = LfTrackStore.readMeta(this);
+                if (m != null) {
+                    JSONObject meta = new JSONObject(m.optString("meta", "{}"));
+                    JSONObject lv = meta.optJSONObject("live");
+                    if (lv != null) { liveUrl = lv.optString("u", null); liveKey = lv.optString("k", null); }
+                }
+            }
+            if (liveUrl == null || liveKey == null || !liveUrl.startsWith("https://")) return;
+            JSONObject q = new JSONObject();
+            q.put("lat", l.getLatitude()); q.put("lng", l.getLongitude()); q.put("t", l.getTime());
+            q.put("spd", l.hasSpeed() ? l.getSpeed() * 3.6 : 0);
+            final String body; final int n;
+            synchronized (liveBuf) {
+                liveBuf.put(q);
+                while (liveBuf.length() > 60) liveBuf.remove(0);
+                long now = System.currentTimeMillis();
+                if (now - liveLast < 20000) return;
+                liveLast = now;
+                JSONObject b = new JSONObject();
+                b.put("k", liveKey); b.put("pts", new JSONArray(liveBuf.toString())); b.put("src", "n");
+                body = b.toString(); n = liveBuf.length();
+            }
+            final String url = liveUrl;
+            new Thread(() -> {
+                try {
+                    java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+                    c.setConnectTimeout(10000); c.setReadTimeout(10000); c.setRequestMethod("POST"); c.setDoOutput(true);
+                    c.setRequestProperty("Content-Type", "text/plain");
+                    c.getOutputStream().write(body.getBytes(StandardCharsets.UTF_8));
+                    int code = c.getResponseCode(); c.disconnect();
+                    if (code == 200) synchronized (liveBuf) { for (int i = 0; i < n && liveBuf.length() > 0; i++) liveBuf.remove(0); }
+                } catch (Exception ignored) {}
+            }).start();
         } catch (Exception ignored) {}
     }
 

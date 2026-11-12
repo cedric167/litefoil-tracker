@@ -111,6 +111,7 @@ final class LfTrackRecorder: NSObject, CLLocationManagerDelegate {
     func begin(meta: String) {
         io.sync { try? FileManager.default.removeItem(at: pointsURL) }
         writeMeta(["running": true, "meta": meta])
+        liveCfgLoaded = false; liveBuf = []
         count = 0
         startUpdates()
     }
@@ -158,12 +159,46 @@ final class LfTrackRecorder: NSObject, CLLocationManagerDelegate {
                 "t": (loc.timestamp.timeIntervalSince1970 * 1000).rounded()
             ]
             append(p)
+            liveOffer(loc)
             count += 1
             onPoint?(p)
         }
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
+
+    // MARK: suivi en direct (sécurité en mer, 12/11)
+    // Si la sortie est partagée (meta.live = {u, k}), la position part au serveur Lite Foil toutes les ~20 s,
+    // y compris écran verrouillé (l'appli tourne en arrière-plan grâce à la localisation).
+    private var liveBuf: [[String: Any]] = []
+    private var liveLast: TimeInterval = 0
+    private var liveCfgLoaded = false
+    private var liveCfg: (String, String)? = nil
+    private func liveConf() -> (String, String)? {
+        if liveCfgLoaded { return liveCfg }
+        liveCfgLoaded = true; liveCfg = nil
+        if let m = readMeta(), let s = m["meta"] as? String, let d = s.data(using: .utf8),
+           let j = try? JSONSerialization.jsonObject(with: d) as? [String: Any], let lv = j["live"] as? [String: Any],
+           let u = lv["u"] as? String, let k = lv["k"] as? String, u.hasPrefix("https://") { liveCfg = (u, k) }
+        return liveCfg
+    }
+    private func liveOffer(_ loc: CLLocation) {
+        guard let cfg = liveConf(), let url = URL(string: cfg.0) else { return }
+        liveBuf.append(["lat": loc.coordinate.latitude, "lng": loc.coordinate.longitude,
+                        "t": (loc.timestamp.timeIntervalSince1970 * 1000).rounded(), "spd": loc.speed >= 0 ? loc.speed * 3.6 : 0])
+        if liveBuf.count > 60 { liveBuf.removeFirst(liveBuf.count - 60) }
+        let now = Date().timeIntervalSince1970
+        if now - liveLast < 20 { return }
+        liveLast = now
+        let n = liveBuf.count
+        guard let body = try? JSONSerialization.data(withJSONObject: ["k": cfg.1, "pts": liveBuf, "src": "n"]) else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"; req.setValue("text/plain", forHTTPHeaderField: "Content-Type"); req.httpBody = body; req.timeoutInterval = 15
+        URLSession.shared.dataTask(with: req) { [weak self] _, resp, _ in
+            guard let h = resp as? HTTPURLResponse, h.statusCode == 200 else { return }
+            DispatchQueue.main.async { guard let s = self else { return }; s.liveBuf.removeFirst(min(n, s.liveBuf.count)) }
+        }.resume()
+    }
 
     private func authChanged() {
         let st = authStatus

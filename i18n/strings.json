@@ -6314,5 +6314,57 @@
  "Lien copié ✓ Colle-le où tu veux.": {
   "en": "Link copied ✓ Paste it anywhere.",
   "es": "Enlace copiado ✓ Pégalo donde quieras."
+ },
+ "Sécurité en mer": {
+  "en": "Safety at sea",
+  "es": "Seguridad en el mar"
+ },
+ "Partager ma sortie en direct": {
+  "en": "Share my session live",
+  "es": "Compartir mi sesión en directo"
+ },
+ "Contacts de sécurité": {
+  "en": "Safety contacts",
+  "es": "Contactos de seguridad"
+ },
+ "Alerte si je ne bouge plus": {
+  "en": "Alert if I stop moving",
+  "es": "Alerta si dejo de moverme"
+ },
+ "Alerte batterie retour": {
+  "en": "Return battery alert",
+  "es": "Alerta de batería para volver"
+ },
+ "Envoyer le lien": {
+  "en": "Send the link",
+  "es": "Enviar el enlace"
+ },
+ "Tout va bien ?": {
+  "en": "Are you OK?",
+  "es": "¿Todo bien?"
+ },
+ "👍 Je vais bien": {
+  "en": "👍 I'm fine",
+  "es": "👍 Estoy bien"
+ },
+ "Appeler le 196": {
+  "en": "Call 196",
+  "es": "Llamar al 196"
+ },
+ "Appeler le 112": {
+  "en": "Call 112",
+  "es": "Llamar al 112"
+ },
+ "Rentre maintenant": {
+  "en": "Head back now",
+  "es": "Vuelve ahora"
+ },
+ "Choisir": {
+  "en": "Choose",
+  "es": "Elegir"
+ },
+ "Non": {
+  "en": "No",
+  "es": "No"
  }
 }

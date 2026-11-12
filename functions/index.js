@@ -569,6 +569,8 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
   const base = "https://" + host;
   const db = getDatabase();
   try {
+    if (kind === "api" && parts[1] === "live") return liveApi(req, res, String(parts[2] || "").replace(/[^A-Za-z0-9_-]/g, ""));
+    if (kind === "l") { const raw = String(parts[1] || ""); return livePage(req, res, raw.replace(/\.json$/, "").replace(/[^A-Za-z0-9_-]/g, ""), /\.json$/.test(raw), base); }
     // « Rejoindre » : Google Play sur Android, App Store sur iPhone, sinon l'appli web
     if (kind === "get") {
       const ua = String(req.get("user-agent") || "");
@@ -626,3 +628,116 @@ ${vids.length ? `<div class="grid">${vids.slice(0, 30).map((x) => `<a href="/v/$
     return res.status(500).send("Erreur, réessaie dans un instant.");
   }
 });
+
+/* ===================== Sécurité en mer (12/11) =====================
+ * Pendant une sortie, l'appli (et le module natif, même écran éteint) envoie la position toutes les ~20 s :
+ *   POST /api/live/{sid}  {k, pts:[{lat,lng,t,spd}], soc?, status?}   (k = clé secrète de la sortie)
+ * Un proche suit la sortie sur /l/{sid} (carte, vitesse, trace, alerte), sans compte.
+ * status : active | alert (immobile, pas de réponse) | sos | ok (fausse alerte) | ended.
+ * En cas d'alerte ou de SOS, les contacts de sécurité (riders Lite Foil choisis) reçoivent une notification. */
+function hav(a, b) { const R = 6371000, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
+  const x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); }
+async function liveApi(req, res, sid) {
+  res.set("Access-Control-Allow-Origin", "*"); res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).send("");
+  if (req.method !== "POST" || !sid) return res.status(405).send("POST attendu");
+  let b = req.body; if (!b || typeof b !== "object") { try { b = JSON.parse(String(req.rawBody || "{}")); } catch (e) { b = {}; } }
+  const db = getDatabase(), ref = db.ref("live/" + sid);
+  const L = (await ref.get()).val();
+  if (!L || !L.k || String(b.k || "") !== String(L.k)) return res.status(403).send("refusé");
+  if (L.status === "ended" && b.status !== "ended") return res.json({ ok: true, ended: true });
+  const up = { upd: Date.now() };
+  const pts = (Array.isArray(b.pts) ? b.pts : []).filter((q) => q && isFinite(+q.lat) && isFinite(+q.lng) && Math.abs(+q.lat) <= 90 && Math.abs(+q.lng) <= 180).slice(-60);
+  let lt = +L.lt || 0, dist = +L.dist || 0, prev = L.last || null;
+  for (const q of pts) {
+    const pt = { lat: +(+q.lat).toFixed(6), lng: +(+q.lng).toFixed(6), t: +q.t || Date.now(), spd: isFinite(+q.spd) ? Math.round(+q.spd * 10) / 10 : 0 };
+    if (prev && pt.t <= (+prev.t || 0)) continue;
+    if (prev) { const d = hav(prev, pt); if (d < 5000) dist += d; }
+    prev = pt;
+    if (pt.t - lt >= 15000) { lt = pt.t; await db.ref("liveTrk/" + sid).push([pt.lat, pt.lng]); }
+  }
+  if (prev && prev !== L.last) { up.last = prev; up.lt = lt; up.dist = Math.round(dist); }
+  if (b.soc != null && isFinite(+b.soc)) up.soc = Math.max(0, Math.min(100, Math.round(+b.soc)));
+  const st = String(b.status || "");
+  if (["alert", "sos", "ok", "ended"].indexOf(st) >= 0) {
+    up.status = st === "ok" ? "active" : st;
+    if (st === "alert" || st === "sos") up.alertT = Date.now();
+    if (st === "ended") up.endT = Date.now();
+  }
+  await ref.update(up);
+  if ((st === "alert" || st === "sos") && L.status !== st) {
+    const uids = Object.keys(L.contacts || {}).filter((u) => u && u !== L.uid);
+    if (uids.length) {
+      const ps = L.ps || "Un rider";
+      await sendToUids(uids, { type: "safety", channel: "live:" + sid, live: String(sid),
+        title: st === "sos" ? "🆘 SOS de " + ps : "⚠️ " + ps + " ne bouge plus",
+        body: st === "sos" ? ps + " a déclenché un SOS en mer. Ouvre sa position." : ps + " est immobile depuis un moment et ne répond pas. Vérifie sa position." }).catch(() => {});
+    }
+  }
+  return res.json({ ok: true });
+}
+async function livePage(req, res, sid, asJson, base) {
+  const db = getDatabase();
+  const L = sid ? (await db.ref("live/" + sid).get()).val() : null;
+  res.set("Cache-Control", "no-store");
+  if (asJson) {
+    if (!L) return res.status(404).json({ ok: false });
+    const trk = Object.values((await db.ref("liveTrk/" + sid).get()).val() || {});
+    const step = Math.max(1, Math.ceil(trk.length / 600));
+    return res.json({ ok: true, ps: L.ps || "Rider", cat: L.cat || "", status: L.status || "active", t0: +L.t0 || 0, upd: +L.upd || 0, now: Date.now(), last: L.last || null,
+      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, trk: trk.filter((x, i) => i % step === 0 || i === trk.length - 1) });
+  }
+  if (!L) return res.status(404).send(sharePageHtml({ title: "Suivi introuvable · Lite Foil", desc: "Ce suivi n'existe plus.", url: base + "/l/" + sid, app: SHARE_APP,
+    body: `<div class="pf"><div class="empty">Ce suivi de sortie n'existe pas ou a expiré.</div></div>` }));
+  const ps = escH(L.ps || "Rider");
+  return res.send(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sortie en direct de ${ps} · Lite Foil</title><meta property="og:title" content="Suis la sortie de ${ps} en direct"><meta property="og:description" content="Position, vitesse et trace en direct, avec alerte en cas de problème. Lite Foil, sécurité en mer.">
+<meta property="og:image" content="${escH(SHARE_ICON)}"><link rel="icon" href="${escH(SHARE_ICON)}"><meta name="theme-color" content="#04121a">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:#04121a;color:#0e1417;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+#map{position:fixed;inset:0}.top{position:fixed;left:12px;right:12px;top:max(12px,env(safe-area-inset-top));z-index:1000;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.96);border-radius:18px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.top img{width:40px;height:40px;border-radius:11px}.top div{flex:1;min-width:0}.top b{display:block;font-size:15.5px}.top small{display:block;font-size:12.5px;color:#5b6b71}
+.pill{flex:none;font-size:12.5px;font-weight:800;padding:6px 10px;border-radius:999px;background:#e3f8ec;color:#0a7a3c}.pill.alert{background:#fff1d6;color:#9a5b00}.pill.sos{background:#e8384f;color:#fff;animation:bl 1s infinite}.pill.ended{background:#eef1f2;color:#5b6b71}.pill.stale{background:#fff1d6;color:#9a5b00}
+@keyframes bl{50%{opacity:.55}}
+.ban{position:fixed;left:12px;right:12px;top:calc(max(12px,env(safe-area-inset-top)) + 72px);z-index:1000;border-radius:16px;padding:12px 14px;font-weight:700;font-size:14.5px;line-height:1.4;display:none;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.ban.sos{display:block;background:#e8384f;color:#fff}.ban.alert{display:block;background:#ffb020;color:#2b1700}.ban.stale{display:block;background:#fff;color:#9a5b00}.ban a{color:inherit;text-decoration:underline}
+.card{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:#fff;border-radius:22px 22px 0 0;padding:14px 16px max(14px,env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}.stats b{display:block;font-size:18px}.stats span{font-size:11.5px;color:#6b7a80;font-weight:600}
+.coord{margin-top:12px;background:#f3f6f7;border-radius:12px;padding:9px 12px;font-size:13.5px;display:flex;justify-content:space-between;gap:8px;align-items:center}.coord b{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.acts{display:flex;gap:8px;margin-top:12px}.acts a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:14px;padding:12px 8px;border-radius:12px;background:#f1f3f4;color:#0e1417}.acts a.red{background:#e8384f;color:#fff}
+.me{width:22px;height:22px;border-radius:50%;background:#19c3cf;border:4px solid #fff;box-shadow:0 0 0 6px rgba(25,195,207,.35),0 2px 8px rgba(0,0,0,.4)}.me.sos{background:#e8384f;box-shadow:0 0 0 8px rgba(232,56,79,.4)}</style></head><body>
+<div id="map"></div>
+<div class="top"><img src="${escH(SHARE_ICON)}" alt=""><div><b>Sortie de ${ps}</b><small id="sub">Chargement…</small></div><span class="pill" id="pill">…</span></div>
+<div class="ban" id="ban"></div>
+<div class="card"><div class="stats"><div><b id="spd">–</b><span>km/h</span></div><div><b id="dist">–</b><span>km</span></div><div><b id="dur">–</b><span>durée</span></div><div><b id="soc">–</b><span>batterie</span></div></div>
+<div class="coord"><span>Position</span><b id="coord">–</b></div>
+<div class="acts"><a id="nav" href="#" target="_blank" rel="noopener">📍 Itinéraire</a><a class="red" href="tel:196">📞 Secours en mer 196</a></div></div>
+<script>
+var SID=${JSON.stringify(sid)},map=L.map("map",{zoomControl:false,attributionControl:false}).setView([46.5,2.5],5);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19}).addTo(map);
+var line=L.polyline([],{color:"#19e3ff",weight:4,opacity:.9}).addTo(map),mk=null,first=true,lastStatus="";
+function dms(v,p,n){var a=Math.abs(v),d=Math.floor(a),m=(a-d)*60;return d+"°"+m.toFixed(3)+"' "+(v>=0?p:n);}
+function dur(ms){var s=Math.max(0,Math.round(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+"h"+String(m).padStart(2,"0"):m+" min";}
+function ago(ms){var s=Math.round(ms/1000);return s<60?"il y a "+s+" s":"il y a "+Math.round(s/60)+" min";}
+function beep(){try{var c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.value=.2;o.start();setTimeout(function(){o.stop();c.close();},600);}catch(e){}try{navigator.vibrate&&navigator.vibrate([400,200,400]);}catch(e){}}
+function load(){fetch("/l/"+SID+".json",{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){if(!d||!d.ok)return;
+ var stale=d.status==="active"&&d.upd&&d.now-d.upd>5*60000,st=d.status==="ended"?"ended":(d.status==="sos"?"sos":(d.status==="alert"?"alert":(stale?"stale":"live")));
+ var pill=document.getElementById("pill");pill.className="pill "+(st==="live"?"":st);pill.textContent={live:"● En direct",ended:"Sortie terminée",sos:"🆘 SOS",alert:"⚠️ Immobile",stale:"⚠️ Sans nouvelles"}[st];
+ document.getElementById("sub").textContent=(d.cat?d.cat+" · ":"")+(d.upd?"mis à jour "+ago(d.now-d.upd):"en attente de position");
+ var ban=document.getElementById("ban");ban.className="ban "+(st==="sos"?"sos":st==="alert"?"alert":st==="stale"?"stale":"");
+ ban.innerHTML=st==="sos"?"🆘 SOS déclenché "+ago(d.now-d.alertT)+". Appelle le <a href='tel:196'>196</a> (CROSS, secours en mer) et donne la position ci-dessous.":st==="alert"?"⚠️ ${ps} ne bouge plus et n'a pas répondu à l'alerte. Essaie de l'appeler ; sans réponse, appelle le <a href='tel:196'>196</a>.":st==="stale"?"Plus de position depuis "+Math.round((d.now-d.upd)/60000)+" min (zone sans réseau ?). Dernière position ci-dessous.":"";
+ if((st==="sos"||st==="alert")&&lastStatus!==st)beep();lastStatus=st;
+ var pts=(d.trk||[]).map(function(p){return[p[0],p[1]];});if(d.last)pts.push([d.last.lat,d.last.lng]);line.setLatLngs(pts);
+ if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon({className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else mk.setLatLng(ll);
+  mk.getElement()&&(mk.getElement().firstChild.className="me"+(st==="sos"?" sos":""));
+  if(first){map.setView(ll,14);first=false;}
+  document.getElementById("coord").textContent=dms(d.last.lat,"N","S")+"  "+dms(d.last.lng,"E","O");
+  document.getElementById("nav").href="https://www.google.com/maps/search/?api=1&query="+d.last.lat+","+d.last.lng;
+  document.getElementById("spd").textContent=st==="ended"?"–":(+d.last.spd||0).toFixed(1).replace(".",",");}
+ document.getElementById("dist").textContent=(d.dist/1000).toFixed(1).replace(".",",");
+ document.getElementById("dur").textContent=d.t0?dur((d.endT||d.now)-d.t0):"–";
+ document.getElementById("soc").textContent=d.soc==null?"–":d.soc+" %";
+}).catch(function(){});}
+load();setInterval(load,10000);
+</script></body></html>`);
+}
