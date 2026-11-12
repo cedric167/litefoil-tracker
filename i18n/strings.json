@@ -4755,6 +4755,34 @@
   "en": "Uploading…",
   "es": "Enviando…"
  },
+ "Disco & danse": {
+  "en": "Disco & dance",
+  "es": "Disco y baile"
+ },
+ "Bonne humeur": {
+  "en": "Feel-good",
+  "es": "Buen humor"
+ },
+ "Pop & fun": {
+  "en": "Pop & fun",
+  "es": "Pop y diversión"
+ },
+ "Été & acoustique": {
+  "en": "Summer & acoustic",
+  "es": "Verano y acústico"
+ },
+ "Utiliser": {
+  "en": "Use",
+  "es": "Usar"
+ },
+ "Pour un fichier de ton téléphone : utilise une musique dont tu as les droits.": {
+  "en": "For a file from your phone: use music you have the rights to.",
+  "es": "Para un archivo de tu teléfono: usa música de la que tengas los derechos."
+ },
+ "Impossible de charger cette musique. Vérifie ta connexion.": {
+  "en": "Can't load this music. Check your connection.",
+  "es": "No se puede cargar esta música. Comprueba tu conexión."
+ },
  "Vitesse max": {
   "en": "Max speed",
   "es": "Velocidad máx."

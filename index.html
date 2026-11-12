@@ -752,6 +752,15 @@
   .vu-tin::placeholder{ color:rgba(255,255,255,.55); }
   .vu-msheet{ position:absolute; left:0; right:0; bottom:0; z-index:6; background:#161823; color:#fff; border-radius:20px 20px 0 0; padding:14px 16px calc(var(--lf-sab, 0px) + 18px); box-shadow:0 -10px 30px rgba(0,0,0,.5); }
   .vu-mh b{ font-size:17px; }
+  .vu-mlib:empty{ display:none; }
+  .vu-mcats{ display:flex; gap:8px; overflow-x:auto; margin:12px -16px 0; padding:2px 16px 4px; scrollbar-width:none; } .vu-mcats::-webkit-scrollbar{ display:none; }
+  .vu-mcats button{ flex:none; border:1.5px solid rgba(255,255,255,.25); background:none; color:#fff; font:inherit; font-size:13px; font-weight:700; border-radius:999px; padding:7px 13px; cursor:pointer; box-shadow:none; }
+  .vu-mcats button.on{ background:#fff; color:#161823; border-color:#fff; }
+  .vu-mlist{ margin-top:8px; max-height:32vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .vu-mrow{ display:flex; align-items:center; gap:11px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+  .vu-mplay{ flex:none; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; font:inherit; font-size:14px; cursor:pointer; box-shadow:none; padding:0; }
+  .vu-mt{ flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25; } .vu-mt b{ font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .vu-mt small{ font-size:12px; color:rgba(255,255,255,.6); }
+  .vu-muse{ flex:none; border:0; border-radius:999px; background:#fe2c55; color:#fff; font:inherit; font-size:13px; font-weight:800; padding:8px 14px; cursor:pointer; box-shadow:none; } .vu-muse:disabled{ opacity:.6; }
   .vu-mpick{ margin-top:14px; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; border:1.5px dashed rgba(255,255,255,.4); background:rgba(255,255,255,.06); color:#fff; font:inherit; font-size:15px; border-radius:14px; padding:16px 12px; cursor:pointer; }
   .vu-mpick span{ font-size:22px; }
   .vu-mnote{ margin-top:8px; font-size:12.5px; color:rgba(255,255,255,.6); text-align:center; }
@@ -4772,7 +4781,7 @@
       //   /storyMedia/{id}   : { uid, img } (la photo en grand, lue seulement quand on ouvre la story)
       //   /storyViews/{id}/{uid} : date de la vue (visible par l'auteur seulement)
       watchStories(cb){ return db.onValue(db.query(db.ref(d,"stories"), db.orderByChild("t"), db.startAt(Date.now()-86400000)), function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v){ v.id=c.key; out.push(v); } }); cb(out); },
-        function(err){ console.warn("Stories indisponibles (règle Firebase /stories manquante ?) :", err&&err.code); cb([]); }); },
+        function(err){ console.warn("Stories indisponibles (règle Firebase /stories manquante ?) :", err&&err.code); cb(null); }); },
       publishStory(o, onProgress){ const self=this, sref=db.push(db.ref(d,"stories"));
         const base={uid:uid,pseudo:me.pseudo||"Rider",type:o.type,thumb:o.thumb||"",cap:String(o.cap||"").slice(0,100),dur:o.dur||0,t:db.serverTimestamp()}; if(me.av) base.av=me.av;
         if(o.type==="img") return db.set(db.ref(d,"storyMedia/"+sref.key),{uid:uid,img:o.img,t:db.serverTimestamp()}).then(function(){ if(onProgress) onProgress(1); return db.set(sref,base); }).then(function(){ return sref.key; });
@@ -5950,6 +5959,9 @@
       else { ctx.lineJoin="round"; ctx.lineWidth=fs*0.16; ctx.strokeStyle=(t.color==="#000000")?"rgba(255,255,255,.95)":"rgba(0,0,0,.85)"; lines.forEach(function(l,i){ ctx.strokeText(l, cx, y0+i*lh); }); ctx.fillStyle=t.color; }
       lines.forEach(function(l,i){ ctx.fillText(l, cx, y0+i*lh); }); ctx.restore();
       boxes.push({ x:cx-bw/2, y:cy-bh/2, w:bw, h:bh }); }); return boxes; }
+  // 13/11 : bibliothèque de musiques libres (CC0, domaine public) fournie avec l'appli : music/index.json + fichiers MP3
+  var vuMusicP=null;
+  function vuMusicList(){ if(!vuMusicP) vuMusicP=fetch("music/index.json").then(function(r){ return r.ok ? r.json() : { tracks:[] }; }).then(function(j){ return (j&&j.tracks)||[]; }).catch(function(){ vuMusicP=null; return []; }); return vuMusicP; }
   function vuThumbFx(dataUrl, texts){ return new Promise(function(res){ if(!dataUrl || !texts || !texts.length){ res(dataUrl); return; }
     var im=new Image(); im.onload=function(){ try{ var c=document.createElement("canvas"); c.width=im.width; c.height=im.height; var x=c.getContext("2d"); x.drawImage(im,0,0); vuDrawTexts(x,c.width,c.height,texts); res(c.toDataURL("image/jpeg",0.7)); }catch(e){ res(dataUrl); } };
     im.onerror=function(){ res(dataUrl); }; im.src=dataUrl; }); }
@@ -6071,23 +6083,42 @@
           .then(function(buf){ musClear(); st.music={ name:String(file.name||"Musique").replace(/\.[a-z0-9]+$/i,""), buf:buf, dur:buf.duration, off:0, vol:0.8 };
             st.murl=URL.createObjectURL(file); st.aud=new Audio(st.murl); st.aud.loop=true; musOpen(); txDraw(); })
           .catch(function(){ say("Impossible de lire cette musique. Essaie un fichier MP3 ou M4A."); }); }
-      function musOpen(){ var old=vu.querySelector(".vu-msheet"); if(old) old.remove(); var m=st.music, clip=win();
+      // liste des musiques de l'appli : catégories, écoute d'un extrait, « Utiliser »
+      function musLib(sh, say){ var box=sh.querySelector("#vuMLib"); if(!box) return; var prev=null, prevBtn=null;
+        var stopPrev=function(){ if(prev){ try{ prev.pause(); }catch(x){} prev=null; } if(prevBtn){ prevBtn.textContent="▶"; prevBtn=null; } };
+        sh._stopPrev=stopPrev;
+        vuMusicList().then(function(list){ if(!document.body.contains(box)) return; if(!list.length){ box.innerHTML=""; return; }
+          var cats=[]; list.forEach(function(t){ if(cats.indexOf(t.cat)<0) cats.push(t.cat); });
+          box.innerHTML='<div class="vu-mcats">'+cats.map(function(c,i){ return '<button type="button" data-cat="'+esc(c)+'" class="'+(i===0?"on":"")+'">'+esc(c)+'</button>'; }).join("")+'</div><div class="vu-mlist" id="vuMList"></div>';
+          var draw=function(cat){ var l=$("vuMList"); l.scrollTop=0; l.innerHTML=list.filter(function(t){ return t.cat===cat; }).map(function(t){
+              return '<div class="vu-mrow" data-id="'+esc(t.id)+'"><button type="button" class="vu-mplay" data-a="prev" aria-label="Écouter">▶</button><span class="vu-mt"><b>'+esc(t.title)+'</b><small>'+esc(t.artist)+' · '+fmt(t.dur)+'</small></span><button type="button" class="vu-muse" data-a="use">Utiliser</button></div>'; }).join(""); };
+          draw(cats[0]);
+          box.addEventListener("click", function(e){ var b=e.target.closest("button"); if(!b) return; e.stopPropagation();
+            if(b.dataset.cat){ stopPrev(); box.querySelectorAll("[data-cat]").forEach(function(x){ x.classList.toggle("on", x===b); }); draw(b.dataset.cat); return; }
+            var row=b.closest(".vu-mrow"), t=row ? list.filter(function(x){ return x.id===row.dataset.id; })[0] : null; if(!t) return;
+            if(b.dataset.a==="prev"){ if(prevBtn===b){ stopPrev(); if(st.mode==="trim") play(); return; }
+              stopPrev(); vid.pause(); prev=new Audio("music/"+t.file); prevBtn=b; b.textContent="❚❚"; prev.onended=stopPrev; var pp=prev.play(); if(pp&&pp.catch) pp.catch(function(){ stopPrev(); }); return; }
+            if(b.dataset.a==="use"){ stopPrev(); b.disabled=true; b.textContent="…"; say("Lecture de la musique…");
+              fetch("music/"+t.file).then(function(r){ if(!r.ok) throw new Error("http"); return r.blob(); })
+                .then(function(bl){ var f, nm=t.title+" · "+t.artist+".mp3"; try{ f=new File([bl], nm, {type:"audio/mpeg"}); }catch(x){ f=bl; f.name=nm; } musLoad(f, say); })
+                .catch(function(){ b.disabled=false; b.textContent="Utiliser"; say("Impossible de charger cette musique. Vérifie ta connexion."); }); } }); }); }
+      function musOpen(){ var old=vu.querySelector(".vu-msheet"); if(old){ if(old._stopPrev) old._stopPrev(); old.remove(); } var m=st.music, clip=win();
         var sh=document.createElement("div"); sh.className="vu-msheet";
         sh.innerHTML='<div class="vu-mh"><b>Musique</b><button type="button" class="vu-sbtn ok" data-a="ok">OK</button></div>'
           +(m ? '<div class="vu-mname"><span>🎵</span><b></b><button type="button" data-a="rm">Retirer</button></div>'
                 +(m.dur>clip+1 ? '<label class="vu-ml"><span>Départ de la musique</span><em id="vuMOffV"></em><input type="range" id="vuMOff" min="0" max="'+Math.floor(m.dur-clip)+'" step="1" value="'+Math.round(m.off)+'"></label>' : '')
                 +'<label class="vu-ml"><span>Volume de la musique</span><input type="range" id="vuMVol" min="0" max="100" value="'+Math.round(m.vol*100)+'"></label>'
-              : '<button type="button" class="vu-mpick" data-a="pick"><span>🎵</span><b>Choisir une musique sur mon téléphone</b></button><div class="vu-mnote">Utilise une musique dont tu as les droits (ta création ou libre de droits).</div>')
+              : '<div class="vu-mlib" id="vuMLib"></div><button type="button" class="vu-mpick" data-a="pick"><span>📁</span><b>Choisir une musique sur mon téléphone</b></button><div class="vu-mnote">Pour un fichier de ton téléphone : utilise une musique dont tu as les droits.</div>')
           +'<label class="vu-ml"><span>Son de la vidéo</span><input type="range" id="vuOVol" min="0" max="100" value="'+Math.round(st.origVol*100)+'"></label>'
           +'<input type="file" id="vuMFile" accept="audio/*" hidden><div class="vu-merr" id="vuMErr"></div>';
-        vu.appendChild(sh); if(m) sh.querySelector(".vu-mname b").textContent=m.name;
+        vu.appendChild(sh); if(m) sh.querySelector(".vu-mname b").textContent=m.name; else musLib(sh, function(tx){ var e=$("vuMErr"); if(e) e.textContent=tx||""; });
         var say=function(tx){ var e=$("vuMErr"); if(e) e.textContent=tx||""; };
         var off=$("vuMOff"), offV=$("vuMOffV"); if(off){ offV.textContent=fmt(m.off); off.addEventListener("input", function(){ m.off=+off.value; offV.textContent=fmt(m.off); try{ if(st.aud) st.aud.currentTime=m.off; }catch(x){} vid.currentTime=st.start; }); }
         var mv=$("vuMVol"); if(mv) mv.addEventListener("input", function(){ m.vol=(+mv.value)/100; });
         $("vuOVol").addEventListener("input", function(){ st.origVol=(+$("vuOVol").value)/100; txDraw(); });
         $("vuMFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(f) musLoad(f, say); });
         sh.addEventListener("click", function(e){ var b=e.target.closest("button"); if(!b) return; var a=b.dataset.a;
-          if(a==="pick") $("vuMFile").click(); else if(a==="rm"){ musClear(); musOpen(); txDraw(); } else if(a==="ok"){ sh.remove(); } });
+          if(a==="pick") $("vuMFile").click(); else if(a==="rm"){ musClear(); musOpen(); txDraw(); } else if(a==="ok"){ if(sh._stopPrev) sh._stopPrev(); sh.remove(); } });
         if(st.mode==="trim" && vid.paused) play(); }
       vu.querySelectorAll(".vu-tools button[data-x]").forEach(function(b){ b.addEventListener("click", function(){
         if(b.dataset.x==="text"){ if(st.texts.length>=6){ $("vuHint").textContent="6 textes maximum."; return; } txEdit(-1); } else musOpen(); }); });
@@ -6156,8 +6187,9 @@
     order.forEach(function(g){ g.unseen=g.list.some(function(x){ return !stSeen[x.id]; }); g.last=g.list[g.list.length-1]; });
     return order.sort(function(a,b){ var am=a.uid===me.uid?0:1, bm=b.uid===me.uid?0:1; if(am!==bm) return am-bm; if(a.unseen!==b.unseen) return a.unseen?-1:1; return (+b.last.t||0)-(+a.last.t||0); }); }
   function stAv(uid, ps, av){ return av ? '<img src="'+esc(av)+'" alt="">' : '<span style="background:'+avatarColor(uid||"x")+'">'+esc(((ps||"R").trim()[0]||"R").toUpperCase())+'</span>'; }
-  function onStories(list){ stories=list||[]; renderStories(); }
-  function renderStories(){ var bars=document.querySelectorAll(".st-bar"); if(!bars.length) return; var gs=stGroups(), mine=gs.filter(function(g){ return g.uid===me.uid; })[0];
+  let storiesOk=false; // faux tant que le serveur n'a pas répondu (ou refuse) : la barre reste masquée
+  function onStories(list){ storiesOk=!!list; stories=list||[]; renderStories(); }
+  function renderStories(){ var bars=document.querySelectorAll(".st-bar"); if(!bars.length) return; if(!storiesOk){ bars.forEach(function(b){ b.innerHTML=""; }); return; } var gs=stGroups(), mine=gs.filter(function(g){ return g.uid===me.uid; })[0];
     var h='<button type="button" class="st-it'+(mine?(mine.unseen?" new":" seen"):" add")+'" data-st="'+(mine?"me":"add")+'"><span class="st-ring"><span class="st-av">'+stAv(me.uid, me.pseudo||"M", me.av)+'</span>'+(mine?'':'<i class="st-plus">+</i>')+'</span><b>Ta story</b></button>';
     gs.forEach(function(g){ if(g.uid===me.uid) return; var l=g.last, off=isOfficial(g.uid), name=(off&&g.uid===TEAM_UID)?TEAM_NAME:(l.pseudo||"Rider");
       h+='<button type="button" class="st-it '+(g.unseen?"new":"seen")+'" data-st="'+esc(g.uid)+'"><span class="st-ring"><span class="st-av">'+stAv(g.uid, name, l.av||(g.uid===TEAM_UID?TEAM_AV:""))+'</span></span><b>'+esc(name)+'</b></button>'; });

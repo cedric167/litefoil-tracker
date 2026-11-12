@@ -1,0 +1,325 @@
+{
+ "note": "Morceaux du domaine public (CC0 1.0), source Internet Archive.",
+ "tracks": [
+  {
+   "id": "loyalty-freak-music-roller-fever",
+   "title": "Roller Fever",
+   "artist": "Loyalty Freak Music",
+   "cat": "Disco & danse",
+   "dur": 145,
+   "file": "loyalty-freak-music-roller-fever.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusic-ROLLERDISCODANCEDANCE",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-dance-robot-activate",
+   "title": "Dance Robot ACTIVATE",
+   "artist": "Loyalty Freak Music",
+   "cat": "Disco & danse",
+   "dur": 159,
+   "file": "loyalty-freak-music-dance-robot-activate.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusic-ROLLERDISCODANCEDANCE",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-take-a-break",
+   "title": "Take A Break",
+   "artist": "Loyalty Freak Music",
+   "cat": "Disco & danse",
+   "dur": 125,
+   "file": "loyalty-freak-music-take-a-break.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusic-ROLLERDISCODANCEDANCE",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-sweat-time",
+   "title": "Sweat Time !",
+   "artist": "Loyalty Freak Music",
+   "cat": "Disco & danse",
+   "dur": 127,
+   "file": "loyalty-freak-music-sweat-time.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusic-ROLLERDISCODANCEDANCE",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-last-energy-for-the-day",
+   "title": "Last Energy For The Day",
+   "artist": "Loyalty Freak Music",
+   "cat": "Disco & danse",
+   "dur": 145,
+   "file": "loyalty-freak-music-last-energy-for-the-day.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusic-ROLLERDISCODANCEDANCE",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-love-train",
+   "title": "Love Train",
+   "artist": "Loyalty Freak Music",
+   "cat": "Bonne humeur",
+   "dur": 121,
+   "file": "loyalty-freak-music-love-train.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusicPOSITIVEATTITUDE20170920175908839",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-sweet-sun",
+   "title": "Sweet Sun",
+   "artist": "Loyalty Freak Music",
+   "cat": "Bonne humeur",
+   "dur": 120,
+   "file": "loyalty-freak-music-sweet-sun.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusicPOSITIVEATTITUDE20170920175908839",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-yippee",
+   "title": "Yippee !",
+   "artist": "Loyalty Freak Music",
+   "cat": "Bonne humeur",
+   "dur": 130,
+   "file": "loyalty-freak-music-yippee.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusicPOSITIVEATTITUDE20170920175908839",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "loyalty-freak-music-beach",
+   "title": "Beach",
+   "artist": "Loyalty Freak Music",
+   "cat": "Chill",
+   "dur": 161,
+   "file": "loyalty-freak-music-beach.mp3",
+   "src": "https://archive.org/details/LoyaltyFreakMusicMELODIESWITHABEAT2018030251947223",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-everything-is-groovy-how-to-move-your-body",
+   "title": "Everything is groovy (How to move your body)",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 116,
+   "file": "komiku-everything-is-groovy-how-to-move-your-body.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-we-have-to-dance-together",
+   "title": "We have to dance TOGETHER",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 138,
+   "file": "komiku-we-have-to-dance-together.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-pop-city",
+   "title": "Pop City",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 96,
+   "file": "komiku-pop-city.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-disco-challenge",
+   "title": "Disco Challenge",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 68,
+   "file": "komiku-disco-challenge.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-road-1-chill",
+   "title": "Road 1 Chill",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 107,
+   "file": "komiku-road-1-chill.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-road-3-chill",
+   "title": "Road 3 Chill",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 106,
+   "file": "komiku-road-3-chill.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-the-journey-begins",
+   "title": "The journey begins",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 101,
+   "file": "komiku-the-journey-begins.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-little-town-before-big-city",
+   "title": "Little town before Big city",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 122,
+   "file": "komiku-little-town-before-big-city.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-dance-with-two-or-more",
+   "title": "Dance with two or more",
+   "artist": "Komiku",
+   "cat": "Pop & fun",
+   "dur": 134,
+   "file": "komiku-dance-with-two-or-more.mp3",
+   "src": "https://archive.org/details/Komiku-HeliceAwesomeDanceAdventure",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-together-to-play",
+   "title": "Together to play !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 128,
+   "file": "komiku-together-to-play.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-time-to-do-some-sport",
+   "title": "Time to do some sport !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 96,
+   "file": "komiku-time-to-do-some-sport.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-play-the-guitar-for-me",
+   "title": "Play the guitar for me !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 147,
+   "file": "komiku-play-the-guitar-for-me.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-duet-guitar-to-chill",
+   "title": "Duet guitar to chill !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 112,
+   "file": "komiku-duet-guitar-to-chill.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-ukulele-is-easy-to-play-but-hard-to-master",
+   "title": "Ukulele is easy to play but hard to master !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 91,
+   "file": "komiku-ukulele-is-easy-to-play-but-hard-to-master.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-groove-all-together",
+   "title": "Groove all together !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 109,
+   "file": "komiku-groove-all-together.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-happy-to-live-this-adventure-with-you",
+   "title": "Happy to live this adventure with you !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 148,
+   "file": "komiku-happy-to-live-this-adventure-with-you.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-feel-that-beat",
+   "title": "Feel that beat !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 179,
+   "file": "komiku-feel-that-beat.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-all-jumpy-for-you",
+   "title": "All jumpy for you !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 118,
+   "file": "komiku-all-jumpy-for-you.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-play-play-play",
+   "title": "Play play play !",
+   "artist": "Komiku",
+   "cat": "Été & acoustique",
+   "dur": 176,
+   "file": "komiku-play-play-play.mp3",
+   "src": "https://archive.org/details/komiku-animal-summer-music-camp",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-cliff-road-chill",
+   "title": "Cliff Road Chill",
+   "artist": "Komiku",
+   "cat": "Chill",
+   "dur": 88,
+   "file": "komiku-cliff-road-chill.mp3",
+   "src": "https://archive.org/details/komiku-cliff-road-chill",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-rock-n-roll-circuit",
+   "title": "Rock'n Roll Circuit",
+   "artist": "Komiku",
+   "cat": "Rock",
+   "dur": 92,
+   "file": "komiku-rock-n-roll-circuit.mp3",
+   "src": "https://archive.org/details/komiku-incredible-kart-game",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-country-circuit",
+   "title": "Country Circuit",
+   "artist": "Komiku",
+   "cat": "Rock",
+   "dur": 102,
+   "file": "komiku-country-circuit.mp3",
+   "src": "https://archive.org/details/komiku-incredible-kart-game",
+   "lic": "CC0 1.0"
+  },
+  {
+   "id": "komiku-flamenco-circuit",
+   "title": "Flamenco Circuit",
+   "artist": "Komiku",
+   "cat": "Rock",
+   "dur": 118,
+   "file": "komiku-flamenco-circuit.mp3",
+   "src": "https://archive.org/details/komiku-incredible-kart-game",
+   "lic": "CC0 1.0"
+  }
+ ]
+}
