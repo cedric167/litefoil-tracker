@@ -289,9 +289,6 @@
   #phStart, #phStop{ width:100%; height:58px; border-radius:18px; font-size:17.5px; font-weight:800; letter-spacing:.01em; }
   #phStart{ background:linear-gradient(135deg,#2bd4c4,#0b6d72); color:#fff; border:0; box-shadow:0 10px 24px rgba(11,109,114,.35); }
   #phStop{ background:linear-gradient(135deg,#ff6b6b,#d1343f); color:#fff; border:0; box-shadow:0 10px 24px rgba(209,52,63,.3); }
-  #tab-tracking .grid .kv:nth-child(-n+4) .v{ font-size:28px; color:#0b2233; }
-  #tab-tracking .grid .kv:nth-child(5), #tab-tracking .grid .kv:nth-child(6){ padding:7px 12px; background:transparent; border-style:dashed; }
-  #tab-tracking .grid .kv:nth-child(5) .v, #tab-tracking .grid .kv:nth-child(6) .v{ font-size:15px; color:var(--muted); }
   #phStepsKv .v, #phJumpsKv .v{ color:#0f8a93 !important; } @keyframes paneIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none; } }
   .home-more{ display:flex; gap:10px; margin-top:12px; }
   .home-more a, .home-more button{ flex:1; display:flex; align-items:center; gap:10px; padding:12px; border-radius:18px; background:#fff; border:1px solid var(--line-soft); box-shadow:var(--sh-sm); text-decoration:none; color:var(--text); font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; text-align:left; }
@@ -1628,6 +1625,68 @@
 .trk-btn.primary,.trk-btn:not(.ghost){background:#111;color:#fff}
 .trk-btn.ghost{background:transparent;color:var(--cyan-ink,#0e7c74);border:1.5px solid var(--line,#d9e0e3)}
 .trk-board{margin-top:14px}
+/* 13/11 : page Tracking refaite (sport en pastilles, tableau de bord, gros bouton) */
+#tab-tracking:not([hidden]){display:flex;flex-direction:column}
+#tab-tracking>*{order:6}
+#tab-tracking>.tk-sport{order:1} #tab-tracking>.tk-rec{order:2} #tab-tracking>.tk-tip{order:3} #tab-tracking>.tk-opts{order:4} #tab-tracking>.tk-mapw{order:5}
+/* pendant l'enregistrement : le tableau de bord puis la carte, le reste passe dessous */
+#tab-tracking:has(#trkChip.rec)>.tk-sport,#tab-tracking:has(#trkChip.rec)>.tk-tip,#tab-tracking:has(#trkChip.rec) .tk-h-rec{display:none}
+#tab-tracking:has(#trkChip.rec)>.tk-mapw{order:3}
+#tab-tracking:has(#trkChip.rec) .tk-gps-l{display:none}
+.tk-h{display:flex;align-items:center;gap:10px;margin:0 2px 12px;font-size:17px}
+.tk-h b{font-weight:800;letter-spacing:-.01em}
+.tk-n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#2bd4c4,#0b6d72)}
+.tk-sport{background:var(--card);border:1px solid var(--line-soft);border-radius:24px;padding:16px 14px 14px;box-shadow:var(--sh-sm);margin-bottom:14px}
+.tk-sport .phseg{background:var(--tile);border-radius:15px;padding:4px;gap:4px}
+.tk-sport .phseg button{border:0;background:transparent;border-radius:12px;padding:10px;font-size:15px}
+.tk-sport .phseg button[aria-selected="true"]{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(16,24,32,.12),0 4px 10px rgba(16,24,32,.06)}
+.tk-chips{display:flex;gap:8px;overflow-x:auto;margin:12px -14px 0;padding:2px 14px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.tk-chips::-webkit-scrollbar{display:none}
+.tk-sport .sps-btn,.tk-sport select.phsel{display:none !important}
+.tk-chips button{flex:0 0 auto;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:84px;max-width:104px;padding:11px 10px 9px;border-radius:18px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;line-height:1.15;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,background .15s,color .15s}
+.tk-chips button i{font-style:normal;font-size:26px;line-height:1}
+.tk-chips button.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f4fdfc);color:#0b5f5a;transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(20,184,171,.6)}
+.tk-rec{position:relative;overflow:hidden;border-radius:28px;padding:18px 16px 16px;color:#fff;background:linear-gradient(165deg,#07222c 0%,#0b3d47 55%,#0f6a67 100%);box-shadow:0 18px 40px -18px rgba(7,34,44,.75);margin-bottom:14px}
+.tk-rec:before{content:"";position:absolute;right:-80px;top:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(47,211,195,.28),rgba(47,211,195,0) 70%);pointer-events:none}
+.tk-rec>*{position:relative}
+.tk-rec .tk-n{background:#fff;color:#0b3d47}
+.tk-rec-top{display:flex;align-items:center;gap:8px}
+.tk-now{flex:1;min-width:0;text-align:center;font-size:13.5px;font-weight:700;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk-gps{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:7px 11px}
+.tk-gps-l{opacity:.75}
+.tk-bars{display:inline-flex;align-items:flex-end;gap:2px;height:13px}
+.tk-bars i{width:4px;border-radius:2px;background:rgba(255,255,255,.28)}
+.tk-bars i:nth-child(1){height:5px}.tk-bars i:nth-child(2){height:9px}.tk-bars i:nth-child(3){height:13px}
+.tk-gps[data-q="1"] .tk-bars i:nth-child(1){background:#ffb454}
+.tk-gps[data-q="2"] .tk-bars i:nth-child(-n+2){background:#ffe27a}
+.tk-gps[data-q="3"] .tk-bars i{background:#5ff0c8}
+.tk-time{text-align:center;margin:18px 0 14px}
+.tk-time-v{font-size:68px;line-height:1;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;font-family:"Instrument Sans",system-ui,sans-serif}
+.tk-time-l{margin-top:6px;font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.65}
+#tab-tracking:has(#trkChip.rec) .tk-time-v{text-shadow:0 0 28px rgba(95,240,200,.45)}
+.tk-stats{display:grid;grid-template-columns:repeat(3,1fr);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:12px 4px}
+.tk-stats>div{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:0 4px}
+.tk-stats>div+div{border-left:1px solid rgba(255,255,255,.14)}
+.tk-stats b{font-size:18.5px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tk-stats span{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.65;white-space:nowrap}
+.tk-extra{display:flex;gap:10px;margin-top:10px}
+.tk-extra:not(:has(.kv:not([hidden]))){display:none}
+.tk-extra .kv{flex:1;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);text-align:center}
+.tk-extra .kv .k{color:rgba(255,255,255,.65)}
+.tk-rec #phStepsKv .v,.tk-rec #phJumpsKv .v{color:#7fe9e0 !important}
+.tk-go{margin-top:16px}
+.tk-rec #phStart{height:64px;border-radius:22px;font-size:19px;background:linear-gradient(135deg,#5ff0c8,#22cdbd);color:#06282a;box-shadow:0 14px 28px -10px rgba(47,211,195,.75);animation:tkPulse 2.4s ease-in-out infinite}
+.tk-rec #phStart:active{transform:scale(.98)}
+.tk-rec #phStop{height:64px;border-radius:22px;font-size:19px}
+@keyframes tkPulse{0%,100%{box-shadow:0 14px 28px -10px rgba(47,211,195,.75),0 0 0 0 rgba(95,240,200,.45)}50%{box-shadow:0 14px 28px -10px rgba(47,211,195,.75),0 0 0 10px rgba(95,240,200,0)}}
+@media (prefers-reduced-motion:reduce){.tk-rec #phStart{animation:none}}
+.tk-rec .note{color:rgba(255,255,255,.82);text-align:center;margin-top:12px;font-size:13.5px}
+.tk-rec .note a{color:#7fe9e0 !important}
+.tk-rec #phMotNote{text-align:left;background:rgba(255,255,255,.08);border-radius:14px;padding:10px 12px}
+.tk-pts{text-align:center;margin-top:6px;font-size:11.5px;opacity:.5;font-variant-numeric:tabular-nums}
+.tk-tip{display:flex;gap:10px;align-items:flex-start;background:#fff8e6;border:1px solid #f5e3b3;border-radius:18px;padding:12px 14px;font-size:13.5px;line-height:1.45;color:#5b4a1c;margin-bottom:6px}
+.tk-tip-ic{font-size:20px;line-height:1.2}
+.tk-optcard .phstl{margin-top:0;border:0;padding:0;background:none}
 .phstl{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--mist,#f4f6f7)}
 .phstl-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
 .phstl-row input{width:22px;height:22px;margin:2px 0 0;accent-color:#14b8ab;flex:0 0 auto}
@@ -2140,66 +2199,47 @@
   </section>
 
   <section id="tab-tracking" class="tabpane" hidden>
-  <div class="trk-hero">
-    <div class="trk-hero-top">
-      <div>
-        <div class="trk-kicker">TRACKING</div>
-        <h2 class="trk-title">Suivre avec mon téléphone</h2>
-        <p class="trk-sub">Sans boîtier : le GPS de ce téléphone enregistre ta sortie, foil, surf, wing, rando, vélo… et la publie en direct si tu le souhaites.</p>
-      </div>
-      <div class="trk-chip" id="trkChip"><span class="dot"></span><span id="trkChipTx">Prêt</span></div>
-    </div>
-    <div class="trk-feats">
-      <span>📍 Trace GPS</span><span>⚡ Vitesse &amp; max</span><span>🗺️ Carte en direct</span><span>🛰️ SportsTrackLive</span><span>🎬 Survol 3D</span>
-    </div>
-  </div>
-
-  <div class="card" id="phoneCard">
-    <div class="note" style="margin-top:0">Garde le téléphone sur toi. Dans l'appli installée, tu peux verrouiller l'écran, l'enregistrement continue ; dans le navigateur, laisse l'écran allumé. À la fin, la sortie apparaît dans <b>Mes activités — Terre &amp; Mer</b>, avec la carte, les stats et le survol 3D.</div>
-    <div class="phlab" style="margin-top:14px">Type d'activité</div>
+  <!-- 13/11 : page Tracking refaite — 1. choisir son sport, 2. tableau de bord + gros bouton, puis carte, partage et sécurité -->
+  <div class="tk-sport" id="tkSport">
+    <div class="tk-h"><span class="tk-n">1</span><b>Choisis ton sport</b></div>
     <div class="phseg" id="phSeg">
       <button type="button" data-m="mer" aria-selected="true">🌊 Mer</button>
       <button type="button" data-m="terre" aria-selected="false">⛰️ Terre</button>
     </div>
-    <select class="phsel" id="phAct" aria-label="Choix de l'activité"></select>
-    <div class="grid" style="margin-top:12px">
-      <div class="kv"><div class="k">Durée</div><div class="v" id="phDur">0:00</div></div>
-      <div class="kv"><div class="k">Distance</div><div class="v" id="phDist">0,00 km</div></div>
-      <div class="kv"><div class="k">Vitesse</div><div class="v" id="phSpd">— km/h</div></div>
-      <div class="kv"><div class="k">Vitesse max</div><div class="v" id="phSpdMax">— km/h</div></div>
-      <div class="kv"><div class="k">Points GPS</div><div class="v" id="phPts">0</div></div>
-      <div class="kv"><div class="k">Précision</div><div class="v" id="phAcc">—</div></div>
+    <div class="tk-chips" id="tkChips" role="listbox" aria-label="Choix de l'activité"></div>
+    <select class="phsel" id="phAct" aria-label="Choix de l'activité" hidden></select>
+  </div>
+
+  <div class="tk-rec" id="phoneCard">
+    <div class="tk-h tk-h-rec"><span class="tk-n">2</span><b>Lance ta sortie</b></div>
+    <div class="tk-rec-top">
+      <div class="trk-chip" id="trkChip"><span class="dot"></span><span id="trkChipTx">Prêt</span></div>
+      <div class="tk-now" id="tkNow"></div>
+      <div class="tk-gps" id="tkGps" data-q="0" title="Signal GPS"><span class="tk-bars"><i></i><i></i><i></i></span><span class="tk-gps-l">GPS</span><span id="phAcc">—</span></div>
+    </div>
+    <div class="tk-time"><div class="tk-time-v" id="phDur">0:00</div><div class="tk-time-l">Durée</div></div>
+    <div class="tk-stats">
+      <div><b id="phDist">0,00 km</b><span>Distance</span></div>
+      <div><b id="phSpd">— km/h</b><span>Vitesse</span></div>
+      <div><b id="phSpdMax">— km/h</b><span>Vitesse max</span></div>
+    </div>
+    <div class="tk-extra">
       <div class="kv" id="phStepsKv" hidden><div class="k">👣 Pas</div><div class="v" id="phSteps">0</div></div>
       <div class="kv" id="phJumpsKv" hidden><div class="k">🦘 Sauts</div><div class="v" id="phJumps">—</div></div>
     </div>
     <div class="note" id="phMotNote" hidden>Pour compter les pas et mesurer les sauts, garde le téléphone <b>fixé au corps</b> (brassard ou ceinture). Le GPS continue écran verrouillé dans l'appli ; les pas et les sauts, eux, se mesurent écran allumé.</div>
-    <div class="phstl" id="phStl">
-      <label class="phstl-row"><input type="checkbox" id="phStlOn"><span><b>Publier en direct sur SportsTrackLive</b><small>Ta sortie apparaît en direct sur ton compte, comme avec le boîtier.</small></span></label>
-      <div id="phStlLogin" hidden>
-        <input id="phStlEmail" type="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="E-mail SportsTrackLive">
-        <input id="phStlPass" type="password" autocomplete="current-password" placeholder="Mot de passe SportsTrackLive" style="margin-top:8px">
-        <div class="row" style="margin-top:10px"><button class="primary" id="phStlGo" type="button">Se connecter</button></div>
-        <div class="note" style="margin-top:8px">Pas encore de compte ? <a href="https://www.sportstracklive.com/fr/users/sign_up" target="_blank" rel="noopener"><b>Créer un compte SportsTrackLive</b></a> (gratuit), puis reviens ici.</div>
-      </div>
-      <div id="phStlState" class="stl-banner" hidden></div>
-    </div>
-    <div class="sec-card" id="secCard">
-      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité en mer</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
-      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
-      <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
-      <div class="sec-row"><span><b>Contacts de sécurité</b><small id="secContactsTxt">Riders Lite Foil prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
-      <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
-        <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
-      <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
-    </div>
-    <div class="row" style="margin-top:14px">
+    <div class="tk-go">
       <button class="primary" id="phStart">▶ Démarrer la sortie</button>
       <button class="danger" id="phStop" hidden>⏹ Terminer</button>
     </div>
     <div class="note" id="phNote">Prêt. Appuie sur « Démarrer » et autorise la localisation.</div>
+    <div class="tk-pts"><span id="phPts">0</span> <span>points GPS</span></div>
   </div>
 
-  <h2>Carte</h2>
+  <div class="tk-tip" id="tkTip"><span class="tk-tip-ic">💡</span><span>Garde le téléphone sur toi. Dans l'appli installée, tu peux verrouiller l'écran : l'enregistrement continue. Dans le navigateur, laisse l'écran allumé. À la fin, ta sortie arrive dans <b>Mes activités</b> avec la carte, les stats et le survol 3D.</span></div>
+
+  <div class="tk-mapw">
+    <h2>Carte en direct</h2>
   <div class="card">
     <div class="map-wrap" id="mapWrap">
       <div id="map"></div>
@@ -2212,7 +2252,32 @@
     </div>
     <a class="linkbtn" id="btnStlMap" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">Voir la session sur SportsTrackLive</a>
   </div>
+  </div>
 
+  <div class="tk-opts">
+    <h2>Partage &amp; sécurité</h2>
+    <div class="card tk-optcard">
+    <div class="phstl" id="phStl">
+      <label class="phstl-row"><input type="checkbox" id="phStlOn"><span><b>Publier en direct sur SportsTrackLive</b><small>Ta sortie apparaît en direct sur ton compte, comme avec le boîtier.</small></span></label>
+      <div id="phStlLogin" hidden>
+        <input id="phStlEmail" type="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="E-mail SportsTrackLive">
+        <input id="phStlPass" type="password" autocomplete="current-password" placeholder="Mot de passe SportsTrackLive" style="margin-top:8px">
+        <div class="row" style="margin-top:10px"><button class="primary" id="phStlGo" type="button">Se connecter</button></div>
+        <div class="note" style="margin-top:8px">Pas encore de compte ? <a href="https://www.sportstracklive.com/fr/users/sign_up" target="_blank" rel="noopener"><b>Créer un compte SportsTrackLive</b></a> (gratuit), puis reviens ici.</div>
+      </div>
+      <div id="phStlState" class="stl-banner" hidden></div>
+    </div>
+    </div>
+    <div class="sec-card" id="secCard">
+      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité en mer</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
+      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
+      <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
+      <div class="sec-row"><span><b>Contacts de sécurité</b><small id="secContactsTxt">Riders Lite Foil prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
+      <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
+        <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
+      <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
+    </div>
+  </div>
 
   <h2>Ma montre</h2>
   <div class="card trk-watch">
@@ -3147,7 +3212,20 @@
     var mine = []; try{ mine = (localStorage.getItem("lf.comm.sports")||"").split(","); }catch(e){}
     PH_ACTS[phMilieu].slice().sort(function(x,y){ return (mine.indexOf(x[0])<0?1:0)-(mine.indexOf(y[0])<0?1:0); }).forEach(function(a){ var o = document.createElement("option"); o.value = a[0]; o.textContent = a[1]; sel.appendChild(o); });
     phType = sel.value; phCat = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
+    tkChips();
   }
+  // 13/11 : le sport se choisit avec des pastilles (la liste déroulante #phAct, masquée, reste la référence)
+  var TK_EMO = { efoil:"⚡", wingfoil:"🪂", parawing:"🪁", windsurf:"⛵", pumpfoil:"🦵", kitesurf:"🪁", surffoil:"🏄", supdownwind:"🌬️", surf:"🏄", bodyboard:"🌊", sup:"🛶", canoe:"🚣", deriveur:"⛵", jetski:"🚤", swim:"🏊", other:"✨",
+    running:"🏃", marche:"🚶", rando:"🥾", trail:"⛰️", velo:"🚴", ski:"🎿", snowboard:"🏂", skate:"🛹", longboard:"🛹", surfskate:"🛹", roller:"🛼", longueur:"🦘", perche:"🤸", parapente:"🪂" };
+  function tkChips(){ var sel=$("phAct"), box=$("tkChips"); if(!sel || !box) return; box.innerHTML="";
+    Array.prototype.forEach.call(sel.options, function(o){ var b=document.createElement("button"); b.type="button"; b.dataset.v=o.value; b.setAttribute("role","option");
+      var i=document.createElement("i"); i.textContent=TK_EMO[o.value]||"✨"; var t=document.createElement("span"); t.textContent=o.text; b.appendChild(i); b.appendChild(t); box.appendChild(b); });
+    box.scrollLeft=0; tkPaint(); }
+  // met à jour la pastille choisie, le sport affiché dans le tableau de bord et les barres du signal GPS
+  function tkPaint(){ var sel=$("phAct"), box=$("tkChips");
+    if(sel && box) Array.prototype.forEach.call(box.children, function(b){ var on=b.dataset.v===sel.value; if(b.classList.contains("on")!==on){ b.classList.toggle("on", on); b.setAttribute("aria-selected", on?"true":"false"); } });
+    var now=$("tkNow"); if(now && sel){ var o=sel.options[sel.selectedIndex], tx=o ? (TK_EMO[o.value]||"")+" "+o.text : ""; if(now.dataset.tx!==tx){ now.dataset.tx=tx; now.textContent=tx; } }
+    var g=$("tkGps"), a=$("phAcc"); if(g && a){ var m=parseFloat(a.textContent), q=isFinite(m) ? (m<=10?3:(m<=30?2:1)) : 0; if(g.dataset.q!==String(q)) g.dataset.q=String(q); } }
   function phSetMilieu(m){
     phMilieu = m;
     var seg = $("phSeg"); if(seg) Array.prototype.forEach.call(seg.querySelectorAll("button"), function(b){ b.setAttribute("aria-selected", b.dataset.m===m ? "true" : "false"); });
@@ -3157,7 +3235,7 @@
   function phHaversine(a,b){ var R=6371000, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lon-a.lon)*Math.PI/180, la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180; var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
   function phDistTotal(){ var d=0; for(var i=1;i<phPts.length;i++) d+=phHaversine(phPts[i-1],phPts[i]); return d; }
   function phNum(x){ return x.toFixed(1).replace(".",","); }
-  function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); }
+  function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); tkPaint(); }
   // Traite une position normalisée (native OU web) : {lat, lon, acc, alt, speedMs, heading, tMs}
   function phOnPos(o, bulk){
     if(o.lat==null || o.lon==null || !isFinite(o.lat) || !isFinite(o.lon)) return;
@@ -3412,7 +3490,8 @@
     phStlBind();
     var a=$("phStart"), b=$("phStop"); if(a) a.addEventListener("click", phStart); if(b) b.addEventListener("click", phStop);
     var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(btn) phSetMilieu(btn.dataset.m); });
-    var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; });
+    var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; tkPaint(); });
+    var chips=$("tkChips"); if(chips && sel) chips.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"); if(!b || phTimer) return; sel.value=b.dataset.v; sel.dispatchEvent(new Event("change")); try{ b.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"}); }catch(x){} });
     phSetMilieu("mer");
     phNatBoot();
   }

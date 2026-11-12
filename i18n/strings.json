@@ -4619,6 +4619,34 @@
   "en": "Delete video",
   "es": "Eliminar el vídeo"
  },
+ "Choisis ton sport": {
+  "en": "Choose your sport",
+  "es": "Elige tu deporte"
+ },
+ "Lance ta sortie": {
+  "en": "Start your session",
+  "es": "Empieza tu salida"
+ },
+ "Carte en direct": {
+  "en": "Live map",
+  "es": "Mapa en directo"
+ },
+ "Partage & sécurité": {
+  "en": "Sharing & safety",
+  "es": "Compartir y seguridad"
+ },
+ "points GPS": {
+  "en": "GPS points",
+  "es": "puntos GPS"
+ },
+ "Garde le téléphone sur toi. Dans l'appli installée, tu peux verrouiller l'écran : l'enregistrement continue. Dans le navigateur, laisse l'écran allumé. À la fin, ta sortie arrive dans": {
+  "en": "Keep your phone on you. In the installed app you can lock the screen: recording continues. In the browser, keep the screen on. At the end, your session appears in",
+  "es": "Lleva el teléfono contigo. En la app instalada puedes bloquear la pantalla: la grabación continúa. En el navegador, deja la pantalla encendida. Al final, tu salida aparece en"
+ },
+ "avec la carte, les stats et le survol 3D.": {
+  "en": "with the map, stats and 3D flyover.",
+  "es": "con el mapa, las estadísticas y el vuelo 3D."
+ },
  "Vitesse max": {
   "en": "Max speed",
   "es": "Velocidad máx."
