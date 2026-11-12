@@ -691,6 +691,34 @@
   .vg-like{ position:absolute; left:6px; bottom:6px; color:#fff; font-size:12px; font-weight:800; text-shadow:0 1px 4px rgba(0,0,0,.6); }
   .vg-del{ position:absolute; right:5px; top:5px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; }
   .vg-del svg{ width:17px; height:17px; fill:none; stroke:#fff; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  /* 13/11 : texte et musique sur la vidéo qu'on publie */
+  .vu-tx{ position:absolute; z-index:1; touch-action:none; }
+  .vu-aa{ font-size:17px; font-weight:800; letter-spacing:-.02em; }
+  .vu-tools button.has i{ box-shadow:0 0 0 2px #fff inset; }
+  .vu-sheet{ position:absolute; inset:0; z-index:6; background:rgba(0,0,0,.88); display:flex; flex-direction:column; padding:calc(env(safe-area-inset-top) + 8px) 14px 14px; }
+  .vu-sbar, .vu-mh{ display:flex; align-items:center; justify-content:space-between; }
+  .vu-sbtn{ border:0; background:none; color:#fff; font:inherit; font-size:15.5px; font-weight:600; padding:10px 6px; cursor:pointer; }
+  .vu-sbtn.ok{ background:#fe2c55; border-radius:999px; padding:9px 20px; font-weight:800; }
+  .vu-tctl{ display:flex; align-items:center; gap:12px; margin-top:10px; }
+  .vu-tbg{ flex:none; width:40px; height:40px; border-radius:10px; border:2px solid #fff; background:transparent; color:#fff; font:inherit; font-size:19px; font-weight:800; cursor:pointer; }
+  .vu-tbg.on{ background:#fff; color:#0b0d10; }
+  .vu-cols{ display:flex; gap:9px; overflow-x:auto; padding:4px 2px; scrollbar-width:none; } .vu-cols::-webkit-scrollbar{ display:none; }
+  .vu-cols button{ flex:none; width:30px; height:30px; border-radius:50%; border:2px solid rgba(255,255,255,.75); padding:0; cursor:pointer; }
+  .vu-cols button.on{ transform:scale(1.2); border-color:#fff; box-shadow:0 0 0 2px #fe2c55; }
+  .vu-tsize{ display:flex; align-items:center; gap:10px; margin-top:12px; color:#fff; font-weight:800; font-size:13px; } .vu-tsize .big{ font-size:22px; }
+  .vu-tsize input, .vu-ml input{ flex:1; width:100%; accent-color:#fe2c55; }
+  .vu-tin{ margin-top:18px; width:100%; border:0; outline:none; resize:none; border-radius:12px; padding:8px 12px; text-align:center; font:inherit; font-weight:800; line-height:1.22; caret-color:#fe2c55; }
+  .vu-tin::placeholder{ color:rgba(255,255,255,.55); }
+  .vu-msheet{ position:absolute; left:0; right:0; bottom:0; z-index:6; background:#161823; color:#fff; border-radius:20px 20px 0 0; padding:14px 16px calc(var(--lf-sab, 0px) + 18px); box-shadow:0 -10px 30px rgba(0,0,0,.5); }
+  .vu-mh b{ font-size:17px; }
+  .vu-mpick{ margin-top:14px; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; border:1.5px dashed rgba(255,255,255,.4); background:rgba(255,255,255,.06); color:#fff; font:inherit; font-size:15px; border-radius:14px; padding:16px 12px; cursor:pointer; }
+  .vu-mpick span{ font-size:22px; }
+  .vu-mnote{ margin-top:8px; font-size:12.5px; color:rgba(255,255,255,.6); text-align:center; }
+  .vu-mname{ margin-top:14px; display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.08); border-radius:14px; padding:11px 12px; }
+  .vu-mname b{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14.5px; }
+  .vu-mname button{ flex:none; border:0; background:none; color:#ff6b81; font:inherit; font-weight:700; font-size:13.5px; cursor:pointer; }
+  .vu-ml{ display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin-top:16px; font-size:13.5px; font-weight:600; color:#fff; } .vu-ml span{ flex:1; } .vu-ml em{ font-style:normal; font-variant-numeric:tabular-nums; opacity:.75; }
+  .vu-merr{ margin-top:10px; min-height:18px; font-size:13px; color:#ffb4c0; text-align:center; }
   .vg-off{ position:absolute; right:6px; top:6px; background:#1fb5bd; color:#fff; font-size:11px; font-weight:800; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
   .vf{ position:fixed; inset:0; z-index:9000; background:#000; }
   .vf-top{ position:absolute; top:0; left:0; right:0; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 12px 10px; color:#fff; background:linear-gradient(180deg,rgba(0,0,0,.55),transparent); pointer-events:none; }
@@ -5807,23 +5835,25 @@
   function recMime(){ var l=["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
     if(!window.MediaRecorder || !MediaRecorder.isTypeSupported) return ""; for(var i=0;i<l.length;i++){ if(MediaRecorder.isTypeSupported(l[i])) return l[i]; } return ""; }
   function canTranscode(){ var c=document.createElement("canvas"); return !!(window.MediaRecorder && c.captureStream && recMime()); }
-  function transcodeVideo(file, start, dur, onProg){ return new Promise(function(res, rej){
+  function transcodeVideo(file, start, dur, onProg, fx){ return new Promise(function(res, rej){
     var url=URL.createObjectURL(file), v=document.createElement("video"); v.src=url; v.playsInline=true; v.preload="auto"; v.crossOrigin="anonymous";
-    var stopped=false, ac=null, rec=null, chunks=[], mime=recMime();
+    var stopped=false, ac=null, rec=null, chunks=[], mime=recMime(), mus=null;
     function cleanup(){ try{ v.pause(); }catch(e){} try{ ac&&ac.close(); }catch(e){} URL.revokeObjectURL(url); }
     v.addEventListener("error", function(){ cleanup(); rej(new Error("vidéo illisible")); });
     v.addEventListener("loadedmetadata", function(){
       var W0=v.videoWidth||720, H0=v.videoHeight||1280, sc=Math.min(1, 1280/Math.max(W0,H0)), W=Math.round(W0*sc/2)*2, H=Math.round(H0*sc/2)*2;
       var c=document.createElement("canvas"); c.width=W; c.height=H; var x=c.getContext("2d"); var stream=c.captureStream(30);
-      try{ var AC=window.AudioContext||window.webkitAudioContext; ac=new AC(); var src=ac.createMediaElementSource(v), dst=ac.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(function(t){ stream.addTrack(t); }); if(ac.resume) ac.resume(); }catch(e){}
+      try{ var AC=window.AudioContext||window.webkitAudioContext; ac=new AC(); var src=ac.createMediaElementSource(v), dst=ac.createMediaStreamDestination(), g0=ac.createGain(); g0.gain.value=(fx&&fx.origVol!=null)?fx.origVol:1; src.connect(g0); g0.connect(dst);
+        if(fx&&fx.musicBuf){ mus=ac.createBufferSource(); mus.buffer=fx.musicBuf; mus.loop=true; var g1=ac.createGain(); g1.gain.value=fx.musicVol!=null?fx.musicVol:0.8; mus.connect(g1); g1.connect(dst); }
+        dst.stream.getAudioTracks().forEach(function(t){ stream.addTrack(t); }); if(ac.resume) ac.resume(); }catch(e){}
       try{ rec=new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:2500000, audioBitsPerSecond:96000}); }catch(e){ cleanup(); rej(e); return; }
       rec.ondataavailable=function(e){ if(e.data && e.data.size) chunks.push(e.data); };
       rec.onstop=function(){ cleanup(); var type=(mime.split(";")[0])||"video/webm"; res(new File(chunks, "video."+(type.indexOf("mp4")>=0?"mp4":"webm"), {type:type})); };
       var end=Math.min(v.duration||dur, start+dur);
-      function draw(){ if(stopped) return; x.drawImage(v,0,0,W,H); var t=v.currentTime; if(onProg) onProg(Math.max(0,Math.min(1,(t-start)/(end-start||1))));
+      function draw(){ if(stopped) return; x.drawImage(v,0,0,W,H); if(fx&&fx.texts&&fx.texts.length) vuDrawTexts(x,W,H,fx.texts); var t=v.currentTime; if(onProg) onProg(Math.max(0,Math.min(1,(t-start)/(end-start||1))));
         if(t>=end-0.05 || v.ended){ stopped=true; try{ rec.stop(); }catch(e){} return; }
         if(v.requestVideoFrameCallback) v.requestVideoFrameCallback(draw); else requestAnimationFrame(draw); }
-      v.addEventListener("seeked", function go(){ v.removeEventListener("seeked", go); rec.start(1000); var p=v.play(); if(p&&p.catch) p.catch(function(e){ stopped=true; cleanup(); rej(e); }); draw(); });
+      v.addEventListener("seeked", function go(){ v.removeEventListener("seeked", go); rec.start(1000); if(mus){ try{ mus.start(0, Math.max(0,+fx.musicOff||0)); }catch(e){} } var p=v.play(); if(p&&p.catch) p.catch(function(e){ stopped=true; cleanup(); rej(e); }); draw(); });
       v.currentTime=start; });
     v.load(); }); }
   function fmtSec(t){ t=Math.max(0,Math.round(t)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); }
@@ -5836,23 +5866,41 @@
     var next=function(){ if(k>=n){ URL.revokeObjectURL(url); res(out); return; } try{ v.currentTime=Math.min(dur-0.05,(k+0.5)*dur/n); }catch(e){ res(out); } };
     v.addEventListener("seeked", function(){ try{ var r=Math.max(60/(v.videoWidth||60),96/(v.videoHeight||96)), w=(v.videoWidth||60)*r, h=(v.videoHeight||96)*r; cx.drawImage(v,(60-w)/2,(96-h)/2,w,h); out.push(c.toDataURL("image/jpeg",0.6)); }catch(e){ out.push(""); } k++; next(); });
     v.addEventListener("loadedmetadata", next); v.addEventListener("error", function(){ res(out); }); setTimeout(function(){ res(out); },15000); }); }
+  // 13/11 (demande de Cédric) : texte sur la vidéo et musique, à la publication, façon TikTok.
+  // Un texte = { s, x, y (centre, de 0 à 1 dans l'image), size (hauteur des lettres / hauteur de l'image), color, bg }.
+  // Le même dessin sert à l'aperçu, à la vidéo publiée (incrusté dans l'image) et à la couverture.
+  function vuWrap(ctx, str, maxW){ var out=[]; String(str).split("\n").forEach(function(par){ var line=""; par.split(/\s+/).forEach(function(w){ var t=line?line+" "+w:w;
+      if(line && ctx.measureText(t).width>maxW){ out.push(line); line=w; } else line=t; }); out.push(line); }); return out; }
+  function vuInk(c){ return (c==="#ffffff"||c==="#ffd60a"||c==="#19e3ff"||c==="#34c759"||c==="#ff9f0a") ? "#0b0d10" : "#ffffff"; }
+  function vuDrawTexts(ctx, W, H, texts){ var boxes=[]; (texts||[]).forEach(function(t){ var fs=Math.max(8, t.size*H), lh=fs*1.22;
+      ctx.save(); ctx.font='800 '+fs+'px "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'; ctx.textAlign="center"; ctx.textBaseline="middle";
+      var lines=vuWrap(ctx, t.s, W*0.86), mw=0; lines.forEach(function(l){ mw=Math.max(mw, ctx.measureText(l).width); });
+      var cx=t.x*W, cy=t.y*H, y0=cy-(lines.length-1)*lh/2, px=fs*0.4, py=fs*0.22, bw=mw+2*px, bh=lines.length*lh+2*py;
+      if(t.bg){ var r=Math.min(fs*0.3, bh/2), x0=cx-bw/2, yy=cy-bh/2; ctx.fillStyle=t.color; ctx.beginPath(); ctx.moveTo(x0+r,yy); ctx.arcTo(x0+bw,yy,x0+bw,yy+bh,r); ctx.arcTo(x0+bw,yy+bh,x0,yy+bh,r); ctx.arcTo(x0,yy+bh,x0,yy,r); ctx.arcTo(x0,yy,x0+bw,yy,r); ctx.closePath(); ctx.fill(); ctx.fillStyle=vuInk(t.color); }
+      else { ctx.lineJoin="round"; ctx.lineWidth=fs*0.16; ctx.strokeStyle=(t.color==="#000000")?"rgba(255,255,255,.95)":"rgba(0,0,0,.85)"; lines.forEach(function(l,i){ ctx.strokeText(l, cx, y0+i*lh); }); ctx.fillStyle=t.color; }
+      lines.forEach(function(l,i){ ctx.fillText(l, cx, y0+i*lh); }); ctx.restore();
+      boxes.push({ x:cx-bw/2, y:cy-bh/2, w:bw, h:bh }); }); return boxes; }
+  function vuThumbFx(dataUrl, texts){ return new Promise(function(res){ if(!dataUrl || !texts || !texts.length){ res(dataUrl); return; }
+    var im=new Image(); im.onload=function(){ try{ var c=document.createElement("canvas"); c.width=im.width; c.height=im.height; var x=c.getContext("2d"); x.drawImage(im,0,0); vuDrawTexts(x,c.width,c.height,texts); res(c.toDataURL("image/jpeg",0.7)); }catch(e){ res(dataUrl); } };
+    im.onerror=function(){ res(dataUrl); }; im.src=dataUrl; }); }
   function openVideoUpload(){ if(!charterOk){ closeFeed(); showCharter(); return; } if(!profileReady()){ closeFeed(); askProfile(); return; }
     var old=$("vu"); if(old) old.remove();
     // 13/11 : le Swip derrière est mis en pause et libéré (plus de son en fond, et le téléphone garde
     // ses décodeurs vidéo pour la vidéo qu'on ajoute) ; il reprend à la fermeture.
     var vf0=$("vf"); if(vf0 && !vf0.hidden){ vf0.querySelectorAll(".vf-item").forEach(vfUnload); vfActive=-1; }
-    var st={ max:+(localStorage.getItem("lf.vu.max")||60)||60, file:null, meta:null, dur:0, start:0, cover:0, url:null, mode:"trim" };
+    var st={ max:+(localStorage.getItem("lf.vu.max")||60)||60, file:null, meta:null, dur:0, start:0, cover:0, url:null, mode:"trim", texts:[], music:null, aud:null, murl:null, origVol:1 };
+    var musClear=function(){ try{ if(st.aud) st.aud.pause(); }catch(e){} if(st.murl){ try{ URL.revokeObjectURL(st.murl); }catch(e){} } st.music=null; st.aud=null; st.murl=null; };
     if([15,30,60].indexOf(st.max)<0) st.max=60;
     var vu=document.createElement("div"); vu.id="vu"; vu.className="vu"; document.body.appendChild(vu); document.body.style.overflow="hidden";
     var vid=null, loopT=null;
-    var close=function(){ if(loopT) clearInterval(loopT); if(st.url) URL.revokeObjectURL(st.url); vu.remove(); var vf=$("vf"); if(!vf||vf.hidden) document.body.style.overflow=""; else feedActivate(); };
+    var close=function(){ if(loopT) clearInterval(loopT); musClear(); if(st.url) URL.revokeObjectURL(st.url); vu.remove(); var vf=$("vf"); if(!vf||vf.hidden) document.body.style.overflow=""; else feedActivate(); };
     var IC={ x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>', back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
       gal:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>',
       cut:'<svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.6"/><circle cx="6" cy="17" r="2.6"/><path d="M8.2 8.4 20 17M8.2 15.6 20 7"/></svg>',
       cov:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="m4 16 5-5 4 4 2-2 5 5"/></svg>' };
     var fmt=function(t){ t=Math.max(0,Math.round(t||0)); return Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); };
     // ---------- 1. Créer ----------
-    function stepCreate(){ if(loopT) clearInterval(loopT); vu.className="vu vu-create";
+    function stepCreate(){ if(loopT) clearInterval(loopT); try{ if(st.aud) st.aud.pause(); }catch(e){} vu.className="vu vu-create";
       vu.innerHTML='<div class="vu-bar"><button class="vu-ib" id="vuX" aria-label="Fermer">'+IC.x+'</button><b></b><span class="vu-ib"></span></div>'
         +'<div class="vu-hero"><div class="vu-hero-i">🏄</div><b>Partage ta session</b><p>Filme maintenant ou importe une vidéo de ta galerie.<br>Elle passera dans le Swip de toute la communauté.</p></div>'
         +'<div class="vu-durs">'+[15,30,60].map(function(d){ return '<button data-d="'+d+'" class="'+(d===st.max?"on":"")+'">'+d+' s</button>'; }).join("")+'</div>'
@@ -5872,17 +5920,19 @@
     function win(){ return Math.min(st.max, st.dur||st.max); }
     // ---------- 2. Modifier ----------
     function stepEdit(){ vu.className="vu vu-edit";
-      vu.innerHTML='<video id="vuV" playsinline webkit-playsinline loop preload="auto"></video>'
+      var fxOk=canTranscode(); // texte et musique : il faut pouvoir réenregistrer la vidéo dans le téléphone
+      vu.innerHTML='<video id="vuV" playsinline webkit-playsinline loop preload="auto"></video><canvas id="vuTx" class="vu-tx"></canvas>'
         +'<div class="vu-bar"><button class="vu-ib" id="vuBack" aria-label="Retour">'+IC.back+'</button><b></b><span class="vu-ib"></span></div>'
-        +'<div class="vu-tools"><button data-m="trim" class="'+(st.mode==="trim"?"on":"")+'"><i>'+IC.cut+'</i>Couper</button><button data-m="cover" class="'+(st.mode==="cover"?"on":"")+'"><i>'+IC.cov+'</i>Couverture</button></div>'
+        +'<div class="vu-tools"><button data-m="trim" class="'+(st.mode==="trim"?"on":"")+'"><i>'+IC.cut+'</i>Couper</button><button data-m="cover" class="'+(st.mode==="cover"?"on":"")+'"><i>'+IC.cov+'</i>Couverture</button>'
+          +(fxOk?'<button data-x="text" id="vuTText"><i><b class="vu-aa">Aa</b></i>Texte</button><button data-x="music" id="vuTMus"><i><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></i>Musique</button>':'')+'</div>'
         +'<div class="vu-panel"><div class="vu-hint" id="vuHint"></div><div class="vu-strip" id="vuStrip"><div class="vu-frames" id="vuFrames"></div><div class="vu-win" id="vuWin"><i></i><i></i></div><div class="vu-head" id="vuHead"></div></div>'
         +'<div class="vu-foot"><span class="vu-len" id="vuLen"></span><button class="vu-next" id="vuNext">Suivant</button></div></div>';
       vid=$("vuV"); vid.src=st.url; vid.muted=false;
       var play=function(){ var p=vid.play(); if(p&&p.catch) p.catch(function(){ vid.muted=true; vid.play().catch(function(){}); }); };
       vid.addEventListener("loadedmetadata", function(){ vid.style.objectFit = vid.videoHeight>=vid.videoWidth ? "cover" : "contain"; vid.currentTime=st.mode==="cover"?st.cover:st.start; if(st.mode==="trim") play(); });
       vid.addEventListener("click", function(){ if(st.mode!=="trim") return; if(vid.paused) play(); else vid.pause(); });
-      $("vuBack").addEventListener("click", function(){ st.file=null; stepCreate(); });
-      vu.querySelectorAll(".vu-tools button").forEach(function(b){ b.addEventListener("click", function(){ st.mode=b.dataset.m; vu.querySelectorAll(".vu-tools button").forEach(function(x){ x.classList.toggle("on",x===b); }); paint(); if(st.mode==="cover"){ vid.pause(); vid.currentTime=st.cover; } else { vid.currentTime=st.start; play(); } }); });
+      $("vuBack").addEventListener("click", function(){ st.file=null; st.texts=[]; st.origVol=1; musClear(); stepCreate(); });
+      vu.querySelectorAll(".vu-tools button[data-m]").forEach(function(b){ b.addEventListener("click", function(){ st.mode=b.dataset.m; vu.querySelectorAll(".vu-tools button[data-m]").forEach(function(x){ x.classList.toggle("on",x===b); }); paint(); if(st.mode==="cover"){ vid.pause(); vid.currentTime=st.cover; } else { vid.currentTime=st.start; play(); } }); });
       $("vuNext").addEventListener("click", stepPost);
       var strip=$("vuStrip"), wEl=$("vuWin"), head=$("vuHead");
       var frDone=false, frGo=function(){ if(frDone) return; frDone=true; var f0=st.file; vuFrames(f0, st.dur||1, 10).then(function(fr){ var f=$("vuFrames"); if(f && st.file===f0) f.innerHTML=fr.map(function(u){ return '<span style="background-image:url('+u+')"></span>'; }).join(""); }); };
@@ -5893,6 +5943,84 @@
           $("vuLen").textContent = fmt(st.start)+" – "+fmt(st.start+W)+" · "+Math.round(W)+" s"; }
         else { wEl.hidden=true; head.className="vu-head cov"; head.style.left=(st.cover/D*100)+"%"; $("vuHint").textContent="Fais glisser pour choisir l'image de couverture"; $("vuLen").textContent="Couverture à "+fmt(st.cover); } }
       paint();
+      // ---------- 13/11 : textes posés sur la vidéo ----------
+      var txC=$("vuTx"), txBoxes=[], txDrag=null;
+      var togglePlay=function(){ if(st.mode!=="trim") return; if(vid.paused) play(); else vid.pause(); };
+      // rectangle réellement occupé par l'image de la vidéo dans l'écran (rognée en portrait, entière en paysage)
+      function txRect(){ var vw=vid.videoWidth||9, vh=vid.videoHeight||16, ew=vu.clientWidth||1, eh=vu.clientHeight||1, sc=vh>=vw?Math.max(ew/vw,eh/vh):Math.min(ew/vw,eh/vh), w=vw*sc, h=vh*sc; return { l:(ew-w)/2, t:(eh-h)/2, w:w, h:h, ew:ew, eh:eh }; }
+      function txDraw(){ if(!txC || !document.body.contains(txC)) return; var r=txRect(), dpr=Math.min(2, window.devicePixelRatio||1), W=Math.max(2,Math.round(r.w*dpr)), H=Math.max(2,Math.round(r.h*dpr));
+        txC.style.left=r.l+"px"; txC.style.top=r.t+"px"; txC.style.width=r.w+"px"; txC.style.height=r.h+"px"; if(txC.width!==W || txC.height!==H){ txC.width=W; txC.height=H; }
+        var cx=txC.getContext("2d"); cx.clearRect(0,0,W,H); txBoxes=vuDrawTexts(cx,W,H,st.texts).map(function(b){ return { x:b.x/dpr, y:b.y/dpr, w:b.w/dpr, h:b.h/dpr }; });
+        var tb=$("vuTText"); if(tb) tb.classList.toggle("has", st.texts.length>0); var mb=$("vuTMus"); if(mb) mb.classList.toggle("has", !!st.music || st.origVol<1); }
+      function txHit(e){ var b=txC.getBoundingClientRect(), px=e.clientX-b.left, py=e.clientY-b.top, m=14; for(var i=txBoxes.length-1;i>=0;i--){ var q=txBoxes[i]; if(px>=q.x-m && px<=q.x+q.w+m && py>=q.y-m && py<=q.y+q.h+m) return i; } return -1; }
+      // écrire / modifier un texte : saisie, couleur, fond, taille
+      function txEdit(i){ var isNew=i<0, t=isNew?{ s:"", x:0.5, y:Math.min(0.7, 0.34+0.09*st.texts.length), size:0.05, color:"#ffffff", bg:false }:st.texts[i], cur={ size:t.size, color:t.color, bg:t.bg };
+        var COLS=["#ffffff","#000000","#fe2c55","#ffd60a","#19e3ff","#34c759","#ff9f0a","#af52de"];
+        var old=vu.querySelector(".vu-sheet"); if(old) old.remove();
+        var sh=document.createElement("div"); sh.className="vu-sheet";
+        sh.innerHTML='<div class="vu-sbar"><button type="button" class="vu-sbtn" data-a="'+(isNew?"cancel":"del")+'">'+(isNew?"Annuler":"Supprimer")+'</button><button type="button" class="vu-sbtn ok" data-a="ok">OK</button></div>'
+          +'<div class="vu-tctl"><button type="button" class="vu-tbg" data-a="bg" aria-label="Fond du texte">A</button><div class="vu-cols">'+COLS.map(function(c){ return '<button type="button" data-c="'+c+'" style="background:'+c+'" aria-label="Couleur"></button>'; }).join("")+'</div></div>'
+          +'<label class="vu-tsize"><span>A</span><input type="range" min="30" max="95" step="1"><span class="big">A</span></label>'
+          +'<textarea class="vu-tin" maxlength="120" rows="3" placeholder="Écris ton texte…" spellcheck="true" autocorrect="on" autocapitalize="sentences"></textarea>';
+        vu.appendChild(sh); vid.pause();
+        var ta=sh.querySelector("textarea"), rg=sh.querySelector("input[type=range]"); ta.value=t.s; rg.value=Math.round(cur.size*1000);
+        var show=function(){ ta.style.fontSize=Math.max(16, Math.min(64, Math.round(cur.size*txRect().h)))+"px";
+          if(cur.bg){ ta.style.background=cur.color; ta.style.color=vuInk(cur.color); ta.style.textShadow="none"; }
+          else { ta.style.background="transparent"; ta.style.color=cur.color; ta.style.textShadow=(cur.color==="#000000")?"0 0 6px rgba(255,255,255,.9)":"0 1px 6px rgba(0,0,0,.9)"; }
+          sh.querySelectorAll("[data-c]").forEach(function(b){ b.classList.toggle("on", b.dataset.c===cur.color); }); sh.querySelector(".vu-tbg").classList.toggle("on", cur.bg); };
+        sh.addEventListener("click", function(e){ var b=e.target.closest("button"); if(!b) return;
+          if(b.dataset.c){ cur.color=b.dataset.c; show(); ta.focus(); return; }
+          var a=b.dataset.a; if(a==="bg"){ cur.bg=!cur.bg; show(); ta.focus(); return; }
+          if(a==="ok"){ var str=ta.value.replace(/^\s+|\s+$/g,"").slice(0,120);
+            if(!str){ if(!isNew) st.texts.splice(i,1); } else { t.s=str; t.size=cur.size; t.color=cur.color; t.bg=cur.bg; if(isNew) st.texts.push(t); } }
+          else if(a==="del"){ st.texts.splice(i,1); }
+          sh.remove(); txDraw(); if(st.mode==="trim") play(); });
+        rg.addEventListener("input", function(){ cur.size=(+rg.value)/1000; show(); });
+        show(); setTimeout(function(){ try{ ta.focus(); }catch(x){} },60); }
+      if(txC){
+        txC.addEventListener("pointerdown", function(e){ var i=txHit(e); if(i<0){ txDrag=null; return; } try{ txC.setPointerCapture(e.pointerId); }catch(x){} var t=st.texts[i]; txDrag={ i:i, x0:e.clientX, y0:e.clientY, tx:t.x, ty:t.y, moved:false }; });
+        txC.addEventListener("pointermove", function(e){ if(!txDrag) return; var r=txRect(), dx=e.clientX-txDrag.x0, dy=e.clientY-txDrag.y0; if(Math.abs(dx)+Math.abs(dy)>6) txDrag.moved=true; if(!txDrag.moved) return;
+          // le texte reste dans la partie de l'image visible à l'écran
+          var t=st.texts[txDrag.i], minX=Math.max(0.04,(16-r.l)/r.w), maxX=Math.min(0.96,(r.ew-16-r.l)/r.w), minY=Math.max(0.05,(70-r.t)/r.h), maxY=Math.min(0.95,(r.eh-40-r.t)/r.h);
+          t.x=Math.max(minX, Math.min(maxX, txDrag.tx+dx/r.w)); t.y=Math.max(minY, Math.min(maxY, txDrag.ty+dy/r.h)); txDraw(); });
+        txC.addEventListener("pointerup", function(){ var d=txDrag; txDrag=null; if(d && !d.moved) txEdit(d.i); });
+        txC.addEventListener("pointercancel", function(){ txDrag=null; });
+        txC.addEventListener("click", function(e){ if(txHit(e)<0) togglePlay(); });
+        vid.addEventListener("loadedmetadata", txDraw); window.addEventListener("resize", txDraw); txDraw();
+      }
+      // ---------- 13/11 : musique ----------
+      // aperçu : la musique suit la vidéo (lecture, pause, retour au début de l'extrait)
+      function musSync(){ try{ vid.volume=st.origVol; }catch(x){} var m=st.music, a=st.aud; if(!m || !a) return; try{ a.volume=m.vol; }catch(x){}
+        if(vid.paused || st.mode!=="trim" || vu.querySelector(".vu-sheet")){ if(!a.paused) a.pause(); return; }
+        var want=(m.off+Math.max(0, vid.currentTime-st.start))%(m.dur||1e9);
+        if(a.paused){ try{ a.currentTime=want; }catch(x){} var p=a.play(); if(p&&p.catch) p.catch(function(){}); } else if(Math.abs(a.currentTime-want)>0.4){ try{ a.currentTime=want; }catch(x){} } }
+      function musLoad(file, say){ say("Lecture de la musique…");
+        var rd=file.arrayBuffer ? file.arrayBuffer() : new Promise(function(res,rej){ var fr=new FileReader(); fr.onload=function(){ res(fr.result); }; fr.onerror=rej; fr.readAsArrayBuffer(file); });
+        rd.then(function(ab){ var AC=window.AudioContext||window.webkitAudioContext, ac=new AC();
+            return new Promise(function(res,rej){ var pr=ac.decodeAudioData(ab, res, rej); if(pr&&pr.catch) pr.catch(rej); }).then(function(buf){ try{ ac.close(); }catch(x){} return buf; }, function(e){ try{ ac.close(); }catch(x){} throw e; }); })
+          .then(function(buf){ musClear(); st.music={ name:String(file.name||"Musique").replace(/\.[a-z0-9]+$/i,""), buf:buf, dur:buf.duration, off:0, vol:0.8 };
+            st.murl=URL.createObjectURL(file); st.aud=new Audio(st.murl); st.aud.loop=true; musOpen(); txDraw(); })
+          .catch(function(){ say("Impossible de lire cette musique. Essaie un fichier MP3 ou M4A."); }); }
+      function musOpen(){ var old=vu.querySelector(".vu-msheet"); if(old) old.remove(); var m=st.music, clip=win();
+        var sh=document.createElement("div"); sh.className="vu-msheet";
+        sh.innerHTML='<div class="vu-mh"><b>Musique</b><button type="button" class="vu-sbtn ok" data-a="ok">OK</button></div>'
+          +(m ? '<div class="vu-mname"><span>🎵</span><b></b><button type="button" data-a="rm">Retirer</button></div>'
+                +(m.dur>clip+1 ? '<label class="vu-ml"><span>Départ de la musique</span><em id="vuMOffV"></em><input type="range" id="vuMOff" min="0" max="'+Math.floor(m.dur-clip)+'" step="1" value="'+Math.round(m.off)+'"></label>' : '')
+                +'<label class="vu-ml"><span>Volume de la musique</span><input type="range" id="vuMVol" min="0" max="100" value="'+Math.round(m.vol*100)+'"></label>'
+              : '<button type="button" class="vu-mpick" data-a="pick"><span>🎵</span><b>Choisir une musique sur mon téléphone</b></button><div class="vu-mnote">Utilise une musique dont tu as les droits (ta création ou libre de droits).</div>')
+          +'<label class="vu-ml"><span>Son de la vidéo</span><input type="range" id="vuOVol" min="0" max="100" value="'+Math.round(st.origVol*100)+'"></label>'
+          +'<input type="file" id="vuMFile" accept="audio/*" hidden><div class="vu-merr" id="vuMErr"></div>';
+        vu.appendChild(sh); if(m) sh.querySelector(".vu-mname b").textContent=m.name;
+        var say=function(tx){ var e=$("vuMErr"); if(e) e.textContent=tx||""; };
+        var off=$("vuMOff"), offV=$("vuMOffV"); if(off){ offV.textContent=fmt(m.off); off.addEventListener("input", function(){ m.off=+off.value; offV.textContent=fmt(m.off); try{ if(st.aud) st.aud.currentTime=m.off; }catch(x){} vid.currentTime=st.start; }); }
+        var mv=$("vuMVol"); if(mv) mv.addEventListener("input", function(){ m.vol=(+mv.value)/100; });
+        $("vuOVol").addEventListener("input", function(){ st.origVol=(+$("vuOVol").value)/100; txDraw(); });
+        $("vuMFile").addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(f) musLoad(f, say); });
+        sh.addEventListener("click", function(e){ var b=e.target.closest("button"); if(!b) return; var a=b.dataset.a;
+          if(a==="pick") $("vuMFile").click(); else if(a==="rm"){ musClear(); musOpen(); txDraw(); } else if(a==="ok"){ sh.remove(); } });
+        if(st.mode==="trim" && vid.paused) play(); }
+      vu.querySelectorAll(".vu-tools button[data-x]").forEach(function(b){ b.addEventListener("click", function(){
+        if(b.dataset.x==="text"){ if(st.texts.length>=6){ $("vuHint").textContent="6 textes maximum."; return; } txEdit(-1); } else musOpen(); }); });
       // glisser sur la bande : déplace l'extrait (Couper) ou l'image (Couverture)
       var drag=null;
       var at=function(e){ var r=strip.getBoundingClientRect(); return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*(st.dur||1); };
@@ -5905,11 +6033,11 @@
         paint(); }
       // lecture en boucle dans l'extrait choisi + tête de lecture
       if(loopT) clearInterval(loopT);
-      loopT=setInterval(function(){ if(!vid||!document.body.contains(vid)) { clearInterval(loopT); return; }
+      loopT=setInterval(function(){ if(!vid||!document.body.contains(vid)) { clearInterval(loopT); return; } musSync();
         if(st.mode==="trim"){ if(vid.currentTime>st.start+win()-0.05 || vid.currentTime<st.start-0.3){ vid.currentTime=st.start; } head.style.left=(vid.currentTime/(st.dur||1)*100)+"%"; } },60); }
     // ---------- 3. Publier ----------
-    function stepPost(){ if(loopT) clearInterval(loopT); if(vid) vid.pause();
-      var needTrim=st.dur>st.max+0.9, heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode();
+    function stepPost(){ if(loopT) clearInterval(loopT); if(vid) vid.pause(); try{ if(st.aud) st.aud.pause(); }catch(e){}
+      var needTrim=st.dur>st.max+0.9, heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode(), hasFx=(st.texts.length>0 || !!st.music || st.origVol<1) && canTranscode();
       vu.className="vu vu-post";
       vu.innerHTML='<div class="vu-pbar"><button class="vu-ib" id="vuBack2" aria-label="Retour">'+IC.back+'</button><b>Publier</b><span class="vu-ib"></span></div>'
         +'<div class="vu-pbody"><div class="vu-top2"><div class="vu-capw2"><textarea id="vuCap" maxlength="150" rows="5" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Décris ta session… Ajoute des #hashtags"></textarea><div class="vu-cnt" id="vuCnt">0/150</div></div>'
@@ -5929,15 +6057,16 @@
       $("vuBack2").addEventListener("click", function(){ back("trim"); }); $("vuEditAgain").addEventListener("click", function(){ back("trim"); }); $("vuCov").addEventListener("click", function(){ back("cover"); });
       // couverture : image à l'instant choisi (dans l'extrait si la vidéo est coupée)
       var covAt=Math.max(0, st.cover-0.6); if(needTrim && (st.cover<st.start || st.cover>st.start+win())) covAt=Math.max(0,st.start);
-      videoThumb(st.file, covAt).then(function(m2){ if(m2.thumb){ st.meta.thumb=m2.thumb; var im=$("vuCovImg"); if(im) im.src=m2.thumb; } });
+      videoThumb(st.file, covAt).then(function(m2){ if(!m2.thumb) return; return vuThumbFx(m2.thumb, st.texts).then(function(th){ st.meta.thumb=th; var im=$("vuCovImg"); if(im) im.src=th; }); });
       if(st.meta.thumb) $("vuCovImg").src=st.meta.thumb;
       $("vuGo").addEventListener("click", function(){ if(!backend||!backend.publishVideo) return; var btn=$("vuGo"); btn.disabled=true; err("");
         var pr=$("vuProg"), bar=pr.querySelector("i"); pr.hidden=false; bar.style.width="0%";
-        var prep=(needTrim||needCompress) ? (function(){ btn.textContent="Préparation…";
-            return transcodeVideo(st.file, needTrim?st.start:0, needTrim?win():(st.dur||VID_MAX_S), function(p){ bar.style.width=Math.round(p*50)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; })
+        var prep=(needTrim||needCompress||hasFx) ? (function(){ btn.textContent="Préparation…";
+            return transcodeVideo(st.file, needTrim?st.start:0, needTrim?win():(st.dur||VID_MAX_S), function(p){ bar.style.width=Math.round(p*50)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; },
+                hasFx ? { texts:st.texts, origVol:st.origVol, musicBuf:st.music?st.music.buf:null, musicOff:st.music?st.music.off:0, musicVol:st.music?st.music.vol:0 } : null)
               .then(function(out){ if(out.size>VID_MAX_MB*1048576) throw new Error("vidéo encore trop lourde après compression"); return out; }); })()
           : Promise.resolve(st.file);
-        prep.then(function(file){ var base=(needTrim||needCompress)?50:0;
+        prep.then(function(file){ var base=(needTrim||needCompress||hasFx)?50:0;
           return backend.publishVideo(file, {thumb:st.meta.thumb, dur:Math.round(needTrim?win():(st.dur||0)), caption:cap.value.trim(), topic:$("vuTopic").value}, function(p){ bar.style.width=Math.round(base+p*(100-base))+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; }); })
           .then(function(){ close(); showTabVideos(); setTimeout(function(){ openFeed(0); vfToast("Ta vidéo est publiée 🎉"); },400); })
           .catch(function(e){ btn.disabled=false; btn.innerHTML='Publier'; pr.hidden=true; err("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")+(/storage|unauthorized|permission/i.test(String(e&&(e.code||e.message)))?" (le stockage des vidéos doit être activé dans Firebase)":"")); }); }); }

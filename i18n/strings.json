@@ -4647,6 +4647,54 @@
   "en": "with the map, stats and 3D flyover.",
   "es": "con el mapa, las estadísticas y el vuelo 3D."
  },
+ "Texte": {
+  "en": "Text",
+  "es": "Texto"
+ },
+ "Musique": {
+  "en": "Music",
+  "es": "Música"
+ },
+ "Écris ton texte…": {
+  "en": "Write your text…",
+  "es": "Escribe tu texto…"
+ },
+ "Choisir une musique sur mon téléphone": {
+  "en": "Choose music from my phone",
+  "es": "Elegir música de mi teléfono"
+ },
+ "Utilise une musique dont tu as les droits (ta création ou libre de droits).": {
+  "en": "Use music you have the rights to (your own or royalty-free).",
+  "es": "Usa música de la que tengas los derechos (tuya o libre de derechos)."
+ },
+ "Départ de la musique": {
+  "en": "Music start",
+  "es": "Inicio de la música"
+ },
+ "Volume de la musique": {
+  "en": "Music volume",
+  "es": "Volumen de la música"
+ },
+ "Son de la vidéo": {
+  "en": "Video sound",
+  "es": "Sonido del vídeo"
+ },
+ "Retirer": {
+  "en": "Remove",
+  "es": "Quitar"
+ },
+ "Lecture de la musique…": {
+  "en": "Reading the music…",
+  "es": "Leyendo la música…"
+ },
+ "Impossible de lire cette musique. Essaie un fichier MP3 ou M4A.": {
+  "en": "Can't read this music. Try an MP3 or M4A file.",
+  "es": "No se puede leer esta música. Prueba con un archivo MP3 o M4A."
+ },
+ "6 textes maximum.": {
+  "en": "6 texts maximum.",
+  "es": "6 textos como máximo."
+ },
  "Vitesse max": {
   "en": "Max speed",
   "es": "Velocidad máx."
