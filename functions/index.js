@@ -524,7 +524,7 @@ exports.videoOptimizeBacklog = onSchedule({ schedule: "every 60 minutes", region
 const SHARE_APP = "https://cedric167.github.io/litefoil-tracker/";
 const SHARE_ICON = SHARE_APP + "icon-192.png"; // icône de l'appli Lite Foil
 const SHARE_PLAY = "https://play.google.com/store/apps/details?id=fr.litefoil.tracker"; // Android
-const SHARE_IOS = "";  // lien App Store (à renseigner) — en attendant, l'iPhone va sur l'appli web
+const SHARE_IOS = "https://testflight.apple.com/join/QpqQEWFN"; // iPhone : bêta publique TestFlight (à remplacer par le lien App Store à la sortie)
 function escH(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function sendDataUrl(res, du) {
   const m = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(String(du || ""));
