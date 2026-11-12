@@ -4769,7 +4769,7 @@
     }
     if(sharing && me.pos){
       L.circle([me.pos.lat,me.pos.lng],{radius:900,color:"#19c3cf",weight:0,fillColor:"#19c3cf",fillOpacity:.18,interactive:false}).addTo(commLayers);
-      L.marker([me.pos.lat,me.pos.lng],{icon:riderIcon(me.uid,{},true), zIndexOffset:500}).addTo(commLayers);
+      L.marker([me.pos.lat,me.pos.lng],{icon:riderIcon(me.uid,{},true), zIndexOffset:500}).on("click", function(){ nearMapClose(); var nb=document.querySelector('#bnav [data-nav="profil"]'); if(nb) nb.click(); else showTab("profil"); }).addTo(commLayers);
     }
     nmPaint();
   }
