@@ -962,6 +962,9 @@
   .cs-it i{ position:relative; width:56px; height:56px; border-radius:18px; background:#f0f3f4; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:26px; border:2px solid transparent; } .cs-it i img{ width:34px; height:34px; object-fit:contain; }
   .cs-it.on i{ border-color:#19c3cf; background:#e3f8f9; } .cs-it em{ position:absolute; top:-6px; right:-6px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#e8384f; color:#fff; font-style:normal; font-size:11px; font-weight:800; line-height:20px; box-sizing:border-box; border:2px solid #fff; }
   .mm-ic svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; display:block; } .mm-ic{ width:24px; opacity:1; color:#3c4a50; } .mm-act.danger .mm-ic{ color:#d33; }
+  /* poignée « glisser pour fermer » */
+  .gov .gcard::before, .sheet-card::before{ content:""; display:block; flex:none; width:38px; height:4px; border-radius:2px; background:#d5dcdf; margin:8px auto 0; }
+  .sheet-card::before{ margin:0 auto 6px; }
   /* ajout de vidéo façon TikTok (#vu) */
   .vu{ position:fixed; inset:0; z-index:10050; background:#000; color:#fff; display:flex; flex-direction:column; font-family:inherit; overflow:hidden; }
   .vu svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
@@ -7762,6 +7765,41 @@
     document.addEventListener("visibilitychange", function(){ if(document.hidden) return; hello(); stats(); if(Date.now()-last>10*60000){ last=Date.now(); cond(); } });
     document.querySelectorAll('.tab[data-tab="dash"]').forEach(function(t){ t.addEventListener("click", function(){ hello(); stats(); }); });
   })();
+</script>
+<script>
+/* 12/11 (demande de Cédric) : toutes les fenêtres qui montent du bas se ferment en les faisant glisser vers le bas
+   (geste rapide ou glissement de plus de 110 px), comme sur Instagram / TikTok. Si la fenêtre a défilé,
+   on remonte d'abord son contenu ; le geste ne se déclenche que depuis le haut du contenu. */
+(function(){
+  var SEL='.sheet-card, .gov .gcard, .mm-ov .mm-card';
+  var st=null;
+  function scroller(el, card){ for(var n=el; n && n!==card.parentNode; n=n.parentNode){ if(n.nodeType!==1) continue; var cs=getComputedStyle(n); if((cs.overflowY==="auto"||cs.overflowY==="scroll") && n.scrollHeight>n.clientHeight+2) return n; if(n===card) break; } return null; }
+  function closeCard(c){
+    var b=c.querySelector('#sheetCancel, #vcClose, #shvClose, #folClose, #upClose, .gc-x, .rs-cancel');
+    if(b){ b.click(); return; }
+    var sh=c.closest('.sheet'); if(sh){ sh.hidden=true; return; }
+    var ov=c.closest('.mm-ov'); if(ov){ if(ov.id) ov.remove(); else ov.hidden=true; return; }
+    var g=c.closest('.gov'); if(g){ g.hidden=true; g.innerHTML=""; }
+  }
+  document.addEventListener("touchstart", function(e){ st=null; if(e.touches.length!==1) return;
+    var c=e.target.closest && e.target.closest(SEL); if(!c) return;
+    if(e.target.closest('input[type=range], .vu-strip, .sh-row, .at-grid, .cs-grid')) { /* boutons / curseurs : le geste reste possible seulement en tirant franchement */ }
+    var sc=scroller(e.target, c); if(sc && sc.scrollTop>2) return;
+    st={c:c, sc:sc, y:e.touches[0].clientY, x:e.touches[0].clientX, t:Date.now(), dy:0, on:false}; }, {passive:true});
+  document.addEventListener("touchmove", function(e){ if(!st) return; var dy=e.touches[0].clientY-st.y, dx=e.touches[0].clientX-st.x;
+    if(!st.on){ if(dy<-4 || Math.abs(dx)>Math.abs(dy)+4){ st=null; return; } if(dy<8) return; if(st.sc && st.sc.scrollTop>2){ st=null; return; } st.on=true; st.y=e.touches[0].clientY; st.t=Date.now(); dy=0;
+      try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(x){} }
+    dy=Math.max(0,dy); var now=Date.now(); st.hist=(st.hist||[]).concat([[now,dy]]).filter(function(h){ return now-h[0]<120; }); st.dy=dy; st.c.style.transition="none"; st.c.style.transform="translateY("+dy+"px)";
+    var ov=st.c.parentNode; if(ov && ov.style) ov.style.backgroundColor="rgba(8,12,14,"+Math.max(0,0.45*(1-dy/500)).toFixed(3)+")";
+    if(e.cancelable) e.preventDefault(); }, {passive:false});
+  function end(){ if(!st) return; var s=st; st=null; if(!s.on) return; var h=s.hist||[], ov=s.c.parentNode;
+    // vitesse sur les 120 dernières ms (un geste rapide « jette » la fenêtre)
+    var v = h.length>1 ? (h[h.length-1][1]-h[0][1])/Math.max(1,h[h.length-1][0]-h[0][0]) : s.dy/Math.max(1,Date.now()-s.t);
+    if(s.dy>110 || (s.dy>30 && v>0.3)){ s.c.style.transition="transform .2s ease-in"; s.c.style.transform="translateY(105%)";
+      setTimeout(function(){ closeCard(s.c); s.c.style.transform=""; s.c.style.transition=""; if(ov&&ov.style) ov.style.backgroundColor=""; },190); }
+    else { s.c.style.transition="transform .22s cubic-bezier(.2,.9,.3,1.2)"; s.c.style.transform=""; if(ov&&ov.style) ov.style.backgroundColor=""; setTimeout(function(){ s.c.style.transition=""; },240); } }
+  document.addEventListener("touchend", end, {passive:true}); document.addEventListener("touchcancel", end, {passive:true});
+})();
 </script>
 </body>
 </html>
