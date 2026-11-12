@@ -240,6 +240,27 @@ exports.eventChatPush = onValueCreated({ ref: "/eventMessages/{eid}/{id}", insta
 const REPORT_ADMIN_UIDS = defineString("REPORT_ADMIN_UIDS", { default: "" });
 function adminUids() { return REPORT_ADMIN_UIDS.value().split(",").map((s) => s.trim()).filter(Boolean); }
 
+/* Nouvel abonné (12/11) : /follows/{uid}/{target} créé → notification à {target}.
+ * Anti-abus : une seule notification par abonné et par jour (s'abonner / se désabonner en boucle). */
+exports.followPush = onValueCreated({ ref: "/follows/{uid}/{target}", instance: DB_INSTANCE }, async (event) => {
+  const { uid, target } = event.params;
+  if (!uid || !target || uid === target) return;
+  const db = getDatabase();
+  const ref = db.ref("followNotified/" + target + "/" + uid);
+  const last = +((await ref.get()).val() || 0);
+  if (Date.now() - last < 86400000) return;
+  await ref.set(Date.now());
+  const ps = (await db.ref("profiles/" + uid + "/pseudo").get()).val() || "Un rider";
+  await sendToUids([target], {
+    type: "follow",
+    channel: "follow:" + uid,
+    follower: String(uid),
+    pseudo: String(ps),
+    title: "Nouvel abonné 🤙",
+    body: ps + " a commencé à te suivre"
+  });
+});
+
 exports.reportAlert = onValueCreated({ ref: "/reports/{id}", instance: DB_INSTANCE }, async (event) => {
   const r = event.data.val() || {};
   const admins = REPORT_ADMIN_UIDS.value().split(",").map((s) => s.trim()).filter(Boolean);
