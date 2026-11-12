@@ -965,6 +965,39 @@
   /* poignée « glisser pour fermer » */
   .gov .gcard::before, .sheet-card::before{ content:""; display:block; flex:none; width:38px; height:4px; border-radius:2px; background:#d5dcdf; margin:8px auto 0; }
   .sheet-card::before{ margin:0 auto 6px; }
+  /* ===== 12/11 : « Près de moi » carte plein écran façon Snap Map ===== */
+  body.nm-on{ overflow:hidden; }
+  .nm{ position:fixed; inset:0; z-index:9400; background:#0b2a33; animation:cfIn .25s ease-out; }
+  .nm[hidden]{ display:none !important; }
+  .nm .nm-mapw{ position:absolute; inset:0; margin:0; }
+  .nm #commMap{ height:100% !important; width:100%; border-radius:0 !important; border:0 !important; }
+  .nm .leaflet-control-zoom{ display:none; } .nm .leaflet-control-attribution{ font-size:9px; opacity:.7; margin-bottom:calc(var(--nm-sh,230px) + 4px) !important; }
+  .nm-top{ position:absolute; left:0; right:0; top:0; z-index:1100; display:flex; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top) + 10px) 12px 0; pointer-events:none; }
+  .nm-ib{ pointer-events:auto; width:46px; height:46px; flex:0 0 46px; border-radius:50%; border:0; background:#fff; color:#0e1417; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,.25); cursor:pointer; padding:0; }
+  .nm-ib svg{ width:24px !important; height:24px !important; fill:none; stroke:currentColor; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  .nm-ghost{ color:#118b92; } .nm-ghost .nm-eyeoff{ display:none; } .nm-ghost.off{ color:#8a989d; } .nm-ghost.off .nm-eye{ display:none; } .nm-ghost.off .nm-eyeoff{ display:block; }
+  .nm-title{ pointer-events:auto; flex:1; min-width:0; height:46px; border-radius:23px; background:rgba(255,255,255,.96); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 4px 14px rgba(0,0,0,.25); display:flex; flex-direction:column; justify-content:center; align-items:center; padding:0 14px; }
+  .nm-title b{ font-size:15.5px; color:#0e1417; } .nm-title small{ font-size:12px; color:#13a04a; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .nm-sheet{ position:absolute; left:0; right:0; bottom:0; z-index:1100; background:#fff; border-radius:24px 24px 0 0; padding:8px 0 calc(var(--lf-sab) + 12px); box-shadow:0 -10px 34px rgba(0,0,0,.22); }
+  .nm-grab{ width:38px; height:4px; border-radius:2px; background:#d5dcdf; margin:0 auto 10px; }
+  .nm-fab{ position:absolute; right:14px; top:-62px; width:48px; height:48px; border-radius:50%; border:0; background:#fff; color:#118b92; box-shadow:0 4px 14px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .nm-fab[hidden]{ display:flex !important; } .nm-fab svg{ width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; }
+  .nm-sh-head{ display:flex; align-items:center; justify-content:space-between; padding:0 16px 10px; } .nm-sh-head b{ font-size:16.5px; color:#0e1417; }
+  .nm-chat{ display:inline-flex; align-items:center; gap:6px; border:0; border-radius:999px; background:linear-gradient(135deg,#1fc3cd,#118b92); color:#fff; font:inherit; font-weight:700; font-size:13.5px; padding:8px 14px; cursor:pointer; box-shadow:0 3px 10px rgba(17,139,146,.3); }
+  .nm-chat svg{ width:17px; height:17px; fill:none; stroke:#fff; stroke-width:2.2; stroke-linejoin:round; }
+  .nm .riders-strip-wrap{ margin:0; padding:0 0 4px; } .nm .riders-strip{ display:flex; gap:10px; overflow-x:auto; padding:2px 16px 8px; scrollbar-width:none; } .nm .riders-strip::-webkit-scrollbar{ display:none; }
+  .nm .rs-item{ flex:0 0 auto; min-width:88px; background:#f3f6f7; border-radius:18px; padding:12px 8px 10px; border:0; }
+  .nm .rs-empty{ padding:6px 16px 10px; color:#6b7a80; font-size:14px; line-height:1.4; }
+  .nm-vis{ margin:6px 16px 0; padding:12px 14px; border-radius:16px; background:#f3f6f7; }
+  .nm-vis .comm-share{ display:flex; align-items:center; gap:10px; } .nm-vis .sw-txt{ flex:1; min-width:0; } .nm-vis .sw-txt b{ font-size:14.5px; display:block; } .nm-vis .note{ font-size:12px; margin:2px 0 0 !important; color:#6b7a80; }
+  .nm-vis .d{ width:10px; height:10px; border-radius:50%; flex:0 0 10px; background:#9aa6b0; } .nm-vis .comm-enable{ margin-top:10px; width:100%; }
+  /* repères photo */
+  .nm-pin{ background:none; border:0; }
+  .nm-pa{ position:relative; display:block; width:48px; height:48px; margin:0 auto; border-radius:50%; padding:3px; background:#fff; box-shadow:0 0 0 3px var(--c), 0 6px 16px rgba(0,0,0,.4); }
+  .nm-pa img, .nm-pa b{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; font-weight:800; }
+  .nm-pa::after{ content:""; position:absolute; left:50%; bottom:-9px; margin-left:-6px; border:6px solid transparent; border-top-color:#fff; }
+  .nm-pn{ display:block; margin:9px auto 0; width:max-content; max-width:110px; padding:2px 8px; border-radius:999px; background:rgba(14,20,23,.82); color:#fff; font-size:11.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transform:translateX(-50%); margin-left:50%; }
+  .nm-pin.me .nm-pa{ animation:nmPulse 2s ease-out infinite; } @keyframes nmPulse{ 0%{ box-shadow:0 0 0 3px #19c3cf, 0 0 0 3px rgba(25,195,207,.5), 0 6px 16px rgba(0,0,0,.4); } 100%{ box-shadow:0 0 0 3px #19c3cf, 0 0 0 22px rgba(25,195,207,0), 0 6px 16px rgba(0,0,0,.4); } }
   /* ajout de vidéo façon TikTok (#vu) */
   .vu{ position:fixed; inset:0; z-index:10050; background:#000; color:#fff; display:flex; flex-direction:column; font-family:inherit; overflow:hidden; }
   .vu svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
@@ -1074,8 +1107,9 @@
   .defi::before{ content:""; position:absolute; inset:auto -10% -30px -10%; height:120px; z-index:-1; opacity:.18;
     background:repeating-radial-gradient(ellipse at 50% 140%, transparent 0 14px, rgba(255,255,255,.7) 14px 15px); }
   .defi:active{ transform:scale(.99); }
-  .defi-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
-  .defi-tag{ display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#ffd36e; white-space:nowrap; }
+  .defi-top{ display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; row-gap:8px; } .defi-top > *{ min-width:0; }
+  .home-defibox{ margin:20px 0 4px; } .home-defibox:empty{ display:none; }
+  .defi-tag{ display:flex; align-items:center; gap:8px; font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#ffd36e; white-space:nowrap; }
   .defi-tag i{ width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,#ffe08a,#e39b12); box-shadow:0 3px 10px rgba(227,155,18,.45); }
   .defi-tag i svg{ width:17px; height:17px; fill:#5a3500; }
   .defi-time{ display:flex; align-items:center; gap:6px; font-size:12px; font-weight:800; padding:6px 10px; border-radius:100px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); white-space:nowrap; }
@@ -1655,7 +1689,9 @@
       <button type="button" data-goto="ultra"><i class="q8"><svg viewBox="0 0 24 24"><path d="M13.9 1.9c.5-.7 1.55-.25 1.4.6l-1.2 6.9h5c.8 0 1.25.9.8 1.55l-9.8 11.2c-.55.65-1.6.15-1.4-.7l1.35-6.65H5.1c-.8 0-1.25-.9-.75-1.55z" fill="#ffd23f"/></svg></i>Ultra</button>
     </div>
 
-    <button class="home-defi" type="button" data-goto="communaute" id="homeDefi">
+    <!-- 12/11 (demande de Cédric) : le défi de la semaine est sur l'Accueil -->
+    <div id="defiBox" class="home-defibox"></div>
+    <button class="home-defi" type="button" data-goto="communaute" id="homeDefi" hidden>
       <span class="hd-note" id="hdNote">40</span>
       <span class="hd-txt"><b id="hdTitle">Défi eFoil de la semaine</b><span id="hdSub">Grimpe au classement et fais monter ta carte de rider</span></span>
       <span class="hd-cup">🏆</span>
@@ -1735,7 +1771,6 @@
     </div>
     <button type="button" class="cm-search" id="cmSearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Rechercher des amis (identifiant)</span><i class="bn-badge" id="cmReqBadge" hidden></i></button>
     <div class="comm-stats" id="commStats" hidden></div>
-    <div id="defiBox"></div>
     <button type="button" class="cm-evcard" id="cmEvents"><span class="cm-ic cm-events"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9.5 15l1.8 1.8 3.5-3.6"/></svg><i class="cm-badge" id="cmEvBadge" hidden></i></span><span class="cme-t"><b>Événements</b><small id="cmEvNext">Sorties et rendez-vous des riders</small></span><span class="cme-go">›</span></button>
 
 
@@ -1829,35 +1864,29 @@
       <div class="note" id="chatNote" style="margin-top:8px">Renseigne un pseudo et active ta visibilité pour discuter.</div>
     </div>
 
-    <div class="m-label" style="margin:22px 6px 8px">Riders près de toi</div>
-    <div class="riders-strip-wrap" id="ridersStripWrap">
-      
-      <div class="riders-strip" id="ridersStrip"></div>
-    </div>
-    <div class="card" style="padding:12px">
-      <div class="comm-wrap" id="commWrap">
-        <div id="commMap"></div>
-        <button id="commRecenter" hidden>Me recentrer</button>
+    <!-- 12/11 (demande de Cédric) : « Près de moi » = carte plein écran façon Snap Map (la carte et la visibilité ne sont plus dans la page) -->
+    <div class="nm" id="nearMap" hidden>
+      <div class="comm-wrap nm-mapw" id="commWrap"><div id="commMap"></div></div>
+      <div class="nm-top">
+        <button class="nm-ib" id="nmBack" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="nm-title"><b>Près de moi</b><small id="nmCount">Riders autour de toi</small></div>
+        <button class="nm-ib nm-ghost" id="nmGhost" aria-label="Me rendre visible ou invisible"><svg class="nm-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="nm-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
       </div>
-      <div class="note" id="commMapNote" style="margin-top:10px">La carte affiche une <b>zone approximative</b> (~1 km), jamais l'adresse exacte.</div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="comm-share">
-        <div class="sw-txt">
-          <b>Me rendre visible sur la carte</b>
-          <div class="note" style="margin-top:2px">Partage ta zone approximative avec les autres riders.</div>
+      <div class="nm-sheet" id="nmSheet">
+        <button class="nm-fab" id="commRecenter" aria-label="Me recentrer" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+        <div class="nm-grab"></div>
+        <div class="nm-sh-head"><b>Riders autour de toi</b><button class="nm-chat" id="nmChat"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg>Tchat local</button></div>
+        <div class="riders-strip-wrap" id="ridersStripWrap"><div class="riders-strip" id="ridersStrip"></div></div>
+        <div class="nm-vis">
+          <div class="comm-share">
+            <span class="d" id="commDot"></span>
+            <div class="sw-txt"><b id="commStatTxt">Visibilité désactivée</b><div class="note" id="commMapNote">Seule une zone d'environ 1 km est partagée, jamais ta position exacte.</div></div>
+            <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
+          </div>
+          <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
         </div>
-        <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
-      </div>
-      <div class="comm-stat"><span class="d" id="commDot"></span><span id="commStatTxt">Visibilité désactivée</span></div>
-      <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
-      <div class="comm-priv">
-        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        <span>Ta position exacte ne quitte jamais ton téléphone : seule une zone arrondie est partagée. Tu peux te rendre invisible à tout moment.</span>
       </div>
     </div>
-
 
     <div class="comm-blocked" id="commBlocked" hidden></div>
     <div class="comm-flaglink"><a id="charterLink">Charte de la communauté · Signaler un problème</a></div>
@@ -3551,6 +3580,7 @@
     for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
     if (name !== "videos" && window.vfLeaveTab) window.vfLeaveTab();
     if (name !== "communaute" && window.__chatLeave) window.__chatLeave();
+    if (window.__nearClose) window.__nearClose();
     if (name === "tracking" || name === "tracker") mapOnShow();
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
@@ -3588,7 +3618,7 @@
     const later = (fn) => setTimeout(fn, 250);
     if (k === "cards") { showTab("profil"); later(() => { const x = document.getElementById("pfCard"); if (x) x.click(); }); }
     else if (k === "friends") { showTab("profil"); later(() => { const x = document.querySelector('#pfTabs [data-pt="fr"]'); if (x) x.click(); }); }
-    else if (k === "defi") { showTab("communaute"); later(() => { const x = document.getElementById("defiOpen"); if (x) x.click(); }); }
+    else if (k === "defi") { showTab("dash"); later(() => { const x = document.getElementById("defiBox"); if (x) x.scrollIntoView({behavior:"smooth", block:"center"}); }); }
     else if (k === "events") { showTab("communaute"); later(() => { const x = document.getElementById("cmEvents"); if (x) x.click(); }); }
     window.scrollTo({ top: 0 }); });
   // Bouton « retour » au menu Lite Foil Ultra en haut de chaque sous-écran
@@ -4733,15 +4763,27 @@
     commMapInit(); if(!commMap) return;
     commLayers.clearLayers();
     for(const k in riders){ const r=riders[k], col=avatarColor(k);
-      L.circle([r.lat,r.lng],{radius:900,color:col,weight:1,fillColor:col,fillOpacity:.12}).addTo(commLayers);
-      L.circleMarker([r.lat,r.lng],{radius:7,color:"#fff",weight:2,fillColor:col,fillOpacity:1})
-        .bindPopup(`<b>${esc(r.pseudo||"Rider")}</b><br><a href="#" data-dm="${esc(k)}" data-ps="${esc(r.pseudo||"Rider")}">Message privé</a>`).addTo(commLayers);
+      if(blocked.has(k)) continue;
+      L.circle([r.lat,r.lng],{radius:900,color:col,weight:0,fillColor:col,fillOpacity:.14,interactive:false}).addTo(commLayers);
+      L.marker([r.lat,r.lng],{icon:riderIcon(k,r,false), riseOnHover:true}).on("click", (function(u){ return function(){ openUserProfile(u); }; })(k)).addTo(commLayers);
     }
     if(sharing && me.pos){
-      L.circle([me.pos.lat,me.pos.lng],{radius:900,color:"#148a90",weight:1,fillColor:"#5acdd1",fillOpacity:.2}).addTo(commLayers);
-      L.circleMarker([me.pos.lat,me.pos.lng],{radius:8,color:"#fff",weight:3,fillColor:"#148a90",fillOpacity:1}).bindPopup("<b>Moi</b>").addTo(commLayers);
+      L.circle([me.pos.lat,me.pos.lng],{radius:900,color:"#19c3cf",weight:0,fillColor:"#19c3cf",fillOpacity:.18,interactive:false}).addTo(commLayers);
+      L.marker([me.pos.lat,me.pos.lng],{icon:riderIcon(me.uid,{},true), zIndexOffset:500}).addTo(commLayers);
     }
+    nmPaint();
   }
+  // 12/11 : carte plein écran « Près de moi »
+  let nmOpen=false;
+  function nearMapOpen(){ var nm=$("nearMap"); if(!nm) return; if(nm.parentNode!==document.body) document.body.appendChild(nm); nm.hidden=false; nmOpen=true; document.body.classList.add("nm-on");
+    commMapInit(); if(!commMap) return; setTimeout(function(){ commMap.invalidateSize(); renderMap(); commRecenter(); nmPaint(); },60); }
+  function nearMapClose(){ var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); }
+  function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+" rider"+(n>1?"s":"")+" autour de toi") : "Personne autour pour l'instant";
+    var g=$("nmGhost"); if(g) g.classList.toggle("off", !sharing); }
+  window.__nearOpen=nearMapOpen; window.__nearClose=nearMapClose;
+  function riderIcon(k, r, mine){ var pr=mine?{av:me.av}:(profileMap[k]||{}), col=mine?"#148a90":avatarColor(k), nm=mine?(me.pseudo||"Moi"):(r.pseudo||"Rider");
+    var inner=pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>';
+    return L.divIcon({className:"nm-pin"+(mine?" me":""), iconSize:[54,64], iconAnchor:[27,60], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(mine?"Moi":nm)+'</span>'}); }
   function commRecenter(){ if(!commMap) return; const pts=[]; if(sharing&&me.pos) pts.push([me.pos.lat,me.pos.lng]);
     for(const k in riders) pts.push([riders[k].lat,riders[k].lng]);
     if(pts.length) commMap.fitBounds(pts,{padding:[45,45],maxZoom:13}); }
@@ -4814,7 +4856,7 @@
       const av = pr.av ? '<span class="rs-av"><img src="'+pr.av+'" alt=""></span>' : '<span class="rs-av" style="background:'+avatarColor(k)+'">'+esc(ini)+'</span>';
       return '<button class="rs-item" data-uid="'+esc(k)+'" data-ps="'+esc(r.pseudo||"Rider")+'"><span class="rs-avwrap">'+av+'<span class="rs-dot"></span></span><span class="rs-nm">'+esc(r.pseudo||"Rider")+'</span>'+(sub?'<span class="rs-sub">'+esc(sub)+'</span>':'')+'</button>';
     }).join("");
-    el.querySelectorAll(".rs-item").forEach(b=> b.addEventListener("click", ()=> openDM(b.dataset.uid,b.dataset.ps)));
+    el.querySelectorAll(".rs-item").forEach(b=> b.addEventListener("click", ()=>{ const r=riders[b.dataset.uid]; if(commMap && r && nmOpen){ commMap.flyTo([r.lat,r.lng],13,{duration:.6}); setTimeout(()=>openUserProfile(b.dataset.uid),650); } else openUserProfile(b.dataset.uid); }));
     renderBlocked();
   }
 
@@ -7220,6 +7262,13 @@
   var typingSentAt=0, typingIdle=null;
   $("chatInput").addEventListener("input", function(){ if(!profileReady()||!charterOk||!backend||!backend.setTyping) return; var now=Date.now(); if(now-typingSentAt>2500){ typingSentAt=now; backend.setTyping(currentChannel()); } if(typingIdle) clearTimeout(typingIdle); typingIdle=setTimeout(function(){ if(backend&&backend.clearTyping) backend.clearTyping(); typingSentAt=0; },3000); });
   $("commRecenter").addEventListener("click", commRecenter);
+  // 12/11 : carte « Près de moi » : retour, mode fantôme, tchat local ; l'onglet « Près de moi » ouvre la carte
+  $("nmBack").addEventListener("click", nearMapClose);
+  $("nmGhost").addEventListener("click", function(){ var c=$("commShare"); if(c){ c.click(); setTimeout(nmPaint,300); } });
+  $("commShare").addEventListener("change", function(){ setTimeout(nmPaint,300); });
+  var _nearAllow=false;
+  $("chatSeg").addEventListener("click", function(e){ var b=e.target.closest("button[data-ch]"); if(!b || b.dataset.ch!=="near" || _nearAllow) return; e.stopImmediatePropagation(); e.preventDefault(); nearMapOpen(); }, true);
+  $("nmChat").addEventListener("click", function(){ nearMapClose(); var b=document.querySelector('#chatSeg [data-ch="near"]'); _nearAllow=true; try{ b.click(); }finally{ _nearAllow=false; } setTimeout(function(){ try{ $("chatInput").focus(); }catch(e){} },120); });
   // sortir les overlays du panneau (l'animation du .tabpane casse le position:fixed) → au <body>
   ["commOnboard","commSheet","geoHelp"].forEach(idv=>{ const el=$(idv); if(el && el.parentElement!==document.body) document.body.appendChild(el); });
 

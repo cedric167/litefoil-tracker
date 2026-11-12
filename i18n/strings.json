@@ -6294,5 +6294,21 @@
  "Écris à un rider avec « Nouveau message ».": {
   "en": "Write to a rider with “New message”.",
   "es": "Escribe a un rider con «Nuevo mensaje»."
+ },
+ "Riders autour de toi": {
+  "en": "Riders around you",
+  "es": "Riders a tu alrededor"
+ },
+ "Tchat local": {
+  "en": "Local chat",
+  "es": "Chat local"
+ },
+ "Personne autour pour l'instant": {
+  "en": "Nobody around yet",
+  "es": "Nadie cerca por ahora"
+ },
+ "Seule une zone d'environ 1 km est partagée, jamais ta position exacte.": {
+  "en": "Only an area of about 1 km is shared, never your exact position.",
+  "es": "Solo se comparte una zona de 1 km aprox., nunca tu posición exacta."
  }
 }
