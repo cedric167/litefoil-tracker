@@ -522,8 +522,9 @@ exports.videoOptimizeBacklog = onSchedule({ schedule: "every 60 minutes", region
  * Seules les infos déjà visibles dans le Swip sont montrées (pseudo, photo, légende, vidéo, J'aime) : jamais
  * de position, d'e-mail ni de message. */
 const SHARE_APP = "https://cedric167.github.io/litefoil-tracker/";
-const SHARE_PLAY = ""; // lien Google Play une fois l'appli publique (ex. https://play.google.com/store/apps/details?id=fr.litefoil.tracker)
-const SHARE_IOS = "";  // lien App Store une fois l'appli publique
+const SHARE_ICON = SHARE_APP + "icon-192.png"; // icône de l'appli Lite Foil
+const SHARE_PLAY = "https://play.google.com/store/apps/details?id=fr.litefoil.tracker"; // Android
+const SHARE_IOS = "";  // lien App Store (à renseigner) — en attendant, l'iPhone va sur l'appli web
 function escH(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function sendDataUrl(res, du) {
   const m = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(String(du || ""));
@@ -537,10 +538,10 @@ a{color:inherit;text-decoration:none}.top{position:fixed;top:0;left:0;right:0;z-
 .brand{font-weight:800;letter-spacing:.18em;font-size:15px}.brand i{font-style:normal;color:#19e3ff}.open{background:#fff;color:#000;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px}
 .vid{position:relative;height:100svh;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}.vid video{width:100%;height:100%;object-fit:cover}
 .info{position:absolute;left:14px;right:14px;bottom:150px;z-index:3;text-shadow:0 1px 4px rgba(0,0,0,.6)}.info b{font-size:17px}.info p{margin-top:6px;font-size:15px;line-height:1.38}.info .likes{display:inline-block;margin-top:8px;font-weight:700;font-size:14px;background:rgba(0,0,0,.35);padding:5px 10px;border-radius:999px}
-.snd{position:absolute;top:70px;left:50%;transform:translateX(-50%);z-index:4;background:rgba(0,0,0,.55);border:0;color:#fff;font:inherit;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px}
+.snd{position:absolute;top:calc(env(safe-area-inset-top) + 84px);left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap;background:rgba(0,0,0,.55);border:0;color:#fff;font:inherit;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px}
 .shade{position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);z-index:2;pointer-events:none}
 .cta{position:fixed;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));z-index:6;background:rgba(255,255,255,.97);color:#0e1417;border-radius:20px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.cta .ic{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#19c3cf,#0b4552);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}.cta .t{flex:1;min-width:0}.cta b{display:block;font-size:15px}.cta small{display:block;color:#5b6b71;font-size:12.5px;margin-top:2px}
+.cta .ic{width:52px;height:52px;border-radius:14px;object-fit:cover;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}.cta .t{flex:1;min-width:0}.cta b{display:block;font-size:15px}.cta small{display:block;color:#5b6b71;font-size:12.5px;margin-top:2px}
 .go{flex:none;background:linear-gradient(135deg,#1fc3cd,#118b92);color:#fff;font-weight:800;font-size:14.5px;padding:12px 16px;border-radius:12px}
 .stores{display:flex;gap:8px;margin-top:8px}.stores a{font-size:12px;font-weight:700;color:#118b92}
 .pf{max-width:560px;margin:0 auto;padding:72px 16px 170px}.pf-h{display:flex;flex-direction:column;align-items:center;text-align:center}.pf-av{width:104px;height:104px;border-radius:50%;object-fit:cover;background:#1d2b30;box-shadow:0 0 0 3px #19c3cf;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800}
@@ -549,16 +550,16 @@ a{color:inherit;text-decoration:none}.top{position:fixed;top:0;left:0;right:0;z-
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.grid a{position:relative;aspect-ratio:3/4;background:#1d2b30 center/cover no-repeat}.grid a span{position:absolute;left:6px;bottom:5px;font-size:12.5px;font-weight:700;text-shadow:0 1px 3px #000}
 .empty{text-align:center;color:#9aa6b0;padding:40px 0}`;
 function sharePageHtml(o) {
-  const store = (SHARE_PLAY || SHARE_IOS) ? `<div class="stores">${SHARE_PLAY ? `<a href="${escH(SHARE_PLAY)}">Google Play</a>` : ""}${SHARE_IOS ? `<a href="${escH(SHARE_IOS)}">App Store</a>` : ""}</div>` : "";
+  const store = "";
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${escH(o.title)}</title><meta name="description" content="${escH(o.desc)}">
 <meta property="og:site_name" content="Lite Foil"><meta property="og:title" content="${escH(o.title)}"><meta property="og:description" content="${escH(o.desc)}">
 <meta property="og:url" content="${escH(o.url)}">${o.img ? `<meta property="og:image" content="${escH(o.img)}"><meta property="og:image:width" content="360"><meta property="og:image:height" content="640">` : ""}
 ${o.video ? `<meta property="og:type" content="video.other"><meta property="og:video" content="${escH(o.video)}"><meta property="og:video:secure_url" content="${escH(o.video)}"><meta property="og:video:type" content="video/mp4"><meta property="og:video:width" content="720"><meta property="og:video:height" content="1280">` : `<meta property="og:type" content="profile">`}
-<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#000000"><style>${SHARE_CSS}</style></head><body>
+<meta name="twitter:card" content="summary_large_image"><link rel="icon" href="${SHARE_ICON}"><link rel="apple-touch-icon" href="${SHARE_ICON}"><meta name="theme-color" content="#000000"><style>${SHARE_CSS}</style></head><body>
 <div class="top"><a class="brand" href="${escH(o.app)}">LITE <i>FOIL</i></a><a class="open" href="${escH(o.app)}">Ouvrir l'appli</a></div>
 ${o.body}
-<div class="cta"><div class="ic">🏄</div><div class="t"><b>Rejoins les riders Lite Foil</b><small>Vidéos, chat, météo, suivi GPS, défis… gratuit</small>${store}</div><a class="go" href="${escH(o.app)}">Rejoindre</a></div>
+<div class="cta"><img class="ic" src="${SHARE_ICON}" alt="Lite Foil"><div class="t"><b>Rejoins les riders Lite Foil</b><small>Vidéos, chat, météo, suivi GPS, défis… gratuit</small>${store}</div><a class="go" href="/get?to=${encodeURIComponent(o.app)}">Rejoindre</a></div>
 </body></html>`;
 }
 exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxInstances: 10 }, async (req, res) => {
@@ -568,6 +569,14 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
   const base = "https://" + host;
   const db = getDatabase();
   try {
+    // « Rejoindre » : Google Play sur Android, App Store sur iPhone, sinon l'appli web
+    if (kind === "get") {
+      const ua = String(req.get("user-agent") || "");
+      let to = String(req.query.to || ""); if (!/^https:\/\/cedric167\.github\.io\/litefoil-tracker\//.test(to)) to = SHARE_APP;
+      if (/android/i.test(ua) && SHARE_PLAY) return res.redirect(302, SHARE_PLAY);
+      if (/iphone|ipad|ipod/i.test(ua) && SHARE_IOS) return res.redirect(302, SHARE_IOS);
+      return res.redirect(302, to);
+    }
     if (!key) return res.redirect(302, SHARE_APP);
     if (kind === "t") { const v = (await db.ref("videos/" + key).get()).val(); return sendDataUrl(res, v && v.thumb); }
     if (kind === "a") { const av = (await db.ref("profiles/" + key + "/av").get()).val(); return sendDataUrl(res, av); }
