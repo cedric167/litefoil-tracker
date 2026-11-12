@@ -880,6 +880,87 @@
   @keyframes vfSwipe{ 0%{ transform:translateY(0); opacity:0; } 20%{ opacity:1; } 100%{ transform:translateY(-44px); opacity:0; } } @keyframes vfFade{ from{ opacity:0; } }
   .vf-hint b{ font-size:19px; } .vf-hint small{ font-size:14px; opacity:.8; }
   .vf-toast{ position:absolute; left:50%; top:42%; transform:translate(-50%,-50%); z-index:7; background:rgba(40,40,40,.88); color:#fff; padding:12px 18px; border-radius:8px; font-weight:600; font-size:14.5px; pointer-events:none; animation:vfFade .2s ease; transition:opacity .4s; } .vf-toast.out{ opacity:0; }
+  /* ===== 12/11 : chat façon Messenger / WhatsApp (refonte) ===== */
+  #chatCard{ position:relative; }
+  #chatCard .chat-box{ gap:0; }
+  #chatCard .crow{ max-width:84%; gap:7px; margin-top:1px; } #chatCard .crow.gf{ margin-top:9px; } #chatCard .cday + .crow{ margin-top:4px; }
+  #chatCard .cav{ width:30px; height:30px; flex:0 0 30px; font-size:12.5px; } #chatCard .cav-ph{ visibility:hidden; }
+  #chatCard.wchat.dm .crow .cav{ display:none; }
+  #chatCard .who2{ font-size:12px; font-weight:600; color:#6b7a80; margin:0 12px 3px; }
+  #chatCard .bubble{ position:relative; border:0 !important; border-radius:20px; padding:8px 13px 7px; font-size:15.5px; line-height:1.36; box-shadow:none; }
+  #chatCard .bubble::before{ display:none !important; }
+  #chatCard .bubble.them{ background:#fff; color:#0e1417; box-shadow:0 1px 1.5px rgba(10,30,40,.1); }
+  #chatCard .bubble.me{ background:linear-gradient(135deg,#1fc3cd,#118b92); color:#fff; box-shadow:0 1px 2px rgba(17,139,146,.25); }
+  #chatCard .crow.them:not(.gf) .bubble{ border-top-left-radius:6px; } #chatCard .crow.them:not(.gl) .bubble{ border-bottom-left-radius:6px; }
+  #chatCard .crow.me:not(.gf) .bubble{ border-top-right-radius:6px; } #chatCard .crow.me:not(.gl) .bubble{ border-bottom-right-radius:6px; }
+  #chatCard .bubble.only-img{ padding:3px; background:transparent; box-shadow:none; } #chatCard .bubble.only-img img{ border-radius:16px; }
+  #chatCard .bubble .btxt{ display:inline; white-space:pre-wrap; }
+  #chatCard .bmeta{ float:right; margin:0 0 0 9px; position:relative; top:6px; font-size:10.5px; line-height:1; white-space:nowrap; color:#8a989d; display:inline-flex; align-items:center; gap:2px; }
+  #chatCard .bubble.me .bmeta{ color:rgba(255,255,255,.78); }
+  #chatCard .btick svg{ width:15px; height:10px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; display:block; } #chatCard .btick{ letter-spacing:0; }
+  #chatCard .bubble.only-img .bmeta{ position:absolute; float:none; right:10px; bottom:9px; top:auto; margin:0; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.7); }
+  #chatCard .qreply{ border-left:3px solid currentColor; background:rgba(0,0,0,.06); border-radius:8px; padding:5px 9px; margin:0 0 5px; font-size:13px; opacity:.9; } #chatCard .bubble.me .qreply{ background:rgba(255,255,255,.18); }
+  #chatCard .cday{ background:rgba(255,255,255,.85); color:#5b6b71; font-size:11.5px; font-weight:700; padding:4px 12px; border-radius:8px; margin:12px 0 4px; box-shadow:0 1px 1px rgba(0,0,0,.05); }
+  #chatCard .react-row{ margin:-6px 8px 0; position:relative; z-index:1; } #chatCard .react-chip{ background:#fff; border:1.5px solid #eef2f3; box-shadow:0 1px 3px rgba(0,0,0,.1); font-size:12.5px; padding:0 7px; }
+  #chatCard .react-chip.on{ border-color:#19c3cf; background:#e3f8f9; }
+  #chatCard .ctime{ display:none; }
+  /* barre d'écriture */
+  #chatCard .chat-input{ display:flex; align-items:flex-end; gap:8px; margin:10px 0 0; }
+  .ci-pill{ flex:1; min-width:0; display:flex; align-items:center; background:#f0f3f4; border-radius:24px; min-height:46px; padding:0 4px; border:1.5px solid transparent; transition:border-color .15s, background .15s; }
+  .ci-pill:focus-within{ border-color:#bfe9ec; background:#fff; }
+  .ci-pill input{ flex:1; min-width:0; border:0 !important; background:none !important; box-shadow:none !important; outline:none; font:inherit; font-size:16px; padding:11px 4px !important; color:var(--text); height:auto; }
+  #chatCard .ci-ic{ width:38px; min-width:38px; height:38px; border:0 !important; background:none !important; border-radius:50%; color:#6b7a80; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; flex:none; }
+  #chatCard .ci-ic svg{ width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  #chatCard .ci-ic:active{ background:rgba(0,0,0,.06) !important; } #chatCard.has-txt .ci-cam{ display:none; }
+  #chatCard .chat-send-btn{ width:46px; height:46px; flex:0 0 46px; border-radius:50%; background:linear-gradient(135deg,#1fc3cd,#118b92); box-shadow:0 3px 10px rgba(17,139,146,.35); transition:transform .15s, opacity .15s; opacity:.55; transform:scale(.92); }
+  #chatCard.has-txt .chat-send-btn{ opacity:1; transform:scale(1); } #chatCard .chat-send-btn svg{ width:21px !important; height:21px !important; min-width:21px; fill:#fff; stroke:none; margin-left:2px; flex:none; }
+  #chatCard .chat-send-btn:disabled{ opacity:.35; }
+  .chat-down{ position:absolute; right:14px; bottom:84px; z-index:5; width:42px; height:42px; border-radius:50%; border:0; background:#fff; color:#118b92; box-shadow:0 3px 12px rgba(0,0,0,.18); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .chat-down[hidden]{ display:none; } .chat-down svg{ width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+  .chat-down i{ position:absolute; top:-6px; right:-4px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#19c3cf; color:#fff; font-style:normal; font-size:11.5px; font-weight:800; line-height:20px; box-sizing:border-box; } .chat-down i[hidden]{ display:none; }
+  /* « … écrit » animé */
+  #chatCard .chat-typing{ display:inline-flex; align-items:center; gap:8px; align-self:flex-start; background:#fff; border-radius:18px; padding:7px 12px; margin:4px 10px 4px 46px; font-style:normal; font-size:12.5px; color:#6b7a80; box-shadow:0 1px 1.5px rgba(10,30,40,.1); }
+  #chatCard .chat-typing[hidden]{ display:none; }
+  #chatCard .chat-typing::before{ content:""; width:22px; height:6px; background:radial-gradient(circle,#9aa6b0 2.6px,transparent 3px) 0 50%/7.5px 6px repeat-x; animation:ciTyp 1s steps(3) infinite; }
+  @keyframes ciTyp{ 0%{ clip-path:inset(0 66% 0 0); } 33%{ clip-path:inset(0 33% 0 0); } 66%{ clip-path:inset(0 0 0 0); } }
+  /* conversation en plein écran */
+  body.chat-full{ overflow:hidden; }
+  #chatCard.full{ background-color:#e8eef0 !important; }
+  #chatCard.full{ position:fixed; inset:0; z-index:9300; margin:0 !important; border-radius:0 !important; padding:0 !important; display:flex; flex-direction:column; overflow:hidden; box-shadow:none;
+    background:#e9eff1 radial-gradient(circle at 20% 30%,rgba(25,195,207,.06) 0 120px,transparent 121px), radial-gradient(circle at 80% 70%,rgba(25,195,207,.05) 0 160px,transparent 161px); animation:cfIn .22s ease-out; }
+  @keyframes cfIn{ from{ opacity:.4; transform:translateY(16px); } }
+  #chatCard.full .chan-sel-wrap{ display:none; }
+  #chatCard.full .chat-head{ display:flex; align-items:center; gap:8px; margin:0; padding:calc(env(safe-area-inset-top) + 8px) 8px 8px; background:rgba(255,255,255,.96); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#0e1417; border-bottom:1px solid rgba(0,0,0,.06); flex:none; }
+  #chatCard.full .chat-back{ width:40px; height:40px; border-radius:50%; background:none !important; color:#0e1417; border:0; display:flex; align-items:center; justify-content:center; padding:0; flex:none; }
+  #chatCard .chat-back svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+  #chatCard.full .chat-title{ display:flex; align-items:center; gap:10px; flex:1; min-width:0; color:#0e1417; cursor:pointer; }
+  #chatCard.full .cp-av{ width:42px; height:42px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:16px; flex:none; }
+  #chatCard.full .cp-av img{ width:100%; height:100%; object-fit:cover; } #chatCard.full .sf-ic{ background:#e3f8f9; font-size:22px; } #chatCard.full .sf-ic img{ width:28px; height:28px; object-fit:contain; }
+  #chatCard.full .cp-txt{ display:flex; flex-direction:column; min-width:0; line-height:1.2; }
+  #chatCard.full .cp-name{ font-size:16.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:3px; }
+  #chatCard.full .cp-sub{ font-size:12.5px; color:#13a04a; opacity:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } #chatCard.full .cp-sub.typing{ color:#118b92; font-style:italic; }
+  .sf-caret{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  #chatCard.full .chat-trans, #chatCard.full .chat-bell{ background:none !important; border:0 !important; color:#118b92 !important; width:40px; height:40px; padding:0; display:flex; align-items:center; justify-content:center; box-shadow:none; }
+  #chatCard.full .chat-trans svg, #chatCard.full .chat-bell svg{ stroke:#118b92 !important; width:23px; height:23px; } #chatCard.full #chatTransLbl{ display:none; }
+  #chatCard.full .chat-trans[aria-pressed="false"] svg{ stroke:#9aa6b0 !important; }
+  #chatCard.full .chat-filter{ margin:8px 12px 0; }
+  #chatCard.full .chat-box{ flex:1; height:auto !important; max-height:none !important; padding:6px 10px 10px; background:none; }
+  #chatCard.full .chat-reply, #chatCard.full .chat-emojis{ margin:0 10px 6px; background:#fff; border-radius:14px; }
+  #chatCard.full .chat-input{ margin:0; padding:8px 10px calc(8px + var(--lf-sab)); background:rgba(255,255,255,.96); border-top:1px solid rgba(0,0,0,.06); flex:none; }
+  #chatCard.full .ci-pill{ background:#f0f3f4; } #chatCard.full #chatNote{ margin:0 !important; padding:6px 14px; background:#fff; font-size:12.5px; }
+  #chatCard.full .chat-down{ bottom:calc(var(--lf-sab) + 76px); }
+  /* menus : Joindre, salons, message */
+  .at-card{ padding-top:8px !important; } .at-grab{ width:38px; height:4px; border-radius:2px; background:#d5dcdf; margin:2px auto 6px; }
+  .at-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px 4px; padding:14px 6px 12px; }
+  .at-it{ border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:7px; font:inherit; font-size:12.5px; font-weight:600; color:var(--text); cursor:pointer; padding:0; }
+  .at-it i{ width:58px; height:58px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.14); transition:transform .12s; } .at-it:active i{ transform:scale(.9); }
+  .at-it svg{ width:27px; height:27px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .cs-card{ max-height:82vh; overflow-y:auto; } .cs-h{ display:block; text-align:center; font-size:16px; margin:2px 0 6px; } .cs-sec{ font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#8a989d; margin:12px 10px 8px; }
+  .cs-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px 4px; padding:0 4px; }
+  .cs-it{ border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:6px; font:inherit; font-size:12px; font-weight:600; color:var(--text); cursor:pointer; padding:0; text-align:center; line-height:1.2; }
+  .cs-it i{ position:relative; width:56px; height:56px; border-radius:18px; background:#f0f3f4; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:26px; border:2px solid transparent; } .cs-it i img{ width:34px; height:34px; object-fit:contain; }
+  .cs-it.on i{ border-color:#19c3cf; background:#e3f8f9; } .cs-it em{ position:absolute; top:-6px; right:-6px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#e8384f; color:#fff; font-style:normal; font-size:11px; font-weight:800; line-height:20px; box-sizing:border-box; border:2px solid #fff; }
+  .mm-ic svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; display:block; } .mm-ic{ width:24px; opacity:1; color:#3c4a50; } .mm-act.danger .mm-ic{ color:#d33; }
   /* ajout de vidéo façon TikTok (#vu) */
   .vu{ position:fixed; inset:0; z-index:10050; background:#000; color:#fff; display:flex; flex-direction:column; font-family:inherit; overflow:hidden; }
   .vu svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
@@ -1716,7 +1797,7 @@
         <select id="chatChannel" class="chan-sel" aria-label="Choisir le salon"></select>
       </div>
       <div class="chat-head">
-        <button class="chat-back" id="chatBack" hidden>←</button>
+        <button class="chat-back" id="chatBack" hidden aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
         <div class="chat-title" id="chatTitle" hidden></div>
         <button class="chat-trans" id="chatTransBtn" aria-pressed="true" title="Traduction automatique des messages"><svg viewBox="0 0 24 24"><path d="M4 5h10M9 3v2M11.5 5c0 5-3.5 8-7.5 9M6 9c0 2.5 2.5 5 6 6"/><path d="M14 20l3.5-9 3.5 9M15.2 17h4.6"/></svg><span id="chatTransLbl">Traduire</span></button>
         <button class="chat-trans chat-bell" id="chatBellBtn" aria-pressed="false" title="Notifications des nouveaux messages"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
@@ -1730,11 +1811,15 @@
       <div id="chatReply" class="chat-reply" hidden></div>
       <div id="chatEmojis" class="chat-emojis" hidden></div>
       <div id="chatTyping" class="chat-typing" hidden></div>
+      <button class="chat-down" id="chatDown" type="button" aria-label="Derniers messages" hidden><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><i id="chatDownN" hidden></i></button>
       <div class="chat-input">
-        <button class="chat-photo chat-emoji-btn" id="chatEmoji" type="button" title="Emoji" aria-label="Emoji">😀</button>
-        <button class="chat-photo" id="chatAttach" type="button" title="Joindre" aria-label="Joindre"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
-        <input id="chatInput" maxlength="400" placeholder="Écrire un message…" spellcheck="true" autocorrect="on" autocapitalize="sentences" enterkeyhint="send">
-        <button class="chat-send-btn" id="chatSend" type="button" aria-label="Envoyer" title="Envoyer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
+        <div class="ci-pill">
+          <button class="chat-photo chat-emoji-btn ci-ic" id="chatEmoji" type="button" title="Émojis" aria-label="Émojis"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><circle cx="9" cy="10" r=".6" fill="currentColor"/><circle cx="15" cy="10" r=".6" fill="currentColor"/></svg></button>
+          <input id="chatInput" maxlength="400" placeholder="Écrire un message…" spellcheck="true" autocorrect="on" autocapitalize="sentences" enterkeyhint="send">
+          <button class="chat-photo ci-ic" id="chatAttach" type="button" title="Joindre" aria-label="Joindre"><svg viewBox="0 0 24 24"><path d="M20.5 11.5 12 20a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button>
+          <button class="chat-photo ci-ic ci-cam" id="chatCam" type="button" title="Photo" aria-label="Prendre une photo"><svg viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.3l1.4-2h5.6l1.4 2h1.3A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.3" r="3.6"/></svg></button>
+        </div>
+        <button class="chat-send-btn" id="chatSend" type="button" aria-label="Envoyer" title="Envoyer"><svg viewBox="0 0 24 24"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button>
         <input id="chatFile" type="file" accept="image/*" hidden>
       </div>
       <div class="note" id="chatNote" style="margin-top:8px">Renseigne un pseudo et active ta visibilité pour discuter.</div>
@@ -3461,6 +3546,7 @@
     for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t === tab);
     for (const pane of document.querySelectorAll(".tabpane")) pane.hidden = pane.id !== "tab-" + name;
     if (name !== "videos" && window.vfLeaveTab) window.vfLeaveTab();
+    if (name !== "communaute" && window.__chatLeave) window.__chatLeave();
     if (name === "tracking" || name === "tracker") mapOnShow();
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
@@ -4985,16 +5071,14 @@
   function closeAttach(){ var o=$("attachOv"); if(o&&o.parentNode) o.parentNode.removeChild(o); }
   function openAttachMenu(){ closeAttach();
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="attachOv";
-    ov.innerHTML='<div class="mm-card"><div class="mm-acts">'
-      +'<button class="mm-act" data-a="event"><span class="mm-ic">📅</span>Créer un événement</button>'
-      +'<button class="mm-act" data-a="ride"><span class="mm-ic">🏄</span>Partager ma sortie eFoil</button>'
-      +'<button class="mm-act" data-a="photo"><span class="mm-ic">📷</span>Photo</button>'
-      +'<button class="mm-act" data-a="gif"><span class="mm-ic">🎞️</span>GIF</button>'
+    ov.innerHTML='<div class="mm-card at-card"><div class="at-grab"></div><div class="at-grid">'
+      +[["photo","Galerie","linear-gradient(135deg,#a259ff,#6f3cf0)",CH_IC.gal],["cam","Caméra","linear-gradient(135deg,#ff5f8f,#e8384f)",CH_IC.cam],["ride","Ma sortie","linear-gradient(135deg,#19c3cf,#148a90)",CH_IC.wave],["event","Événement","linear-gradient(135deg,#ffb020,#f07d0a)",CH_IC.cal],["gif","GIF","linear-gradient(135deg,#2fd27a,#14a35a)",CH_IC.gif]]
+        .map(function(a){ return '<button class="at-it" data-a="'+a[0]+'"><i style="background:'+a[2]+'">'+a[3]+'</i><span>'+a[1]+'</span></button>'; }).join("")
       +'</div></div>';
     document.body.appendChild(ov);
     ov.addEventListener("click", function(e){ if(e.target===ov) closeAttach(); });
-    ov.querySelectorAll(".mm-act").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.a; closeAttach();
-      if(a==="photo"){ var f=$("chatFile"); if(f) f.click(); } else if(a==="event"){ openNewEventModal(currentChannel()); } else if(a==="ride"){ openRideSheet(); } else if(a==="gif"){ openGifPicker(); } }); });
+    ov.querySelectorAll(".at-it").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.a; closeAttach();
+      if(a==="photo"||a==="cam"){ var f=$("chatFile"); if(f){ if(a==="cam") f.setAttribute("capture","environment"); else f.removeAttribute("capture"); f.click(); } } else if(a==="event"){ openNewEventModal(currentChannel()); } else if(a==="ride"){ openRideSheet(); } else if(a==="gif"){ openGifPicker(); } }); });
   }
   function openRideSheet(){ var r=currentRide();
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="rideOv";
@@ -5042,9 +5126,12 @@
     function _avatar(m,i){ if(isOfficial(m.uid) && !m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+TEAM_AV+'" alt=""></div>'; if(m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+m.av+'" alt=""></div>'; var ini=(((m.pseudo||"R").trim()[0])||"R").toUpperCase(); return '<div class="cav tapp" data-i="'+i+'" style="background:'+avatarColor(m.uid||"x")+'">'+esc(ini)+'</div>'; }
     let prevDay="";
     function dayLabel(t){ var d=new Date(t||Date.now()), td=new Date(), yd=new Date(Date.now()-86400000); var k=x=>x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate(); if(k(d)===k(td)) return "Aujourd'hui"; if(k(d)===k(yd)) return "Hier"; return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }
+    // 12/11 : messages groupés façon Messenger (même auteur, < 3 min) : nom sur le 1er, photo sur le dernier
+    const same=(a,b)=> a && b && a.uid===b.uid && Math.abs((+b.t||0)-(+a.t||0))<180000 && new Date(a.t||0).toDateString()===new Date(b.t||0).toDateString() && !a.ev && !b.ev;
     box.innerHTML = arr.map((m,i)=>{ const mine=m.uid===me.uid;
       let sep=""; const dk=new Date(m.t||Date.now()).toDateString(); if(dk!==prevDay){ prevDay=dk; sep='<div class="cday">'+esc(dayLabel(m.t))+'</div>'; }
-      const who=(mine||chatMode==="dm")?"":'<div class="who2 tapp" data-i="'+i+'">'+esc(isOfficial(m.uid)&&m.uid===TEAM_UID?TEAM_NAME:(m.pseudo||"Rider"))+offBadge(m.uid)+'</div>';
+      const gFirst=!same(arr[i-1],m) || sep!=="", gLast=!same(m,arr[i+1]) || (arr[i+1] && new Date(arr[i+1].t||0).toDateString()!==dk);
+      const who=(mine||chatMode==="dm"||!gFirst)?"":'<div class="who2 tapp" data-i="'+i+'">'+esc(isOfficial(m.uid)&&m.uid===TEAM_UID?TEAM_NAME:(m.pseudo||"Rider"))+offBadge(m.uid)+'</div>';
       const flag = mine?"":`<button class="flag" data-i="${i}" title="Signaler" aria-label="Signaler ce message">⚑</button>`;
       const replyBtn = `<button class="msg-reply" data-i="${i}" title="Répondre" aria-label="Répondre">↩︎</button>`;
       // annonce d'événement : la carte remplace le texte (gardé pour les notifications et anciennes versions)
@@ -5062,13 +5149,12 @@
       const rideHtml = (m.ride?rideCardHtml(m.ride):"")+(m.ev?evCardHtml(m.ev):"");
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
       const onlyImg = ((m.img||m.gif) && !bodyText && !note && !m.rt && !m.ride) ? " only-img" : "";
-      const metaB = isConvo ? `<span class="bmeta">${timeLabel(m.t)}${mine?' <span class="btick">✓✓</span>':''}</span>` : "";
+      const metaB = `<span class="bmeta">${timeLabel(m.t)}${mine&&isConvo?' <span class="btick"><svg viewBox="0 0 18 12"><path d="M1 6.5 4.5 10 11 2.5M7 9.5l.6.5L14 2.5"/></svg></span>':''}</span>`;
       const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}${(m.ride||m.ev)?" has-ride":""}" data-i="${i}">${q}${rideHtml}${imgHtml}${gifHtml}${txtHtml}${note}${metaB}</div>`;
       const reacts = (function(){ if(!m.reactions) return ""; var cnt={}, mineE=null; for(var k in m.reactions){ var e=m.reactions[k]; if(!e) continue; cnt[e]=(cnt[e]||0)+1; if(k===me.uid) mineE=e; } var keys=Object.keys(cnt); if(!keys.length) return ""; return '<div class="react-row">'+keys.map(function(e){ return '<button class="react-chip'+(mineE===e?" on":"")+'" data-i="'+i+'" data-e="'+e+'">'+e+' '+cnt[e]+'</button>'; }).join("")+'</div>'; })();
       const reactBtn = `<button class="msg-react" data-i="${i}" title="Réagir" aria-label="Réagir">🙂﹢</button>`;
       const delBtn = mine?`<button class="msg-del" data-i="${i}" title="Supprimer" aria-label="Supprimer">🗑</button>`:"";
-      const time = isConvo ? "" : `<div class="ctime">${timeLabel(m.t)}</div>`;
-      return `${sep}<div class="crow ${mine?"me":"them"}">${mine?"":_avatar(m,i)}<div class="ccol">${who}${bubble}${reacts}${time}</div></div>`;
+      return `${sep}<div class="crow ${mine?"me":"them"}${gFirst?" gf":""}${gLast?" gl":""}">${mine?"":(gLast?_avatar(m,i):'<div class="cav cav-ph"></div>')}<div class="ccol">${who}${bubble}${reacts}</div></div>`;
     }).join("");
     box.querySelectorAll(".flag").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) reportMessage(m); }));
     box.querySelectorAll(".msg-reply").forEach(b=> b.addEventListener("click", ()=>{ const m=arr[+b.dataset.i]; if(m) setReply(m); }));
@@ -5164,8 +5250,10 @@
     var box=$("chatBox"); if(!box) return;
     var peers=Object.keys(myDMs).filter(function(p){ return myDMs[p] && !blocked.has(p); });
     peers.sort(function(a,b){ return (+myDMs[b].t||0)-(+myDMs[a].t||0); });
-    if(!peers.length){ box.innerHTML='<div class="comm-empty" style="margin-top:8px">Aucun message privé pour l\'instant.<br>Touche un rider (en haut ou sur la carte) pour lui écrire en privé.</div>'; return; }
-    box.innerHTML='<div class="glist">'+peers.map(function(p){ var e=myDMs[p]; var prof=profileMap[p]||{}; var name=e.pseudo||prof.pseudo||"Rider";
+    var newBtn='<button class="gnew" id="dmNewBtn"><span class="gnew-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Nouveau message</span></button>';
+    var bindNew=function(){ var nb=$("dmNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker); };
+    if(!peers.length){ box.innerHTML=newBtn+'<div class="comm-empty" style="margin-top:8px">Aucun message privé pour l\'instant.<br>Écris à un rider avec « Nouveau message ».</div>'; bindNew(); return; }
+    box.innerHTML=newBtn+'<div class="glist">'+peers.map(function(p){ var e=myDMs[p]; var prof=profileMap[p]||{}; var name=e.pseudo||prof.pseudo||"Rider";
       var mine=(e.by===me.uid);
       var cnt=+(e.unread||0);
       var unread=!mine && (cnt>0 || (+e.t||0)>(dmSeen[p]||0));
@@ -5176,7 +5264,7 @@
       var av = prof.av ? '<span class="gav" style="width:54px;height:54px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:54px;height:54px;background:'+avatarColor(p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
       return '<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b>'+offBadge(p)+'</span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+badge+'</span></button>';
     }).join("")+'</div>';
-    box.querySelectorAll(".grow").forEach(function(b){ b.addEventListener("click", function(){ openDM(b.dataset.uid, b.dataset.ps); }); });
+    box.querySelectorAll(".grow").forEach(function(b){ b.addEventListener("click", function(){ openDM(b.dataset.uid, b.dataset.ps); }); }); bindNew();
   }
 
   function showGroupsList(){ chatMode="groups"; curGroup=null; dmPeer=null;
@@ -7039,14 +7127,25 @@
   var msgOv=document.createElement("div"); msgOv.className="mm-ov"; msgOv.hidden=true; document.body.appendChild(msgOv);
   msgOv.addEventListener("click", function(e){ if(e.target===msgOv) closeMsgMenu(); });
   function closeMsgMenu(){ msgOv.hidden=true; msgOv.innerHTML=""; }
+  const CH_IC={
+    reply:'<svg viewBox="0 0 24 24"><path d="M10 8V4.5L3 11l7 6.5V14c5 0 8.5 1.5 11 5.5-1-5.5-4-10.5-11-11.5z"/></svg>',
+    copy:'<svg viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/></svg>',
+    trash:'<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 12.5A1.5 1.5 0 0 0 8 21h8a1.5 1.5 0 0 0 1.5-1.5L18.5 7M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/></svg>',
+    flag:'<svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
+    gal:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>',
+    cam:'<svg viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.3l1.4-2h5.6l1.4 2h1.3A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.3" r="3.6"/></svg>',
+    wave:'<svg viewBox="0 0 24 24"><path d="M2 16c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M4 11l5-6 3 3 3-4 5 7"/></svg>',
+    cal:'<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+    gif:'<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M10 10H8a1.5 1.5 0 0 0-1.5 1.5v1A1.5 1.5 0 0 0 8 14h2v-2H9M13 9.5v5M16.5 14.5v-5H19M16.5 12H18.5"/></svg>'
+  };
   function openMsgMenu(m){
     if(!profileReady()||!charterOk){ updateChatGate(); return; }
     var mine=m.uid===me.uid;
     var emojis=REACT_EMOJIS.map(function(e){ var on=(m.reactions&&m.reactions[me.uid]===e); return '<button class="mm-emo'+(on?' on':'')+'" data-e="'+e+'">'+e+'</button>'; }).join("");
-    var acts='<button class="mm-act" data-a="reply"><span class="mm-ic">↩︎</span>Répondre</button>';
-    if(m.text) acts+='<button class="mm-act" data-a="copy"><span class="mm-ic">⧉</span>Copier</button>';
-    if(mine) acts+='<button class="mm-act danger" data-a="del"><span class="mm-ic">🗑</span>Supprimer</button>';
-    else acts+='<button class="mm-act" data-a="report"><span class="mm-ic">⚑</span>Signaler</button>';
+    var acts='<button class="mm-act" data-a="reply"><span class="mm-ic">'+CH_IC.reply+'</span>Répondre</button>';
+    if(m.text) acts+='<button class="mm-act" data-a="copy"><span class="mm-ic">'+CH_IC.copy+'</span>Copier le texte</button>';
+    if(mine) acts+='<button class="mm-act danger" data-a="del"><span class="mm-ic">'+CH_IC.trash+'</span>Supprimer</button>';
+    else acts+='<button class="mm-act" data-a="report"><span class="mm-ic">'+CH_IC.flag+'</span>Signaler</button>';
     msgOv.innerHTML='<div class="mm-card"><div class="mm-react">'+emojis+'</div><div class="mm-acts">'+acts+'</div></div>';
     msgOv.hidden=false;
     msgOv.querySelectorAll(".mm-emo").forEach(function(b){ b.addEventListener("click", function(){ if(!profileReady()||!charterOk){ msgOv.hidden=true; updateChatGate(); askProfile(); return; } var mineE=(m.reactions&&m.reactions[me.uid]); if(backend) backend.addReaction(currentChannel(), m.id, mineE===b.dataset.e?"":b.dataset.e); closeMsgMenu(); }); });
@@ -7060,6 +7159,55 @@
   function showReply(){ var r=$("chatReply"); if(!r) return; if(replyTarget){ r.innerHTML='<div class="rt"><b>Réponse à '+esc(replyTarget.pseudo)+'</b><span>'+esc(replyTarget.text)+'</span></div><button class="rx" id="chatReplyX" aria-label="Annuler">×</button>'; r.hidden=false; var x=$("chatReplyX"); if(x) x.addEventListener("click", clearReply); } else { r.hidden=true; r.innerHTML=""; } }
   function setReply(m){ if(!m) return; replyTarget={pseudo:(m.pseudo||"Rider"), text:(m.text||"📷 Photo").slice(0,120)}; showReply(); var i=$("chatInput"); if(i) i.focus(); }
   function clearReply(){ replyTarget=null; showReply(); }
+  // ================= 12/11 (demande de Cédric) : chat façon Messenger / WhatsApp =================
+  // conversation en plein écran (privé, groupe, événement, et le salon dès qu'on y écrit), choix du salon
+  // en grille avec non-lus, bouton « derniers messages », appareil photo direct, messages groupés.
+  (function(){ var card=$("chatCard"); if(!card) return; var salonFull=false;
+    // en plein écran, la carte est posée directement dans la page (sinon l'animation de l'onglet la garde dans son cadre)
+    var holder=document.createComment("chatCard");
+    function setFull(on){ if(on && card.parentNode!==document.body){ card.parentNode.insertBefore(holder, card); document.body.appendChild(card); }
+      else if(!on && holder.parentNode){ holder.parentNode.insertBefore(card, holder); holder.parentNode.removeChild(holder); }
+      card.classList.toggle("full", on); document.body.classList.toggle("chat-full", on);
+      if(on){ try{ window.scrollTo(0,0); }catch(e){} } paintSalonHead(); setTimeout(function(){ chatToBottom($("chatBox"), true); },60); }
+    function isConvo(){ return card.classList.contains("wchat"); }
+    function paintSalonHead(){ var t=$("chatTitle"); if(!t) return; var full=card.classList.contains("full");
+      if(full && !isConvo()){ $("chatBack").hidden=false; t.hidden=false;
+        var n=0; try{ var seenTs={}; }catch(e){}
+        t.innerHTML='<span class="cp-av sf-ic">'+spIco(chatTopic)+'</span><span class="cp-txt"><span class="cp-name">'+esc(CHANS[chatTopic]||"Salon")+' <svg class="sf-caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span><span class="cp-sub">'+(chatMode==="near"?"Riders près de toi":"Salon public · toute la communauté")+'</span></span>'; } }
+    window.__chatPaintSalon=paintSalonHead;
+    window.__chatLeave=function(){ if(card.classList.contains("full")){ salonFull=false; if(isConvo()){ try{ $("chatBack").click(); }catch(e){} } setFull(false); } };
+    // privé / groupe / événement → plein écran ; retour à la liste → normal
+    new MutationObserver(function(){ var c=isConvo(); if(c && !card.classList.contains("full")) setFull(true); else if(!c && card.classList.contains("full") && !salonFull) setFull(false); }).observe(card,{attributes:true,attributeFilter:["class"]});
+    // salon : plein écran dès qu'on touche la discussion ou la barre d'écriture
+    var goSalon=function(){ if(isConvo() || card.classList.contains("full")) return; if(chatMode!=="salon" && chatMode!=="near") return; salonFull=true; setFull(true); };
+    $("chatInput").addEventListener("focus", goSalon); $("chatBox").addEventListener("click", function(e){ if(e.target.closest(".bubble,.cav,.who2,a,button")) return; goSalon(); });
+    // retour : quitte le plein écran du salon (sinon comportement habituel)
+    $("chatBack").addEventListener("click", function(e){ if(salonFull && !isConvo()){ e.stopImmediatePropagation(); salonFull=false; setFull(false); $("chatBack").hidden=true; $("chatTitle").hidden=true; try{ $("chatInput").blur(); }catch(x){} } }, true);
+    // titre du salon → grille des salons
+    $("chatTitle").addEventListener("click", function(){ if(card.classList.contains("full") && !isConvo()) openChanSheet(); });
+    var sel=$("chatChannel"); if(sel) sel.addEventListener("change", paintSalonHead);
+    // les autres onglets (Messages, Groupes…) sortent du plein écran du salon
+    $("chatSeg").addEventListener("click", function(){ if(salonFull){ salonFull=false; setFull(false); } }, true);
+    // bouton « derniers messages »
+    var box=$("chatBox"), down=$("chatDown"), dn=$("chatDownN"), lastN=0;
+    box.addEventListener("scroll", function(){ var up=(box.scrollHeight-box.scrollTop-box.clientHeight)>220; down.hidden=!up; if(!up){ dn.hidden=true; lastN=box.querySelectorAll(".crow").length; } }, {passive:true});
+    new MutationObserver(function(){ var n=box.querySelectorAll(".crow").length; if(!down.hidden && n>lastN && lastN){ dn.textContent=String(n-lastN); dn.hidden=false; } else if(down.hidden) lastN=n; }).observe(box,{childList:true});
+    down.addEventListener("click", function(){ chatUserUp=false; box.scrollTo({top:box.scrollHeight,behavior:"smooth"}); dn.hidden=true; });
+    // appareil photo direct
+    var cam=$("chatCam"); if(cam) cam.addEventListener("click", function(){ if(!profileReady()||!charterOk){ updateChatGate(); return; } var f=$("chatFile"); f.setAttribute("capture","environment"); f.click(); });
+    // le bouton Envoyer s'allume quand il y a du texte
+    var inp=$("chatInput"), sendB=$("chatSend"), lit=function(){ card.classList.toggle("has-txt", !!(inp.value||"").trim()); }; inp.addEventListener("input", lit); sendB.addEventListener("click", function(){ setTimeout(lit,30); });
+    // grille des salons (avec nouveaux messages)
+    function openChanSheet(){ var ov=document.createElement("div"); ov.className="mm-ov"; var keys=Object.keys(CHANS);
+      var unread=function(tp){ var o=document.querySelector('#chatChannel option[value="'+tp+'"]'); var m=o&&o.textContent.match(/🔴\s*(\d+\+?)/); return m?m[1]:""; };
+      var cell=function(k){ var u=unread(k); return '<button class="cs-it'+(k===chatTopic?" on":"")+'" data-k="'+k+'"><i>'+spIco(k)+(u?'<em>'+u+'</em>':'')+'</i><span>'+esc(CHANS[k])+'</span></button>'; };
+      ov.innerHTML='<div class="mm-card cs-card"><div class="at-grab"></div><b class="cs-h">Choisis ton salon</b>'
+        +'<div class="cs-sec">Sports nautiques</div><div class="cs-grid">'+keys.filter(function(k){ return CHAN_LAND.indexOf(k)<0; }).map(cell).join("")+'</div>'
+        +'<div class="cs-sec">Sports terrestres</div><div class="cs-grid">'+keys.filter(function(k){ return CHAN_LAND.indexOf(k)>=0; }).map(cell).join("")+'</div></div>';
+      document.body.appendChild(ov); ov.addEventListener("click", function(e){ if(e.target===ov) ov.remove(); });
+      ov.querySelectorAll(".cs-it").forEach(function(b){ b.addEventListener("click", function(){ var s2=$("chatChannel"); if(s2){ s2.value=b.dataset.k; s2.dispatchEvent(new Event("change")); } ov.remove(); paintSalonHead(); }); }); }
+    window.__openChanSheet=openChanSheet;
+  })();
   var EMOJIS=["👍","❤️","😂","🤙","🔥","🌊","🏄","💨","😎","🙏","👏","😮","😢","💪","⚡","🎉","☀️","🤩","👋","✅","🚀","🫶","🤝","🙌"];
   (function(){ var box=$("chatEmojis"); if(!box) return; box.innerHTML=EMOJIS.map(function(e){return '<button type="button">'+e+'</button>';}).join(""); box.querySelectorAll("button").forEach(function(b){ b.addEventListener("click", function(){ var i=$("chatInput"); if(i){ i.value+=b.textContent; i.focus(); } }); }); })();
   var _em=$("chatEmoji"); if(_em) _em.addEventListener("click", function(){ var p=$("chatEmojis"); if(p) p.hidden=!p.hidden; });

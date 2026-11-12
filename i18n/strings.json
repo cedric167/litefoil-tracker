@@ -6254,5 +6254,45 @@
  "Ta vidéo est publiée 🎉": {
   "en": "Your video is posted 🎉",
   "es": "Tu vídeo está publicado 🎉"
+ },
+ "Nouveau message": {
+  "en": "New message",
+  "es": "Nuevo mensaje"
+ },
+ "Galerie": {
+  "en": "Gallery",
+  "es": "Galería"
+ },
+ "Ma sortie": {
+  "en": "My session",
+  "es": "Mi sesión"
+ },
+ "Choisis ton salon": {
+  "en": "Choose your room",
+  "es": "Elige tu sala"
+ },
+ "Copier le texte": {
+  "en": "Copy text",
+  "es": "Copiar texto"
+ },
+ "Salon public · toute la communauté": {
+  "en": "Public room · whole community",
+  "es": "Sala pública · toda la comunidad"
+ },
+ "Riders près de toi": {
+  "en": "Riders near you",
+  "es": "Riders cerca de ti"
+ },
+ "Sports nautiques": {
+  "en": "Water sports",
+  "es": "Deportes acuáticos"
+ },
+ "Sports terrestres": {
+  "en": "Land sports",
+  "es": "Deportes terrestres"
+ },
+ "Écris à un rider avec « Nouveau message ».": {
+  "en": "Write to a rider with “New message”.",
+  "es": "Escribe a un rider con «Nuevo mensaje»."
  }
 }
