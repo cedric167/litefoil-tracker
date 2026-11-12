@@ -691,6 +691,47 @@
   .vg-like{ position:absolute; left:6px; bottom:6px; color:#fff; font-size:12px; font-weight:800; text-shadow:0 1px 4px rgba(0,0,0,.6); }
   .vg-del{ position:absolute; right:5px; top:5px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; }
   .vg-del svg{ width:17px; height:17px; fill:none; stroke:#fff; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  /* 13/11 : stories */
+  .st-bar{ display:flex; gap:12px; overflow-x:auto; margin:2px -16px 10px; padding:4px 16px 6px; scrollbar-width:none; -webkit-overflow-scrolling:touch; } .st-bar::-webkit-scrollbar{ display:none; } .st-bar:empty{ display:none; }
+  .st-it{ flex:none; width:72px; border:0; background:none; box-shadow:none; padding:0; min-height:0; display:flex; flex-direction:column; align-items:center; gap:5px; font:inherit; color:var(--text); cursor:pointer; }
+  .st-ring{ position:relative; width:66px; height:66px; border-radius:50%; padding:3px; background:#d5dde1; display:block; }
+  .st-it.new .st-ring{ background:conic-gradient(from 200deg,#2bd4c4,#19e3ff,#0b6d72,#5ff0c8,#2bd4c4); }
+  .st-it.add .st-ring{ background:none; border:2px dashed #b9c4ca; padding:1px; }
+  .st-av{ display:flex; width:100%; height:100%; border-radius:50%; overflow:hidden; border:2.5px solid #fff; background:#0b3a55; }
+  .st-av img, .st-av span{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:23px; }
+  .st-plus{ position:absolute; right:-3px; bottom:-3px; width:24px; height:24px; border-radius:50%; background:#14b8ab; color:#fff; border:2.5px solid #fff; font-style:normal; font-weight:800; font-size:17px; line-height:19px; text-align:center; }
+  .st-it b{ font-size:11.5px; font-weight:600; max-width:72px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .st-it.seen b{ color:var(--muted); }
+  .stv, .stc{ position:fixed; inset:0; z-index:10060; background:#000; color:#fff; overflow:hidden; font-family:inherit; user-select:none; -webkit-user-select:none; }
+  .stv-media{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#000; }
+  .stv-media video, .stv-media .stv-img{ position:relative; width:100%; height:100%; object-fit:contain; }
+  .stv-blur{ position:absolute; inset:-20px; width:calc(100% + 40px); height:calc(100% + 40px); object-fit:cover; filter:blur(22px) brightness(.55); }
+  .stv-spin{ position:absolute; left:50%; top:50%; margin:-20px 0 0 -20px; display:block; }
+  .stv-top{ position:absolute; left:0; right:0; top:0; z-index:3; padding:calc(env(safe-area-inset-top) + 8px) 10px 26px; background:linear-gradient(180deg,rgba(0,0,0,.6),transparent); }
+  .stv-bars{ display:flex; gap:4px; } .stv-bars i{ flex:1; height:3px; border-radius:3px; background:rgba(255,255,255,.35); overflow:hidden; }
+  .stv-bars i b{ display:block; height:100%; background:#fff; transform-origin:left center; transform:scaleX(0); } .stv-bars i.done b{ transform:scaleX(1); }
+  .stv-head{ display:flex; align-items:center; gap:4px; margin-top:10px; }
+  .stv-who{ flex:1; min-width:0; display:flex; align-items:center; gap:9px; border:0; background:none; box-shadow:none; color:#fff; font:inherit; padding:0; text-align:left; cursor:pointer; }
+  .stv-who b{ font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .stv-who small{ flex:none; font-size:12.5px; opacity:.75; }
+  .stv-av{ flex:none; width:36px; height:36px; border-radius:50%; overflow:hidden; display:flex; } .stv-av img, .stv-av span{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; }
+  .stv-ib{ flex:none; width:42px; height:42px; border:0; background:none; box-shadow:none; color:#fff; font:inherit; font-size:24px; line-height:1; cursor:pointer; text-shadow:0 1px 3px rgba(0,0,0,.6); }
+  .stv-tap{ position:absolute; inset:0; z-index:2; touch-action:none; }
+  .stv-cap{ position:absolute; left:14px; right:14px; bottom:calc(var(--lf-sab, 0px) + 84px); z-index:3; text-align:center; font-size:18px; font-weight:800; line-height:1.3; text-shadow:0 1px 6px rgba(0,0,0,.85); pointer-events:none; }
+  .stv-foot{ position:absolute; left:0; right:0; bottom:0; z-index:3; display:flex; align-items:center; gap:10px; padding:28px 14px calc(var(--lf-sab, 0px) + 16px); background:linear-gradient(0deg,rgba(0,0,0,.7),transparent); }
+  .stv-views{ flex:1; font-size:14px; font-weight:700; }
+  .stv-foot button{ border:0; border-radius:999px; background:rgba(255,255,255,.18); color:#fff; font:inherit; font-size:13.5px; font-weight:700; padding:10px 15px; cursor:pointer; box-shadow:none; }
+  .stv.paused .stv-top, .stv.paused .stv-foot, .stv.paused .stv-cap{ opacity:0; transition:opacity .2s; }
+  .stc-bar{ position:absolute; left:0; right:0; top:0; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 6px) 8px 8px; } .stc-bar b{ font-size:16.5px; }
+  .stc-pick{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; background:radial-gradient(120% 90% at 50% 0%,#0f6a67,#07222c 70%); }
+  .stc-hero{ text-align:center; } .stc-emo{ font-size:54px; } .stc-hero b{ display:block; font-size:24px; margin-top:8px; } .stc-hero p{ margin:8px auto 0; max-width:30ch; font-size:14.5px; line-height:1.45; color:rgba(255,255,255,.8); }
+  .stc-btns{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:340px; margin-top:28px; }
+  .stc-btns button{ display:flex; align-items:center; gap:12px; border:0; border-radius:18px; background:rgba(255,255,255,.12); color:#fff; font:inherit; font-size:16px; font-weight:700; padding:16px 18px; cursor:pointer; box-shadow:none; } .stc-btns button span{ font-size:24px; }
+  .stc-btns button:first-child{ background:linear-gradient(135deg,#5ff0c8,#22cdbd); color:#06282a; }
+  .stc-err{ min-height:20px; margin-top:10px; text-align:center; font-size:13.5px; color:#ffb4c0; }
+  .stc-foot{ position:absolute; left:0; right:0; bottom:0; z-index:3; padding:40px 14px calc(var(--lf-sab, 0px) + 16px); background:linear-gradient(0deg,rgba(0,0,0,.85),transparent); }
+  .stc-foot input{ width:100%; border:0; outline:none; border-radius:14px; background:rgba(255,255,255,.16); color:#fff; font:inherit; font-size:16px; padding:13px 14px; } .stc-foot input::placeholder{ color:rgba(255,255,255,.65); }
+  .stc-go{ width:100%; margin-top:6px; height:54px; border:0; border-radius:18px; background:linear-gradient(135deg,#5ff0c8,#22cdbd); color:#06282a; font:inherit; font-size:17px; font-weight:800; cursor:pointer; } .stc-go:disabled{ opacity:.75; }
+  .stc-prog{ height:4px; border-radius:4px; background:rgba(255,255,255,.2); margin-top:10px; overflow:hidden; } .stc-prog i{ display:block; height:100%; width:0; background:#5ff0c8; transition:width .2s; }
   /* 13/11 : texte et musique sur la vidéo qu'on publie */
   .vu-tx{ position:absolute; z-index:1; touch-action:none; }
   .vu-aa{ font-size:17px; font-weight:800; letter-spacing:-.02em; }
@@ -1776,6 +1817,7 @@
     <div class="home-hello">
       <div><div class="hh-date" id="homeDate"></div><h2 class="hh-title" id="homeHello">Bonjour 👋</h2></div>
     </div>
+    <div class="st-bar" aria-label="Stories"></div>
 
     <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
       <div class="hc-top"><span class="hc-lbl">Conditions maintenant</span><span class="hc-spot" id="hcSpot">—</span></div>
@@ -2112,6 +2154,7 @@
   </section>
 
   <section id="tab-videos" class="tabpane" hidden>
+    <div class="st-bar" aria-label="Stories"></div>
     <div class="vid-hero">
       <div class="vh-eb">Vidéos des riders</div>
       <h2 class="vh-title">Vos plus belles sessions.</h2>
@@ -4724,6 +4767,26 @@
         .then(function(url){ const v={uid:uid,pseudo:me.pseudo||"Rider",url:url,path:path,thumb:meta.thumb||"",caption:(meta.caption||"").slice(0,150),topic:meta.topic||"efoil",dur:meta.dur||0,t:db.serverTimestamp()};
           if(me.av) v.av=me.av; return db.set(vref,v).then(function(){ return vref.key; }); }); },
       likeVideo(vid,on){ return db.set(db.ref(d,"videos/"+vid+"/likes/"+uid), on?true:null); },
+      // ---------- 13/11 : stories (photo ou vidéo courte, visibles 24 h) ----------
+      //   /stories/{id}      : { uid, pseudo, av, type:"img"|"vid", thumb, cap, dur, url, path, t }
+      //   /storyMedia/{id}   : { uid, img } (la photo en grand, lue seulement quand on ouvre la story)
+      //   /storyViews/{id}/{uid} : date de la vue (visible par l'auteur seulement)
+      watchStories(cb){ return db.onValue(db.query(db.ref(d,"stories"), db.orderByChild("t"), db.startAt(Date.now()-86400000)), function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v){ v.id=c.key; out.push(v); } }); cb(out); },
+        function(err){ console.warn("Stories indisponibles (règle Firebase /stories manquante ?) :", err&&err.code); cb([]); }); },
+      publishStory(o, onProgress){ const self=this, sref=db.push(db.ref(d,"stories"));
+        const base={uid:uid,pseudo:me.pseudo||"Rider",type:o.type,thumb:o.thumb||"",cap:String(o.cap||"").slice(0,100),dur:o.dur||0,t:db.serverTimestamp()}; if(me.av) base.av=me.av;
+        if(o.type==="img") return db.set(db.ref(d,"storyMedia/"+sref.key),{uid:uid,img:o.img,t:db.serverTimestamp()}).then(function(){ if(onProgress) onProgress(1); return db.set(sref,base); }).then(function(){ return sref.key; });
+        const ext=((o.file.name||"").split(".").pop()||"mp4").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"mp4", path="videos/"+uid+"/st_"+sref.key+"."+ext;
+        return self.storage().then(function(S){ return new Promise(function(res,rej){
+          const task=S.m.uploadBytesResumable(S.m.ref(S.s,path), o.file, {contentType:o.file.type||"video/mp4"});
+          task.on("state_changed", function(sn){ if(onProgress) onProgress(sn.bytesTransferred/(sn.totalBytes||1)); }, rej, function(){ S.m.getDownloadURL(task.snapshot.ref).then(res, rej); }); }); })
+        .then(function(url){ base.url=url; base.path=path; return db.set(sref,base); }).then(function(){ return sref.key; }); },
+      getStoryImg(id){ return db.get(db.ref(d,"storyMedia/"+id+"/img")).then(function(sn){ return sn.val(); }); },
+      deleteStory(st){ const self=this; return db.remove(db.ref(d,"storyViews/"+st.id)).catch(function(){}).then(function(){ return db.remove(db.ref(d,"storyMedia/"+st.id)).catch(function(){}); })
+        .then(function(){ return db.remove(db.ref(d,"stories/"+st.id)); })
+        .then(function(){ if(st.uid===uid && st.path) return self.storage().then(function(S){ return S.m.deleteObject(S.m.ref(S.s,st.path)); }).catch(function(){}); }); },
+      markStoryView(id){ return db.set(db.ref(d,"storyViews/"+id+"/"+uid), db.serverTimestamp()); },
+      watchStoryViews(id,cb){ return db.onValue(db.ref(d,"storyViews/"+id), function(sn){ cb(sn.val()||{}); }, function(){ cb({}); }); },
       deleteVideo(v){ const self=this; return db.remove(db.ref(d,"videos/"+v.id)).then(function(){ db.remove(db.ref(d,"videoComments/"+v.id)).catch(function(){});
         if(v.uid===uid && v.path) return self.storage().then(function(S){ return S.m.deleteObject(S.m.ref(S.s,v.path)); }).catch(function(){}); }); },
       watchVideoComments(vid,cb){ return db.onValue(db.query(db.ref(d,"videoComments/"+vid), db.limitToLast(200)), function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v){ v.id=c.key; out.push(v); } }); cb(out); }, function(){ cb([]); }); },
@@ -4801,6 +4864,7 @@
     const DEMO_VID="https://litefoil.fr/cdn/shop/videos/c/vp/e098ec1ef4e84f2094f6707f89383c5a/e098ec1ef4e84f2094f6707f89383c5a.SD-480p-1.5Mbps-86567816.mp4?v=0", DEMO_POSTER="https://litefoil.fr/cdn/shop/files/preview_images/e098ec1ef4e84f2094f6707f89383c5a.thumbnail.0000000000_small.jpg?v=1781518914&width=600";
     const demoVideos=[{id:"vd1",uid:"demo-aurel",pseudo:"Aurel66",url:DEMO_VID,thumb:DEMO_POSTER,caption:"Session du matin, mer d'huile 🌅",topic:"efoil",t:Date.now()-5400000,likes:{"demo-marine":true,"demo-leo":true}},
       {id:"vd2",uid:TEAM_UID,pseudo:TEAM_NAME,av:TEAM_AV,url:DEMO_VID,thumb:DEMO_POSTER,caption:"Lite Foil Ultra : 1 seule planche, 3 façons de voler ⚡",topic:"efoil",t:Date.now()-86400000,likes:{"demo-aurel":true}}];
+    let demoStories=[{id:"sd1",uid:"demo-aurel",pseudo:"Aurel66",type:"img",thumb:DEMO_POSTER,cap:"Session du matin 🌅",dur:0,t:Date.now()-3600000}], demoStCb=null; const demoStImg={sd1:DEMO_POSTER};
     let demoVidCb=null; const demoComs={vd1:[{id:"c1",uid:"demo-marine",pseudo:"Marine",text:"Trop beau ce plan d'eau 😍",t:Date.now()-3000000}]}, demoComCb={};
     const demoDM={}; let demoDMcb=null;
     demoDM[TEAM_UID]={pseudo:TEAM_NAME,text:"Bienvenue dans la communauté Lite Foil 👋",by:TEAM_UID,t:Date.now()-60000,unread:1};
@@ -4867,6 +4931,12 @@
         demoVideos.unshift(v); if(demoVidCb) demoVidCb(demoVideos.slice()); res(v.id); } },150); }); },
       likeVideo(vid,on){ demoVideos.forEach(function(v){ if(v.id===vid){ v.likes=v.likes||{}; if(on) v.likes[uid]=true; else delete v.likes[uid]; } }); if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
       deleteVideo(v){ for(var i=0;i<demoVideos.length;i++){ if(demoVideos[i].id===v.id){ demoVideos.splice(i,1); break; } } if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
+      watchStories(cb){ demoStCb=cb; cb(demoStories.slice()); return function(){ demoStCb=null; }; },
+      publishStory(o, onProgress){ var id="s"+Date.now(), st={id:id,uid:uid,pseudo:me.pseudo||"Rider",av:me.av||"",type:o.type,thumb:o.thumb||"",cap:o.cap||"",dur:o.dur||0,t:Date.now()};
+        if(o.type==="img") demoStImg[id]=o.img; else st.url=URL.createObjectURL(o.file); if(onProgress) onProgress(1); demoStories.push(st); if(demoStCb) demoStCb(demoStories.slice()); return Promise.resolve(id); },
+      getStoryImg(id){ return Promise.resolve(demoStImg[id]||null); },
+      deleteStory(st){ demoStories=demoStories.filter(function(x){ return x.id!==st.id; }); if(demoStCb) demoStCb(demoStories.slice()); return Promise.resolve(); },
+      markStoryView(){ return Promise.resolve(); }, watchStoryViews(id,cb){ cb({}); return function(){}; },
       watchVideoComments(vid,cb){ (demoComCb[vid]=demoComCb[vid]||[]).push(cb); cb((demoComs[vid]||[]).slice()); return function(){ demoComCb[vid]=(demoComCb[vid]||[]).filter(function(f){ return f!==cb; }); }; },
       addVideoComment(vid,text){ (demoComs[vid]=demoComs[vid]||[]).push({id:"c"+Date.now(),uid:uid,pseudo:me.pseudo||"Rider",text:text,t:Date.now()}); (demoComCb[vid]||[]).forEach(function(f){ f(demoComs[vid].slice()); }); return Promise.resolve(); },
       deleteVideoComment(vid,cid){ demoComs[vid]=(demoComs[vid]||[]).filter(function(c){ return c.id!==cid; }); (demoComCb[vid]||[]).forEach(function(f){ f(demoComs[vid].slice()); }); return Promise.resolve(); },
@@ -6072,6 +6142,130 @@
           .catch(function(e){ btn.disabled=false; btn.innerHTML='Publier'; pr.hidden=true; err("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")+(/storage|unauthorized|permission/i.test(String(e&&(e.code||e.message)))?" (le stockage des vidéos doit être activé dans Firebase)":"")); }); }); }
     stepCreate(); }
   function showTabVideos(){ var t=document.querySelector('.tab[data-tab="videos"]'); if(t) t.click(); }
+
+  /* ================= 13/11 (demande de Cédric) : STORIES =================
+   * Une photo ou une vidéo courte (15 s) visible 24 h par la communauté. Barre de cercles en haut de l'accueil
+   * et du Swip : « Ta story » puis les riders (anneau coloré = pas encore vue). Toucher ouvre la visionneuse
+   * plein écran : barres de progression, toucher à droite / à gauche pour avancer / reculer, appui long = pause. */
+  var STORY_TTL=86400000, STORY_VID_S=15, STORY_IMG_MS=5000;
+  let stories=[], stImgCache={}, stSeen=(function(){ try{ return JSON.parse(localStorage.getItem("lf.st.seen")||"{}")||{}; }catch(e){ return {}; } })();
+  function stSeenSave(){ var now=Date.now(); Object.keys(stSeen).forEach(function(k){ if(now-stSeen[k]>2*STORY_TTL) delete stSeen[k]; }); try{ localStorage.setItem("lf.st.seen", JSON.stringify(stSeen)); }catch(e){} }
+  function stLive(){ var now=Date.now(); return stories.filter(function(x){ return x && x.uid && !blocked.has(x.uid) && (+x.t||now)>now-STORY_TTL; }); }
+  // un groupe par rider : moi d'abord, puis les stories pas encore vues, puis les autres
+  function stGroups(){ var by={}, order=[]; stLive().sort(function(a,b){ return (+a.t||0)-(+b.t||0); }).forEach(function(x){ if(!by[x.uid]){ by[x.uid]={ uid:x.uid, list:[] }; order.push(by[x.uid]); } by[x.uid].list.push(x); });
+    order.forEach(function(g){ g.unseen=g.list.some(function(x){ return !stSeen[x.id]; }); g.last=g.list[g.list.length-1]; });
+    return order.sort(function(a,b){ var am=a.uid===me.uid?0:1, bm=b.uid===me.uid?0:1; if(am!==bm) return am-bm; if(a.unseen!==b.unseen) return a.unseen?-1:1; return (+b.last.t||0)-(+a.last.t||0); }); }
+  function stAv(uid, ps, av){ return av ? '<img src="'+esc(av)+'" alt="">' : '<span style="background:'+avatarColor(uid||"x")+'">'+esc(((ps||"R").trim()[0]||"R").toUpperCase())+'</span>'; }
+  function onStories(list){ stories=list||[]; renderStories(); }
+  function renderStories(){ var bars=document.querySelectorAll(".st-bar"); if(!bars.length) return; var gs=stGroups(), mine=gs.filter(function(g){ return g.uid===me.uid; })[0];
+    var h='<button type="button" class="st-it'+(mine?(mine.unseen?" new":" seen"):" add")+'" data-st="'+(mine?"me":"add")+'"><span class="st-ring"><span class="st-av">'+stAv(me.uid, me.pseudo||"M", me.av)+'</span>'+(mine?'':'<i class="st-plus">+</i>')+'</span><b>Ta story</b></button>';
+    gs.forEach(function(g){ if(g.uid===me.uid) return; var l=g.last, off=isOfficial(g.uid), name=(off&&g.uid===TEAM_UID)?TEAM_NAME:(l.pseudo||"Rider");
+      h+='<button type="button" class="st-it '+(g.unseen?"new":"seen")+'" data-st="'+esc(g.uid)+'"><span class="st-ring"><span class="st-av">'+stAv(g.uid, name, l.av||(g.uid===TEAM_UID?TEAM_AV:""))+'</span></span><b>'+esc(name)+'</b></button>'; });
+    bars.forEach(function(bar){ bar.innerHTML=h; bar.querySelectorAll("[data-st]").forEach(function(b){ b.addEventListener("click", function(){ var k=b.dataset.st; if(k==="add") openStoryCreate(); else openStories(k==="me"?me.uid:k); }); }); }); }
+
+  // ---------- visionneuse ----------
+  function openStories(uid){ var groups=stGroups(), gi=-1; for(var i=0;i<groups.length;i++){ if(groups[i].uid===uid){ gi=i; break; } } if(gi<0) return;
+    var old=$("stv"); if(old) old.remove();
+    var vf0=$("vf"); if(vf0 && !vf0.hidden){ vf0.querySelectorAll(".vf-item").forEach(vfUnload); vfActive=-1; }
+    var el=document.createElement("div"); el.id="stv"; el.className="stv"; document.body.appendChild(el); var prevOv=document.body.style.overflow; document.body.style.overflow="hidden";
+    var si=0, raf=0, t0=0, acc=0, paused=false, vd=null, cur=null, viewsUnsub=null, closed=false, holdT=null, held=false;
+    var first=function(g){ for(var k=0;k<g.list.length;k++){ if(!stSeen[g.list[k].id]) return k; } return 0; };
+    function close(){ if(closed) return; closed=true; cancelAnimationFrame(raf); if(viewsUnsub){ viewsUnsub(); viewsUnsub=null; } try{ if(vd) vd.pause(); }catch(e){} el.remove(); document.body.style.overflow=prevOv; renderStories();
+      var vf=$("vf"); if(vf && !vf.hidden) feedActivate(); }
+    function go(d){ var g=groups[gi]; if(si+d>=0 && si+d<g.list.length){ si+=d; show(); return; }
+      if(d>0){ if(gi+1<groups.length){ gi++; si=first(groups[gi]); show(); } else close(); }
+      else { if(gi>0){ gi--; si=groups[gi].list.length-1; show(); } else { t0=performance.now(); acc=0; if(vd){ try{ vd.currentTime=0; }catch(e){} } } } }
+    function setPaused(pz){ paused=pz; el.classList.toggle("paused", pz); if(vd){ if(pz) vd.pause(); else { var pr=vd.play(); if(pr&&pr.catch) pr.catch(function(){}); } } if(!pz) t0=performance.now(); }
+    function tick(now){ if(closed) return; var prog=0;
+      if(cur){ if(vd){ var du=Math.min(vd.duration||cur.dur||STORY_VID_S, STORY_VID_S+1); prog=du>0?vd.currentTime/du:0; if(vd.ended || (du>0 && vd.currentTime>=du-0.05)) prog=1; }
+        else { if(!paused && el.dataset.ready==="1"){ acc+=now-t0; } t0=now; prog=acc/STORY_IMG_MS; } }
+      var bar=el.querySelector(".stv-bars i.on b"); if(bar) bar.style.transform="scaleX("+Math.max(0,Math.min(1,prog))+")";
+      if(prog>=1 && !paused){ go(1); if(closed) return; }
+      raf=requestAnimationFrame(tick); }
+    function show(){ var g=groups[gi], x=g.list[si]; cur=x; if(viewsUnsub){ viewsUnsub(); viewsUnsub=null; } try{ if(vd) vd.pause(); }catch(e){} vd=null; acc=0; t0=performance.now(); paused=false; el.classList.remove("paused"); el.dataset.ready="0";
+      var mine=x.uid===me.uid, off=isOfficial(x.uid), name=(off&&x.uid===TEAM_UID)?TEAM_NAME:(x.pseudo||"Rider");
+      el.innerHTML='<div class="stv-media">'+(x.thumb?'<img class="stv-blur" src="'+esc(x.thumb)+'" alt="">':'')+(x.type==="vid"?'<video playsinline webkit-playsinline preload="auto"></video>':'<img class="stv-img" alt="">')+'<div class="vf-spin stv-spin"><i></i><i></i></div></div>'
+        +'<div class="stv-top"><div class="stv-bars">'+g.list.map(function(_,k){ return '<i class="'+(k<si?"done":(k===si?"on":""))+'"><b></b></i>'; }).join("")+'</div>'
+        +'<div class="stv-head"><button type="button" class="stv-who" id="stvWho"><span class="stv-av">'+stAv(x.uid, name, mine?me.av:(x.av||(x.uid===TEAM_UID?TEAM_AV:"")))+'</span><b>'+esc(mine?"Ta story":name)+(off?' <span class="off-badge">✓</span>':'')+'</b><small>'+esc(timeAgo(x.t))+'</small></button>'
+        +'<button type="button" class="stv-ib" id="stvMore" aria-label="Options">⋯</button><button type="button" class="stv-ib" id="stvX" aria-label="Fermer">✕</button></div></div>'
+        +'<div class="stv-tap" id="stvTap"></div>'
+        +(x.cap?'<div class="stv-cap">'+esc(x.cap)+'</div>':'')
+        +(mine?'<div class="stv-foot"><span class="stv-views" id="stvViews">👁 0</span><button type="button" id="stvAdd">＋ Ajouter</button><button type="button" id="stvDel">Supprimer</button></div>':'');
+      var ready=function(){ el.dataset.ready="1"; t0=performance.now(); var sp=el.querySelector(".stv-spin"); if(sp) sp.remove(); };
+      if(x.type==="vid"){ vd=el.querySelector("video"); vd.src=x.url||""; vd.muted=false;
+        vd.addEventListener("loadedmetadata", function(){ vd.style.objectFit = vd.videoHeight>=vd.videoWidth ? "cover" : "contain"; });
+        vd.addEventListener("playing", ready); vd.addEventListener("error", function(){ ready(); acc=STORY_IMG_MS*0.6; vd=null; });
+        var pr=vd.play(); if(pr&&pr.catch) pr.catch(function(){ if(!vd) return; vd.muted=true; var p2=vd.play(); if(p2&&p2.catch) p2.catch(function(){}); }); }
+      else { var im=el.querySelector(".stv-img"), put=function(src){ if(cur!==x || !src) { if(cur===x) ready(); return; } im.onload=ready; im.onerror=ready; im.src=src; };
+        if(stImgCache[x.id]) put(stImgCache[x.id]); else if(backend&&backend.getStoryImg) backend.getStoryImg(x.id).then(function(src){ if(src) stImgCache[x.id]=src; put(src||x.thumb); }).catch(function(){ put(x.thumb); }); else put(x.thumb); }
+      if(!stSeen[x.id]){ stSeen[x.id]=Date.now(); stSeenSave(); }
+      if(!mine && backend && backend.markStoryView && profileReady()) backend.markStoryView(x.id).catch(function(){});
+      if(mine && backend && backend.watchStoryViews) viewsUnsub=backend.watchStoryViews(x.id, function(v){ var n=Object.keys(v||{}).filter(function(u){ return u!==me.uid; }).length, b=$("stvViews"); if(b) b.textContent="👁 "+fmtCount(n)+" vue"+(n>1?"s":""); });
+      $("stvX").addEventListener("click", close);
+      $("stvWho").addEventListener("click", function(){ if(mine) return; close(); openUserProfile(x.uid); });
+      $("stvMore").addEventListener("click", function(){ setPaused(true);
+        if(mine || canModerate(x.uid)){ if(confirm("Supprimer cette story ?")) delStory(x); else setPaused(false); return; }
+        if(confirm("Signaler cette story à l'équipe Lite Foil ?")){ if(backend&&backend.sendReport) backend.sendReport({type:"story",targetUid:x.uid,targetPseudo:x.pseudo,text:("Story "+x.id+" : "+(x.cap||"")).slice(0,400)}); alert("Signalée, merci. L'équipe Lite Foil va la vérifier."); }
+        setPaused(false); });
+      var ad=$("stvAdd"); if(ad) ad.addEventListener("click", function(){ close(); openStoryCreate(); });
+      var dl=$("stvDel"); if(dl) dl.addEventListener("click", function(){ setPaused(true); if(confirm("Supprimer cette story ?")) delStory(x); else setPaused(false); });
+      // toucher : court = suivant (ou précédent à gauche) ; appui long = pause
+      var tap=$("stvTap");
+      tap.addEventListener("pointerdown", function(){ held=false; clearTimeout(holdT); holdT=setTimeout(function(){ held=true; setPaused(true); },220); });
+      tap.addEventListener("pointerup", function(e){ clearTimeout(holdT); if(held){ held=false; setPaused(false); return; } var r=tap.getBoundingClientRect(); go((e.clientX-r.left)<r.width*0.3 ? -1 : 1); });
+      ["pointercancel","pointerleave"].forEach(function(n){ tap.addEventListener(n, function(){ clearTimeout(holdT); if(held){ held=false; setPaused(false); } }); }); }
+    function delStory(x){ if(!backend||!backend.deleteStory) return; backend.deleteStory(x).then(function(){ stories=stories.filter(function(y){ return y.id!==x.id; }); var g=groups[gi]; g.list=g.list.filter(function(y){ return y.id!==x.id; });
+        if(!g.list.length){ groups.splice(gi,1); if(!groups.length || gi>=groups.length){ close(); return; } si=first(groups[gi]); } else if(si>=g.list.length) si=g.list.length-1; show(); })
+      .catch(function(e){ setPaused(false); alert("Suppression impossible : "+((e&&(e.code||e.message))||"erreur")); }); }
+    si=first(groups[gi]); show(); raf=requestAnimationFrame(tick); }
+
+  // ---------- créer une story ----------
+  function stSmall(dataUrl, max){ return new Promise(function(res){ if(!dataUrl){ res(""); return; } var im=new Image(); im.onload=function(){ try{ var sc=Math.min(1,max/Math.max(im.width,im.height)), c=document.createElement("canvas"); c.width=Math.max(1,Math.round(im.width*sc)); c.height=Math.max(1,Math.round(im.height*sc)); c.getContext("2d").drawImage(im,0,0,c.width,c.height); res(c.toDataURL("image/jpeg",0.6)); }catch(e){ res(""); } }; im.onerror=function(){ res(""); }; im.src=dataUrl; }); }
+  function openStoryCreate(){ if(!charterOk){ showTab("communaute"); showCharter(); return; } if(!profileReady()){ askProfile("Valide ton profil pour publier une story."); return; }
+    var old=$("stc"); if(old) old.remove();
+    var el=document.createElement("div"); el.id="stc"; el.className="stc"; document.body.appendChild(el); var prevOv=document.body.style.overflow; document.body.style.overflow="hidden";
+    var st={ file:null, type:"", url:null, dur:0, thumb:"" }, busy=false;
+    var close=function(){ if(st.url) URL.revokeObjectURL(st.url); el.remove(); document.body.style.overflow=prevOv; };
+    function pick(){ el.className="stc stc-pick";
+      el.innerHTML='<div class="stc-bar"><button type="button" class="stv-ib" id="stcX" aria-label="Fermer">✕</button><b>Nouvelle story</b><span class="stv-ib"></span></div>'
+        +'<div class="stc-hero"><div class="stc-emo">✨</div><b>Partage un moment</b><p>Une photo ou une vidéo de 15 secondes, visible 24 heures par la communauté.</p></div>'
+        +'<div class="stc-btns"><button type="button" data-i="stcCam"><span>📷</span>Prendre une photo</button><button type="button" data-i="stcVid"><span>🎥</span>Filmer</button><button type="button" data-i="stcGal"><span>🖼️</span>Galerie</button></div>'
+        +'<input id="stcCam" type="file" accept="image/*" capture="environment" hidden><input id="stcVid" type="file" accept="video/*" capture="environment" hidden><input id="stcGal" type="file" accept="image/*,video/*" hidden><div class="stc-err" id="stcErr"></div>';
+      $("stcX").addEventListener("click", close);
+      el.querySelectorAll(".stc-btns button").forEach(function(b){ b.addEventListener("click", function(){ $(b.dataset.i).click(); }); });
+      ["stcCam","stcVid","stcGal"].forEach(function(id){ $(id).addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(f) load(f); }); }); }
+    function err(tx){ var e=$("stcErr"); if(e) e.textContent=tx||""; }
+    function load(f){ var isVid=/^video\//.test(f.type) || /\.(mp4|mov|webm|m4v|3gp)$/i.test(f.name||"");
+      if(!isVid && !/^image\//.test(f.type) && !/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||"")){ err("Choisis une photo ou une vidéo."); return; }
+      st.file=f; st.type=isVid?"vid":"img"; if(st.url) URL.revokeObjectURL(st.url); st.url=URL.createObjectURL(f); preview(); }
+    function preview(){ el.className="stc stc-prev";
+      el.innerHTML='<div class="stv-media">'+(st.type==="vid"?'<video id="stcV" playsinline webkit-playsinline loop muted autoplay></video>':'<img class="stv-img" id="stcI" alt="">')+'</div>'
+        +'<div class="stc-bar"><button type="button" class="stv-ib" id="stcBack" aria-label="Retour">‹</button><b></b><span class="stv-ib"></span></div>'
+        +'<div class="stc-foot"><input id="stcCap" maxlength="100" placeholder="Ajoute un texte… (facultatif)" spellcheck="true" autocorrect="on" autocapitalize="sentences"><div class="stc-prog" id="stcProg" hidden><i></i></div><div class="stc-err" id="stcErr"></div>'
+        +'<button type="button" class="stc-go" id="stcGo">Publier ma story</button></div>';
+      if(st.type==="vid"){ var v=$("stcV"); v.src=st.url; v.addEventListener("loadedmetadata", function(){ v.style.objectFit = v.videoHeight>=v.videoWidth ? "cover" : "contain"; }); v.addEventListener("error", function(){ err("Impossible de lire cette vidéo. Essaie une autre."); }); }
+      else { var im=$("stcI"); im.onerror=function(){ err("Impossible de lire cette photo. Essaie une autre."); }; im.src=st.url; }
+      $("stcBack").addEventListener("click", function(){ if(!busy) pick(); });
+      $("stcGo").addEventListener("click", publish); }
+    function publish(){ if(busy || !backend || !backend.publishStory) return; busy=true; err(""); var btn=$("stcGo"), pr=$("stcProg"), bar=pr.querySelector("i"), cap=($("stcCap").value||"").trim(); btn.disabled=true; pr.hidden=false; bar.style.width="5%";
+      var fail=function(e){ busy=false; btn.disabled=false; btn.textContent="Publier ma story"; pr.hidden=true; err(typeof e==="string" ? e : ("Envoi impossible : "+((e&&(e.code||e.message))||"erreur"))); };
+      var done=function(){ close(); renderStories(); setTimeout(function(){ openStories(me.uid); },350); };
+      if(st.type==="img"){ btn.textContent="Préparation…";
+        compressImage(st.file, 1280, 0.72).then(function(img){ return stSmall(img, 160).then(function(th){ bar.style.width="40%"; btn.textContent="Envoi…";
+            return backend.publishStory({ type:"img", img:img, thumb:th, cap:cap }, function(){ bar.style.width="100%"; }); }); }).then(done, function(e){ fail(e && e.code ? e : "Impossible de lire cette photo. Essaie une autre."); });
+        return; }
+      btn.textContent="Préparation…";
+      videoThumb(st.file).then(function(m){ if(m.err && !m.dur) throw "Impossible de lire cette vidéo. Essaie une autre.";
+        var dur=m.dur||0, long=dur>STORY_VID_S+0.9;
+        if(!canTranscode()){ if(long) throw "Vidéo trop longue pour une story : "+STORY_VID_S+" secondes maximum."; if(st.file.size>60*1048576) throw "Vidéo trop lourde pour une story.";
+          return { file:st.file, dur:dur, thumb:m.thumb }; }
+        // réenregistrée en 720p (15 s au plus) : légère, et lisible sur tous les téléphones
+        return transcodeVideo(st.file, 0, Math.min(dur||STORY_VID_S, STORY_VID_S), function(p){ bar.style.width=Math.round(5+p*45)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; })
+          .then(function(out){ return { file:out, dur:Math.min(dur||STORY_VID_S, STORY_VID_S), thumb:m.thumb }; }); })
+      .then(function(o){ return stSmall(o.thumb, 160).then(function(th){ btn.textContent="Envoi…";
+          return backend.publishStory({ type:"vid", file:o.file, thumb:th, dur:Math.round(o.dur), cap:cap }, function(p){ bar.style.width=Math.round(50+p*50)+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; }); }); })
+      .then(done, fail); }
+    pick(); }
 
   /* ================= ÉVÉNEMENTS (agenda : créer une sortie, s'inscrire) ================= */
   const EV_MONTHS=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
@@ -7851,6 +8045,7 @@
     if(backend.watchMyDMs) dmUnsub = backend.watchMyDMs(onMyDMs);
     if(backend.watchEvents) eventsUnsub = backend.watchEvents(onEvents);
     if(backend.watchVideos) vidUnsub = backend.watchVideos(onVideos);
+    if(backend.watchStories){ renderStories(); backend.watchStories(onStories); }
     // favoris : le compte fait foi ; ceux gardés sur ce téléphone avant la sauvegarde en ligne y sont envoyés une fois
     if(backend.watchFavs){ var favFirst=true; backend.watchFavs(function(srv){
       if(favFirst){ favFirst=false; try{ if(!localStorage.getItem("lf.vf.favUp")){ var loc=vfFavs(); for(var k in loc){ if(!srv[k]){ srv[k]=loc[k]; backend.setFav(k,true); } } localStorage.setItem("lf.vf.favUp","1"); } }catch(e){} }

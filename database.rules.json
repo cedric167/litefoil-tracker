@@ -142,6 +142,32 @@
         ".validate": "!newData.exists() || (newData.child('img').isString() && newData.child('img').val().length <= 400000)"
       }
     },
+    "stories": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "t"
+      ],
+      "$sid": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('official/'+auth.uid).exists())))",
+        ".validate": "!newData.exists() || (newData.child('type').isString() && newData.child('type').val().length <= 3 && newData.child('cap').isString() && newData.child('cap').val().length <= 100 && newData.child('thumb').isString() && newData.child('thumb').val().length <= 60000 && auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())"
+      }
+    },
+    "storyMedia": {
+      "$sid": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('official/'+auth.uid).exists())))",
+        ".validate": "!newData.exists() || (newData.child('img').isString() && newData.child('img').val().length <= 900000 && auth.token.email_verified === true)"
+      }
+    },
+    "storyViews": {
+      "$sid": {
+        ".read": "auth != null && root.child('stories/'+$sid+'/uid').val() === auth.uid",
+        ".write": "auth != null && !newData.exists() && (root.child('stories/'+$sid+'/uid').val() === auth.uid || root.child('official/'+auth.uid).exists())",
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
+    },
     "videos": {
       ".read": "auth != null",
       ".indexOn": [

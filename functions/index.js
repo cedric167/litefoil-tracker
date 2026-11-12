@@ -445,6 +445,21 @@ exports.videoCleanup = onValueDeleted({ ref: "/videos/{vid}", instance: DB_INSTA
   if (v.posterPath && /^videos\//.test(v.posterPath)) { try { await getStorage().bucket(VIDEO_BUCKET).file(v.posterPath).delete(); } catch (e) { /* déjà supprimée */ } }
 });
 
+/* ===================== Stories (13/11) =====================
+ * Une story (photo ou vidéo courte) est visible 24 h. Toutes les heures, celles qui ont expiré sont
+ * supprimées : fiche /stories/{id}, photo /storyMedia/{id}, vues /storyViews/{id} et fichier vidéo. */
+exports.storyCleanup = onSchedule({ schedule: "every 60 minutes", region: "europe-west1" }, async () => {
+  const db = getDatabase();
+  const snap = await db.ref("/stories").orderByChild("t").endAt(Date.now() - 24 * 3600 * 1000).get();
+  const old = [];
+  snap.forEach((c) => { old.push([c.key, c.val() || {}]); });
+  for (const [id, s] of old) {
+    if (s.path && /^videos\//.test(s.path)) { try { await getStorage().bucket(VIDEO_BUCKET).file(s.path).delete(); } catch (e) { /* déjà supprimé */ } }
+    await db.ref().update({ ["stories/" + id]: null, ["storyMedia/" + id]: null, ["storyViews/" + id]: null });
+  }
+  if (old.length) console.log("stories expirées supprimées :", old.length);
+});
+
 /* ===================== Vidéos fluides (11/11) =====================
  * Les vidéos publiées arrivent telles que filmées : 4K, 60 i/s, HEVC (iPhone), 20 à 40 Mo,
  * parfois avec l'index du fichier à la fin. Sur beaucoup d'Android, elles démarrent lentement,

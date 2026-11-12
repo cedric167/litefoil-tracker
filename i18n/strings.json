@@ -4695,6 +4695,66 @@
   "en": "6 texts maximum.",
   "es": "6 textos como máximo."
  },
+ "Ta story": {
+  "en": "Your story",
+  "es": "Tu historia"
+ },
+ "Nouvelle story": {
+  "en": "New story",
+  "es": "Nueva historia"
+ },
+ "Partage un moment": {
+  "en": "Share a moment",
+  "es": "Comparte un momento"
+ },
+ "Une photo ou une vidéo de 15 secondes, visible 24 heures par la communauté.": {
+  "en": "A photo or a 15-second video, visible to the community for 24 hours.",
+  "es": "Una foto o un vídeo de 15 segundos, visible 24 horas para la comunidad."
+ },
+ "Prendre une photo": {
+  "en": "Take a photo",
+  "es": "Hacer una foto"
+ },
+ "Filmer": {
+  "en": "Record a video",
+  "es": "Grabar"
+ },
+ "Ajoute un texte… (facultatif)": {
+  "en": "Add a text… (optional)",
+  "es": "Añade un texto… (opcional)"
+ },
+ "Publier ma story": {
+  "en": "Post my story",
+  "es": "Publicar mi historia"
+ },
+ "＋ Ajouter": {
+  "en": "＋ Add",
+  "es": "＋ Añadir"
+ },
+ "Supprimer cette story ?": {
+  "en": "Delete this story?",
+  "es": "¿Eliminar esta historia?"
+ },
+ "Signaler cette story à l'équipe Lite Foil ?": {
+  "en": "Report this story to the Lite Foil team?",
+  "es": "¿Denunciar esta historia al equipo Lite Foil?"
+ },
+ "Choisis une photo ou une vidéo.": {
+  "en": "Choose a photo or a video.",
+  "es": "Elige una foto o un vídeo."
+ },
+ "Impossible de lire cette photo. Essaie une autre.": {
+  "en": "Can't read this photo. Try another one.",
+  "es": "No se puede leer esta foto. Prueba con otra."
+ },
+ "Vidéo trop lourde pour une story.": {
+  "en": "Video too large for a story.",
+  "es": "Vídeo demasiado pesado para una historia."
+ },
+ "Envoi…": {
+  "en": "Uploading…",
+  "es": "Enviando…"
+ },
  "Vitesse max": {
   "en": "Max speed",
   "es": "Velocidad máx."
