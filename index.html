@@ -692,6 +692,8 @@
   .vid-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:4px; border-radius:16px; overflow:hidden; }
   .vg-it{ position:relative; aspect-ratio:9/14; border:0; padding:0; border-radius:0; box-shadow:none; min-height:0; cursor:pointer; background:#0b3a55 center/cover no-repeat; }
   .vg-like{ position:absolute; left:6px; bottom:6px; color:#fff; font-size:12px; font-weight:800; text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  .vg-del{ position:absolute; right:5px; top:5px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; }
+  .vg-del svg{ width:17px; height:17px; fill:none; stroke:#fff; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
   .vg-off{ position:absolute; right:6px; top:6px; background:#1fb5bd; color:#fff; font-size:11px; font-weight:800; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
   .vf{ position:fixed; inset:0; z-index:9000; background:#000; }
   .vf-top{ position:absolute; top:0; left:0; right:0; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:calc(env(safe-area-inset-top) + 10px) 12px 10px; color:#fff; background:linear-gradient(180deg,rgba(0,0,0,.55),transparent); pointer-events:none; }
@@ -5557,7 +5559,7 @@
       // lecture avec le son refusée par le téléphone : on relance sans le son
       if(!vd.muted){ vfMuted=true; vd.muted=true; vd.play().catch(function(){ it.classList.remove("loading"); it.classList.add("paused"); }); }
       else { it.classList.remove("loading"); it.classList.add("paused"); } }); }
-  function feedActivate(force){ var list=$("vfList"); if(!list) return; var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
+  function feedActivate(force){ var list=$("vfList"); if(!list) return; if($("vu")) return; /* écran d'ajout ouvert : le fil reste en pause */ var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
     var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
     its.forEach(function(it,i){ var vd=it.querySelector("video"), d=i-k;
       if(d===0){ vfPlay(it); watchCount(it); vfSeenAdd(it.dataset.vid); }
@@ -5720,7 +5722,7 @@
     var done=false, fin=function(r){ if(done) return; done=true; res(r); };
     v.addEventListener("loadedmetadata", function(){ var d=v.duration||0; try{ v.currentTime=(at!=null ? Math.min(at+0.6, Math.max(0,d-0.1)) : Math.min(0.6, d/3)); }catch(e){ fin({dur:d,thumb:""}); } });
     v.addEventListener("seeked", function(){ try{ var w=360, h=Math.round(w*(v.videoHeight||640)/(v.videoWidth||360)); var c=document.createElement("canvas"); c.width=w; c.height=Math.min(h,640); c.getContext("2d").drawImage(v,0,0,w,h); fin({dur:v.duration||0, thumb:c.toDataURL("image/jpeg",0.7)}); }catch(e){ fin({dur:v.duration||0,thumb:""}); } });
-    v.addEventListener("error", function(){ fin({dur:0,thumb:"",err:true}); }); setTimeout(function(){ fin({dur:v.duration||0,thumb:""}); },8000); }); }
+    v.addEventListener("error", function(){ fin({dur:0,thumb:"",err:true}); }); setTimeout(function(){ fin({dur:v.duration||0,thumb:""}); },20000); }); }
   // recompression et découpe dans le téléphone : la vidéo est rejouée dans un canvas (720p) et réenregistrée
   // (MediaRecorder, MP4 si le téléphone sait le faire, sinon WebM). Durée de traitement = durée de l'extrait.
   function recMime(){ var l=["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
@@ -5757,11 +5759,14 @@
     v.addEventListener("loadedmetadata", next); v.addEventListener("error", function(){ res(out); }); setTimeout(function(){ res(out); },15000); }); }
   function openVideoUpload(){ if(!charterOk){ closeFeed(); showCharter(); return; } if(!profileReady()){ closeFeed(); askProfile(); return; }
     var old=$("vu"); if(old) old.remove();
+    // 13/11 : le Swip derrière est mis en pause et libéré (plus de son en fond, et le téléphone garde
+    // ses décodeurs vidéo pour la vidéo qu'on ajoute) ; il reprend à la fermeture.
+    var vf0=$("vf"); if(vf0 && !vf0.hidden){ vf0.querySelectorAll(".vf-item").forEach(vfUnload); vfActive=-1; }
     var st={ max:+(localStorage.getItem("lf.vu.max")||60)||60, file:null, meta:null, dur:0, start:0, cover:0, url:null, mode:"trim" };
     if([15,30,60].indexOf(st.max)<0) st.max=60;
     var vu=document.createElement("div"); vu.id="vu"; vu.className="vu"; document.body.appendChild(vu); document.body.style.overflow="hidden";
     var vid=null, loopT=null;
-    var close=function(){ if(loopT) clearInterval(loopT); if(st.url) URL.revokeObjectURL(st.url); vu.remove(); var vf=$("vf"); if(!vf||vf.hidden) document.body.style.overflow=""; };
+    var close=function(){ if(loopT) clearInterval(loopT); if(st.url) URL.revokeObjectURL(st.url); vu.remove(); var vf=$("vf"); if(!vf||vf.hidden) document.body.style.overflow=""; else feedActivate(); };
     var IC={ x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>', back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
       gal:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>',
       cut:'<svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.6"/><circle cx="6" cy="17" r="2.6"/><path d="M8.2 8.4 20 17M8.2 15.6 20 7"/></svg>',
@@ -5801,7 +5806,8 @@
       vu.querySelectorAll(".vu-tools button").forEach(function(b){ b.addEventListener("click", function(){ st.mode=b.dataset.m; vu.querySelectorAll(".vu-tools button").forEach(function(x){ x.classList.toggle("on",x===b); }); paint(); if(st.mode==="cover"){ vid.pause(); vid.currentTime=st.cover; } else { vid.currentTime=st.start; play(); } }); });
       $("vuNext").addEventListener("click", stepPost);
       var strip=$("vuStrip"), wEl=$("vuWin"), head=$("vuHead");
-      vuFrames(st.file, st.dur||1, 10).then(function(fr){ var f=$("vuFrames"); if(f) f.innerHTML=fr.map(function(u){ return '<span style="background-image:url('+u+')"></span>'; }).join(""); });
+      var frDone=false, frGo=function(){ if(frDone) return; frDone=true; var f0=st.file; vuFrames(f0, st.dur||1, 10).then(function(fr){ var f=$("vuFrames"); if(f && st.file===f0) f.innerHTML=fr.map(function(u){ return '<span style="background-image:url('+u+')"></span>'; }).join(""); }); };
+      vid.addEventListener("loadeddata", frGo); setTimeout(frGo, 2500);
       function paint(){ var D=st.dur||1, W=win();
         if(st.mode==="trim"){ wEl.hidden=false; wEl.style.left=(st.start/D*100)+"%"; wEl.style.width=(W/D*100)+"%"; head.className="vu-head";
           $("vuHint").textContent = st.dur>st.max+0.9 ? ("Fais glisser le cadre pour choisir tes "+st.max+" secondes") : "Ta vidéo entière sera publiée";
@@ -6406,7 +6412,7 @@
     glisse:{ name:"Glisse, Vague & Plan d'eau", stats:["SPD","WAV","ENG","JIB","ACC","DRI"] },
     terre: { name:"Terrestres, Endurance & Roulants", stats:["SPD","PAC","DIS","ALT","PWR","STA"] },
     explo: { name:"Athlétisme & Explosivité", stats:["SPD","ACC","REG","POP","REP","EFF"] } };
-  const LF_STAT_NAME = { SPD:"Vitesse max", WAV:"Vagues / glisses", FLY:"Temps en vol", CAR:"Carving", PMP:"Pumping", DIS:"Distance", ENG:"Endurance", JIB:"Manœuvres",
+  const LF_STAT_NAME = { SPD:"Vitesse max", WAV:"Vagues / glisses", FLY:"Temps en vol", CAR:"Carving", PMP:"Pumping", DIS:"Plus longue sortie", ENG:"Endurance", JIB:"Manœuvres",
     ACC:"Accélération", DRI:"Cap / trajectoire", PAC:"Régularité d'allure", ALT:"Dénivelé", PWR:"Puissance", STA:"Tenue de l'effort", REG:"Régularité", POP:"Impulsion", REP:"Volume", EFF:"Efficacité" };
   // [clé, nom, famille, icône, milieu, vitesse de référence km/h (≈ niveau élite), distance de référence par sortie km, seuil de vol / mouvement km/h]
   const LF_SPORTS = [
@@ -6460,7 +6466,7 @@
     var last=M.slice(0,6).map(function(m){return m.vmax;}).filter(function(x){return x>0;}), lavg=last.length?last.reduce(function(x,y){return x+y;},0)/last.length:0, lsd=last.length>1?Math.sqrt(last.reduce(function(x,y){return x+(y-lavg)*(y-lavg);},0)/last.length):lavg;
     var raw = {
       SPD: V/sp.vref,
-      DIS: 0.6*Dbest/sp.dref + 0.4*Dtot/(sp.dref*25),
+      DIS: Dbest/sp.dref,
       WAV: max(function(m){ return m.waves; })/20,
       FLY: max(function(m){ return m.fly; })/0.85,
       CAR: max(function(m){ return m.turnsH; })/40,
@@ -6482,29 +6488,36 @@
     // course / marche : la régularité de la cadence compte aussi dans l'allure
     var cads=M.map(function(m){ return m.cad; }).filter(function(x){ return x>0; }); if(cads.length) raw.PAC = 0.7*raw.PAC + 0.3*cl01(Math.max.apply(null,cads)/180);
     var keys=LF_FAM[sp.fam].stats, st=keys.map(function(k){ return rate(raw[k]); });
-    return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st }; }
+    // 13/11 : valeurs réelles affichées sur la carte (vitesse max en km/h, plus longue sortie en km)
+    var r1=function(x){ return isFinite(x)&&x>0 ? Math.round(x*10)/10 : 0; };
+    return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st, v:{ SPD:r1(V), DIS:r1(Dbest) } }; }
+  // valeur affichée pour une stat : [texte, unité]. Vitesse et distance = valeur réelle, les autres = note 1 à 99.
+  function cardVal(c, s, i){ if(s==="SPD" || s==="DIS"){ var x=c.v ? +c.v[s] : 0;
+      if(x>0) return [ (x>=100?Math.round(x):x).toLocaleString("fr-FR"), s==="SPD"?"km/h":"km" ];
+      if(!c.n || c.v) return ["—", s==="SPD"?"km/h":"km"]; }
+    return [String(c.s[i]), ""]; }
   let mySports=[]; try{ mySports=(localStorage.getItem("lf.comm.sports")||"").split(",").filter(function(k){ return LF_SP[k]; }); }catch(e){ mySports=[]; }
   const saveMySports=()=>{ try{ localStorage.setItem("lf.comm.sports", mySports.join(",")); }catch(e){} };
   // mes cartes : une par sport choisi ou pratiqué + carte principale (moyenne pondérée par le nombre de sorties)
   function myCards(){ var by={}; localSess().forEach(function(a){ var k=sportOf(a); if(k){ (by[k]=by[k]||[]).push(a); } });
     var keys=mySports.slice(); Object.keys(by).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); });
-    var d={}; keys.forEach(function(k){ var c=sportStats(LF_SP[k], by[k]||[]); d[k]=c||{ k:k, n:0, r:rate(0), s:LF_FAM[LF_SP[k].fam].stats.map(function(){ return rate(0); }) }; });
+    var d={}; keys.forEach(function(k){ var c=sportStats(LF_SP[k], by[k]||[]); d[k]=c||{ k:k, n:0, r:rate(0), s:LF_FAM[LF_SP[k].fam].stats.map(function(){ return rate(0); }), v:{ SPD:0, DIS:0 } }; });
     // la carte principale ne compte que les sports déjà pratiqués (sinon un sport juste coché ferait baisser la note)
     var w=0, t=0; keys.forEach(function(k){ var c=d[k]; if(!c.n) return; w+=c.n; t+=c.n*c.r; }); if(!w){ keys.forEach(function(k){ w+=1; t+=d[k].r; }); }
     return { g: keys.length? Math.round(t/w) : rate(0), d:d, order:keys.sort(function(x,y){ return d[y].r-d[x].r; }) }; }
   let ratingsCache={};
   function cardsOf(uid){ if(uid===me.uid) return myCards(); var r=ratingsCache[uid]; if(!r) return null; var d={}, keys=Object.keys(r.d||{}).filter(function(k){ return LF_SP[k]; });
-    keys.forEach(function(k){ d[k]={ k:k, n:+r.d[k].n||0, r:+r.d[k].r||1, s:(r.d[k].s||[]).map(Number) }; }); return { g:+r.g||rate(0), d:d, order:keys.sort(function(x,y){ return d[y].r-d[x].r; }) }; }
+    keys.forEach(function(k){ d[k]={ k:k, n:+r.d[k].n||0, r:+r.d[k].r||1, s:(r.d[k].s||[]).map(Number), v:r.d[k].v||null }; }); return { g:+r.g||rate(0), d:d, order:keys.sort(function(x,y){ return d[y].r-d[x].r; }) }; }
   // publie mes notes (lues par mes amis et la communauté) quand elles changent
   let lastRatingsJson="";
   function publishRatings(){ if(!backend || !backend.saveRatings || !profileReady()) return; var c=myCards(), o={ g:c.g, d:{}, t:Date.now() };
-    c.order.forEach(function(k){ o.d[k]={ r:c.d[k].r, n:c.d[k].n, s:c.d[k].s }; }); var j=JSON.stringify([o.g,o.d]); if(j===lastRatingsJson) return; lastRatingsJson=j; backend.saveRatings(o).catch(function(){ lastRatingsJson=""; }); }
+    c.order.forEach(function(k){ o.d[k]={ r:c.d[k].r, n:c.d[k].n, s:c.d[k].s, v:{ SPD:+(c.d[k].v&&c.d[k].v.SPD)||0, DIS:+(c.d[k].v&&c.d[k].v.DIS)||0 } }; }); var j=JSON.stringify([o.g,o.d]); if(j===lastRatingsJson) return; lastRatingsJson=j; backend.saveRatings(o).catch(function(){ lastRatingsJson=""; }); }
   function fcardHtml(uid, k, c){ var main=!k, sp=main?null:LF_SP[k], n=main?c.g:c.d[k].r, tier=cardTier(n), mine=uid===me.uid, pr=profileMap[uid]||{};
     var ps=mine?me.pseudo:(pr.pseudo||pName(uid)), cimg=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
     var photo=cimg?'<img class="fc-photo" src="'+esc(cimg)+'" alt="">':(av?'<img class="fc-av" src="'+esc(av)+'" alt="">':'<div class="fc-avl">'+esc((ps||"R").charAt(0).toUpperCase())+'</div>');
     var cells;
     if(main){ var top=c.order.slice(0,6); cells=top.length? top.map(function(x){ return '<div><b>'+c.d[x].r+'</b><span>'+LF_SP[x].ic+' '+esc(LF_SP[x].name.split(" ")[0].slice(0,7).toUpperCase())+'</span></div>'; }).join("") : '<div class="fc-empty">Choisis tes sports</div>'; }
-    else cells=LF_FAM[sp.fam].stats.map(function(s,i){ return '<div><b>'+c.d[k].s[i]+'</b><span>'+s+'</span></div>'; }).join("");
+    else cells=LF_FAM[sp.fam].stats.map(function(s,i){ var cv=cardVal(c.d[k],s,i); return '<div><b>'+esc(cv[0])+'</b><span>'+(cv[1]?esc(cv[1].toUpperCase()):s)+'</span></div>'; }).join("");
     return '<div class="fcard '+tier[0]+(main?' fc-main':'')+'"><div class="fc-shine"></div>'
       +'<div class="fc-l"><div class="fc-ovr">'+n+'</div><div class="fc-pos">'+(main?"GLOBAL":esc(sp.name.toUpperCase().slice(0,10)))+'</div><div class="fc-ic">'+(main?spIco("trophy"):sp.ic)+'</div></div>'
       +'<div class="fc-tier">'+tier[1]+'</div>'+photo
@@ -6632,8 +6645,15 @@
       sb.disabled=true; var id=String(raw.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_");
       var pr = o.shared ? backend.unshareSession(id) : backend.shareSession(id, sessSummary(raw));
       pr.then(function(){ if(o.shared) delete mySharedSess[id]; else mySharedSess[id]=true; closeOverlay(); renderProfil(); }).catch(function(){ sb.disabled=false; alert("Partage impossible pour le moment, réessaie."); }); }); }
-  function vidTiles(list){ var vis=vidVisible(); return list.map(function(v){ var gi=vis.indexOf(v); return '<button class="vg-it" data-gi="'+gi+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span></button>'; }).join(""); }
-  function bindVidTiles(root){ root.querySelectorAll(".vg-it[data-gi]").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.gi; if(i<0) return; closeOverlay(); openFeed(i); }); }); }
+  // del = vrai sur « Mon profil » : corbeille sur mes vidéos pour les supprimer
+  function vidTiles(list, del){ var vis=vidVisible(); return list.map(function(v){ var gi=vis.indexOf(v), d=del && v.uid===me.uid && !v.seed;
+    return '<button class="vg-it" data-gi="'+gi+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span>'+(d?'<span class="vg-del" role="button" data-del="'+esc(v.id)+'" aria-label="Supprimer la vidéo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg></span>':'')+'</button>'; }).join(""); }
+  function bindVidTiles(root){ root.querySelectorAll(".vg-it[data-gi]").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.gi; if(i<0) return; closeOverlay(); openFeed(i); }); });
+    root.querySelectorAll(".vg-del[data-del]").forEach(function(b){ b.addEventListener("click", function(ev){ ev.stopPropagation(); ev.preventDefault(); if(b._busy) return;
+      var v=videos.filter(function(x){ return x.id===b.dataset.del; })[0]; if(!v || !backend || !backend.deleteVideo) return;
+      if(!confirm("Supprimer définitivement cette vidéo ?")) return; b._busy=true; var tile=b.closest(".vg-it"); if(tile) tile.style.opacity=".4";
+      backend.deleteVideo(v).then(function(){ videos=videos.filter(function(x){ return x.id!==v.id; }); if(tile) tile.remove(); renderProfil(); })
+        .catch(function(e){ b._busy=false; if(tile) tile.style.opacity=""; alert("Suppression impossible : "+((e&&(e.code||e.message))||"erreur")); }); }); }); }
   function friendRows(ids){ return ids.map(function(u){ return '<div class="pf-fr" data-up="'+esc(u)+'"><span class="pf-fav">'+avHtml(u)+'</span><span><b>'+esc(pName(u))+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'</b><small>@'+esc(pseudoKey(pName(u))||"rider")+'</small></span>'+friendBtnHtml(u)+'</div>'; }).join(""); }
   function bindFriendRows(root, after){ bindFriendBtns(root, after); root.querySelectorAll("[data-up]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.up); }); }); }
   // mon profil
@@ -6656,7 +6676,7 @@
       rb.querySelectorAll("[data-up]").forEach(function(b){ b.addEventListener("click", function(){ openUserProfile(b.dataset.up); }); }); }
     document.querySelectorAll("#pfTabs button").forEach(function(b){ b.classList.toggle("on", b.dataset.pt===pfTab); });
     var g=$("pfGrid");
-    if(pfTab==="vid"){ g.innerHTML = vids.length ? vidTiles(vids) : '<div class="comm-empty">Pas encore de vidéo.<br><button class="primary" id="pfPostVid" style="margin-top:10px">Publier une vidéo</button></div>'; bindVidTiles(g); var pv=$("pfPostVid"); if(pv) pv.addEventListener("click", openVideoUpload); }
+    if(pfTab==="vid"){ g.innerHTML = vids.length ? vidTiles(vids, true) : '<div class="comm-empty">Pas encore de vidéo.<br><button class="primary" id="pfPostVid" style="margin-top:10px">Publier une vidéo</button></div>'; bindVidTiles(g); var pv=$("pfPostVid"); if(pv) pv.addEventListener("click", openVideoUpload); }
     else if(pfTab==="sess"){ var list=sess.map(function(a){ var o=sessSummary(a); o.shared=!!mySharedSess[String(a.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_")]; return o; });
       g.innerHTML = list.length ? list.map(function(o,i){ return sessTile(o,i,true); }).join("") : '<div class="comm-empty">Pas encore de session.<br>Lance un enregistrement dans l\'onglet Tracking 📍</div>';
       g.querySelectorAll(".pf-sess").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.si; openSessDetail(list[i], true, sess[i]); }); }); }
@@ -6825,7 +6845,7 @@
     var cur=sel?C.d[sel]:null, sp=sel?LF_SP[sel]:null;
     var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>'+spIco("trophy")+' Globale</span></button>'
       +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("");
-    var legend = sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+LF_FAM[sp.fam].stats.map(function(s,i){ return '<div><span><b>'+s+'</b> · '+esc(LF_STAT_NAME[s])+'</span><b>'+cur.s[i]+'</b></div>'; }).join("")+'</div>'
+    var legend = sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+LF_FAM[sp.fam].stats.map(function(s,i){ var cv=cardVal(cur,s,i); return '<div><span><b>'+s+'</b> · '+esc(LF_STAT_NAME[s])+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+'</b></div>'; }).join("")+'</div>'
         +(mine&&!cur.n?'<div class="gc-count">Enregistre une sortie de '+esc(sp.name)+' dans Tracking pour faire monter cette carte.</div>':'')
       : '<div class="gc-count">La carte principale fait la moyenne de tes sports, en comptant plus ceux que tu pratiques le plus.</div>';
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Mes Cartes Rider":"Cartes Rider")+'</b><span></span></div><div class="gc-body">'
@@ -6924,7 +6944,7 @@
       spDraw(x, main?"trophy":sp.k, cx0+CW*.2, cy0+CH*.34-22, 66, "#fff");
       x.font='800 64px "Instrument Sans", sans-serif'; x.fillText(ps.toUpperCase().slice(0,16), cx0+CW/2, cy0+CH*.63);
       x.globalAlpha=.6; x.fillRect(cx0+CW*.18, cy0+CH*.665, CW*.64, 4); x.globalAlpha=1;
-      var cells = main ? C.order.slice(0,6).map(function(q){ return [C.d[q].r, LF_SP[q].name.split(" ")[0].slice(0,7).toUpperCase()]; }) : LF_FAM[sp.fam].stats.map(function(st,i){ return [C.d[k].s[i], st]; });
+      var cells = main ? C.order.slice(0,6).map(function(q){ return [C.d[q].r, LF_SP[q].name.split(" ")[0].slice(0,7).toUpperCase()]; }) : LF_FAM[sp.fam].stats.map(function(st,i){ var cv=cardVal(C.d[k],st,i); return [cv[0], cv[1]?cv[1].toUpperCase():st]; });
       cells.forEach(function(c,i){ var cx=cx0+CW*(0.24+0.26*(i%3)), cy=cy0+CH*(0.735+0.075*Math.floor(i/3)); x.textAlign="right"; x.font='800 58px "Instrument Sans", sans-serif'; x.fillText(String(c[0]), cx+8, cy); x.textAlign="left"; x.globalAlpha=.72; x.font='800 26px "Instrument Sans", sans-serif'; x.fillText(c[1], cx+16, cy); x.globalAlpha=1; });
       x.textAlign="center"; x.globalAlpha=.7; x.font='700 26px "Instrument Sans", sans-serif'; x.fillText((main?(C.order.length+" discipline"+(C.order.length>1?"s":"")):(C.d[k].n+" sortie"+(C.d[k].n>1?"s":"")))+" · LITE FOIL", cx0+CW/2, cy0+CH*.9); x.globalAlpha=1;
       x.fillStyle="#fff"; x.font='400 76px "Instrument Serif", Georgia, serif'; x.fillText("Rejoins-moi sur l'eau.", W/2, cy0+CH+150);

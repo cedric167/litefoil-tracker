@@ -4611,6 +4611,14 @@
   "en": "Speed in large",
   "es": "Velocidad en grande"
  },
+ "Plus longue sortie": {
+  "en": "Longest session",
+  "es": "Salida más larga"
+ },
+ "Supprimer la vidéo": {
+  "en": "Delete video",
+  "es": "Eliminar el vídeo"
+ },
  "Vitesse max": {
   "en": "Max speed",
   "es": "Velocidad máx."
