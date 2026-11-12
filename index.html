@@ -359,6 +359,14 @@
   .pf-rq button{ border:0; border-radius:9px; padding:7px 10px; font-weight:700; font-size:13px; font-family:inherit; cursor:pointer; background:#1fb5bd; color:#fff; } .pf-rq button.no{ background:#e3e8ec; color:#3d4a52; }
   .pf-tabs{ display:flex; border-top:1px solid var(--line); margin:0 -16px; } .pf-tabs button{ flex:1; border:0; background:none; padding:11px 0; font-weight:700; font-size:14px; font-family:inherit; color:var(--muted); cursor:pointer; border-top:2px solid transparent; margin-top:-1px; }
   .pf-tabs button.on{ color:var(--ink,#0b0d10); border-top-color:var(--ink,#0b0d10); }
+  .fol-btn{ border:0; border-radius:6px; background:#fe2c55; color:#fff; font:inherit; font-weight:700; font-size:14px; padding:8px 16px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:4px; flex:none; white-space:nowrap; }
+  .fol-btn.on{ background:#f1f1f2; color:#161823; } .fol-btn svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+  .fol-btn.big{ flex:1; padding:11px 16px; font-size:15px; } .up-acts{ display:flex; gap:8px; } .up-acts > button{ flex:none; } .up-acts .fol-btn.big{ flex:1.4; } .up-acts #upMsg{ flex:1; } .up-acts #upCard{ width:48px; flex:0 0 48px; padding:0; font-size:20px; }
+  .up-friend{ text-align:center; margin:-2px 0 6px; } .up-friend .fs-act{ background:none !important; color:var(--muted) !important; font-size:13px; padding:4px 8px; box-shadow:none; border:0; text-decoration:underline; }
+  .pf-nums button{ position:relative; } .pf-newf{ position:absolute; top:-4px; right:6px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#fe2c55; color:#fff; font-style:normal; font-size:11px; font-weight:800; line-height:18px; } .pf-newf[hidden]{ display:none; }
+  .fol-tabs{ display:flex; border-bottom:1px solid var(--line); } .fol-tabs button{ border-radius:0 !important; flex:1; border:0; background:none; font:inherit; font-size:14.5px; font-weight:600; color:var(--muted); padding:12px 0; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; } .fol-tabs button.on{ color:var(--ink,#0b0d10); border-bottom-color:var(--ink,#0b0d10); } .fol-tabs b{ font-weight:800; }
+  .fol-card{ height:80vh; } .fol-card .gc-body{ flex:1; overflow-y:auto; }
+  .fol-row{ display:flex; align-items:center; gap:12px; padding:9px 2px; cursor:pointer; } .fol-row .pf-fav{ width:50px; height:50px; flex:0 0 50px; } .fol-n{ flex:1; min-width:0; display:flex; flex-direction:column; } .fol-n b{ font-size:15px; } .fol-n small{ color:var(--muted); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pf-tabs button{ display:flex; align-items:center; justify-content:center; gap:4px; border-radius:0 !important; } .pf-favic{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round; } .pf-tabs button.on .pf-favic{ fill:currentColor; }
   .pf-favnote{ grid-column:1/-1; font-size:12.5px; color:var(--muted); font-weight:600; padding:2px 2px 6px; }
   .pf-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin:0 -16px; }
@@ -1795,9 +1803,10 @@
     <div class="pf-top">
       <div class="pf-av" id="pfAv">+</div>
       <div class="pf-nums">
-        <button type="button" data-pt="sess"><b id="pfNSess">0</b><span>Sessions</span></button>
-        <button type="button" data-pt="vid"><b id="pfNVid">0</b><span>Vidéos</span></button>
-        <button type="button" data-pt="fr"><b id="pfNFr">0</b><span>Amis</span></button>
+        <button type="button" data-fl="following"><b id="pfNFing">0</b><span>Abonnements</span></button>
+        <button type="button" data-fl="followers"><b id="pfNFers">0</b><span>Abonnés</span><i class="pf-newf" id="pfNewF" hidden></i></button>
+        <button type="button" data-fl="likes"><b id="pfNLikes">0</b><span>J'aime</span></button>
+        <i hidden><b id="pfNSess"></b><b id="pfNVid"></b><b id="pfNFr"></b></i>
       </div>
     </div>
     <div class="pf-name" id="pfName">Mon profil</div>
@@ -4306,6 +4315,9 @@
       // ---------- amis : demande /friendReq/{à}/{de}, liste /friends/{uid}/{ami}=true des deux côtés ----------
       searchNames(k){ return db.get(db.query(db.ref(d,"names"), db.orderByKey(), db.startAt(k), db.endAt(k+"\uf8ff"), db.limitToFirst(15))).then(function(s){ var out=[]; s.forEach(function(c){ out.push({nk:c.key, uid:c.val()}); }); return out; }); },
       watchFriends(cb){ return db.onValue(db.ref(d,"friends/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      // 12/11 : abonnements façon TikTok (/follows/{moi}/{rider} = date) ; les abonnés se déduisent de la même liste
+      watchFollows(cb){ return db.onValue(db.ref(d,"follows"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      setFollow(to,on){ var r=db.ref(d,"follows/"+uid+"/"+to); return on ? db.set(r, db.serverTimestamp()) : db.remove(r); },
       watchFriendReqs(cb){ return db.onValue(db.ref(d,"friendReq/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       // 12/11 : vues du profil (façon TikTok) : /profileViews/{profil vu}/{visiteur} = {t, pseudo}
       recordProfileView(to){ if(!to || to===uid) return Promise.resolve(); return db.set(db.ref(d,"profileViews/"+to+"/"+uid),{t:db.serverTimestamp(),pseudo:me.pseudo||"Rider"}); },
@@ -4509,6 +4521,9 @@
       deleteAccount(){ return Promise.resolve("deleted"); },
       searchNames(k){ var out=[]; Object.keys(demo).forEach(function(u){ var nk=pseudoKey(demo[u].pseudo); if(nk && nk.indexOf(k)===0) out.push({nk:nk, uid:u}); }); return Promise.resolve(out); },
       watchFriends(cb){ cb({"demo-marine":true}); return function(){}; },
+      watchFollows(cb){ var now=Date.now(), m={"demo-aurel":{},"demo-marine":{},"demo-leo":{}}; m["demo-aurel"][uid]=now-7200000; m["demo-marine"][uid]=now-86400000; m["demo-leo"]["demo-aurel"]=now; m["demo-marine"]["demo-aurel"]=now; m[uid]={"demo-marine":now-3600000};
+        this._fcb=cb; this._fm=m; cb(JSON.parse(JSON.stringify(m))); return function(){}; },
+      setFollow(to,on){ var m=this._fm||{}; m[uid]=m[uid]||{}; if(on) m[uid][to]=Date.now(); else delete m[uid][to]; if(this._fcb) this._fcb(JSON.parse(JSON.stringify(m))); return Promise.resolve(); },
       recordProfileView(){ return Promise.resolve(); }, clearProfileViews(){ return Promise.resolve(); },
       watchProfileViews(cb){ cb({"demo-marine":{t:Date.now()-2*3600000,pseudo:"Marine"},"demo-aurel":{t:Date.now()-26*3600000,pseudo:"Aurel66"},"demo-leo":{t:Date.now()-4*86400000,pseudo:"Léo.Foil"}}); return function(){}; },
       watchFriendReqs(cb){ cb({"demo-leo":{pseudo:"Léo.Foil", t:Date.now()-3600000}}); return function(){}; },
@@ -5216,8 +5231,8 @@
   function vfCapHtml(t){ return esc(t||"").replace(/(^|\s)(#[\wÀ-ÿ]+)/g,'$1<b class="vf-tag">$2</b>'); }
   function feedItemHtml(v,i){ var off=isOfficial(v.uid), name=(off&&v.uid===TEAM_UID)?TEAM_NAME:(v.pseudo||"Rider");
     var av=v.av||(off&&v.uid===TEAM_UID?TEAM_AV:""), avh=av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>';
-    var canF=v.uid!==me.uid && v.uid!==TEAM_UID, fs=canF?friendState(v.uid):"";
-    return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'">'
+    var canF=v.uid!==me.uid && v.uid!==TEAM_UID, fs=canF&&iFollow(v.uid)?"friend":"";
+    return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'" data-uid="'+esc(v.uid||"")+'">'
       +'<video playsinline webkit-playsinline loop preload="none" data-src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
       +'<div class="vf-tap"></div><div class="vf-play"><i>'+VF_IC.play+'</i></div><div class="vf-spin"><i></i><i></i></div><button class="vf-err" type="button">Vidéo indisponible · Réessayer</button>'
       +'<div class="vf-side">'
@@ -5272,7 +5287,7 @@
     mode = mode || (typeof start==="number" ? "modal" : (document.body.dataset.tab==="videos" ? "tab" : "modal"));
     if(mode==="modal" && typeof start==="number") vfSel="fy";
     if(!vs0.length && mode!=="tab"){ openVideoUpload(); return; }
-    if(vfSel==="fol" && typeof start!=="number") vs0=vs0.filter(function(v){ return friendState(v.uid)==="friend"; });
+    if(vfSel==="fol" && typeof start!=="number") vs0=vs0.filter(function(v){ return iFollow(v.uid) || friendState(v.uid)==="friend"; });
     var first=(typeof start==="number" && vs0[start]) ? vs0[start] : null;
     var vs=vfShuffle(vs0.filter(function(v){ return v!==first; })); if(first) vs.unshift(first); start=0;
     var vf=feedEl(), list=$("vfList"); if(!vf.hidden) vf.querySelectorAll(".vf-item").forEach(vfUnload);
@@ -5332,7 +5347,7 @@
   function vfBurst(it, x, y){ var r=it.getBoundingClientRect(), h=document.createElement("div"); h.className="vf-burst"; h.innerHTML=VF_IC.like;
     h.style.left=(x-r.left)+"px"; h.style.top=(y-r.top)+"px"; h.style.setProperty("--rot",(Math.random()*40-20).toFixed(0)+"deg"); it.appendChild(h); setTimeout(function(){ h.remove(); },900); }
   function vfFollow(em, v){ if(!em || em.classList.contains("done")) return; if(!profileReady()){ closeFeed(); askProfile("Valide ton profil pour suivre des riders."); return; }
-    em.classList.add("done","pop"); em.textContent="✓"; try{ navigator.vibrate&&navigator.vibrate(12); }catch(e){} friendAction(v.uid, function(){}); }
+    em.classList.add("done","pop"); em.textContent="✓"; if(!iFollow(v.uid)) toggleFollow(v.uid); vfToast("Tu suis "+(v.pseudo||"ce rider")); }
   function wireFeedItem(it, v){ var vd=it.querySelector("video"), last=0, lastX=0, lastY=0, pressT=null;
     var isOn=function(){ return +it.dataset.i===vfActive; };
     vd.addEventListener("waiting", function(){ if(isOn()) it.classList.add("loading"); });
@@ -6204,9 +6219,49 @@
   function pName(u){ if(u===me.uid) return me.pseudo||"Moi"; if(u===TEAM_UID) return TEAM_NAME; var p=profileMap[u]; return (p&&p.pseudo)||"Rider"; }
   function pAv(u){ if(u===me.uid) return me.av||""; if(u===TEAM_UID) return TEAM_AV; var p=profileMap[u]; return (p&&p.av)||""; }
   function avHtml(u){ var a=pAv(u); return a?'<img src="'+esc(a)+'" alt="">':esc((pName(u)||"R").charAt(0).toUpperCase()); }
+  // ---------- 12/11 : abonnés / abonnements façon TikTok ----------
+  let followAll={}, followInit=false, followSeen=(function(){ try{ return +localStorage.getItem("lf.fol.seen")||0; }catch(e){ return 0; } })();
+  function iFollow(u){ return !!(followAll[me.uid]||{})[u]; }
+  function followsMe(u){ return !!(followAll[u]||{})[me.uid]; }
+  function followingOf(u){ return Object.keys(followAll[u]||{}).filter(function(x){ return x!==u && !blocked.has(x); }); }
+  function followersOf(u){ var o=[]; for(var x in followAll){ if(x!==u && followAll[x] && followAll[x][u] && !blocked.has(x)) o.push(x); } return o.sort(function(a,b){ return (+followAll[b][u]||0)-(+followAll[a][u]||0); }); }
+  function likesOf(u){ var n=0; vidVisible().forEach(function(v){ if(v.uid===u) n+=vidLikes(v); }); return n; }
+  function followLabel(u){ return iFollow(u) ? (followsMe(u)?"Ami(e)s":"Suivi(e)") : (followsMe(u)?"Suivre en retour":"Suivre"); }
+  function followBtn(u, cls){ if(!u || u===me.uid || u===TEAM_UID) return ""; var on=iFollow(u);
+    return '<button type="button" class="fol-btn '+(cls||"")+(on?" on":"")+'" data-fol="'+esc(u)+'">'+(on?(followsMe(u)?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11.5 10.5 15 17 8.5"/></svg>':''):'')+esc(followLabel(u))+'</button>'; }
+  function toggleFollow(u, after){ if(!backend || !backend.setFollow || !u || u===me.uid) return;
+    if(!profileReady()){ closeOverlay(); try{ closeFeed(); }catch(e){} askProfile("Valide ton profil pour suivre des riders."); return; }
+    var on=!iFollow(u); followAll[me.uid]=followAll[me.uid]||{}; if(on) followAll[me.uid][u]=Date.now(); else delete followAll[me.uid][u];
+    try{ navigator.vibrate&&navigator.vibrate(10); }catch(e){}
+    onFollowsChanged(); if(after) after();
+    backend.setFollow(u,on).catch(function(){ alert("Action impossible pour le moment, réessaie."); }); }
+  function bindFollowBtns(root, after){ root.querySelectorAll("[data-fol]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); toggleFollow(b.dataset.fol, after); }); }); }
+  function onFollows(m){ var prev=followAll; followAll=m||{};
+    // nouvel abonné pendant que l'appli est ouverte → petite bulle
+    if(followInit && me.uid){ for(var x in followAll){ if(x===me.uid || blocked.has(x)) continue; var t=followAll[x]&&followAll[x][me.uid]; if(t && !(prev[x]&&prev[x][me.uid]) && Date.now()-(+t||0)<120000){ var pr=profileMap[x]||{};
+        showMsgToast({ uid:x, name:pr.pseudo||"Un rider", avUrl:pr.av, sub:"Nouvel abonné", text:"a commencé à te suivre", onTap:(function(u){ return function(){ openUserProfile(u); }; })(x) }); } } }
+    if(!followInit && !followSeen){ followSeen=Date.now(); try{ localStorage.setItem("lf.fol.seen", String(followSeen)); }catch(e){} }
+    followInit=true; onFollowsChanged(); }
+  function newFollowersN(){ var n=0; followersOf(me.uid).forEach(function(x){ if((+followAll[x][me.uid]||0)>followSeen) n++; }); return n; }
+  function onFollowsChanged(){ try{ renderProfil(); }catch(e){}
+    var vf=$("vf"); if(vf && !vf.hidden) vf.querySelectorAll('.vf-av [data-a="follow"]').forEach(function(em){ var it=em.closest(".vf-item"), u=it&&it.dataset.uid; if(!u) return; var on=iFollow(u); em.classList.toggle("done",on); em.textContent=on?"✓":"+"; });
+    var ul=$("folList"); if(ul && ul._redraw) ul._redraw(); var up=$("upFolWrap"); if(up && up._redraw) up._redraw(); }
+  // liste Abonnements / Abonnés (façon TikTok)
+  function openFollowList(uid, which){ var o=gOverlay(); o.hidden=false; var tab=which||"followers";
+    if(uid===me.uid && tab==="followers"){ followSeen=Date.now(); try{ localStorage.setItem("lf.fol.seen", String(followSeen)); }catch(e){} try{ renderProfil(); }catch(e){} }
+    var draw=function(){ var ids=tab==="following"?followingOf(uid):followersOf(uid);
+      o.innerHTML='<div class="gcard fol-card"><div class="gc-head"><button class="gc-x" id="folClose">✕</button><b>'+esc(uid===me.uid?(me.pseudo||"Moi"):pName(uid))+'</b><span></span></div>'
+        +'<div class="fol-tabs"><button data-ft="following" class="'+(tab==="following"?"on":"")+'">Abonnements <b>'+fmtCount(followingOf(uid).length)+'</b></button><button data-ft="followers" class="'+(tab==="followers"?"on":"")+'">Abonnés <b>'+fmtCount(followersOf(uid).length)+'</b></button></div>'
+        +'<div class="gc-body" id="folList">'+(ids.length ? ids.map(function(u){ var pr=profileMap[u]||{}; return '<div class="fol-row" data-up="'+esc(u)+'"><span class="pv-av" style="background:'+avatarColor(u)+'">'+avHtml(u)+'</span><span class="fol-n"><b>'+esc(pName(u))+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'</b><small>@'+esc(pseudoKey(pName(u))||"rider")+(u!==me.uid&&followsMe(u)&&tab!=="followers"?' · Te suit':'')+'</small></span>'+followBtn(u)+'</div>'; }).join("")
+          : '<div class="comm-empty">'+(tab==="following"?(uid===me.uid?"Tu ne suis personne pour l'instant.<br>Dans le Swip, touche le + rouge sur la photo d'un rider.":"Ne suit personne pour l'instant."):(uid===me.uid?"Pas encore d'abonné.<br>Publie tes sessions dans le Swip pour te faire suivre 🤙":"Pas encore d'abonné."))+'</div>')+'</div></div>';
+      $("folClose").addEventListener("click", closeOverlay);
+      o.querySelectorAll("[data-ft]").forEach(function(b){ b.addEventListener("click", function(){ tab=b.dataset.ft; draw(); }); });
+      bindFollowBtns(o); o.querySelectorAll(".fol-row[data-up]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.up); }); });
+      var l=$("folList"); if(l) l._redraw=draw; };
+    draw(); }
   function friendState(u){ if(myFriends[u]) return "friend"; if(friendReqs[u]) return "incoming"; if(sentReqs[u]) return "sent"; return "none"; }
   function friendBtnHtml(u, big){ if(!u || u===me.uid || u===TEAM_UID) return ""; var st=friendState(u);
-    var t={friend:"✓ Amis",incoming:"Suivre en retour",sent:"Demandé",none:"Suivre"}[st];
+    var t={friend:"✓ Amis",incoming:"Accepter en ami",sent:"Demande envoyée",none:"Ajouter en ami"}[st];
     return '<button type="button" class="'+(big?"":"fs-act")+(st==="friend"||st==="sent"?" ghost":"")+(big&&st!=="friend"&&st!=="sent"?" pf-main":"")+'" data-fu="'+esc(u)+'">'+t+'</button>'; }
   function friendAction(u, after){ if(!backend) return;
     if(!profileReady()){ closeOverlay(); askProfile("Valide ton profil pour ajouter des amis."); return; }
@@ -6274,6 +6329,8 @@
     var pc=$("pfCard"); if(pc){ var mc=myCards(); pc.innerHTML='🃏 Ma carte <b class="pf-ovr '+cardTier(mc.g)[0]+'">'+mc.g+'</b>'; }
     var sess=localSess(), vids=videos.filter(function(v){ return v && v.uid===me.uid; }), fr=Object.keys(myFriends).filter(function(u){ return !blocked.has(u); });
     $("pfNSess").textContent=sess.length; $("pfNVid").textContent=vids.length; $("pfNFr").textContent=fr.length;
+    $("pfNFing").textContent=fmtCount(followingOf(me.uid).length); $("pfNFers").textContent=fmtCount(followersOf(me.uid).length); $("pfNLikes").textContent=fmtCount(likesOf(me.uid));
+    var nf=newFollowersN(), nb=$("pfNewF"); if(nb){ nb.hidden=!nf; nb.textContent=nf>9?"9+":String(nf); }
     var rq=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }), rb=$("pfReqs");
     if(rb){ rb.hidden=!rq.length; rb.innerHTML = rq.length ? '<b style="font-size:13px">Demandes d\'amis</b>'+rq.map(function(u){ var ps=(friendReqs[u]&&friendReqs[u].pseudo)||pName(u); return '<div class="pf-rq"><span class="pf-fr" style="padding:0;border:0;background:none" data-up="'+esc(u)+'"><span class="pf-fav" style="width:34px;height:34px">'+avHtml(u)+'</span></span><b>'+esc(ps)+'</b><button data-acc="'+esc(u)+'">Accepter</button><button class="no" data-dec="'+esc(u)+'">Refuser</button></div>'; }).join("") : "";
       rb.querySelectorAll("[data-acc]").forEach(function(b){ b.addEventListener("click", function(){ friendAction(b.dataset.acc); }); });
@@ -6295,9 +6352,8 @@
   window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
   // rechercher des amis par identifiant (pseudo unique)
   // recherche façon TikTok : plein écran, onglets Top / Riders / Vidéos, bouton « Suivre » (= demande d'ami)
-  function followBtnHtml(u){ if(!u || u===me.uid || u===TEAM_UID) return ""; var st=friendState(u);
-    var t={friend:"Message", incoming:"Suivre en retour", sent:"Demandé", none:"Suivre"}[st];
-    return '<button type="button" class="ts-btn'+(st==="friend"||st==="sent"?" ghost":"")+'" data-tsf="'+esc(u)+'">'+t+'</button>'; }
+  function followBtnHtml(u){ if(!u || u===me.uid || u===TEAM_UID) return ""; var on=iFollow(u);
+    return '<button type="button" class="ts-btn'+(on?" ghost":"")+'" data-tsf="'+esc(u)+'">'+esc(followLabel(u))+'</button>'; }
   function openFriendSearch(){
     var ov=document.createElement("div"); ov.className="ts-ov";
     ov.innerHTML='<div class="ts-top"><button type="button" class="ts-back" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'
@@ -6330,7 +6386,7 @@
       var all=body.querySelector(".ts-all"); if(all) all.addEventListener("click", function(){ ov.querySelector('[data-tt="riders"]').click(); });
       body.querySelectorAll("[data-tsu]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.tsu); }); });
       body.querySelectorAll("[data-tsf]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); var u=b.dataset.tsf;
-        if(friendState(u)==="friend"){ close(); goToCommunaute(); openDM(u, pName(u)); return; } friendAction(u, draw); }); });
+        toggleFollow(u, draw); }); });
       body.querySelectorAll(".ts-vid").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.gi; if(i<0) return; close(); openFeed(i); }); }); };
     var run=function(){ var v=inp.value.trim(), q=pseudoKey(v)||v.toLowerCase().replace(/[^a-z0-9]/g,""); clr.hidden=!v;
       var local=Object.keys(profileMap).filter(function(u){ if(u===me.uid || u===TEAM_UID || blocked.has(u)) return false; var p=profileMap[u]||{}; if(!p.nk && !p.pseudo) return false; return !q || pseudoKey(p.pseudo||"").indexOf(q)>=0 || String(p.nk||"").indexOf(q)>=0; });
@@ -6375,14 +6431,16 @@
     var vids=videos.filter(function(v){ return v && v.uid===uid; });
     var draw=function(){
       g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="upClose">✕</button><b>@'+esc(pseudoKey(pName(uid))||"rider")+'</b><span></span></div><div class="gc-body up-wrap">'
-        +'<div class="pf-top"><div class="pf-av">'+avHtml(uid)+'</div><div class="pf-nums"><button type="button" data-ut="sess"><b>'+(sess?sess.length:"🔒")+'</b><span>Sessions</span></button><button type="button" data-ut="vid"><b>'+vids.length+'</b><span>Vidéos</span></button><button type="button"><b>'+nFr+'</b><span>Amis</span></button></div></div>'
+        +'<div class="pf-top"><div class="pf-av">'+avHtml(uid)+'</div><div class="pf-nums"><button type="button" data-ufl="following"><b>'+fmtCount(followingOf(uid).length)+'</b><span>Abonnements</span></button><button type="button" data-ufl="followers"><b>'+fmtCount(followersOf(uid).length)+'</b><span>Abonnés</span></button><button type="button"><b>'+fmtCount(likesOf(uid))+'</b><span>J\'aime</span></button></div></div>'
         +'<div class="pf-name">'+esc(pName(uid))+(isOfficial(uid)?' <span class="pf-off">✓ Équipe Lite Foil</span>':'')+'</div>'
         +(p.bio?'<div class="pf-bio">'+esc(p.bio)+'</div>':'')
-        +'<div class="pf-acts">'+friendBtnHtml(uid,true)+(p.dm!=="none"?'<button type="button" id="upMsg">Message</button>':'')+'<button type="button" id="upCard">🃏 Sa carte</button></div>'
+        +'<div class="pf-acts up-acts" id="upFolWrap">'+followBtn(uid,"big")+(p.dm!=="none"?'<button type="button" id="upMsg">Message</button>':'')+'<button type="button" id="upCard" aria-label="Sa carte">🃏</button></div>'
+        +(uid!==TEAM_UID?'<div class="up-friend">'+friendBtnHtml(uid,false)+'</div>':'')
         +'<div class="pf-tabs"><button type="button" data-ut="vid" class="'+(tab==="vid"?"on":"")+'">Vidéos</button><button type="button" data-ut="sess" class="'+(tab==="sess"?"on":"")+'">Sessions</button><button type="button" data-ut="pal" class="'+(tab==="pal"?"on":"")+'">🏆 Palmarès</button></div>'
         +'<div class="pf-grid" id="upGrid"></div></div></div>';
       $("upClose").addEventListener("click", closeOverlay);
-      bindFriendBtns(g, draw);
+      bindFriendBtns(g, draw); bindFollowBtns(g); var fw=$("upFolWrap"); if(fw) fw._redraw=draw;
+      g.querySelectorAll("[data-ufl]").forEach(function(b){ b.addEventListener("click", function(){ openFollowList(uid, b.dataset.ufl); }); });
       var um=$("upMsg"); if(um) um.addEventListener("click", function(){ if(!profileReady()){ closeOverlay(); askProfile(); return; } closeOverlay(); goToCommunaute(); openDM(uid, pName(uid)); });
       $("upCard").addEventListener("click", function(){ openRiderCard(uid); });
       g.querySelectorAll("[data-ut]").forEach(function(b){ b.addEventListener("click", function(){ tab=b.dataset.ut; draw(); }); });
@@ -6727,6 +6785,9 @@
   var _cms=$("cmSearch"); if(_cms) _cms.addEventListener("click", openFriendSearch);
   var _cme=$("cmEvents"); if(_cme) _cme.addEventListener("click", function(){ var b=document.querySelector('#chatSeg [data-ch="events"]'); if(b) b.click(); var cc=$("chatCard"); if(cc) try{ cc.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){} });
   document.querySelectorAll("#tab-profil [data-pt]").forEach(function(b){ b.addEventListener("click", function(){ pfTab=b.dataset.pt; renderProfil(); }); });
+  document.querySelectorAll("#tab-profil [data-fl]").forEach(function(b){ b.addEventListener("click", function(){ var w=b.dataset.fl;
+    if(w==="likes"){ var n=likesOf(me.uid); alert((n?("Tes vidéos ont reçu "+n.toLocaleString("fr-FR")+" J'aime au total ❤️"):"Tes vidéos n'ont pas encore de J'aime. Publie ta prochaine session dans le Swip !")); return; }
+    openFollowList(me.uid, w); }); });
   var _lt=$("commLoginToggle"); if(_lt) _lt.addEventListener("click", function(){ var f=$("commLoginForm"); showLogin(!!(f&&f.hidden)); });
   var _lg=$("commLoginGo"); if(_lg) _lg.addEventListener("click", doLogin);
   var _lr=$("commLoginReset"); if(_lr) _lr.addEventListener("click", function(){ sendPwLink(($("commLoginEmail").value||"").trim()); });
@@ -7185,6 +7246,7 @@
     if(backend.watchResults) backend.watchResults(function(m){ resultsAll=m||{}; renderProfil(); });
     setTimeout(publishRatings, 4000);
     if(backend.watchFriends) backend.watchFriends(onFriends);
+    if(backend.watchFollows) backend.watchFollows(onFollows);
     if(backend.watchFriendReqs) backend.watchFriendReqs(onFriendReqs);
     pvWatch();
     var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(); });

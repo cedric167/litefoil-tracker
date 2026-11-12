@@ -6174,5 +6174,53 @@
  "Ouvrir le Swip": {
   "en": "Open Swip",
   "es": "Abrir Swip"
+ },
+ "Abonnés": {
+  "en": "Followers",
+  "es": "Seguidores"
+ },
+ "Suivre": {
+  "en": "Follow",
+  "es": "Seguir"
+ },
+ "Suivi(e)": {
+  "en": "Following",
+  "es": "Siguiendo"
+ },
+ "Ami(e)s": {
+  "en": "Friends",
+  "es": "Amigos"
+ },
+ "Suivre en retour": {
+  "en": "Follow back",
+  "es": "Seguir también"
+ },
+ "Nouvel abonné": {
+  "en": "New follower",
+  "es": "Nuevo seguidor"
+ },
+ "a commencé à te suivre": {
+  "en": "started following you",
+  "es": "empezó a seguirte"
+ },
+ "Ajouter en ami": {
+  "en": "Add friend",
+  "es": "Añadir amigo"
+ },
+ "Accepter en ami": {
+  "en": "Accept friend",
+  "es": "Aceptar amistad"
+ },
+ "Demande envoyée": {
+  "en": "Request sent",
+  "es": "Solicitud enviada"
+ },
+ "Pas encore d'abonné.": {
+  "en": "No followers yet.",
+  "es": "Aún no hay seguidores."
+ },
+ "Ne suit personne pour l'instant.": {
+  "en": "Not following anyone yet.",
+  "es": "Aún no sigue a nadie."
  }
 }

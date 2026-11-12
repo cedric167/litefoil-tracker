@@ -247,6 +247,15 @@
           ".validate": "newData.isNumber() && $vid.length < 100"
         }
       }
+    },
+    "follows": {
+      ".read": "auth != null",
+      "$uid": {
+        "$t": {
+          ".write": "auth != null && auth.uid === $uid && $t !== $uid && (!newData.exists() || (auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists()))",
+          ".validate": "newData.isNumber() && newData.val() === now"
+        }
+      }
     }
   }
 }
