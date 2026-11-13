@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Télécharger Lite Foil</title>
+<meta name="description" content="Lite Foil, l'appli des riders : GPS haute précision, SOS, appels entre riders, météo et webcams en direct.">
+<meta property="og:title" content="Télécharger Lite Foil">
+<meta property="og:description" content="GPS haute précision, SOS en mer comme à terre, appels entre riders, météo et webcams en direct.">
+<meta property="og:image" content="https://cedric167.github.io/litefoil-tracker/icon-512.png">
+<style>
+  :root{ color-scheme:dark; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px 20px; color:#fff; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(120% 80% at 50% 0%, #12656a 0%, #0b3138 45%, #06181d 100%); }
+  main{ width:100%; max-width:420px; text-align:center; }
+  img.ic{ width:104px; height:104px; border-radius:24px; box-shadow:0 14px 34px rgba(0,0,0,.4); }
+  h1{ font-size:30px; margin:20px 0 6px; letter-spacing:-.3px; }
+  p{ margin:0 0 24px; color:rgba(255,255,255,.78); font-size:15.5px; line-height:1.5; }
+  a.b{ display:flex; align-items:center; justify-content:center; gap:10px; margin:12px 0; padding:16px; border-radius:16px; text-decoration:none; font-weight:800; font-size:17px; color:#06262b; background:#7fe6dc; }
+  a.b.alt{ background:rgba(255,255,255,.14); color:#fff; }
+  small{ display:block; margin-top:22px; color:rgba(255,255,255,.55); font-size:12.5px; }
+</style>
+</head>
+<body>
+<main>
+  <img class="ic" src="../icon-512.png" alt="Lite Foil">
+  <h1>Lite Foil</h1>
+  <p>L'appli des riders : GPS haute précision, SOS en mer comme à terre, appels entre riders, météo et webcams en direct.</p>
+  <a class="b" id="and" href="https://play.google.com/store/apps/details?id=fr.litefoil.tracker">Télécharger sur Google Play</a>
+  <a class="b" id="ios" href="https://apps.apple.com/app/id6827991078">Télécharger sur l'App Store</a>
+  <a class="b alt" href="../">Ouvrir dans le navigateur</a>
+  <small>Gratuit · Android et iPhone</small>
+</main>
+<script>
+  // envoie directement vers la bonne boutique ; sur ordinateur, les deux boutons restent affichés
+  (function(){ var ua=navigator.userAgent||"", ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1), and=/Android/.test(ua);
+    if(/[?&]stay=1/.test(location.search)) return;
+    if(ios){ document.getElementById("and").className="b alt"; location.replace(document.getElementById("ios").href); }
+    else if(and){ document.getElementById("ios").className="b alt"; location.replace(document.getElementById("and").href); } })();
+</script>
+</body>
+</html>
