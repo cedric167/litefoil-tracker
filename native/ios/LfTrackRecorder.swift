@@ -191,7 +191,7 @@ final class LfTrackRecorder: NSObject, CLLocationManagerDelegate {
         if now - liveLast < 20 { return }
         liveLast = now
         let n = liveBuf.count
-        guard let body = try? JSONSerialization.data(withJSONObject: ["k": cfg.1, "pts": liveBuf, "src": "n"]) else { return }
+        guard let body = try? JSONSerialization.data(withJSONObject: ["k": cfg.1, "pts": liveBuf, "src": "n"] as [String: Any]) else { return }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"; req.setValue("text/plain", forHTTPHeaderField: "Content-Type"); req.httpBody = body; req.timeoutInterval = 15
         URLSession.shared.dataTask(with: req) { [weak self] _, resp, _ in

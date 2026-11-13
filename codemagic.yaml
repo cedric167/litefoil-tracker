@@ -49,7 +49,7 @@ workflows:
         script: |
           xcode-project build-ipa \
             --workspace "ios/App/App.xcworkspace" \
-            --scheme "App"
+            --scheme "App" || { echo "===== ERREURS XCODE ====="; grep -h -B2 -A8 -E "error:|ARCHIVE FAILED|provisioning profile" /tmp/xcodebuild_logs/*.log | head -200; exit 1; }
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
