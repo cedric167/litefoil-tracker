@@ -3335,6 +3335,10 @@
   function phHaversine(a,b){ var R=6371000, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lon-a.lon)*Math.PI/180, la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180; var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
   function phDistTotal(){ var d=0; for(var i=1;i<phPts.length;i++) d+=phHaversine(phPts[i-1],phPts[i]); return d; }
   function phNum(x){ return x.toFixed(1).replace(".",","); }
+  // 13/11 : diagnostic du GPS affiché pendant l'enregistrement : rythme réel des points, source, version de la page
+  function phDiag(){ var n=phPts.length, k=Math.min(10, n-1), tx="";
+    if(k>=2){ var dt=(phPts[n-1].t-phPts[n-1-k].t)/k; if(dt>0) tx="1 point toutes les "+phNum(dt)+" s"; }
+    return " ["+(tx?tx+" · ":"")+"GPS "+(phNatOn?"natif":(phBgId!=null?"module":"web"))+" · v163]"; }
   function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); tkPaint(); }
   // Traite une position normalisée (native OU web) : {lat, lon, acc, alt, speedMs, heading, tMs}
   function phOnPos(o, bulk){
@@ -3358,7 +3362,7 @@
     $("phSpd").textContent = (spd!=null?phNum(spd):"0,0")+" km/h";
     $("phSpdMax").textContent = phNum(phMax)+" km/h";
     $("phAcc").textContent = (acc!=null?Math.round(acc)+" m":"—");
-    $("phNote").textContent = phNatOn ? phNatNote()+" "+phPts.length+" points GPS." : (phBgId!=null ? "Enregistrement en cours (continue écran éteint) — " : "Enregistrement en cours — ")+phPts.length+" points GPS.";
+    $("phNote").textContent = (phNatOn ? phNatNote()+" "+phPts.length+" points GPS." : (phBgId!=null ? "Enregistrement en cours (continue écran éteint) — " : "Enregistrement en cours — ")+phPts.length+" points GPS.")+phDiag();
     try { mapUpdate(o.lat, o.lon, spd); } catch(e){}
   }
   // ---------- 07/11 : capteurs du téléphone (accéléromètre) : podomètre et sauts ----------
