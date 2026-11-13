@@ -382,7 +382,49 @@
   .wc-seas{ display:flex; gap:6px; background:#e9eff2; border-radius:16px; padding:4px; margin-bottom:12px; }
   .wc-seas button{ flex:1; border:0; background:none; border-radius:12px; padding:10px 4px; font:inherit; font-size:13.5px; font-weight:700; color:var(--muted); cursor:pointer; box-shadow:none; min-height:0; white-space:nowrap; }
   .wc-seas button.on{ background:#fff; color:#0b3d47; box-shadow:0 2px 8px rgba(8,40,48,.12); } .wc-seas button small{ font-weight:700; opacity:.6; margin-left:3px; }
-  .wc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .wc{ margin:16px 0 4px; } .wc-head{ margin:0 4px 10px; } .wc-head h3{ font-size:19px; }
+  .wc-seas{ margin-bottom:10px; } .wc-seas button{ padding:8px 4px; font-size:13px; }
+  .wc-grid{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; margin:0 -14px; padding:2px 14px 12px; scrollbar-width:none; } .wc-grid::-webkit-scrollbar{ display:none; }
+  .wc-grid .wc-card{ flex:0 0 58%; max-width:250px; scroll-snap-align:center; aspect-ratio:16/10.5; border-radius:18px; }
+  .wc-grid .wc-card .wc-n{ position:absolute; right:9px; top:9px; z-index:1; font-size:10px; font-weight:800; color:#fff; background:rgba(0,0,0,.5); border-radius:999px; padding:3px 7px; }
+  /* recherche de spot */
+  .ms{ position:relative; border-radius:22px; padding:16px 14px 13px; color:#fff; background:linear-gradient(135deg,#06181d 0%,#0b3138 52%,#0f6a6c 100%); box-shadow:0 12px 28px rgba(6,40,46,.24); }
+  .ms::before{ content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background:radial-gradient(60% 90% at 100% 0%, rgba(95,240,200,.24), transparent 62%), radial-gradient(50% 70% at 0% 100%, rgba(90,205,209,.14), transparent 60%); }
+  .ms > *{ position:relative; }
+  .ms-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin:0 4px 12px; }
+  .ms-k{ font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:#7fe6dc; }
+  .ms-top h3{ margin:3px 0 0; font-family:"Instrument Serif", Georgia, serif; font-weight:400; font-size:29px; line-height:1.05; color:#fff; }
+  .ms-wave{ flex:none; width:38px; height:38px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#7fe6dc; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.12); } .ms-wave svg{ width:21px; height:21px; }
+  .ms-field{ display:flex; align-items:center; gap:8px; background:#fff; border-radius:16px; padding:5px 5px 5px 13px; box-shadow:0 6px 18px rgba(0,0,0,.22); }
+  .ms-field:focus-within{ box-shadow:0 0 0 3px rgba(95,240,200,.5), 0 6px 18px rgba(0,0,0,.22); }
+  .ms-loupe{ flex:none; width:19px; height:19px; color:#148a90; }
+  .ms-field input{ flex:1; min-width:0; border:0 !important; outline:0 !important; background:none; padding:9px 0; margin:0; font:inherit; font-size:16px; font-weight:600; color:#0b2a30; box-shadow:none; -webkit-appearance:none; appearance:none; }
+  .ms-field input::placeholder{ color:#8aa0a6; font-weight:500; } .ms-field input::-webkit-search-cancel-button{ -webkit-appearance:none; }
+  .ms-field button{ flex:none; width:42px; height:42px; min-height:0; padding:0; border:0; border-radius:12px; cursor:pointer; color:#fff; background:linear-gradient(145deg,#2fc4c0,#0f7f86); box-shadow:0 3px 8px rgba(15,127,134,.35); display:flex; align-items:center; justify-content:center; }
+  .ms-field button svg{ width:21px; height:21px; } .ms-field button:active{ transform:scale(.94); }
+  .ms-note{ margin:10px 4px 0; font-size:12px; line-height:1.4; color:rgba(255,255,255,.66); }
+  .ms #mtoResults{ border:0; border-radius:16px; margin-top:8px; background:#fff; color:#0b2a30; box-shadow:0 10px 24px rgba(0,0,0,.25); }
+  .ms #mtoResults .r{ display:flex; align-items:center; gap:10px; padding:10px 10px 10px 13px; border-top:1px solid #e8eef0; font-size:15px; }
+  .ms #mtoResults .r:active,.ms #mtoResults .r:hover{ background:#f0f8f8; }
+  .ms #mtoResults .r .r-t{ flex:1; min-width:0; } .ms #mtoResults .r .r-t b{ display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .ms #mtoResults .r small{ color:#6b8087; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ms #mtoResults .r .r-pin{ flex:none; width:30px; height:30px; border-radius:10px; background:#e6f6f6; color:#148a90; display:flex; align-items:center; justify-content:center; } .r-pin svg{ width:16px; height:16px; }
+  .ms-cam{ flex:none; position:relative; width:74px; height:46px; padding:0; min-height:0; border:0; border-radius:10px; overflow:hidden; background:#0b1f26; cursor:pointer; box-shadow:0 2px 6px rgba(8,40,48,.25); }
+  .ms-cam img{ width:100%; height:100%; object-fit:cover; display:block; } .ms-cam i{ position:absolute; left:5px; top:5px; width:7px; height:7px; border-radius:50%; background:#ff2d55; box-shadow:0 0 0 2px rgba(255,255,255,.85); animation:wcPulse 1.4s ease-in-out infinite; }
+  .ms-cam em{ position:absolute; right:4px; bottom:3px; font-style:normal; font-size:8.5px; font-weight:800; letter-spacing:.05em; color:#fff; text-shadow:0 1px 3px #000; }
+  .ms #mtoResults .r-h{ padding:8px 13px 4px; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#e11d48; cursor:default; border-top:1px solid #e8eef0; } .ms #mtoResults .r-h:first-child{ border-top:0; }
+  /* webcam en direct du spot choisi */
+  #mtoLive{ margin-top:10px; }
+  .ms-live{ display:flex; align-items:stretch; gap:12px; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:8px; }
+  .ms-pip{ flex:0 0 54%; position:relative; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#000; }
+  .ms-pip iframe, .ms-pip img{ position:absolute; inset:0; width:100%; height:100%; border:0; object-fit:cover; display:block; }
+  .ms-pip button{ position:absolute; inset:0; width:100%; height:100%; min-height:0; padding:0; border:0; background:none; cursor:pointer; box-shadow:none; }
+  .ms-pip .wc-b{ position:absolute; left:6px; top:6px; display:inline-flex; align-items:center; gap:4px; font-size:9px; font-weight:800; letter-spacing:.06em; color:#fff; background:rgba(225,29,72,.92); border-radius:999px; padding:2px 6px; pointer-events:none; } .ms-pip .wc-b i{ width:5px; height:5px; border-radius:50%; background:#fff; animation:wcPulse 1.4s ease-in-out infinite; }
+  .ms-live-tx{ flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; }
+  .ms-live-tx small{ font-size:10px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#7fe6dc; }
+  .ms-live-tx b{ font-size:15.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .ms-live-tx span{ font-size:12.5px; color:rgba(255,255,255,.75); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ms-live-tx button{ align-self:flex-start; margin-top:6px; min-height:0; border:0; border-radius:999px; padding:6px 11px; font:inherit; font-size:12px; font-weight:800; color:#06262b; background:#7fe6dc; cursor:pointer; box-shadow:none; }
+  .ms-more{ display:flex; gap:8px; overflow-x:auto; margin-top:8px; scrollbar-width:none; } .ms-more::-webkit-scrollbar{ display:none; }
+  .ms-more .ms-cam{ width:92px; height:56px; border-radius:11px; } .ms-more .ms-cam em{ left:5px; right:5px; text-align:left; font-size:9px; letter-spacing:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .wc-card{ position:relative; display:block; padding:0; border:0; border-radius:16px; overflow:hidden; background:#0b1f26; aspect-ratio:16/11; cursor:pointer; box-shadow:0 6px 16px rgba(8,40,48,.12); text-align:left; font:inherit; min-height:0; }
   .wc-card img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; } .wc-card:active{ transform:scale(.98); }
   .wc-card::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.78)); }
@@ -2316,12 +2358,25 @@
 .gw-h b,.gw-d b{font-size:16px;font-weight:700}
 .gw-d small{font-size:13px;color:var(--muted);margin-left:3px}
     </style>
-    <div class="m-label" style="margin:2px 6px 10px">Rechercher un spot</div>
-    <div class="card" style="padding:12px">
-      <input id="mtoSearch" class="wg-custom" style="width:100%" placeholder="Nom d un lieu / spot (ex. Leucate, Hyeres...)" autocomplete="off">
+
+    <!-- 13/11 : recherche de spot (couleurs Lite Foil) + webcam en direct du spot quand il y en a une -->
+    <div class="ms" id="mtoSearchCard">
+      <div class="ms-top"><div><div class="ms-k">Météo · webcams en direct</div><h3>Trouve ton spot</h3></div><span class="ms-wave" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/></svg></span></div>
+      <div class="ms-field">
+        <svg class="ms-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+        <input id="mtoSearch" type="search" placeholder="Leucate, Hyères, Saint-Malo…" autocomplete="off" enterkeyhint="search" aria-label="Rechercher un spot">
+        <button id="mtoGeo" type="button" aria-label="Utiliser ma position actuelle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/><circle cx="12" cy="12" r="7.5"/></svg></button>
+      </div>
       <div id="mtoResults" hidden></div>
-      <button id="mtoGeo" class="mto-geo" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Utiliser ma position actuelle</button>
-      <div class="note" style="margin-top:8px">Cherche n importe quel spot, ou utilise ta position actuelle : conditions en direct, carte et prévisions.</div>
+      <div id="mtoLive" hidden></div>
+      <div class="ms-note">Vent, vagues et prévisions du spot, avec sa webcam en direct quand il en a une.</div>
+    </div>
+
+    <!-- 13/11 : webcams du littoral en direct (YouTube), liste dans webcams/index.json -->
+    <div class="wc" id="wcBox" hidden>
+      <div class="wc-head"><div><div class="m-label">En direct</div><h3>Webcams du littoral</h3></div><span class="wc-live"><i></i>LIVE</span></div>
+      <div class="wc-seas" id="wcSeas"></div>
+      <div class="wc-grid" id="wcGrid"></div>
     </div>
 
     <div class="m-label" style="margin:16px 6px 10px">Météo</div>
@@ -2371,12 +2426,6 @@
       <span class="wa-t"><b>Modèles de vagues Ifremer</b><span>Méditerranée — prévisions détaillées (ouvre le site)</span></span>
       <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </a>
-    <!-- 13/11 : webcams du littoral en direct (YouTube), liste dans webcams/index.json -->
-    <div class="wc" id="wcBox" hidden>
-      <div class="wc-head"><div><div class="m-label">En direct</div><h3>Webcams du littoral</h3></div><span class="wc-live"><i></i>LIVE</span></div>
-      <div class="wc-seas" id="wcSeas"></div>
-      <div class="wc-grid" id="wcGrid"></div>
-    </div>
   </section>
 
   <section id="tab-ultra" class="tabpane" hidden>
@@ -8511,7 +8560,7 @@
         box.innerHTML=curHtml+'<div class="gw-sect">Par heure</div><div class="gw-strip">'+hours+'</div><div class="gw-sect">Prochains jours</div><div class="gw-strip">'+dd+'</div>';
       }catch(e){ box.innerHTML='<div class="comm-empty">Météo indisponible pour le moment.</div>'; }
     }
-    function apply(p,label){ pos=p; try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
+    function apply(p,label){ pos=p; try{ if(window.lfWc && window.lfWc.spot) window.lfWc.spot(p.lat, p.lng, label||p.name||""); }catch(e){} try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
     async function reverseName(lat,lon){
       try{
         var r=await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+lat+"&longitude="+lon+"&localityLanguage=fr");
@@ -8578,8 +8627,17 @@
         t=setTimeout(function(){ (async function(){ try{ if(ctrl) ctrl.abort(); ctrl=new AbortController();
           var r=await fetch("https://geocoding-api.open-meteo.com/v1/search?count=6&language=fr&name="+encodeURIComponent(q),{signal:ctrl.signal});
           var j=await r.json(); var list=(j&&j.results)||[];
-          if(!list.length){ res.innerHTML='<div class="r">Aucun résultat</div>'; res.hidden=false; return; }
-          res.innerHTML=""; list.forEach(function(it){ var d=document.createElement("div"); d.className="r"; var sub=[it.admin2,it.admin1,it.country].filter(Boolean).join(", "); d.innerHTML="<b>"+escH(it.name)+"</b><small>"+escH(sub)+"</small>"; d.addEventListener("click",function(){ inp.value=it.name; hide(); pickSpot({name:it.name,lat:it.latitude,lon:it.longitude}); }); res.appendChild(d); }); res.hidden=false;
+          var WC=window.lfWc, camHits=(WC&&WC.find)?WC.find(q):[];
+          var camBtn=function(c){ return '<button type="button" class="ms-cam" aria-label="Webcam en direct"><img alt="" src="'+WC.thumb(c)+'"><i></i><em>LIVE</em></button>'; };
+          res.innerHTML="";
+          if(camHits.length){ var h=document.createElement("div"); h.className="r-h"; h.textContent="Webcams en direct"; res.appendChild(h);
+            camHits.slice(0,4).forEach(function(c){ var d=document.createElement("div"); d.className="r"; d.innerHTML=camBtn(c)+'<span class="r-t"><b>'+escH(c.place)+'</b><small>'+escH(c.view)+' · en direct</small></span>';
+              d.addEventListener("click",function(){ hide(); WC.open(c); }); res.appendChild(d); });
+            if(list.length){ var h2=document.createElement("div"); h2.className="r-h"; h2.style.color="#148a90"; h2.textContent="Spots"; res.appendChild(h2); } }
+          if(!list.length && !camHits.length){ res.innerHTML='<div class="r">Aucun résultat</div>'; res.hidden=false; return; }
+          list.forEach(function(it){ var d=document.createElement("div"); d.className="r"; var sub=[it.admin2,it.admin1,it.country].filter(Boolean).join(", "), near=(WC&&WC.near)?WC.near(it.latitude,it.longitude,it.name)[0]:null;
+            d.innerHTML='<span class="r-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="r-t"><b>'+escH(it.name)+'</b><small>'+escH(sub)+'</small></span>'+(near?camBtn(near.c):'');
+            d.addEventListener("click",function(e){ if(near && e.target.closest(".ms-cam")){ hide(); WC.open(near.c); return; } inp.value=it.name; hide(); inp.blur(); pickSpot({name:it.name,lat:it.latitude,lon:it.longitude}); }); res.appendChild(d); }); res.hidden=false;
         }catch(e){} })(); },320); });
       document.addEventListener("click",function(e){ if(!res.contains(e.target)&&e.target!==inp) hide(); });
     })();
@@ -8589,7 +8647,7 @@
       locate();                          // auto-localisation en direct à chaque ouverture (façon Google)
       wgInitUI(); };
     const lb=$m("mtoLocate"); if(lb) lb.addEventListener("click",locate);
-    var gb=document.getElementById("mtoGeo"); if(gb) gb.addEventListener("click",function(){ locate(); window.scrollTo({top:0,behavior:"smooth"}); });
+    var gb=document.getElementById("mtoGeo"); if(gb) gb.addEventListener("click",function(){ locate(); });
   })();
 </script>
 <script>
@@ -8811,11 +8869,11 @@
   function list(){ return data.cams.filter(function(c){ return c.sea===sea; }); }
   function draw(){ var seas=document.getElementById("wcSeas"), grid=document.getElementById("wcGrid");
     seas.innerHTML=data.seas.map(function(x){ var n=data.cams.filter(function(c){ return c.sea===x.k; }).length; return '<button type="button" data-k="'+x.k+'" class="'+(x.k===sea?"on":"")+'">'+esc(x.name)+'<small>'+n+'</small></button>'; }).join("");
-    grid.innerHTML=list().map(function(c,k){ return '<button type="button" class="wc-card" data-k="'+k+'"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault_live.jpg" data-fb="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault.jpg">'
-      +(c.embed?'<span class="wc-b"><i></i>LIVE</span>':'<span class="wc-yt">YouTube ↗</span>')+'<span class="wc-t"><b>'+esc(c.place)+'</b><span>'+esc(c.view)+'</span></span></button>'; }).join("");
+    grid.scrollLeft=0; grid.innerHTML=list().map(function(c,k,L){ return '<button type="button" class="wc-card" data-k="'+k+'"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault_live.jpg" data-fb="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault.jpg">'
+      +(c.embed?'<span class="wc-b"><i></i>LIVE</span><span class="wc-n">'+(k+1)+' / '+L.length+'</span>':'<span class="wc-yt">YouTube ↗</span>')+'<span class="wc-t"><b>'+esc(c.place)+'</b><span>'+esc(c.view)+'</span></span></button>'; }).join("");
     grid.querySelectorAll("img").forEach(function(im){ im.addEventListener("error", function(){ if(im.dataset.fb){ var f=im.dataset.fb; im.dataset.fb=""; im.src=f; } }); }); }
   function yt(c){ return "https://www.youtube.com/watch?v="+encodeURIComponent(c.id); }
-  function open(k){ var l=list(), c=l[k]; if(!c) return; if(!c.embed){ window.open(yt(c), "_blank", "noopener"); return; }
+  function open(k, cam){ var l=list(), c=l[k]; if(cam){ l=data.cams.filter(function(x){ return x.sea===cam.sea; }); k=l.indexOf(cam); c=cam; } if(!c) return; if(!c.embed){ window.open(yt(c), "_blank", "noopener"); return; }
     var old=document.getElementById("wcv"); if(old) old.remove(); var el=document.createElement("div"); el.id="wcv"; el.className="wcv"; var prevOv=document.body.style.overflow; document.body.style.overflow="hidden";
     var close=function(){ el.remove(); document.body.style.overflow=prevOv; };
     var show=function(){ c=l[k]; var p=l[(k-1+l.length)%l.length], n=l[(k+1)%l.length];
@@ -8827,9 +8885,26 @@
     document.body.appendChild(el); show(); }
   box.addEventListener("click", function(e){ var s=e.target.closest("#wcSeas button"); if(s){ sea=s.dataset.k; try{ localStorage.setItem("lf.wc.sea",sea); }catch(x){} draw(); return; }
     var c=e.target.closest(".wc-card"); if(c) open(+c.dataset.k); });
+  // --- pour la recherche de spot : caméras par nom, caméras proches, webcam du spot choisi ---
+  var nrm=function(t){ return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); };
+  var km=function(a,b,c,d){ var R=6371, x=(d-b)*Math.PI/180*Math.cos((a+c)*Math.PI/360), y=(c-a)*Math.PI/180; return R*Math.sqrt(x*x+y*y); };
+  var thumb=function(c){ return "https://i.ytimg.com/vi/"+esc(c.id)+"/mqdefault_live.jpg"; };
+  var lastSpot=null;
+  function near(lat,lon,name){ if(!data || !isFinite(lat) || !isFinite(lon)) return []; var n=nrm(name);
+    return data.cams.filter(function(c){ return isFinite(c.lat); }).map(function(c){ var dk=km(lat,lon,c.lat,c.lon); return { c:c, km:dk, nm:!!n && n.length>3 && (nrm(c.place).indexOf(n)>=0 || n.indexOf(nrm(c.place))>=0) }; })
+      .filter(function(x){ return x.km<=15 || (x.nm && x.km<=40); }).sort(function(a,b){ return a.km-b.km; }); }
+  function find(q){ q=nrm(q); if(!data || q.length<3) return []; return data.cams.filter(function(c){ var t=nrm(c.place+" "+c.view); return q.split(" ").every(function(w){ return t.indexOf(w)>=0; }); }); }
+  function spot(lat,lon,name){ lastSpot=[lat,lon,name]; var el=document.getElementById("mtoLive"); if(!el) return; var L=near(lat,lon,name);
+    if(!L.length){ el.hidden=true; el.innerHTML=""; return; } var c=L[0].c, dist=L[0].km<1?"sur place":"à "+Math.round(L[0].km)+" km";
+    el.innerHTML='<div class="ms-live"><div class="ms-pip">'+(c.embed?'<iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/'+esc(c.id)+'?autoplay=1&mute=1&playsinline=1&controls=0&rel=0&modestbranding=1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" title="Webcam '+esc(c.place)+'" tabindex="-1"></iframe>':'<img alt="" src="'+thumb(c)+'">')
+      +'<span class="wc-b"><i></i>LIVE</span><button type="button" data-i="0" aria-label="Voir la webcam en grand"></button></div>'
+      +'<div class="ms-live-tx"><small>Webcam '+dist+'</small><b>'+esc(c.place)+'</b><span>'+esc(c.view)+'</span><button type="button" data-i="0">Voir en grand</button></div></div>'
+      +(L.length>1?'<div class="ms-more">'+L.slice(1,8).map(function(x,i){ return '<button type="button" class="ms-cam" data-i="'+(i+1)+'"><img alt="" loading="lazy" src="'+thumb(x.c)+'"><i></i><em>'+esc(x.c.place===c.place?x.c.view:x.c.place)+'</em></button>'; }).join("")+'</div>':'');
+    el.hidden=false; el.onclick=function(e){ var b=e.target.closest("button[data-i]"); if(b && L[+b.dataset.i]) open(0, L[+b.dataset.i].c); }; }
+  window.lfWc={ near:near, find:find, thumb:thumb, open:function(c){ open(0,c); }, spot:spot };
   function load(){ if(data || loading) return; loading=true;
     fetch("webcams/index.json").then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){ if(!j || !j.cams || !j.cams.length) throw 0; data=j;
-      try{ sea=localStorage.getItem("lf.wc.sea"); }catch(x){} if(!data.seas.some(function(x){ return x.k===sea; })) sea=data.seas[0].k; box.hidden=false; draw(); })
+      try{ sea=localStorage.getItem("lf.wc.sea"); }catch(x){} if(!data.seas.some(function(x){ return x.k===sea; })) sea=data.seas[0].k; box.hidden=false; draw(); if(lastSpot) spot(lastSpot[0],lastSpot[1],lastSpot[2]); })
       .catch(function(){ loading=false; }); }
   // chargé à la première ouverture de l'onglet Météo
   var pane=document.getElementById("tab-meteo"); if(!pane) return;
