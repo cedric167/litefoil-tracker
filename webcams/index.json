@@ -1,0 +1,307 @@
+{
+ "note": "Webcams du littoral français diffusées en direct sur YouTube (13/11/2026). id = identifiant de la vidéo YouTube ; embed=false : la chaîne n'autorise pas la lecture hors de YouTube. Si une caméra ne s'affiche plus, son direct a été relancé avec un nouvel identifiant : le remplacer ici.",
+ "seas": [
+  {
+   "k": "med",
+   "name": "Méditerranée"
+  },
+  {
+   "k": "atl",
+   "name": "Atlantique"
+  },
+  {
+   "k": "man",
+   "name": "Manche"
+  }
+ ],
+ "cams": [
+  {
+   "sea": "med",
+   "place": "Cannes",
+   "view": "Quai Laubeuf",
+   "id": "asO_10T0k2k",
+   "embed": true,
+   "by": "Cannes webcams : Quai Laubeuf"
+  },
+  {
+   "sea": "med",
+   "place": "Cannes",
+   "view": "Boulevard du Midi",
+   "id": "z6BNMoj9Pyo",
+   "embed": true,
+   "by": "Cannes webcams : Boulevard du midi"
+  },
+  {
+   "sea": "med",
+   "place": "Cannes",
+   "view": "Palm Beach",
+   "id": "8cff6yAO9bw",
+   "embed": true,
+   "by": "Cannes webcams : Palm Beach"
+  },
+  {
+   "sea": "med",
+   "place": "Hyères",
+   "view": "Almanarre",
+   "id": "mGaeBFaOabU",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "Hyères",
+   "view": "Port Saint-Pierre",
+   "id": "pynpgT_4ST4",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "Hyères",
+   "view": "La Madrague",
+   "id": "TLUj277L_oM",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "Hyères",
+   "view": "L'Ayguade",
+   "id": "D8Zu4OqOI6g",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "Hyères",
+   "view": "Les Estagnets",
+   "id": "j-4yLN5J-jU",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "La Croix-Valmer",
+   "view": "Gigaro",
+   "id": "8lgXh5egzx0",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "Le Lavandou",
+   "view": "Aiguebelle",
+   "id": "q1lrNOBNqDg",
+   "embed": true,
+   "by": "Webcams-Méditerranée-Var"
+  },
+  {
+   "sea": "med",
+   "place": "Saint-Mandrier",
+   "view": "Port et rade de Toulon",
+   "id": "Hsn5yv_eT3I",
+   "embed": false,
+   "by": ""
+  },
+  {
+   "sea": "med",
+   "place": "Marseille",
+   "view": "Calanque de Samena",
+   "id": "5ODL3jl2ezQ",
+   "embed": true,
+   "by": "Live Marseille - Calanque Samena"
+  },
+  {
+   "sea": "atl",
+   "place": "Pointe du Raz",
+   "view": "Raz de Sein",
+   "id": "StsPFQng1Bk",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "atl",
+   "place": "Gâvres",
+   "view": "Port et rade de Lorient",
+   "id": "B4kOzuzFu1g",
+   "embed": false,
+   "by": ""
+  },
+  {
+   "sea": "atl",
+   "place": "Vannes",
+   "view": "Le port",
+   "id": "dXckWr5B8f8",
+   "embed": true,
+   "by": "Golfe du Morbihan Vannes Tourisme"
+  },
+  {
+   "sea": "atl",
+   "place": "Piriac-sur-Mer",
+   "view": "Le port",
+   "id": "g_cjMgguKJ8",
+   "embed": true,
+   "by": "CCI Nantes St-Nazaire"
+  },
+  {
+   "sea": "atl",
+   "place": "Pornichet – La Baule",
+   "view": "La baie",
+   "id": "Rst3kvq9B8Y",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "atl",
+   "place": "Île d'Oléron",
+   "view": "Plage de La Perroche",
+   "id": "quI9pHnsy1o",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "atl",
+   "place": "Île d'Oléron",
+   "view": "Saint-Trojan",
+   "id": "9yfjmxlKJTk",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "L'Aber Wrac'h",
+   "view": "Le port",
+   "id": "dW-wGCSZiDo",
+   "embed": true,
+   "by": "Webcams Ports France"
+  },
+  {
+   "sea": "man",
+   "place": "Le Conquet",
+   "view": "Phare de Kermorvan",
+   "id": "MMAvHrvjsH4",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Quay-Portrieux",
+   "view": "Le port",
+   "id": "pvq6V9UbOgI",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Binic",
+   "view": "La plage",
+   "id": "gJoTOmi4i4o",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Cast-le-Guildo",
+   "view": "Le port",
+   "id": "bzc8jiyO-ws",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Malo",
+   "view": "Thermes Marins",
+   "id": "VNOV8KgGR0c",
+   "embed": true,
+   "by": "Webcam Saint-Malo - Les Thermes Marins"
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Malo",
+   "view": "Le port",
+   "id": "p6nAlz4_bdI",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Pirou",
+   "view": "La plage",
+   "id": "TD3d2bACEUM",
+   "embed": true,
+   "by": "Les webcams de la Baie du Mont-Saint-Michel"
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Germain-sur-Ay",
+   "view": "La plage",
+   "id": "Fr-gaKtiRb0",
+   "embed": true,
+   "by": "Les webcams de la Baie du Mont-Saint-Michel"
+  },
+  {
+   "sea": "man",
+   "place": "Luc-sur-Mer",
+   "view": "La plage",
+   "id": "LZP48Tt9zeA",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Langrune-sur-Mer",
+   "view": "La plage",
+   "id": "OL7xrDcVZno",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Trouville-sur-Mer",
+   "view": "Le port",
+   "id": "igv2OEZVtzo",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Le Havre",
+   "view": "Port et MuMa",
+   "id": "wHWL7lDnChY",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Fécamp",
+   "view": "Le port",
+   "id": "30hMtF2swvE",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Valery-en-Caux",
+   "view": "La plage",
+   "id": "FAXbLsgvMNg",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Dieppe",
+   "view": "Panoramique",
+   "id": "PRDWF7PjBIU",
+   "embed": true,
+   "by": "Vision-Environnement - Webcams LIVE"
+  },
+  {
+   "sea": "man",
+   "place": "Mers-les-Bains",
+   "view": "Esplanade",
+   "id": "Kq_9wTO0dhU",
+   "embed": true,
+   "by": "mers-les-bains"
+  }
+ ]
+}
