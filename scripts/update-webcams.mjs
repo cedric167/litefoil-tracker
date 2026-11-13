@@ -1,5 +1,7 @@
 // Lite Foil — met à jour webcams/index.json (identifiants des directs YouTube des webcams du littoral).
-// Lancé chaque jour par .github/workflows/webcams.yml ; peut aussi se lancer à la main : node scripts/update-webcams.mjs
+// Lancé chaque jour sur le PC de Cédric par la tâche planifiée Windows « LiteFoil webcams » (scripts/update-webcams.cmd).
+// YouTube bloque cette lecture depuis les serveurs de GitHub (demande de connexion) : le workflow
+// .github/workflows/webcams.yml ne sert plus qu'à un essai manuel. À la main : node scripts/update-webcams.mjs
 //
 // Pour chaque caméra :
 //   1) si son direct actuel tourne toujours, on ne touche à rien ;
@@ -26,7 +28,9 @@ async function isLive(id) {
   const h = await get("https://www.youtube.com/watch?v=" + encodeURIComponent(id));
   if (!h || !/ytInitialPlayerResponse/.test(h)) return null;
   if (/"isLiveNow":true/.test(h)) return true;
-  if (/"isLiveNow":false/.test(h) || /"playabilityStatus":\{"status":"(ERROR|UNPLAYABLE|LOGIN_REQUIRED)"/.test(h) || /"isLiveContent":false/.test(h)) return false;
+  // YouTube demande parfois de se connecter (serveurs, robots) : on ne sait alors rien, et on ne touche à rien
+  if (/"playabilityStatus":\{"status":"LOGIN_REQUIRED"/.test(h)) return null;
+  if (/"isLiveNow":false/.test(h) || /"playabilityStatus":\{"status":"(ERROR|UNPLAYABLE)"/.test(h) || /"isLiveContent":false/.test(h)) return false;
   return null;
 }
 // vidéos (id, titre) listées dans une page de chaîne (onglet Directs ou recherche dans la chaîne)

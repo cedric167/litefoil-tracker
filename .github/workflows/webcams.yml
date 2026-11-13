@@ -1,12 +1,10 @@
-# Lite Foil : met à jour chaque jour les identifiants des webcams du littoral (directs YouTube).
-# Quand une chaîne relance son direct, l'identifiant change : scripts/update-webcams.mjs retrouve le nouveau
-# et le fichier webcams/index.json est corrigé tout seul. Lançable aussi à la main (onglet Actions → Run workflow).
+# Lite Foil : identifiants des webcams du littoral (directs YouTube).
+# 13/11 : YouTube bloque la lecture de ses pages depuis les serveurs GitHub (demande de connexion), donc plus de
+# planification ici : la mise à jour quotidienne tourne sur le PC (tâche planifiée Windows « LiteFoil webcams »,
+# scripts/update-webcams.cmd). Ce workflow reste lançable à la main pour refaire l'essai (onglet Actions → Run workflow).
 name: Webcams du littoral
 
 on:
-  schedule:
-    - cron: "23 4 * * *"   # tous les jours vers 5 h 30 (heure de Paris en hiver)
-    - cron: "23 13 * * *"  # et en début d'après-midi
   workflow_dispatch:
 
 permissions:
