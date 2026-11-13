@@ -2514,7 +2514,6 @@
     <div class="tk-pts"><span id="phPts">0</span> <span>points GPS</span></div>
   </div>
 
-  <div class="tk-tip" id="tkTip"><span class="tk-tip-ic">💡</span><span>Garde le téléphone sur toi. Dans l'appli installée, tu peux verrouiller l'écran : l'enregistrement continue. Dans le navigateur, laisse l'écran allumé. À la fin, ta sortie arrive dans <b>Mes activités</b> avec la carte, les stats et le survol 3D.</span></div>
 
   <div class="tk-mapw">
     <h2>Carte en direct</h2>
@@ -2534,7 +2533,16 @@
 
   <div class="tk-opts">
     <h2>Partage &amp; sécurité</h2>
-    <div class="card tk-optcard">
+    <div class="sec-card" id="secCard">
+      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité en mer</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
+      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
+      <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
+      <div class="sec-row"><span><b>Contacts de sécurité</b><small id="secContactsTxt">Riders Lite Foil prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
+      <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
+        <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
+      <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
+    </div>
+    <div class="card tk-optcard" style="margin-top:12px">
     <div class="phstl" id="phStl">
       <label class="phstl-row"><input type="checkbox" id="phStlOn"><span><b>Publier en direct sur SportsTrackLive</b><small>Ta sortie apparaît en direct sur ton compte, comme avec le boîtier.</small></span></label>
       <div id="phStlLogin" hidden>
@@ -2545,15 +2553,6 @@
       </div>
       <div id="phStlState" class="stl-banner" hidden></div>
     </div>
-    </div>
-    <div class="sec-card" id="secCard">
-      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité en mer</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
-      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
-      <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
-      <div class="sec-row"><span><b>Contacts de sécurité</b><small id="secContactsTxt">Riders Lite Foil prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
-      <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
-        <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
-      <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
     </div>
   </div>
 
