@@ -107,13 +107,13 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover{position:fixed;inset:0;z-index:60;background:#05070a;display:none}
 .flyover.open{display:block}
 .flyover #flyMap{position:absolute;inset:0}
-.flyover .topband{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 26px) 20px 60px;background:linear-gradient(180deg,rgba(5,8,12,.92) 0%,rgba(5,8,12,.75) 45%,rgba(5,8,12,0) 100%);pointer-events:none;z-index:5;text-align:center;color:#fff}
-.flyover .brand{font-weight:700;letter-spacing:.22em;font-size:16px;opacity:.95}
+.flyover .topband{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 34px;background:linear-gradient(180deg,rgba(5,8,12,.78) 0%,rgba(5,8,12,.45) 55%,rgba(5,8,12,0) 100%);pointer-events:none;z-index:5;text-align:center;color:#fff}
+.flyover .brand{font-weight:700;letter-spacing:.22em;font-size:12px;opacity:.9}
 .flyover .brand b{color:var(--cyan-bright)}
-.flyover .aname{font-size:13px;opacity:.8;margin-top:4px}
-.flyover .stats{display:flex;justify-content:space-around;margin-top:20px}
+.flyover .aname{font-size:11.5px;opacity:.75;margin-top:1px}
+.flyover .stats{display:flex;justify-content:space-around;margin-top:8px}
 .flyover .stats .st .u{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.05em}
-.flyover .stats .st .v{font-size:34px;font-weight:700;line-height:1}
+.flyover .stats .st .v{font-size:24px;font-weight:700;line-height:1.05}
 .flyover .stats .st .v small{font-size:13px;font-weight:600;opacity:.75}
 .flyover .ctrl{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6}
 .flyover .ctrl button{border:0;background:rgba(255,255,255,.14);color:#fff;backdrop-filter:blur(8px);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
@@ -122,12 +122,26 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover .fview{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 200px);z-index:6;display:flex;gap:3px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:999px;padding:4px}
 .flyover .fview button{border:0;background:transparent;color:#fff;border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;white-space:nowrap}
 .flyover .fview button.on{background:var(--cyan)}
-.flyover .flyrec{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 250px);z-index:7;border:0;border-radius:999px;background:#fff;color:#0e1417;font-size:14px;font-weight:700;padding:10px 16px;display:flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.flyover .flyrec{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:7;border:0;border-radius:999px;background:#fff;color:#0e1417;font-size:14px;font-weight:700;padding:10px 16px;display:flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .flyover .flyrec[hidden]{display:none}
 .flyover .flyrec svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .flyover .seek{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:18px;padding:8px 10px}
 .flyover .seek button{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;font-weight:700;line-height:1}
 .flyover .seekbar{flex:1;min-width:0}
+/* barre unique du bas */
+.flyover .fbar{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:999px;padding:6px 8px;transition:opacity .35s}
+.flyover .fbar .fplay{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:var(--cyan);color:#fff;font-size:15px;line-height:1;display:grid;place-items:center;padding:0}
+.flyover .fbar .fpill{flex:none;border:0;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:12.5px;font-weight:700;padding:9px 10px;white-space:nowrap;line-height:1}
+.flyover .fbar .seekbar input{height:22px}
+.flyover .fbar .seeklab{font-size:10.5px;margin-top:-4px;padding:0 2px}
+.flyover .fmenu{position:absolute;right:8px;bottom:calc(100% + 8px);display:flex;flex-direction:column;gap:2px;background:rgba(10,14,18,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:16px;padding:5px;min-width:112px}
+.flyover .fmenu[hidden]{display:none}
+.flyover .fmenu button{border:0;background:transparent;color:#fff;border-radius:11px;padding:10px 12px;font-size:14px;font-weight:600;text-align:left}
+.flyover .fmenu button.on{background:var(--cyan)}
+.flyover .flyzoom{transition:opacity .35s}
+.flyover.idle .fbar,.flyover.idle .flyzoom,.flyover.idle .closef{opacity:0;pointer-events:none}
+.flyover .topband{transition:opacity .35s}
+.flyover.idle .topband{opacity:.85}
 .flyover .seekbar input{width:100%;margin:0;accent-color:#ff5a1f;height:26px;touch-action:none}
 .flyover .seeklab{display:flex;justify-content:space-between;color:#fff;font-size:11.5px;opacity:.8;font-variant-numeric:tabular-nums;margin-top:-2px}
 .flyover .spd{display:flex;gap:3px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:4px}
@@ -137,7 +151,7 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px)}
 .flyover .closef svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .flyover .flyzoom{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:7;display:flex;flex-direction:column;gap:8px}
-.flyover .flyzoom button{width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:22px;font-weight:700;backdrop-filter:blur(8px)}
+.flyover .flyzoom button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:22px;font-weight:700;backdrop-filter:blur(8px)}
 
 /* ---------- Connexion (modale) ---------- */
 .modal{position:fixed;inset:0;z-index:70;background:rgba(10,15,18,.45);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
@@ -276,31 +290,27 @@ input[type=file]{display:none}
     <button id="flyRotL" aria-label="Tourner a gauche">⟲</button>
     <button id="flyRotR" aria-label="Tourner a droite">⟳</button>
   </div>
-  <!-- 13/11 : trois vues (ensemble, suivre le point, à bord) et bouton pour recentrer après avoir déplacé la carte -->
+  <!-- 13/11 : commandes regroupées dans une seule barre fine, qui s'efface pendant la lecture (toucher l'écran pour la revoir) -->
   <button class="flyrec" id="flyRecenter" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>Recentrer</button>
-  <div class="fview" id="flyView" role="tablist" aria-label="Vue">
-    <button data-v="all" class="on">Ensemble</button>
-    <button data-v="follow">Suivre</button>
-    <button data-v="board">À bord</button>
-  </div>
-  <!-- 13/11 : barre pour avancer / reculer dans le parcours -->
-  <div class="seek">
-    <button id="flyBack" aria-label="Reculer">«</button>
-    <div class="seekbar"><input type="range" id="flySeek" min="0" max="1000" step="1" value="0" aria-label="Position dans le parcours"><div class="seeklab"><span id="flySeekT">0:00</span><span id="flySeekEnd"></span></div></div>
-    <button id="flyFwd" aria-label="Avancer">»</button>
-  </div>
-  <div class="ctrl">
-    <button id="flyPlay" aria-label="Lecture/Pause">⏸</button>
-    <div class="spd" id="flySpd">
+  <div class="fbar" id="flyBar">
+    <div class="fmenu" id="flySpd" hidden>
       <button data-s="0.1">0,1×</button>
       <button data-s="0.25">0,25×</button>
       <button data-s="0.5">0,5×</button>
       <button data-s="1" class="on">1×</button>
       <button data-s="2">2×</button>
     </div>
-    <button id="flyReplay">↺</button>
-    <button class="primary" id="flyClose2">Terminer</button>
+    <div class="fmenu fmenu-v" id="flyView" hidden>
+      <button data-v="all" class="on">Ensemble</button>
+      <button data-v="follow">Suivre</button>
+      <button data-v="board">À bord</button>
+    </div>
+    <button id="flyPlay" class="fplay" aria-label="Lecture/Pause">⏸</button>
+    <div class="seekbar"><input type="range" id="flySeek" min="0" max="1000" step="1" value="0" aria-label="Position dans le parcours"><div class="seeklab"><span id="flySeekT">0:00</span><span id="flySeekEnd"></span></div></div>
+    <button class="fpill" id="flySpdBtn" aria-label="Vitesse de lecture">1×</button>
+    <button class="fpill" id="flyViewBtn" aria-label="Vue">Ensemble</button>
   </div>
+  <div hidden><button id="flyBack"></button><button id="flyFwd"></button><button id="flyReplay"></button><button id="flyClose2"></button></div>
 </div>
 
 <script>
@@ -665,8 +675,9 @@ let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1, flyDraw=null, flySee
 // avancer / reculer : la barre et les boutons « » déplacent le point sans attendre
 function flySeekTo(v){ flyProg=Math.max(0,Math.min(1,v)); if(flyDraw) flyDraw(true); if(flyProg<1 && flyPaused){ const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="▶"; } }
 (function(){ const sk=document.getElementById("flySeek");
-  sk.addEventListener("input",()=>{ flySeeking=true; flySeekTo(sk.value/1000); });
-  ["change","pointerup","pointercancel","touchend"].forEach(n=>sk.addEventListener(n,()=>{ flySeeking=false; }));
+  let skT=null;
+  sk.addEventListener("input",()=>{ flySeeking=true; flySeekTo(sk.value/1000); clearTimeout(skT); skT=setTimeout(()=>{ flySeeking=false; },400); });
+  ["change","pointerup","pointercancel","touchend"].forEach(n=>sk.addEventListener(n,()=>{ clearTimeout(skT); flySeeking=false; }));
   document.getElementById("flyBack").onclick=()=>flySeekTo(flyProg-0.05);
   document.getElementById("flyFwd").onclick=()=>flySeekTo(flyProg+0.05); })();
 // 13/11 : vues du survol. "all" = carte fixe sur tout le parcours ; "follow" = la carte reste centrée sur le point ;
@@ -678,7 +689,8 @@ function flyBearing(p,q){ const r=Math.PI/180, y=Math.sin((q.lon-p.lon)*r)*Math.
 function flyCam(o){ if(!flyMap) return; flyAuto=true; try{ flyMap.jumpTo(o); }finally{ flyAuto=false; } }
 function flySetFree(v){ flyFree=v; const b=document.getElementById("flyRecenter"); if(b) b.hidden=!v; }
 function flySetView(v){ flyView=v; flyBear=null; flyBearOff=0; flySetFree(false);
-  document.querySelectorAll("#flyView button").forEach(x=>x.classList.toggle("on",x.dataset.v===v));
+  document.querySelectorAll("#flyView button").forEach(x=>{ x.classList.toggle("on",x.dataset.v===v); if(x.dataset.v===v) document.getElementById("flyViewBtn").textContent=x.textContent; });
+  document.getElementById("flyView").hidden=true; flyWake();
   if(!flyMap) return;
   if(v==="all"){ if(flyFit) flyMap.easeTo({center:flyFit.center,zoom:flyFit.zoom,pitch:55,bearing:0,duration:600}); }
   else if(v==="follow"){ flyCam({zoom:Math.max(flyMap.getZoom(),15.5),pitch:55}); }
@@ -691,8 +703,17 @@ function ptGeo(p){ return {type:"Feature",geometry:{type:"Point",coordinates:[p.
 document.getElementById("btnFly").onclick=()=>startFly(current);
 document.getElementById("closeFly").onclick=document.getElementById("flyClose2").onclick=stopFly;
 document.getElementById("flyReplay").onclick=()=>startFly(current);
-document.getElementById("flyPlay").onclick=()=>{ if(flyProg>=1){ startFly(current); return; } flyPaused=!flyPaused; document.getElementById("flyPlay").textContent=flyPaused?"▶":"⏸"; };
-document.querySelectorAll("#flySpd button").forEach(b=>{ b.onclick=()=>{ flySpeedMul=parseFloat(b.dataset.s); document.querySelectorAll("#flySpd button").forEach(x=>x.classList.toggle("on",x===b)); }; });
+document.getElementById("flyPlay").onclick=()=>{ if(flyProg>=1){ startFly(current); return; } flyPaused=!flyPaused; document.getElementById("flyPlay").textContent=flyPaused?"▶":"⏸"; flyWake(); };
+document.querySelectorAll("#flySpd button").forEach(b=>{ b.onclick=()=>{ flySpeedMul=parseFloat(b.dataset.s); document.querySelectorAll("#flySpd button").forEach(x=>x.classList.toggle("on",x===b)); document.getElementById("flySpdBtn").textContent=b.textContent; document.getElementById("flySpd").hidden=true; flyWake(); }; });
+// menus (vitesse, vue) ouverts par les deux pastilles de la barre
+function flyMenu(id){ ["flySpd","flyView"].forEach(k=>{ const m=document.getElementById(k); m.hidden = (k!==id) ? true : !m.hidden; }); flyWake(); }
+document.getElementById("flySpdBtn").onclick=()=>flyMenu("flySpd");
+document.getElementById("flyViewBtn").onclick=()=>flyMenu("flyView");
+// la barre s'efface après 3 s de lecture ; toucher l'écran la fait revenir
+let flyIdleT=null;
+function flyWake(){ const ov=document.getElementById("flyover"); ov.classList.remove("idle"); clearTimeout(flyIdleT);
+  flyIdleT=setTimeout(()=>{ const open=!document.getElementById("flySpd").hidden || !document.getElementById("flyView").hidden; if(!flyPaused && !flySeeking && !open && ov.classList.contains("open")) ov.classList.add("idle"); else if(ov.classList.contains("open")) flyWake(); }, 3000); }
+["pointerdown","touchstart"].forEach(n=>document.getElementById("flyover").addEventListener(n, flyWake, {capture:true, passive:true}));
 document.getElementById("flyZin").onclick=()=>{ if(flyMap) flyMap.zoomIn(); };
 document.getElementById("flyZout").onclick=()=>{ if(flyMap) flyMap.zoomOut(); };
 document.getElementById("flyRotL").onclick=()=>{ if(!flyMap) return; if(flyView==="board" && !flyFree){ flyBearOff-=30; if(flyDraw) flyDraw(true); } else flyMap.easeTo({bearing:flyMap.getBearing()-30,duration:300}); };
@@ -728,12 +749,19 @@ async function startFly(a){
     runFly(a,pts);
   };
   flyMap.resize();
-  if(flyMap.isStyleLoaded()) setup(); else flyMap.once("load",setup);
+  // 13/11 : « load » n'arrive qu'une fois dans la vie de la carte. A la 2e ouverture, si des images chargent encore,
+  // on attendait un evenement qui ne revient jamais : le survol ne demarrait pas.
+  let done=false; const go=()=>{ if(done) return; done=true; flyMap._lfReady=true; setup(); };
+  const styleOk=()=>{ try{ return flyMap.isStyleLoaded() || !!(flyMap.style && flyMap.style._loaded); }catch(e){ return false; } };
+  if(flyMap._lfReady || styleOk()) go();
+  else { flyMap.once("load",go); flyMap.once("idle",go);
+    const iv=setInterval(()=>{ if(done){ clearInterval(iv); return; } try{ if(styleOk()){ clearInterval(iv); go(); } }catch(e){} },400);
+    setTimeout(()=>clearInterval(iv),20000); }
 }
 function runFly(a,pts){
   cancelAnimationFrame(flyRAF);
   const N=pts.length, BASE=30000; // 30 s a 1x
-  flyProg=0; flyPaused=false;
+  flyProg=0; flyPaused=false; flySeeking=false; flyWake();
   const playBtn=document.getElementById("flyPlay"); if(playBtn) playBtn.textContent="⏸";
   const spd=document.getElementById("flySpeed"), alt=document.getElementById("flyAlt"), dist=document.getElementById("flyDist");
   const maxSpeedDisplay=a.milieu==="mer"; let last=performance.now();
@@ -769,16 +797,16 @@ function runFly(a,pts){
   const frame=(now)=>{
     const dt=now-last; last=now;
     if(!flyPaused && !flySeeking){
-      flyProg=Math.min(1, flyProg + (dt/BASE)*flySpeedMul);
-      flyDraw(false);
+      flyProg=Math.min(1, flyProg + (Math.min(dt,250)/BASE)*flySpeedMul);
+      try{ flyDraw(false); }catch(e){}
       if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; }
     }
     flyRAF=requestAnimationFrame(frame);
   };
-  flyDraw(false);
+  try{ flyDraw(false); }catch(e){}
   flyRAF=requestAnimationFrame(frame);
 }
-function stopFly(){ cancelAnimationFrame(flyRAF); flyDraw=null; flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
+function stopFly(){ cancelAnimationFrame(flyRAF); flyDraw=null; clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
