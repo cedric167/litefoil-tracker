@@ -106,7 +106,7 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 /* ---------- Survol 3D (flyover) ---------- */
 .flyover{position:fixed;inset:0;z-index:60;background:#05070a;display:none}
 .flyover.open{display:block}
-.flyover #flyMap{position:absolute;inset:0}
+.flyover #flyMap{position:absolute;inset:0;background:linear-gradient(180deg,#2f7fcb 0%,#7fb9ea 22%,#d9eefc 46%,#d9eefc 100%)}
 .flyover .topband{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 34px;background:linear-gradient(180deg,rgba(5,8,12,.78) 0%,rgba(5,8,12,.45) 55%,rgba(5,8,12,0) 100%);pointer-events:none;z-index:5;text-align:center;color:#fff}
 .flyover .brand{font-weight:700;letter-spacing:.22em;font-size:12px;opacity:.9}
 .flyover .brand b{color:var(--cyan-bright)}
@@ -621,6 +621,29 @@ const mapStyle = {
   },
   layers:[{id:"sat",type:"raster",source:"esri"}]
 };
+// 13/11 : carte du survol 3D. Image satellite plus contrastée, ombrage du relief, noms des lieux, ciel dégradé.
+const flyStyle = {
+  version:8,
+  sources:{
+    esri:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:19,attribution:"Esri World Imagery"},
+    places:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:17},
+    dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14},
+    demShade:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14}
+  },
+  layers:[
+    {id:"bg",type:"background",paint:{"background-color":"#16404e"}},
+    {id:"sat",type:"raster",source:"esri",paint:{"raster-saturation":0.22,"raster-contrast":0.14,"raster-brightness-min":0.03,"raster-fade-duration":250}},
+    {id:"shade",type:"hillshade",source:"demShade",paint:{"hillshade-exaggeration":0.35,"hillshade-shadow-color":"#0a1b24","hillshade-highlight-color":"#fff6e0","hillshade-accent-color":"#0a1b24"}},
+    {id:"places",type:"raster",source:"places",paint:{"raster-opacity":0.85}}
+  ]
+};
+// couleur selon la vitesse : bleu (lent) -> cyan -> vert -> jaune -> orange -> rouge (rapide)
+function flySpeedColor(k){ const st=[[0,[46,134,255]],[0.25,[25,227,255]],[0.5,[95,240,160]],[0.72,[255,221,74]],[0.88,[255,140,40]],[1,[255,54,84]]]; k=Math.max(0,Math.min(1,k));
+  for(let i=1;i<st.length;i++){ if(k<=st[i][0]){ const a=st[i-1], b=st[i], t=(k-a[0])/((b[0]-a[0])||1); return "rgb("+a[1].map((v,j)=>Math.round(v+(b[1][j]-v)*t)).join(",")+")"; } } return "rgb(255,54,84)"; }
+function flyGradient(pts){ const N=pts.length, total=(pts[N-1].dist||0); let vmax=0; pts.forEach(p=>{ if((+p.speed||0)>vmax) vmax=+p.speed; });
+  if(!(total>0) || !(vmax>0)) return null; const out=["interpolate",["linear"],["line-progress"]]; let last=-1; const step=Math.max(1,Math.floor(N/70));
+  for(let i=0;i<N;i+=step){ const f=Math.min(1,(pts[i].dist||0)/total); if(f<=last) continue; let v=0,c=0; for(let k=Math.max(0,i-2);k<=Math.min(N-1,i+2);k++){ v+=(+pts[k].speed||0); c++; } out.push(f, flySpeedColor((v/c)/vmax)); last=f; }
+  if(last<1) out.push(1, flySpeedColor((+pts[N-1].speed||0)/vmax)); return out.length>=7 ? out : null; }
 let detMap=null, flyMap=null, current=null;
 function lineGeo(pts){ return {type:"Feature",geometry:{type:"LineString",coordinates:pts.map(p=>[p.lon,p.lat])}}; }
 function bounds(pts){ const b=new maplibregl.LngLatBounds(); pts.forEach(p=>b.extend([p.lon,p.lat])); return b; }
@@ -727,18 +750,31 @@ async function startFly(a){
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
   document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : " m";
   if(!flyMap){
-    flyMap=new maplibregl.Map({container:"flyMap",style:mapStyle,attributionControl:false,interactive:true,maxPitch:80,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
+    flyMap=new maplibregl.Map({container:"flyMap",style:flyStyle,attributionControl:false,interactive:true,antialias:true,fadeDuration:200,maxPitch:80,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
     ["dragstart","rotatestart","pitchstart"].forEach(n=>flyMap.on(n,(e)=>{ if(!flyAuto && e && e.originalEvent) flySetFree(true); }));
   }
   const setup=()=>{
-    try{ flyMap.setTerrain({source:"dem",exaggeration:1.25}); }catch(e){}
-    for(const id of ["flyFull","flyHead","flyDot"]){ if(flyMap.getLayer(id)) flyMap.removeLayer(id); if(flyMap.getSource(id)) flyMap.removeSource(id); }
-    flyMap.addSource("flyFull",{type:"geojson",data:lineGeo(pts)});
-    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",paint:{"line-color":"#ff5a1f","line-width":4,"line-opacity":.22},layout:{"line-join":"round","line-cap":"round"}});
-    flyMap.addSource("flyHead",{type:"geojson",data:lineGeo([pts[0]])});
-    flyMap.addLayer({id:"flyHead",type:"line",source:"flyHead",paint:{"line-color":"#ff5a1f","line-width":6,"line-opacity":1},layout:{"line-join":"round","line-cap":"round"}});
+    try{ flyMap.setTerrain({source:"dem",exaggeration:1.4}); }catch(e){}
+    try{ if(flyMap.setSky) flyMap.setSky({"sky-color":"#3f8fd6","horizon-color":"#d9eefc","fog-color":"#cfe6f5","sky-horizon-blend":0.7,"horizon-fog-blend":0.6,"fog-ground-blend":0.55,"atmosphere-blend":0.8}); }catch(e){}
+    for(const id of ["flyDot","flyDotHalo","flyEnds","flyHead","flyHeadCase","flyHeadGlow","flyFull","flyFullCase"]){ if(flyMap.getLayer(id)) flyMap.removeLayer(id); }
+    for(const id of ["flyFull","flyHead","flyDot","flyEnds"]){ if(flyMap.getSource(id)) flyMap.removeSource(id); }
+    const rc={"line-join":"round","line-cap":"round"}, grad=flyGradient(pts);
+    // parcours entier : fin, sombre dessous, coloré selon la vitesse dessus
+    flyMap.addSource("flyFull",{type:"geojson",lineMetrics:true,data:lineGeo(pts)});
+    flyMap.addLayer({id:"flyFullCase",type:"line",source:"flyFull",layout:rc,paint:{"line-color":"#04161b","line-width":7,"line-opacity":.35}});
+    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",layout:rc,paint: grad ? {"line-width":4,"line-opacity":.55,"line-gradient":grad} : {"line-color":"#19e3ff","line-width":4,"line-opacity":.4}});
+    // partie déjà parcourue : halo lumineux, liseré blanc, coeur cyan
+    flyMap.addSource("flyHead",{type:"geojson",data:lineGeo([pts[0],pts[0]])});
+    flyMap.addLayer({id:"flyHeadGlow",type:"line",source:"flyHead",layout:rc,paint:{"line-color":"#19e3ff","line-width":18,"line-blur":14,"line-opacity":.55}});
+    flyMap.addLayer({id:"flyHeadCase",type:"line",source:"flyHead",layout:rc,paint:{"line-color":"#ffffff","line-width":7.5,"line-opacity":.95}});
+    flyMap.addLayer({id:"flyHead",type:"line",source:"flyHead",layout:rc,paint:{"line-color":"#0fb9cf","line-width":4.5}});
+    // départ (vert) et arrivée (rouge)
+    flyMap.addSource("flyEnds",{type:"geojson",data:{type:"FeatureCollection",features:[{type:"Feature",properties:{k:"a"},geometry:{type:"Point",coordinates:[pts[0].lon,pts[0].lat]}},{type:"Feature",properties:{k:"b"},geometry:{type:"Point",coordinates:[pts[pts.length-1].lon,pts[pts.length-1].lat]}}]}});
+    flyMap.addLayer({id:"flyEnds",type:"circle",source:"flyEnds",paint:{"circle-radius":5.5,"circle-color":["match",["get","k"],"a","#2bd47a","#ff3654"],"circle-stroke-color":"#fff","circle-stroke-width":2.5,"circle-pitch-alignment":"map"}});
+    // point mobile : halo qui respire + pastille
     flyMap.addSource("flyDot",{type:"geojson",data:ptGeo(pts[0])});
-    flyMap.addLayer({id:"flyDot",type:"circle",source:"flyDot",paint:{"circle-radius":8,"circle-color":"#ff5a1f","circle-stroke-color":"#fff","circle-stroke-width":3}});
+    flyMap.addLayer({id:"flyDotHalo",type:"circle",source:"flyDot",paint:{"circle-radius":20,"circle-color":"#19e3ff","circle-opacity":.28,"circle-blur":.6}});
+    flyMap.addLayer({id:"flyDot",type:"circle",source:"flyDot",paint:{"circle-radius":8,"circle-color":"#0fb9cf","circle-stroke-color":"#fff","circle-stroke-width":3.5}});
     // vue fixe cadree sur toute la trace : seul le point se deplace
     let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
     for(const q of pts){ if(q.lon<minx)minx=q.lon; if(q.lon>maxx)maxx=q.lon; if(q.lat<miny)miny=q.lat; if(q.lat>maxy)maxy=q.lat; }
@@ -801,6 +837,7 @@ function runFly(a,pts){
       try{ flyDraw(false); }catch(e){}
       if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; }
     }
+    try{ if(flyMap.getLayer("flyDotHalo")){ const w=(Math.sin(now/420)+1)/2; flyMap.setPaintProperty("flyDotHalo","circle-radius",16+w*9); flyMap.setPaintProperty("flyDotHalo","circle-opacity",.34-w*.2); } }catch(e){}
     flyRAF=requestAnimationFrame(frame);
   };
   try{ flyDraw(false); }catch(e){}
