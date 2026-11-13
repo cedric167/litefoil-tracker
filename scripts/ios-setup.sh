@@ -25,6 +25,8 @@ plutil -replace NSLocationWhenInUseUsageDescription -string "Votre position sert
 plutil -replace NSLocationAlwaysAndWhenInUseUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint ou le téléphone dans la poche. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée, et vous l'arrêtez vous-même." "$PLIST"
 plutil -replace UIBackgroundModes -json '["location"]' "$PLIST"
 plutil -replace NSLocationAlwaysUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint, et reprenne si l'appli est fermée. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée." "$PLIST"
+plutil -replace NSMicrophoneUsageDescription -string "Le micro sert aux appels audio et vidéo entre riders, et au son de vos vidéos." "$PLIST"
+plutil -replace NSCameraUsageDescription -string "La caméra sert aux appels vidéo entre riders, et à filmer ou photographier pour vos publications." "$PLIST"
 plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
 plutil -lint "$PLIST" >/dev/null
 

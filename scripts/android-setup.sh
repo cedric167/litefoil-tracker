@@ -18,12 +18,18 @@ cp "$ROOT/native/android/LfTrackStore.java" "$ROOT/native/android/LfTrackService
    "$ROOT/native/android/LfTrackPlugin.java" "$ROOT/native/android/MainActivity.java" "$PKG_DIR/"
 
 # 2) Permissions : localisation, service de premier plan (Android 14+), notification (Android 13+)
-for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION WAKE_LOCK POST_NOTIFICATIONS; do
+for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION WAKE_LOCK POST_NOTIFICATIONS RECORD_AUDIO MODIFY_AUDIO_SETTINGS CAMERA; do
   grep -q "android.permission.$P\"" "$MANIFEST" || \
     perl -0pi -e "s#(<uses-permission android:name=\"android.permission.INTERNET\" />)#\$1\n    <uses-permission android:name=\"android.permission.$P\" />#" "$MANIFEST"
 done
 grep -q 'android.hardware.location.gps' "$MANIFEST" || \
   perl -0pi -e 's#(<uses-permission android:name="android.permission.INTERNET" />)#$1\n    <uses-feature android:name="android.hardware.location.gps" />#' "$MANIFEST"
+
+# 2 bis) Appels audio/vidéo : micro et caméra, jamais obligatoires (aucun appareil exclu du Play Store)
+for F in camera camera.autofocus microphone; do
+  grep -q "android.hardware.$F\"" "$MANIFEST" || \
+    perl -0pi -e "s#(<uses-permission android:name=\"android.permission.INTERNET\" />)#\$1\n    <uses-feature android:name=\"android.hardware.$F\" android:required=\"false\" />#" "$MANIFEST"
+done
 
 # 3) Déclaration du service (dans <application>)
 if ! grep -q 'LfTrackService' "$MANIFEST"; then
