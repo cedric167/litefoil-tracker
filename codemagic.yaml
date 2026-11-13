@@ -37,6 +37,8 @@ workflows:
           npx cap sync ios
           # connexion Google sur iPhone : sous-module Google du module de connexion, puis pods
           bash scripts/ios-post-sync.sh
+      - name: Sign in with Apple (identifiant et profil Apple)
+        script: python3 scripts/ios-signin-apple.py
       - name: Signature automatique
         script: |
           xcode-project use-profiles
