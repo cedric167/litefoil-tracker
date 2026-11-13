@@ -23,7 +23,7 @@ plutil -replace NSBluetoothAlwaysUsageDescription -string "Lite Foil se connecte
 plutil -replace NSBluetoothPeripheralUsageDescription -string "Lite Foil se connecte en Bluetooth à votre matériel Lite Foil." "$PLIST"
 plutil -replace NSLocationWhenInUseUsageDescription -string "Votre position sert à vous situer sur la carte, à enregistrer vos sorties et, si vous l'activez, à apparaître dans la communauté (zone approximative)." "$PLIST"
 plutil -replace NSLocationAlwaysAndWhenInUseUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint ou le téléphone dans la poche. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée, et vous l'arrêtez vous-même." "$PLIST"
-plutil -replace UIBackgroundModes -json '["bluetooth-central","location"]' "$PLIST"
+plutil -replace UIBackgroundModes -json '["location"]' "$PLIST"
 plutil -replace NSLocationAlwaysUsageDescription -string "Autorisez « Toujours » pour que l'enregistrement de votre sortie continue quand l'écran est éteint, et reprenne si l'appli est fermée. L'enregistrement ne tourne que pendant une sortie que vous avez démarrée." "$PLIST"
 plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
 plutil -lint "$PLIST" >/dev/null
@@ -172,7 +172,7 @@ PLIST
   sed -i '' '/CODE_SIGN_ENTITLEMENTS = /d' "$PBX"
   sed -i '' "s/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Automatic;\\
 				CODE_SIGN_ENTITLEMENTS = App\/App.entitlements;/" "$PBX"
-  plutil -replace UIBackgroundModes -json '["bluetooth-central","location","remote-notification"]' "$PLIST"
+  plutil -replace UIBackgroundModes -json '["location","remote-notification"]' "$PLIST"
   # AppDelegate : démarre Firebase et transmet le jeton Apple au module de notifications
   DELEGATE="$APP/App/AppDelegate.swift"
   if ! grep -q "LITEFOIL_PUSH" "$DELEGATE"; then

@@ -7892,7 +7892,7 @@
       +'<div class="lfo-lbl">Mot de passe</div><div class="lfo-pw"><input class="lfo-inp" id="lfoLiPw" type="password" autocomplete="current-password" placeholder="Ton mot de passe"><button class="lfo-eye" type="button" data-eye="lfoLiPw" aria-label="Afficher">👁</button></div>'
       +'<div style="text-align:right;margin-top:10px"><button class="lfo-link" id="lfoLiForgot">Mot de passe oublié ?</button></div>'
       +'<div class="lfo-err" id="lfoLiErr"></div>'
-      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoLiGo">Me connecter</button><div class="lfo-small">Pas encore de compte ? <button class="lfo-link" data-go="signup">Créer un compte</button></div></div></section>'
+      +'<div class="lfo-foot"><button class="lfo-btn lfo-main" id="lfoLiGo">Me connecter</button><div class="lfo-small">Pas encore de compte ? <button class="lfo-link" data-go="signup">Créer un compte</button></div><div class="lfo-small" style="margin-top:6px"><button class="lfo-link" id="lfoDemoGo" type="button">Découvrir l’appli en mode démonstration</button></div></div></section>'
     // 7. profil rider
     +'<section class="lfo-s" data-s="profile" hidden><div class="lfo-steps"><i class="on"></i><i></i><i></i></div><div class="lfo-h" style="font-size:36px">Ton profil rider</div>'
       +'<div style="display:flex;align-items:center;gap:16px;margin-top:18px"><button class="lfo-av" id="lfoAv" type="button" aria-label="Choisir une photo"><img id="lfoAvImg" alt="" src="'+team+'"><span>📷</span></button><div class="lfo-sub" style="margin:0">Ta photo apparaît sur ta carte rider et dans la communauté.</div></div>'
@@ -8528,6 +8528,20 @@
   var fab=document.createElement("button"); fab.id="secFab"; fab.className="sec-fab"; fab.hidden=true; fab.textContent="SOS"; fab.setAttribute("aria-label","SOS"); document.body.appendChild(fab);
   fab.addEventListener("click", openSos);
   window.__secOpenSos=openSos;
+})();
+</script>
+<script>
+/* 13/11 : mode démonstration accessible sans compte (demandé par la vérification Apple, règle 2.1) :
+   lien sur l'écran de connexion -> ?demo=1 (données fictives, rien n'est écrit dans la vraie base) ; pastille pour en sortir. */
+(function(){
+  document.addEventListener("click", function(e){ var b=e.target && e.target.closest ? e.target.closest("#lfoDemoGo") : null; if(!b) return;
+    e.preventDefault(); try{ sessionStorage.setItem("lf.demo.ui","1"); }catch(x){} location.href=location.pathname+"?demo=1"; }, true);
+  if(!/[?&]demo=1(&|$)/.test(location.search)) return;
+  var ui=false; try{ ui=sessionStorage.getItem("lf.demo.ui")==="1"; }catch(x){} if(!ui) return;
+  var c=document.createElement("button"); c.type="button"; c.id="lfDemoChip"; c.textContent="Mode démo · Quitter";
+  c.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 6px);z-index:99999;border:0;border-radius:999px;padding:7px 14px;background:#161823;color:#fff;font:700 12.5px/1 system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:.92";
+  c.addEventListener("click", function(){ try{ sessionStorage.removeItem("lf.demo.ui"); }catch(x){} location.href=location.pathname; });
+  (document.body||document.documentElement).appendChild(c);
 })();
 </script>
 </body>
