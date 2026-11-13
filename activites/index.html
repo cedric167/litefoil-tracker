@@ -100,6 +100,11 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .statgrid .s .u{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .statgrid .s .v{font-size:23px;font-weight:700;margin-top:3px}
 .statgrid .s .v small{font-size:12px;color:var(--muted);font-weight:600}
+.sharep{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:15.5px;font-weight:700;color:var(--fg);background:var(--card);display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:var(--shadow)}
+.sharep.on{background:#e8f7f6;border-color:#bfe9e5;color:#0b6d72}
+.sharep svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sharep-note{font-size:12px;color:var(--muted);margin:7px 4px 0;line-height:1.4;text-align:center}
+.lf-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);z-index:90;background:#0e1417;color:#fff;font-size:14.5px;font-weight:600;padding:12px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:88vw;text-align:center}
 .fly{width:100%;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(135deg,#0e1417,#223);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:var(--shadow)}
 .fly svg{width:22px;height:22px;fill:currentColor}
 
@@ -267,6 +272,11 @@ input[type=file]{display:none}
     <div class="meta" id="detMeta">—</div>
     <div class="statgrid" id="detStats"></div>
     <button class="fly" id="btnFly"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Survol 3D du parcours</button>
+    <!-- 13/11 : partage d'une sortie sur son profil (avant : onglet « Sessions » du profil) -->
+    <div id="shareProf" hidden>
+      <button class="sharep" id="btnShareProf"></button>
+      <div class="sharep-note">Seuls tes amis voient tes sorties partagées. La position exacte n'est jamais partagée, seulement la forme du parcours.</div>
+    </div>
     <button class="btn-ghost" id="btnDel" style="margin-top:12px;width:100%;color:#c0392b;border-color:#f0c4c4">🗑 Supprimer cette sortie</button>
   </div>
 </section>
@@ -653,8 +663,23 @@ async function ensurePoints(a){
   try{ a.points=await STL.points(a.id); }catch(e){ a.points=[]; }
   return a.points;
 }
+// 13/11 : sorties montrées sur le profil. La liste est tenue par l'appli principale (clé lf.comm.sharedSess) ;
+// le partage lui-même se fait là-bas (compte connecté), puis on revient ici.
+function sharedKey(a){ return String(a.id).replace(/[.#$\[\]\/]/g,"_"); }
+function sharedSet(){ try{ return new Set(JSON.parse(localStorage.getItem("lf.comm.sharedSess")||"[]")); }catch(e){ return new Set(); } }
+function paintShare(a){ const box=document.getElementById("shareProf"), b=document.getElementById("btnShareProf");
+  const phone=a && (a.source==="phone" || String(a.id).indexOf("phone-")===0);
+  if(!phone || !((+a.distanceM||0)>=100)){ box.hidden=true; return; }
+  const on=sharedSet().has(sharedKey(a)); box.hidden=false; b.classList.toggle("on",on);
+  b.innerHTML= on ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Visible sur mon profil · Retirer'
+                  : '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c.6-3.3 3-5.2 6.2-5.2s5.6 1.9 6.2 5.2"/><path d="M18 8v6M15 11h6"/></svg>Montrer à mes amis sur mon profil';
+  b.onclick=()=>{ location.href="../index.html?sessShare="+encodeURIComponent(String(a.id))+"&sessOp="+(on?0:1); }; }
+function lfToast(tx){ const t=document.createElement("div"); t.className="lf-toast"; t.textContent=tx; document.body.appendChild(t); setTimeout(()=>t.remove(),3800); }
+(function(){ try{ const q=new URLSearchParams(location.search), r=q.get("shared"); if(r==null) return;
+  lfToast(r==="1" ? "Sortie visible sur ton profil ✔" : r==="0" ? "Sortie retirée de ton profil" : r==="profil" ? "Crée d'abord ton profil pour partager une sortie." : "Partage impossible pour le moment, réessaie.");
+  history.replaceState(null,"",location.pathname); }catch(e){} })();
 async function openDetail(a){
-  current=a; await ensurePoints(a);
+  current=a; await ensurePoints(a); try{ paintShare(a); }catch(e){}
   document.getElementById("detName").textContent=`${sportIcon(a.milieu,a.activityType)} ${a.name}`;
   document.getElementById("detMeta").innerHTML=`${fmtDate(a.startedAt)} &nbsp;·&nbsp; <b>${a.categoryName||""}</b>`;
   const sea=a.milieu==="mer";

@@ -7285,7 +7285,7 @@
     $("sdClose").addEventListener("click", closeOverlay);
     var sdl=$("sdDel"); if(sdl) sdl.addEventListener("click", function(){ if(!confirm("Supprimer définitivement cette session ?")) return; var id=String(raw.id||("s"+o.t)), key=id.replace(/[.#$\[\]\/]/g,"_");
       try{ var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(function(x){ return String(x.id)!==id; }); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){}
-      if(mySharedSess[key] && backend && backend.unshareSession){ backend.unshareSession(key).catch(function(){}); delete mySharedSess[key]; }
+      if(mySharedSess[key] && backend && backend.unshareSession){ backend.unshareSession(key).catch(function(){}); delete mySharedSess[key]; sharedSessSave(); }
       closeOverlay(); publishRatings(); publishMyStats(); renderProfil(); });
     var so=$("sdOfficial"); if(so) so.addEventListener("click", function(){ var v=prompt("Ta meilleure mesure officielle sur cette séance, en mètres (ex. 6,42) :", raw.official?String(raw.official).replace(".",","):"");
       if(v==null) return; var x=parseFloat(String(v).replace(",",".")); if(!(x>0 && x<12)){ alert("Mesure invalide."); return; }
@@ -7294,7 +7294,7 @@
     var sb=$("sdShare"); if(sb) sb.addEventListener("click", function(){ if(!profileReady()){ closeOverlay(); askProfile("Valide ton profil pour partager tes sessions."); return; }
       sb.disabled=true; var id=String(raw.id||("s"+o.t)).replace(/[.#$\[\]\/]/g,"_");
       var pr = o.shared ? backend.unshareSession(id) : backend.shareSession(id, sessSummary(raw));
-      pr.then(function(){ if(o.shared) delete mySharedSess[id]; else mySharedSess[id]=true; closeOverlay(); renderProfil(); }).catch(function(){ sb.disabled=false; alert("Partage impossible pour le moment, réessaie."); }); }); }
+      pr.then(function(){ if(o.shared) delete mySharedSess[id]; else mySharedSess[id]=true; sharedSessSave(); closeOverlay(); renderProfil(); }).catch(function(){ sb.disabled=false; alert("Partage impossible pour le moment, réessaie."); }); }); }
   // del = vrai sur « Mon profil » : corbeille sur mes vidéos pour les supprimer
   function vidTiles(list, del){ var vis=vidVisible(); return list.map(function(v){ var gi=vis.indexOf(v), d=del && v.uid===me.uid && !v.seed;
     return '<button class="vg-it" data-gi="'+gi+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span>'+(d?'<span class="vg-del" role="button" data-del="'+esc(v.id)+'" aria-label="Supprimer la vidéo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg></span>':'')+'</button>'; }).join(""); }
@@ -7337,7 +7337,23 @@
       bindVidTiles(g); var gs=$("pfGoSwip"); if(gs) gs.addEventListener("click", function(){ var t=document.querySelector('#bnav [data-nav="videos"]'); if(t) t.click(); }); }
     else { g.innerHTML = fr.length ? friendRows(fr) : '<div class="comm-empty">Pas encore d\'amis.<br><button class="primary" id="pfFind2" style="margin-top:10px">Rechercher des amis</button></div>'; bindFriendRows(g); var f2=$("pfFind2"); if(f2) f2.addEventListener("click", openFriendSearch); }
   }
-  window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); renderProfil(); }).catch(function(){}); };
+  // 13/11 : la liste des sorties montrées sur le profil est copiée dans le téléphone pour la page Activités
+  function sharedSessSave(){ try{ localStorage.setItem("lf.comm.sharedSess", JSON.stringify(Object.keys(mySharedSess))); }catch(e){} }
+  function sharedSessLoad(){ return (backend && backend.getSessions && me.uid) ? backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); sharedSessSave(); }) : Promise.reject(new Error("pas connecté")); }
+  window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) sharedSessLoad().then(renderProfil).catch(function(){}); };
+  // Demande venue de la page Activités : index.html?sessShare=<id>&sessOp=1 (montrer) ou 0 (retirer). On attend la connexion, on agit, on y retourne.
+  (function(){ var q; try{ q=new URLSearchParams(location.search); }catch(e){ return; } var sid=q.get("sessShare"); if(!sid) return; var op=q.get("sessOp")!=="0", tries=0;
+    var back=function(code){ location.replace("activites/index.html?shared="+code); };
+    var iv=setInterval(function(){ tries++;
+      if(!(backend && me.uid)){ if(tries>40){ clearInterval(iv); back("profil"); } return; }
+      clearInterval(iv);
+      if(!profileReady()){ back("profil"); return; }
+      var raw=localSess().filter(function(a){ return String(a.id)===sid; })[0], key=sid.replace(/[.#$\[\]\/]/g,"_");
+      if(!raw && op){ back("x"); return; }
+      (op ? backend.shareSession(key, sessSummary(raw)) : backend.unshareSession(key))
+        .then(function(){ return sharedSessLoad().catch(function(){ if(op) mySharedSess[key]=true; else delete mySharedSess[key]; sharedSessSave(); }); })
+        .then(function(){ back(op?"1":"0"); }, function(){ back("x"); });
+    }, 250); })();
   // rechercher des amis par identifiant (pseudo unique)
   // recherche façon TikTok : plein écran, onglets Top / Riders / Vidéos, bouton « Suivre » (= demande d'ami)
   function followBtnHtml(u){ if(!u || u===me.uid || u===TEAM_UID) return ""; var on=iFollow(u);
