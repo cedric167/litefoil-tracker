@@ -640,6 +640,10 @@
   .sosm{ display:flex; flex-direction:column; gap:6px; min-width:210px; background:linear-gradient(150deg,#c4162f,#7a0c20); color:#fff; border-radius:14px; padding:12px; margin:-2px -4px 2px; }
   .sosm b{ font-size:19px; font-weight:900; letter-spacing:.05em; } .sosm i{ font-style:normal; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; opacity:.85; margin-top:-4px; } .sosm span{ font-size:14.5px; }
   .sosm a{ display:block; text-align:center; text-decoration:none !important; border-radius:12px; padding:10px; font-size:14.5px; font-weight:800; color:#fff !important; background:rgba(255,255,255,.18); } .sosm a.w{ background:#fff; color:#7a0c20 !important; }
+  .livem{ display:flex; flex-direction:column; gap:6px; min-width:210px; background:linear-gradient(150deg,#0b3138,#0f6a6c); color:#fff; border-radius:14px; padding:12px; margin:-2px -4px 2px; }
+  .livem b{ display:flex; align-items:center; gap:7px; font-size:15px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; } .livem b i{ width:9px; height:9px; border-radius:50%; background:#ff2d55; animation:wcPulse 1.4s ease-in-out infinite; }
+  .livem span{ font-size:14.5px; line-height:1.35; } .livem a{ display:block; text-align:center; text-decoration:none !important; border-radius:12px; padding:10px; font-size:14.5px; font-weight:800; color:#06262b !important; background:#7fe6dc; }
+  .livem.end{ background:linear-gradient(150deg,#1b2a30,#33474e); } .livem.end a{ background:#fff; }
   /* 13/11 : appels */
   .chat-call{ flex:none; width:38px; height:38px; min-height:0; padding:0; border:0; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(20,138,144,.12); color:#148a90; cursor:pointer; box-shadow:none; }
   .chat-call[hidden]{ display:none; } .chat-call svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
@@ -2604,7 +2608,7 @@
       <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
       <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Tes amis te suivent en direct dans l'appli, et tes proches avec un simple lien.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
       <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
-      <div class="sec-row"><span><b>Mes gardiens</b><small id="secContactsTxt">Amis prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
+      <div class="sec-row"><span><b>Mes gardiens</b><small id="secContactsTxt">Amis prévenus de tes départs en direct, alertes et SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
       <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
         <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
       <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
@@ -5736,6 +5740,11 @@
     var kind=(String(t).match(/SOS \(([^)]*)\)/)||[])[1]||"besoin d'aide";
     return '<span class="sosm"><b>🆘 SOS</b><i>'+esc(kind.charAt(0).toUpperCase()+kind.slice(1))+'</i><span>J\'ai besoin d\'aide.</span>'
       +(live?'<a class="w" href="'+esc(live)+'" target="_blank" rel="noopener">📍 Position en direct</a>':'')+(map?'<a href="'+esc(map)+'" target="_blank" rel="noopener">🧭 Itinéraire</a>':'')+(!live&&!map?'<span>Position en cours de recherche.</span>':'')+'</span>'; }
+  // messages automatiques du suivi en direct : carte avec bouton (ouvre la carte dans l'appli)
+  function lfLiveCard(t, who){ var url=(String(t).match(/https?:\/\/[^\s]+/)||[])[0]||"", sid=(url.match(/\/l\/([A-Za-z0-9_-]+)/)||[])[1]||"", end=/^🏁/.test(t), body=String(t).replace(/https?:\/\/[^\s]+/,"").replace(/^(🔴 En direct|🏁 Sortie terminée) ?: ?/,"").replace(/(Suis-moi sur la carte|Revoir mon parcours) ?: ?$/,"").trim();
+    return '<span class="livem'+(end?" end":"")+'"><b>'+(end?"🏁 Sortie terminée":'<i></i>En direct')+'</b><span>'+esc(body.charAt(0).toUpperCase()+body.slice(1))+'</span>'
+      +(sid?'<a href="'+esc(url)+'" target="_blank" rel="noopener" data-live="'+esc(sid)+'" data-nm="'+esc(who||"Rider")+'">'+(end?"🗺️ Voir le parcours":"📍 Suivre sur la carte")+'</a>':'')+'</span>'; }
+  document.addEventListener("click", function(e){ var a=e.target.closest && e.target.closest("a[data-live]"); if(!a) return; e.preventDefault(); e.stopPropagation(); try{ lfLiveView(a.dataset.live, a.dataset.nm); }catch(x){ window.open(a.href,"_blank"); } }, true);
   function renderChat(){
     if(chatMode==="groups"){ renderGroupsList(); return; }
     if(chatMode==="dms"){ renderDMList(); return; }
@@ -5765,6 +5774,7 @@
       let bodyText=(m.text&&!m.ev)?esc(m.text):"", note="";
       const sosMsg=!!(m.text && !m.ev && /^🆘 SOS/.test(m.text));
       if(sosMsg){ bodyText=lfSosCard(m.text); }
+      else if(m.text && !m.ev && /^(🔴 En direct|🏁 Sortie terminée)/.test(m.text)){ bodyText=lfLiveCard(m.text, m.pseudo); }
       else if(!mine && autoTrans && m.text && !m.ev && translatable(m.text)){
         const c=tcache[tl+"|"+m.text];
         if(c){ const h=strHash(m.text), showOrig=transShowOrig.has(h);
@@ -8991,7 +9001,7 @@
   cLive.addEventListener("change", function(){ ls("lf.sec.live", cLive.checked?"1":"0"); if(cLive.checked && !(api()&&api().me().ready)){ cLive.checked=false; alert("Crée ton profil (onglet Profil) pour partager ta sortie en direct."); ls("lf.sec.live","0"); } });
   cIdle.addEventListener("change", function(){ ls("lf.sec.idle", cIdle.value); });
   function contacts(){ try{ return JSON.parse(ls("lf.sec.contacts")||"[]")||[]; }catch(e){ return []; } }
-  function paintContacts(){ var n=contacts().length, t=$("secContactsTxt"); if(t) t.textContent = n ? (n+" contact"+(n>1?"s":"")+" prévenu"+(n>1?"s":"")+" en cas d'alerte ou de SOS") : "Riders Lite Foil prévenus en cas d'alerte ou de SOS."; }
+  function paintContacts(){ var n=contacts().length, t=$("secContactsTxt"); if(t) t.textContent = n ? (n+" gardien"+(n>1?"s":"")+" : prévenu"+(n>1?"s":"")+" de tes départs en direct, alertes et SOS") : "Riders Lite Foil prévenus en cas d'alerte ou de SOS."; }
   paintContacts();
   $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), sel=contacts();
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12600"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Mes gardiens</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi tes amis et les riders que tu suis. Sans choix, tous tes amis sont prévenus.</p>'
@@ -9011,7 +9021,13 @@
       S.live={ sid:sid, k:k, url:BASE+"/l/"+sid, api:BASE+"/api/live/"+sid };
       A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:S.cat, contacts:ct }).then(function(){ if(A.livePublish) A.livePublish(sid, S.cat); }).catch(function(){});
       ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:S.live, cat:S.cat, milieu:S.milieu }));
-      setTimeout(shareLive, 900); }
+      var gs=guardians ? contacts().filter(function(u){ return A.contacts().some(function(c){ return c.uid===u; }); }) : [];
+      S.live.to=gs; S.live.cat=S.cat;
+      if(gs.length && A.dm){ var txt0="🔴 En direct : je pars en "+(S.cat||"sortie")+". Suis-moi sur la carte : "+S.live.url, okN=0;
+        setTimeout(function(){ gs.forEach(function(u){ A.dm(u, txt0).then(function(){ okN++; }, function(){}); });
+          setTimeout(function(){ secToast(okN ? "Départ envoyé à "+okN+" proche"+(okN>1?"s":"")+" : ils te suivent en direct" : "Départ non envoyé (vérifie ta connexion)"); }, 2500); }, 1200); }
+      else setTimeout(shareLive, 900);
+      ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:S.live, cat:S.cat, milieu:S.milieu })); }
     else ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:null, cat:S.cat, milieu:S.milieu }));
     startTimer(); paintLive();
     return S.live ? { u:S.live.api, k:S.live.k } : null; };
@@ -9023,7 +9039,12 @@
     S.hist.push(pt); var lim=Date.now()-35*60000; while(S.hist.length && S.hist[0].t<lim) S.hist.shift();
     S.buf.push({ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60);
     if(Date.now()-S.lastPost>20000) post(); });
-  document.addEventListener("lf-trk-stop", function(){ try{ var A0=api(); if(S.live && A0 && A0.liveUnpublish) A0.liveUnpublish(); }catch(e){} if(S.live) post("ended"); S.running=false; stopTimer(); closeAsk(); ls("lf.sec.cur", null); paintLive(); });
+  function secToast(t){ var el=document.createElement("div"); el.textContent=t; el.style.cssText="position:fixed;left:50%;bottom:calc(var(--lf-sab,0px) + 110px);transform:translateX(-50%);z-index:12800;background:#0e1417;color:#fff;font-size:14px;font-weight:700;padding:11px 16px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:88vw;text-align:center"; document.body.appendChild(el); setTimeout(function(){ el.remove(); }, 4200); }
+  function fmtMin(ms){ var m=Math.max(1,Math.round(ms/60000)); return m<60 ? m+" min" : Math.floor(m/60)+" h "+(m%60<10?"0":"")+(m%60); }
+  document.addEventListener("lf-trk-stop", function(){ try{ var A1=api(), L=S.live; if(L && !L.sos && A1 && A1.dm && L.to && L.to.length){
+        var txt1="🏁 Sortie terminée : "+(L.cat||S.cat||"sortie")+" · "+(S.trav/1000).toFixed(2).replace(".",",")+" km en "+fmtMin(Date.now()-S.t0)+". Revoir mon parcours : "+L.url;
+        L.to.forEach(function(u){ A1.dm(u, txt1).catch(function(){}); }); } }catch(e){}
+    try{ var A0=api(); if(S.live && A0 && A0.liveUnpublish) A0.liveUnpublish(); }catch(e){} if(S.live) post("ended"); S.running=false; stopTimer(); closeAsk(); ls("lf.sec.cur", null); paintLive(); });
   function socNow(){ var D=window.__lfDash; return (D && D.soc!=null && isFinite(+D.soc)) ? +D.soc : null; }
   function post(status){ if(!S.live) return Promise.resolve(); var body={ k:S.live.k, pts:S.buf.slice(), soc:socNow() }; if(status) body.status=status;
     S.lastPost=Date.now(); var sent=S.buf.length;
