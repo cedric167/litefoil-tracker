@@ -113,6 +113,8 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover.open{display:block}
 .flyover #flySV{position:absolute;inset:0;z-index:2;background:#05070a}
 .flyover #flySV[hidden]{display:none}
+.flyover.sv .fbar{bottom:calc(env(safe-area-inset-bottom,0px) + 34px)}
+.flyover.sv .flyzoom{display:none}
 .flyover .svmsg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;max-width:78%;text-align:center;background:rgba(10,14,18,.72);color:#fff;font-size:14px;font-weight:600;line-height:1.4;padding:12px 16px;border-radius:16px;pointer-events:none}
 .flyover .svmsg[hidden]{display:none}
 .flyover #flyMap{position:absolute;inset:0;background:linear-gradient(180deg,#2f7fcb 0%,#7fb9ea 22%,#d9eefc 46%,#d9eefc 100%)}
@@ -756,7 +758,7 @@ function svLoad(){ if(svLoadP) return svLoadP;
     sc.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GSV_KEY)+"&v=weekly&loading=async&callback=__lfSvReady"; document.head.appendChild(sc);
     setTimeout(()=>{ if(!(window.google && google.maps)){ svLoadP=null; rej(new Error("délai")); } },15000); });
   return svLoadP; }
-function svOpen(){ const box=document.getElementById("flySV"); box.hidden=false; svMsg("Chargement de Street View…"); svLast=null;
+function svOpen(){ const box=document.getElementById("flySV"); box.hidden=false; document.getElementById("flyover").classList.add("sv"); svMsg("Chargement de Street View…"); svLast=null;
   if(svPano){ svMsg(""); return; }
   if(!svQuota()){ svMsg("Street View a déjà été ouvert plusieurs fois aujourd'hui sur ce téléphone. Réessaie demain, ou utilise la vue « À bord »."); return; }
   svLoad().then(()=>{ if(flyView!=="street") return;
@@ -764,7 +766,7 @@ function svOpen(){ const box=document.getElementById("flySV"); box.hidden=false;
     svPano=new google.maps.StreetViewPanorama(box,{ visible:true, addressControl:false, linksControl:false, panControl:false, zoomControl:false, fullscreenControl:false, motionTracking:false, motionTrackingControl:false, showRoadLabels:false, enableCloseButton:false, clickToGo:false, disableDefaultUI:true });
     svMsg(""); if(flyDraw) flyDraw(true);
   }).catch(()=>{ svMsg("Street View est indisponible pour le moment. Vérifie ta connexion."); }); }
-function svClose(){ const box=document.getElementById("flySV"); if(box) box.hidden=true; svMsg(""); }
+function svClose(){ const box=document.getElementById("flySV"); if(box) box.hidden=true; document.getElementById("flyover").classList.remove("sv"); svMsg(""); }
 // déplace la photo de rue vers le point du parcours (au plus une recherche toutes les 1,2 s, et seulement si on a bougé de 12 m)
 function svUpdate(lon,lat,heading,force){ if(!svPano || !svSvc || svBusy) return; const now=Date.now(); if(!force && now-svT<1200) return;
   if(svLast){ const dx=(lon-svLast.lon)*Math.cos(lat*Math.PI/180)*111320, dy=(lat-svLast.lat)*110540; if(!force && Math.sqrt(dx*dx+dy*dy)<12){ try{ svPano.setPov({heading:heading,pitch:0}); }catch(e){} return; } }
