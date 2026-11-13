@@ -247,6 +247,12 @@
   .hs-logo{ flex:none; width:104px; height:52px; overflow:hidden; position:relative; } .hs-logo img{ position:absolute; left:-13px; top:-17px; width:144px; height:auto; display:block; }
   .hs-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; border-left:1px solid rgba(255,255,255,.16); padding-left:14px; } .hs-tx b{ font-size:16px; font-weight:800; letter-spacing:.1px; } .hs-tx small{ font-size:12px; color:rgba(255,255,255,.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hs-go{ flex:none; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; } .hs-go svg{ width:18px; height:18px; }
+  .home-wind{ margin:12px 0 0; background:#fff; border-radius:20px; padding:13px 14px 8px; box-shadow:0 4px 14px rgba(13,40,45,.07); } .home-wind[hidden]{ display:none; }
+  .hw-h{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#148a90; margin-bottom:4px; } .hw-h svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+  .hw-r{ display:flex; align-items:center; gap:10px; width:100%; min-height:0; border:0; border-top:1px solid #eef2f3; background:none; padding:9px 0; font:inherit; text-align:left; cursor:pointer; box-shadow:none; color:inherit; } .hw-r:first-of-type{ border-top:0; }
+  .hw-r b{ flex:1; min-width:0; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .hw-r small{ display:block; font-size:12px; font-weight:600; color:#6b7a80; }
+  .hw-k{ flex:none; font-size:19px; font-weight:800; color:#0b3d47; font-variant-numeric:tabular-nums; } .hw-k i{ font-style:normal; font-size:11.5px; font-weight:700; color:#6b7a80; margin-left:2px; } .hw-k.hot{ color:#d2470f; }
+  .lb-seg{ display:flex; gap:4px; background:#e9eff2; border-radius:14px; padding:4px; margin:0 0 12px; } .lb-seg button{ flex:1; min-height:0; border:0; background:none; border-radius:10px; padding:9px 4px; font:inherit; font-size:13.5px; font-weight:700; color:#6b7a80; cursor:pointer; box-shadow:none; } .lb-seg button.on{ background:#fff; color:#0b3d47; box-shadow:0 2px 8px rgba(8,40,48,.12); }
   .home-invite{ display:flex; align-items:center; gap:12px; width:100%; margin:16px 0 0; padding:13px 14px; border:0; border-radius:20px; text-align:left; font:inherit; cursor:pointer; color:#06262b; background:linear-gradient(120deg,#bff3ec,#7fe6dc); box-shadow:0 8px 20px rgba(20,138,144,.2); }
   .home-invite:active{ transform:scale(.985); } .hi-ic{ flex:none; width:42px; height:42px; border-radius:14px; background:#06262b; color:#7fe6dc; display:flex; align-items:center; justify-content:center; } .hi-ic svg{ width:22px; height:22px; }
   .hi-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; } .hi-tx b{ font-size:16px; font-weight:800; } .hi-tx small{ font-size:12px; line-height:1.3; opacity:.8; }
@@ -2095,6 +2101,7 @@
       </div>
       <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
     </button>
+    <div class="home-wind" id="homeWind" hidden></div>
 
     <div class="home-card">
       <div class="hcard-head"><span class="m-label">Mes sorties</span><a class="hcard-link" href="activites/index.html">Tout voir <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></div>
@@ -3787,6 +3794,16 @@
     phSaveLocal(sess);
     $("phNote").innerHTML = "Sortie enregistrée ✔ "+(sess.distanceM/1000).toFixed(2).replace(".",",")+" km · "+phFmtDur(sess.durationSec)+" · max "+phNum(sess.maxSpeedKmh)+" km/h"+(sess.steps?" · "+sess.steps.toLocaleString("fr-FR")+" pas":"")+(sess.jumps?" · "+sess.jumps.length+" saut"+(sess.jumps.length>1?"s":""):"")+". <a href=\"activites/\" style=\"color:var(--accent-ink);font-weight:800\">Voir dans Activités →</a>";
   }
+  // 14/11 : avec le moteur ou la batterie Lite Foil connectés, on mesure l'énergie consommée pendant la sortie
+  var phPow = { t0:0, wh:0, max:0, n:0, sum:0, soc0:null, soc1:null, last:0 };
+  setInterval(function(){ if(!phTimer) return; var D=window.__lfDash; if(!D) return; var now=Date.now();
+    if(phPow.t0!==phT0) phPow={ t0:phT0, wh:0, max:0, n:0, sum:0, soc0:null, soc1:null, last:0 };
+    var w=(D.vescPow!=null && isFinite(+D.vescPow)) ? +D.vescPow : ((D.batPow!=null && isFinite(+D.batPow)) ? +D.batPow : null);
+    if(w!=null){ w=Math.abs(w); if(w<20000){ if(phPow.last){ var dt=(now-phPow.last)/1000; if(dt>0 && dt<15) phPow.wh+=w*dt/3600; } phPow.sum+=w; phPow.n++; if(w>phPow.max) phPow.max=w; phPow.last=now; } }
+    if(D.soc!=null && isFinite(+D.soc)){ if(phPow.soc0==null) phPow.soc0=+D.soc; phPow.soc1=+D.soc; } }, 2000);
+  function phPowerOf(distanceM){ if(phPow.t0!==phT0 || (phPow.n<5 && phPow.soc0==null)) return undefined;
+    var o={}; if(phPow.n>=5){ o.wh=Math.round(phPow.wh); o.avgW=Math.round(phPow.sum/phPow.n); o.maxW=Math.round(phPow.max); if(distanceM>200) o.whKm=Math.round(phPow.wh/(distanceM/1000)); }
+    if(phPow.soc0!=null){ o.soc0=Math.round(phPow.soc0); o.soc1=Math.round(phPow.soc1); } return o; }
   function phBuildSession(){
     var src = phPts.slice(), t0 = src[0].t, cum = 0, out = [];
     for(var i=0;i<src.length;i++){ if(i>0) cum += phHaversine(src[i-1],src[i]); out.push({ lat:src[i].lat, lon:src[i].lon, speed:+(src[i].speed||0).toFixed(1), bearing:Math.round(src[i].bearing||0), dist:Math.round(cum), alt:Math.round(src[i].alt||0), t:Math.round(src[i].t-t0) }); }
@@ -3801,7 +3818,8 @@
       startedAt: new Date(phT0).toISOString(), durationSec: durationSec, distanceM: distanceM,
       avgSpeedKmh: avgSpeedKmh, maxSpeedKmh: +phMax.toFixed(1), maxAltM: maxAltM,
       firstLat: out[0].lat, firstLon: out[0].lon, thumbnailUrl: null, source: "phone", points: out,
-      steps: phMotUsed() ? phMot.steps : undefined, jumps: phMot.jumps.length ? phMot.jumps.slice() : undefined
+      steps: phMotUsed() ? phMot.steps : undefined, jumps: phMot.jumps.length ? phMot.jumps.slice() : undefined,
+      power: phPowerOf(distanceM)
     };
   }
   function phSaveLocal(sess){
@@ -8109,18 +8127,22 @@
     if(nm) nm.textContent = me.pseudo || "Créer mon profil";
     if(gr) gr.textContent = me.pseudo ? ("N"+(mlv+1)+" · "+GRADES[mlv][1]+" · "+mxp.toLocaleString("fr-FR")+" pts") : "Pseudo et photo pour rejoindre les riders";
     try{ window.LF_RIDER={note:riderNote(riderXP(myStats()||{})), rank:r, km:mk, mois:mois}; document.dispatchEvent(new Event("lf-rider")); }catch(e){} }
-  function openDefiBoard(){ var o=gOverlay(); o.hidden=false; var b=defiBoard();
+  function worldBoard(){ var out=[]; for(var u in commStats){ if(u===TEAM_UID || u===me.uid || blocked.has(u)) continue; var k=+(commStats[u]||{}).km||0; if(k>0) out.push({ uid:u, km:k }); }
+    var mine=+((myStats()||{}).km)||0; if(mine>0 && me.pseudo) out.push({ uid:me.uid, km:mine }); out.sort(function(a,b){ return b.km-a.km; }); return out; }
+  function openDefiBoard(mode){ var o=gOverlay(); o.hidden=false; var world=mode==="world", b=world?worldBoard():defiBoard();
     var rows=b.slice(0,50).map(function(x,i){ var pr=profileMap[x.uid]||{}, av=(x.uid===me.uid?me.av:pr.av);
       var avh=av?'<span class="cav"><img src="'+av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(x.uid)+'">'+esc((defiName(x.uid).trim()[0]||"R").toUpperCase())+'</span>';
       var st=x.uid===me.uid?(myStats()||{}):(commStats[x.uid]||{});
       return '<div class="lb-row'+(x.uid===me.uid?" me":"")+'" data-uid="'+esc(x.uid)+'"><span class="lb-pos p'+(i+1)+'">'+(i+1)+'</span>'+avh+'<span class="pick-ps">'+esc(defiName(x.uid))+(x.uid===me.uid?" (toi)":"")+'</span><span class="lb-note">'+riderNote(riderXP(st))+'</span><span class="lb-km">'+(Math.round(x.km*10)/10).toLocaleString("fr-FR")+' km</span></div>'; }).join("");
-    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>🏆 Défi eFoil de la semaine</b><span></span></div><div class="gc-body">'
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>'+(world?"🌍 Classement mondial":"🏆 Défi eFoil de la semaine")+'</b><span></span></div><div class="gc-body">'
+      +'<div class="lb-seg"><button type="button" data-m="week" class="'+(world?"":"on")+'">Cette semaine</button><button type="button" data-m="world" class="'+(world?"on":"")+'">Mondial · tous les temps</button></div>'
       +(DEFI_LOT?'<div class="defi-lot" style="background:#fff1d6;color:#8a5a00">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
-      +'<div class="gc-count">Classement des km parcourus en eFoil cette semaine (du lundi au dimanche), enregistrés avec l\'appli (suivi GPS ou tracker). Les traces des premiers sont vérifiées par l\'équipe Lite Foil avant la remise du lot.</div>'
+      +'<div class="gc-count">'+(world?'Tous les riders, tous les sports : total des kilomètres enregistrés avec l\'appli depuis leur inscription.':'Classement des km parcourus en eFoil cette semaine (du lundi au dimanche), enregistrés avec l\'appli (suivi GPS ou tracker). Les traces des premiers sont vérifiées par l\'équipe Lite Foil avant la remise du lot.')+'</div>'
       +(rows||'<div class="comm-empty">Personne pour l\'instant : la première sortie eFoil de la semaine prend la tête !</div>')
       +'<button class="primary df-go" id="dfGo">▶ Enregistrer une sortie eFoil</button><div class="df-help">Lance le suivi dans l\'onglet Tracking avant d\'aller sur l\'eau, puis appuie sur Terminer en sortant : tes km comptent tout de suite pour le classement.</div>'
       +'</div></div>';
     $("dfClose").addEventListener("click", closeOverlay); $("dfGo").addEventListener("click", goTrackEfoil);
+    o.querySelectorAll(".lb-seg button").forEach(function(sb){ sb.addEventListener("click", function(){ openDefiBoard(sb.dataset.m); }); });
     o.querySelectorAll(".lb-row[data-uid]").forEach(function(rw){ rw.addEventListener("click", function(){ openRiderCard(rw.dataset.uid); }); }); }
   function renderCommStats(){ var el=$("commStats"); if(!el) return; var n=0, km=0;
     for(var u in commStats){ var v=commStats[u]||{}; n+=(+v.n||0); km+=(+v.km||0); }
@@ -9293,6 +9315,28 @@
   // chargé à la première ouverture de l'onglet Météo
   var pane=document.getElementById("tab-meteo"); if(!pane) return;
   if(!pane.hidden) load(); else { try{ new MutationObserver(function(){ if(!pane.hidden) load(); }).observe(pane,{attributes:true,attributeFilter:["hidden"]}); }catch(e){ load(); } }
+})();
+</script>
+<script>
+/* 14/11 : vent prévu sur « Mes spots » (les spots cherchés dans la Météo) : meilleur créneau de jour dans les 48 h, à partir de 12 nœuds */
+(function(){
+  var box=document.getElementById("homeWind"); if(!box) return; var MIN=12;
+  function favs(){ try{ return (JSON.parse(localStorage.getItem("lf.meteo.favs")||"[]")||[]).slice(0,5); }catch(e){ return []; } }
+  function esc(t){ return String(t==null?"":t).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function draw(rows){ rows=rows.filter(function(r){ return r && r.k>=MIN; }).sort(function(a,b){ return b.k-a.k; }); if(!rows.length){ box.hidden=true; box.innerHTML=""; return; }
+    box.innerHTML='<div class="hw-h"><svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/></svg>Du vent sur tes spots</div>'
+      +rows.map(function(r){ return '<button type="button" class="hw-r" data-goto="meteo"><b>'+esc(r.name)+'<small>'+esc(r.when)+' · rafales '+r.g+' nds</small></b><span class="hw-k'+(r.k>=20?" hot":"")+'">'+r.k+'<i>nds</i></span></button>'; }).join("");
+    box.hidden=false; }
+  function load(){ var l=favs(); if(!l.length){ box.hidden=true; return; }
+    var key="lf.wind."+l.map(function(x){ return x.name; }).join("|"); try{ var c=JSON.parse(sessionStorage.getItem(key)||"null"); if(c && Date.now()-c.t<3600000){ draw(c.rows); return; } }catch(e){}
+    Promise.all(l.map(function(sp){ return fetch("https://api.open-meteo.com/v1/forecast?latitude="+sp.lat+"&longitude="+sp.lon+"&hourly=wind_speed_10m,wind_gusts_10m&wind_speed_unit=kn&forecast_days=3&timezone=auto").then(function(r){ return r.json(); }).then(function(j){
+        var H=j&&j.hourly; if(!H||!H.time) return null; var now=Date.now(), best=null;
+        for(var i=0;i<H.time.length;i++){ var d=new Date(H.time[i]), h=d.getHours(), dt=d.getTime()-now; if(dt<0 || dt>48*3600000 || h<8 || h>20) continue; var k=+H.wind_speed_10m[i]||0; if(!best || k>best.k) best={ k:Math.round(k), g:Math.round(+H.wind_gusts_10m[i]||0), d:d }; }
+        if(!best) return null; var day=new Date(); day.setHours(0,0,0,0); var diff=Math.round((new Date(best.d.getFullYear(),best.d.getMonth(),best.d.getDate())-day)/86400000);
+        return { name:sp.name, k:best.k, g:best.g, when:(diff===0?"Aujourd'hui":diff===1?"Demain":"Après-demain")+" vers "+best.d.getHours()+" h" }; }).catch(function(){ return null; }); }))
+      .then(function(rows){ rows=rows.filter(Boolean); try{ sessionStorage.setItem(key, JSON.stringify({ t:Date.now(), rows:rows })); }catch(e){} draw(rows); }); }
+  load(); document.addEventListener("visibilitychange", function(){ if(!document.hidden) load(); });
+  document.querySelectorAll('.tab[data-tab="dash"], #bnav [data-nav="dash"]').forEach(function(t){ t.addEventListener("click", load); });
 })();
 </script>
 <script>

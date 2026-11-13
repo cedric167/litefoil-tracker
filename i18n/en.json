@@ -330,7 +330,7 @@
  "Connexion impossible": "Unable to connect",
  "Connexion impossible :": "Unable to connect:",
  "Connexion…": "Connecting…",
- "Conso": "Usage",
+ "Conso": "Consumption",
  "Consommé": "Consumed",
  "Contacts de sécurité": "Safety contacts",
  "Continuer": "Continue",
@@ -1576,5 +1576,11 @@
  "En mouvement": "Moving time",
  "Exporter en GPX (Strava, Garmin…)": "Export as GPX (Strava, Garmin…)",
  "Mes spots": "My spots",
- "Retirer ce spot": "Remove this spot"
+ "Retirer ce spot": "Remove this spot",
+ "Puissance moy.": "Avg power",
+ "Du vent sur tes spots": "Wind on your spots",
+ "Cette semaine": "This week",
+ "Mondial · tous les temps": "World · all time",
+ "🌍 Classement mondial": "🌍 World ranking",
+ "Tous les riders, tous les sports : total des kilomètres enregistrés avec l'appli depuis leur inscription.": "All riders, all sports: total kilometres recorded with the app since they joined."
 }
