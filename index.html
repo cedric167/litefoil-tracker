@@ -352,6 +352,29 @@
   .pf-name{ font-size:17px; font-weight:800; margin:0 4px; } .pf-name .pf-off{ color:#1fb5bd; font-size:15px; }
   .pf-id{ font-size:13px; color:var(--muted); margin:1px 4px 0; } .pf-bio{ font-size:14px; margin:6px 4px 0; white-space:pre-line; }
   .pf-bio:empty{ display:none; }
+  /* 13/11 : profil redessiné */
+  #tab-profil .pf-hero{ position:relative; background:#fff; border:1px solid var(--line-soft,#e3e9ec); border-radius:24px; box-shadow:0 10px 30px rgba(8,40,48,.08); overflow:hidden; margin:4px 0 0; }
+  #tab-profil .pf-cover{ height:92px; position:relative; overflow:hidden; background:radial-gradient(120% 140% at 85% -20%,rgba(95,240,200,.55),transparent 55%), radial-gradient(90% 120% at 0% 120%,rgba(25,227,255,.35),transparent 60%), linear-gradient(120deg,#06181d 0%,#0b3d47 55%,#0f6a67 100%); }
+  #tab-profil .pf-cover::after{ content:""; position:absolute; left:-10%; right:-10%; bottom:-34px; height:60px; border-radius:50%; background:rgba(255,255,255,.07); box-shadow:0 -14px 0 rgba(255,255,255,.04); }
+  #tab-profil .pf-cover img{ position:absolute; right:6px; top:4px; width:132px; height:auto; opacity:.9; pointer-events:none; }
+  #tab-profil .pf-hbody{ display:flex; align-items:flex-end; gap:14px; padding:0 16px; margin-top:-40px; position:relative; }
+  #tab-profil .pf-av{ width:88px; height:88px; font-size:32px; box-shadow:0 0 0 4px #fff, 0 8px 20px rgba(8,40,48,.22); cursor:pointer; }
+  #tab-profil .pf-av::after{ content:""; right:-3px; bottom:-1px; width:30px; height:30px; border:3px solid #fff; background:#14b8ab url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l1.600-2.400h6.800L17 8.500h3v10H4z'/%3E%3Ccircle cx='12' cy='13.2' r='3.1'/%3E%3C/svg%3E") center/16px no-repeat; box-shadow:0 2px 6px rgba(0,0,0,.18); }
+  #tab-profil .pf-who{ flex:1; min-width:0; padding-bottom:6px; }
+  #tab-profil .pf-name{ margin:0; font-size:21px; font-weight:800; letter-spacing:-.2px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #tab-profil .pf-name .pf-off{ display:inline-block; vertical-align:middle; margin-left:4px; font-size:11.5px; font-weight:800; color:#0b6d72; background:#e8f7f6; border-radius:999px; padding:3px 8px; }
+  #tab-profil .pf-id{ margin:2px 0 0; font-size:13px; }
+  #tab-profil .pf-bio{ margin:10px 18px 0; font-size:14.5px; line-height:1.4; color:#26333a; }
+  #tab-profil .pf-nums{ display:grid; grid-template-columns:repeat(3,1fr); margin:14px 12px 0; padding:10px 0 12px; border-top:1px solid var(--line-soft,#e3e9ec); }
+  #tab-profil .pf-nums button{ position:relative; gap:1px; padding:4px 2px; border-radius:12px; min-height:0; box-shadow:none; }
+  #tab-profil .pf-nums button + button{ border-left:1px solid var(--line-soft,#e3e9ec); border-radius:0; }
+  #tab-profil .pf-nums b{ font-size:21px; font-weight:800; letter-spacing:-.3px; } #tab-profil .pf-nums span{ font-size:12px; font-weight:600; }
+  #tab-profil .pf-nums button:active b{ color:#0b6d72; }
+  #tab-profil .pf-tabs{ border-top:0; margin:4px 0 12px; padding:4px; gap:4px; background:#e9eff2; border-radius:16px; }
+  #tab-profil .pf-tabs button{ border-top:0; margin-top:0; padding:10px 0; border-radius:12px !important; font-size:12.5px; gap:4px; white-space:nowrap; min-height:0; box-shadow:none; }
+  #tab-profil .pf-tabs button svg{ width:15px; height:15px; flex:none; }
+  #tab-profil .pf-tabs button.on{ background:#fff; color:#0b3d47; box-shadow:0 2px 8px rgba(8,40,48,.12); }
+  #tab-profil .pf-tabs button.on svg{ color:#14b8ab; }
   /* 13/11 : actions du profil */
   .pfa{ margin:14px 0 12px; display:flex; flex-direction:column; gap:10px; }
   .pfa-main{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -2168,8 +2191,17 @@
 
   <section id="tab-profil" class="tabpane" hidden>
     <!-- 07/11 : profil façon Instagram (photo, compteurs, carte, vidéos, sessions, amis) -->
-    <div class="pf-top">
-      <div class="pf-av" id="pfAv">+</div>
+    <!-- 13/11 : en-tête redessiné (bandeau, photo, nom, bio, compteurs dans une seule carte) -->
+    <div class="pf-hero">
+      <div class="pf-cover"><img src="litefoil-logo.png" alt=""></div>
+      <div class="pf-hbody">
+        <div class="pf-av" id="pfAv">+</div>
+        <div class="pf-who">
+          <div class="pf-name" id="pfName">Mon profil</div>
+          <div class="pf-id" id="pfId"></div>
+        </div>
+      </div>
+      <div class="pf-bio" id="pfBio"></div>
       <div class="pf-nums">
         <button type="button" data-fl="following"><b id="pfNFing">0</b><span>Abonnements</span></button>
         <button type="button" data-fl="followers"><b id="pfNFers">0</b><span>Abonnés</span><i class="pf-newf" id="pfNewF" hidden></i></button>
@@ -2177,9 +2209,6 @@
         <i hidden><b id="pfNSess"></b><b id="pfNVid"></b><b id="pfNFr"></b></i>
       </div>
     </div>
-    <div class="pf-name" id="pfName">Mon profil</div>
-    <div class="pf-id" id="pfId"></div>
-    <div class="pf-bio" id="pfBio"></div>
     <!-- 13/11 : actions du profil redessinées (icônes au trait) + accès à « Mes activités » -->
     <div class="pfa">
       <div class="pfa-main">
@@ -2195,11 +2224,10 @@
     </div>
     <div class="pf-reqs" id="pfReqs" hidden></div>
     <div class="pf-tabs" id="pfTabs">
-      <button type="button" data-pt="vid" class="on">Vidéos</button>
-      <button type="button" data-pt="fav" aria-label="Favoris"><svg class="pf-favic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12a1 1 0 0 1 1 1v16l-7-4.6L5 20.5v-16a1 1 0 0 1 1-1z"/></svg>Favoris</button>
-      <button type="button" data-pt="sess">Sessions</button>
-      <button type="button" data-pt="fr">Amis</button>
-      <button type="button" data-pt="pal">🏆</button>
+      <button type="button" data-pt="vid" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="12.5" height="14" rx="2.6"/><path d="M16 10.5l4.5-2.6v8.2L16 13.5"/></svg>Vidéos</button>
+      <button type="button" data-pt="fav" aria-label="Favoris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12a1 1 0 0 1 1 1v16l-7-4.6L5 20.5v-16a1 1 0 0 1 1-1z"/></svg>Favoris</button>
+      <button type="button" data-pt="fr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c.6-3.3 3-5.2 6.2-5.2s5.6 1.9 6.2 5.2"/><circle cx="17.2" cy="9" r="2.6"/><path d="M17.5 14.4c2 .3 3.3 1.7 3.8 4"/></svg>Amis</button>
+      <button type="button" data-pt="pal" aria-label="Trophées"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5.5H5a3 3 0 0 0 3 4M16 5.5h3a3 3 0 0 1-3 4"/><path d="M12 13v3.5M8.5 20h7M9.5 20c0-2 1-3.5 2.5-3.5s2.5 1.5 2.5 3.5"/></svg>Trophées</button>
     </div>
     <div class="pf-grid" id="pfGrid"></div>
   </section>
