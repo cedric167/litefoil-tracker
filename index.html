@@ -2527,7 +2527,7 @@
     </a>
     <!-- 13/11 : webcams du littoral en direct (YouTube), liste dans webcams/index.json -->
     <div class="wc" id="wcBox" hidden>
-      <div class="wc-head"><div><div class="m-label">En direct</div><h3>Webcams du littoral</h3></div><span class="wc-live"><i></i>LIVE</span></div>
+      <div class="wc-head"><div><div class="m-label">En direct</div><h3>Webcams du monde</h3></div><span class="wc-live"><i></i>LIVE</span></div>
       <div class="wc-seas" id="wcSeas"></div>
       <div class="wc-grid" id="wcGrid"></div>
     </div>
@@ -9227,8 +9227,9 @@
   function list(){ return data.cams.filter(function(c){ return c.sea===sea; }); }
   function draw(){ var seas=document.getElementById("wcSeas"), grid=document.getElementById("wcGrid");
     seas.innerHTML=data.seas.map(function(x){ var n=data.cams.filter(function(c){ return c.sea===x.k; }).length; return '<button type="button" data-k="'+x.k+'" class="'+(x.k===sea?"on":"")+'">'+esc(x.name)+'<small>'+n+'</small></button>'; }).join("");
+    try{ var on=seas.querySelector("button.on"); if(on) seas.scrollLeft=Math.max(0, on.offsetLeft-seas.clientWidth/2+on.offsetWidth/2); }catch(e){}
     grid.scrollLeft=0; grid.innerHTML=list().map(function(c,k,L){ return '<button type="button" class="wc-card" data-k="'+k+'"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault_live.jpg" data-fb="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault.jpg">'
-      +(c.embed?'<span class="wc-b"><i></i>LIVE</span><span class="wc-n">'+(k+1)+' / '+L.length+'</span>':'<span class="wc-yt">YouTube ↗</span>')+'<span class="wc-t"><b>'+esc(c.place)+'</b><span>'+esc(c.view)+'</span></span></button>'; }).join("");
+      +(c.embed?'<span class="wc-b"><i></i>LIVE</span><span class="wc-n">'+(k+1)+' / '+L.length+'</span>':'<span class="wc-yt">YouTube ↗</span>')+'<span class="wc-t"><b>'+esc(c.place)+'</b><span>'+esc(c.view)+(c.country?' · '+esc(c.country):'')+'</span></span></button>'; }).join("");
     grid.querySelectorAll("img").forEach(function(im){ im.addEventListener("error", function(){ if(im.dataset.fb){ var f=im.dataset.fb; im.dataset.fb=""; im.src=f; } }); }); }
   function yt(c){ return "https://www.youtube.com/watch?v="+encodeURIComponent(c.id); }
   function open(k, cam){ var l=list(), c=l[k]; if(cam){ l=data.cams.filter(function(x){ return x.sea===cam.sea; }); k=l.indexOf(cam); c=cam; } if(!c) return; if(!c.embed){ window.open(yt(c), "_blank", "noopener"); return; }
@@ -9250,7 +9251,7 @@
   var lastSpot=null;
   function near(lat,lon,name){ if(!data || !isFinite(lat) || !isFinite(lon)) return []; var n=nrm(name);
     return data.cams.filter(function(c){ return isFinite(c.lat); }).map(function(c){ var dk=km(lat,lon,c.lat,c.lon); return { c:c, km:dk, nm:!!n && n.length>3 && (nrm(c.place).indexOf(n)>=0 || n.indexOf(nrm(c.place))>=0) }; })
-      .filter(function(x){ return x.km<=15 || (x.nm && x.km<=40); }).sort(function(a,b){ return a.km-b.km; }); }
+      .filter(function(x){ return x.c.approx ? (x.nm && x.km<=80) : (x.km<=15 || (x.nm && x.km<=40)); }).sort(function(a,b){ return a.km-b.km; }); }
   function find(q){ q=nrm(q); if(!data || q.length<3) return []; return data.cams.filter(function(c){ var t=nrm(c.place+" "+c.view); return q.split(" ").every(function(w){ return t.indexOf(w)>=0; }); }); }
   function spot(lat,lon,name){ lastSpot=[lat,lon,name]; var el=document.getElementById("mtoLive"); if(!el) return; var L=near(lat,lon,name);
     if(!L.length){ el.hidden=true; el.innerHTML=""; return; } var c=L[0].c, dist=L[0].km<1?"sur place":"à "+Math.round(L[0].km)+" km";

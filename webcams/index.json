@@ -3,15 +3,43 @@
  "seas": [
   {
    "k": "med",
-   "name": "Méditerranée"
+   "name": "France · Méditerranée"
   },
   {
    "k": "atl",
-   "name": "Atlantique"
+   "name": "France · Atlantique"
   },
   {
    "k": "man",
-   "name": "Manche"
+   "name": "France · Manche"
+  },
+  {
+   "k": "es",
+   "name": "Espagne · Portugal"
+  },
+  {
+   "k": "it",
+   "name": "Italie · Grèce · Méditerranée"
+  },
+  {
+   "k": "nord",
+   "name": "Europe du Nord"
+  },
+  {
+   "k": "usa",
+   "name": "États-Unis · Canada"
+  },
+  {
+   "k": "car",
+   "name": "Caraïbes · Amérique latine"
+  },
+  {
+   "k": "afr",
+   "name": "Afrique · Océan Indien"
+  },
+  {
+   "k": "asia",
+   "name": "Asie · Océanie"
   }
  ],
  "cams": [
@@ -194,6 +222,108 @@
    "lon": 5.349
   },
   {
+   "sea": "med",
+   "place": "Porto Vecchio",
+   "view": "PORTO-VECCHIO - BASTION DE FRANCE",
+   "country": "France",
+   "area": "Corse",
+   "id": "D4ymOXDT2Xw",
+   "embed": true,
+   "by": "Webcams Touristiques",
+   "match": [
+    "porto vecchio"
+   ],
+   "ch": "https://www.youtube.com/@webcamstouristiques1701",
+   "lat": 42,
+   "lon": 9,
+   "approx": true
+  },
+  {
+   "sea": "med",
+   "place": "Ajaccio",
+   "view": "sur la baie d’Ajaccio, Corse",
+   "country": "France",
+   "area": "Corse",
+   "id": "TBsd57vQi_Q",
+   "embed": false,
+   "by": "🔴 Les webcams en direct de Corse",
+   "match": [
+    "ajaccio"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsdeCorse",
+   "lat": 42,
+   "lon": 9,
+   "approx": true
+  },
+  {
+   "sea": "med",
+   "place": "Porto Vecchio",
+   "view": "PORTO-VECCHIO - PORT DE",
+   "country": "France",
+   "area": "Corse",
+   "id": "rW-cFwzUyxE",
+   "embed": false,
+   "by": "🔴 Webcams Ports France",
+   "match": [
+    "porto vecchio"
+   ],
+   "ch": "https://www.youtube.com/@Webcam-Ports-france",
+   "lat": 42,
+   "lon": 9,
+   "approx": true
+  },
+  {
+   "sea": "med",
+   "place": "Corse",
+   "view": "PROPRIANO - Port de Commerce",
+   "country": "France",
+   "area": "Corse",
+   "id": "EEgNF2KYksU",
+   "embed": false,
+   "by": "🔴 Les webcams en direct de Corse",
+   "match": [
+    "corse"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsdeCorse",
+   "lat": 42,
+   "lon": 9,
+   "approx": true
+  },
+  {
+   "sea": "med",
+   "place": "Ajaccio",
+   "view": "Port de Commerce, Corse",
+   "country": "France",
+   "area": "Corse",
+   "id": "-SWWZ6aY_ec",
+   "embed": false,
+   "by": "🔴 Les webcams en direct de Corse",
+   "match": [
+    "ajaccio"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsdeCorse",
+   "lat": 42,
+   "lon": 9,
+   "approx": true
+  },
+  {
+   "sea": "med",
+   "place": "Corse",
+   "view": "CARGÈSE - Explorasub, pl",
+   "country": "France",
+   "area": "Corse",
+   "id": "jr6V1BCw1oM",
+   "embed": false,
+   "by": "🔴 Les webcams en direct de Corse",
+   "match": [
+    "corse"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsdeCorse",
+   "lat": 42,
+   "lon": 9,
+   "approx": true
+  },
+  {
    "sea": "atl",
    "place": "Pointe du Raz",
    "view": "Raz de Sein",
@@ -292,6 +422,23 @@
    "ch": "https://www.youtube.com/@Vision-environnement",
    "lat": 45.842,
    "lon": -1.207
+  },
+  {
+   "sea": "atl",
+   "place": "Sables d Olonne",
+   "view": "Les Sables D'Olonne",
+   "country": "France",
+   "area": "Les Sables-d'Olonne",
+   "id": "J0B1L5OXxtU",
+   "embed": true,
+   "by": "Les Sables d'Olonne",
+   "match": [
+    "sables d olonne"
+   ],
+   "ch": "https://www.youtube.com/@LesSablesdOlonne-Tourisme",
+   "lat": 46.49,
+   "lon": -1.79,
+   "approx": true
   },
   {
    "sea": "man",
@@ -542,6 +689,3713 @@
    "ch": "https://www.youtube.com/@mers-les-bains",
    "lat": 50.068,
    "lon": 1.388
+  },
+  {
+   "sea": "man",
+   "place": "Cabourg",
+   "view": "Pavillon Charles Bertrand",
+   "country": "France",
+   "area": "Deauville",
+   "id": "RZTjHwmeni8",
+   "embed": true,
+   "by": "🔴 Vision-Environnement - Webcams LIVE",
+   "match": [
+    "cabourg"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 49.36,
+   "lon": 0.07,
+   "approx": true
+  },
+  {
+   "sea": "man",
+   "place": "Roscoff",
+   "view": "Phare de",
+   "country": "France",
+   "area": "Perros-Guirec",
+   "id": "5kR_P_n3JSE",
+   "embed": true,
+   "by": "🔴 Vision-Environnement - Webcams LIVE",
+   "match": [
+    "roscoff"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 48.81,
+   "lon": -3.44,
+   "approx": true
+  },
+  {
+   "sea": "man",
+   "place": "Wissant",
+   "view": "Diffusion en de",
+   "country": "France",
+   "area": "Wissant",
+   "id": "lKBcDQVNJBI",
+   "embed": true,
+   "by": "Wissant webcam",
+   "match": [
+    "wissant"
+   ],
+   "ch": "https://www.youtube.com/@wissant_webcam",
+   "lat": 50.88,
+   "lon": 1.66,
+   "approx": true
+  },
+  {
+   "sea": "man",
+   "place": "Etretat",
+   "view": "ÉTRETAT - Le Donjon, falaises",
+   "country": "France",
+   "area": "Étretat",
+   "id": "7vI2bhEwCKA",
+   "embed": true,
+   "by": "🔴 Webcams des Côtes Seinomarines - Normandie",
+   "match": [
+    "etretat"
+   ],
+   "ch": "https://www.youtube.com/@Live-Normandie-SM",
+   "lat": 49.71,
+   "lon": 0.2,
+   "approx": true
+  },
+  {
+   "sea": "man",
+   "place": "Perros",
+   "view": "GUIREC - Port, Cô",
+   "country": "France",
+   "area": "Perros-Guirec",
+   "id": "5lG_8f2Dfo0",
+   "embed": true,
+   "by": "🔴 🌊 Les webcam de la côte de granite rose",
+   "match": [
+    "perros"
+   ],
+   "ch": "https://www.youtube.com/@webcams-perros-guirec",
+   "lat": 48.81,
+   "lon": -3.44,
+   "approx": true
+  },
+  {
+   "sea": "man",
+   "place": "Perros",
+   "view": "TRESTRAOU - Centre Nauti",
+   "country": "France",
+   "area": "Perros-Guirec",
+   "id": "Y0v7bY6BumY",
+   "embed": true,
+   "by": "🔴 🌊 Les webcam de la côte de granite rose",
+   "match": [
+    "perros"
+   ],
+   "ch": "https://www.youtube.com/@webcams-perros-guirec",
+   "lat": 48.81,
+   "lon": -3.44,
+   "approx": true
+  },
+  {
+   "sea": "man",
+   "place": "Perros",
+   "view": "SAINT-GUIREC - Port de Ploumanac’h",
+   "country": "France",
+   "area": "Perros-Guirec",
+   "id": "QwZgNrPYFEA",
+   "embed": true,
+   "by": "🔴 🌊 Les webcam de la côte de granite rose",
+   "match": [
+    "perros"
+   ],
+   "ch": "https://www.youtube.com/@webcams-perros-guirec",
+   "lat": 48.81,
+   "lon": -3.44,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Albufeira",
+   "view": "Beach Hotel So",
+   "country": "Portugal",
+   "area": "Algarve",
+   "id": "GeQVAs9N490",
+   "embed": true,
+   "by": "WEBCAMS ONLINE",
+   "match": [
+    "albufeira"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsOnline",
+   "lat": 37.02,
+   "lon": -8.94,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Gran Canaria",
+   "view": "www.haffner.eu Gran Cana",
+   "country": "Espagne",
+   "area": "Gran Canaria",
+   "id": "5amd8RkRxrs",
+   "embed": true,
+   "by": "Streamer Haffner",
+   "match": [
+    "gran canaria"
+   ],
+   "ch": "https://www.youtube.com/@StreamerHaffner",
+   "lat": 28.14,
+   "lon": -15.43,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "San Sebastian",
+   "view": "Playa La Concha Villa Fa",
+   "country": "Espagne",
+   "area": "Pays basque espagnol",
+   "id": "N1leboi8ePI",
+   "embed": true,
+   "by": "WEBCAMS ONLINE",
+   "match": [
+    "san sebastian"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsOnline",
+   "lat": 43.32,
+   "lon": -1.98,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Santander",
+   "view": "Loredo, Somo y - Cantabria",
+   "country": "Espagne",
+   "area": "Cantabrie & Asturies",
+   "id": "bV_ltoX7Jy8",
+   "embed": true,
+   "by": "Tend Networks",
+   "match": [
+    "santander"
+   ],
+   "ch": "https://www.youtube.com/@tendnetworks",
+   "lat": 43.46,
+   "lon": -3.75,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Madeira",
+   "view": "Calheta Beach - Mudas Museum",
+   "country": "Portugal",
+   "area": "Madère & Açores",
+   "id": "4dbXjCzI5FU",
+   "embed": true,
+   "by": "Madeira-Web",
+   "match": [
+    "madeira"
+   ],
+   "ch": "https://www.youtube.com/@MadeiraWebLive",
+   "lat": 32.65,
+   "lon": -16.91,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Madeira",
+   "view": "Praia dos Reis Magos Beach, Caniço",
+   "country": "Portugal",
+   "area": "Madère & Açores",
+   "id": "PujA-AJpbek",
+   "embed": true,
+   "by": "Madeira-Web",
+   "match": [
+    "madeira"
+   ],
+   "ch": "https://www.youtube.com/@MadeiraWebLive",
+   "lat": 32.65,
+   "lon": -16.91,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Porto",
+   "view": "360° Panorama Moniz - Cachalote",
+   "country": "Portugal",
+   "area": "Porto & Nord",
+   "id": "owvg72MlX5I",
+   "embed": true,
+   "by": "Madeira-Web",
+   "match": [
+    "porto"
+   ],
+   "ch": "https://www.youtube.com/@MadeiraWebLive",
+   "lat": 41.15,
+   "lon": -8.67,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Tarifa",
+   "view": "KITESURF in - Los Lances Beach",
+   "country": "Espagne",
+   "area": "Tarifa",
+   "id": "dx6jgEqsjBE",
+   "embed": false,
+   "by": "meteo365es",
+   "match": [
+    "tarifa"
+   ],
+   "ch": "https://www.youtube.com/@meteo365es",
+   "lat": 36.01,
+   "lon": -5.6,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Tossa",
+   "view": "de Mar - Girona",
+   "country": "Espagne",
+   "area": "Costa Brava",
+   "id": "nWFcWooDAxI",
+   "embed": true,
+   "by": "Vayawebcam",
+   "match": [
+    "tossa"
+   ],
+   "ch": "https://www.youtube.com/@Vayawebcam",
+   "lat": 42.26,
+   "lon": 3.18,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Valencia",
+   "view": "EN DESDE Ayuntamiento",
+   "country": "Espagne",
+   "area": "Valence",
+   "id": "dVAtjVi7bUQ",
+   "embed": false,
+   "by": "Wolkam IT",
+   "match": [
+    "valencia"
+   ],
+   "ch": "https://www.youtube.com/@WolkamIT",
+   "lat": 39.47,
+   "lon": -0.32,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Torremolinos",
+   "view": "El Bajondil",
+   "country": "Espagne",
+   "area": "Costa del Sol",
+   "id": "qVpEwuoIUzc",
+   "embed": false,
+   "by": "meteo365es",
+   "match": [
+    "torremolinos"
+   ],
+   "ch": "https://www.youtube.com/@meteo365es",
+   "lat": 36.72,
+   "lon": -4.42,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Conil",
+   "view": "Playa de la Fontanilla",
+   "country": "Espagne",
+   "area": "Cadix",
+   "id": "KmBrwm5T-Dc",
+   "embed": true,
+   "by": "La costa de Cádiz",
+   "match": [
+    "conil"
+   ],
+   "ch": "https://www.youtube.com/@Lacostadecadiz1",
+   "lat": 36.53,
+   "lon": -6.3,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Fuerteventura",
+   "view": "Corralejo Bay in",
+   "country": "Espagne",
+   "area": "Fuerteventura",
+   "id": "C1jR1DsIPFs",
+   "embed": false,
+   "by": "Fuerteventura Playas",
+   "match": [
+    "fuerteventura"
+   ],
+   "ch": "https://www.youtube.com/@fuerteventuraplayas",
+   "lat": 28.73,
+   "lon": -13.87,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Lanzarote",
+   "view": "from the Bea",
+   "country": "Espagne",
+   "area": "Lanzarote",
+   "id": "GE1WiiUlVvU",
+   "embed": true,
+   "by": "Beach Bar Lanzarote",
+   "match": [
+    "lanzarote"
+   ],
+   "ch": "https://www.youtube.com/@tpkmw",
+   "lat": 29.12,
+   "lon": -13.56,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Puerto Del Carmen",
+   "view": "from LANZAROTE BEACH - P",
+   "country": "Espagne",
+   "area": "Lanzarote",
+   "id": "EUkmKa47U7I",
+   "embed": true,
+   "by": "LanzaroteWebcam",
+   "match": [
+    "puerto del carmen"
+   ],
+   "ch": "https://www.youtube.com/@LanzaroteWebcam",
+   "lat": 29.12,
+   "lon": -13.56,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Lanzarote",
+   "view": "Sky View - How",
+   "country": "Espagne",
+   "area": "Lanzarote",
+   "id": "JgdRpYxwt4s",
+   "embed": true,
+   "by": "WingCam",
+   "match": [
+    "lanzarote"
+   ],
+   "ch": "https://www.youtube.com/@wingcamlive",
+   "lat": 29.12,
+   "lon": -13.56,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Lanzarote",
+   "view": "from Cruise Ship Dock",
+   "country": "Espagne",
+   "area": "Lanzarote",
+   "id": "U2hp0tRcOUU",
+   "embed": true,
+   "by": "LanzaroteWebcam",
+   "match": [
+    "lanzarote"
+   ],
+   "ch": "https://www.youtube.com/@LanzaroteWebcam",
+   "lat": 29.12,
+   "lon": -13.56,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Madeira",
+   "view": "Funchal Marina 1 Island",
+   "country": "Portugal",
+   "area": "Madère & Açores",
+   "id": "SVzFVByub-c",
+   "embed": true,
+   "by": "Madeira-Web",
+   "match": [
+    "madeira"
+   ],
+   "ch": "https://www.youtube.com/@MadeiraWebLive",
+   "lat": 32.65,
+   "lon": -16.91,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Mallorca",
+   "view": "Playa de Muro Resort Pla",
+   "country": "Espagne",
+   "area": "Majorque",
+   "id": "mxfelXmWtCA",
+   "embed": true,
+   "by": "WEBCAMS ONLINE",
+   "match": [
+    "mallorca"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsOnline",
+   "lat": 39.57,
+   "lon": 2.65,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Benidorm",
+   "view": "Resort Night Beach",
+   "country": "Espagne",
+   "area": "Alicante & Costa Blanca",
+   "id": "-i86wO9r7qQ",
+   "embed": false,
+   "by": "BeniCam - Benidorm Webcam",
+   "match": [
+    "benidorm"
+   ],
+   "ch": "https://www.youtube.com/@benicam",
+   "lat": 38.34,
+   "lon": -0.48,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Gran Canaria",
+   "view": "Maspalomas, Meloneras",
+   "country": "Espagne",
+   "area": "Gran Canaria",
+   "id": "2u8W916MO4A",
+   "embed": true,
+   "by": "Harry Hurtig",
+   "match": [
+    "gran canaria"
+   ],
+   "ch": "https://www.youtube.com/@HarryHurtigGranCanaria",
+   "lat": 28.14,
+   "lon": -15.43,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Benidorm",
+   "view": "Playa de Levante",
+   "country": "Espagne",
+   "area": "Alicante & Costa Blanca",
+   "id": "7i5qu1dotFY",
+   "embed": false,
+   "by": "meteo365es",
+   "match": [
+    "benidorm"
+   ],
+   "ch": "https://www.youtube.com/@meteo365es",
+   "lat": 38.34,
+   "lon": -0.48,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Malaga",
+   "view": "Weather Málaga Port - Cruise Ships",
+   "country": "Espagne",
+   "area": "Costa del Sol",
+   "id": "sxgx5ZqAAxo",
+   "embed": false,
+   "by": "meteo365es",
+   "match": [
+    "malaga"
+   ],
+   "ch": "https://www.youtube.com/@meteo365es",
+   "lat": 36.72,
+   "lon": -4.42,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Valencia",
+   "view": "Gandia Beach - Spain",
+   "country": "Espagne",
+   "area": "Valence",
+   "id": "pjzMaHgcn7M",
+   "embed": true,
+   "by": "Spain Live Cams",
+   "match": [
+    "valencia"
+   ],
+   "ch": "https://www.youtube.com/@spainlivecams",
+   "lat": 39.47,
+   "lon": -0.32,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Valencia",
+   "view": "Foios Panoramic 180º - España",
+   "country": "Espagne",
+   "area": "Valence",
+   "id": "xk-gPiLdmk0",
+   "embed": true,
+   "by": "Wolkam IT",
+   "match": [
+    "valencia"
+   ],
+   "ch": "https://www.youtube.com/@WolkamIT",
+   "lat": 39.47,
+   "lon": -0.32,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Mallorca",
+   "view": "Can Pastilla BonaOna",
+   "country": "Espagne",
+   "area": "Majorque",
+   "id": "VsQekhPeUKs",
+   "embed": true,
+   "by": "WEBCAMS ONLINE",
+   "match": [
+    "mallorca"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsOnline",
+   "lat": 39.57,
+   "lon": 2.65,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Mallorca",
+   "view": "Palma de Paseo",
+   "country": "Espagne",
+   "area": "Majorque",
+   "id": "b_mKk1uL6ZI",
+   "embed": true,
+   "by": "WEBCAMS ONLINE",
+   "match": [
+    "mallorca"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsOnline",
+   "lat": 39.57,
+   "lon": 2.65,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Mallorca",
+   "view": "Playa Palmira R",
+   "country": "Espagne",
+   "area": "Majorque",
+   "id": "LNm0YuNRDqA",
+   "embed": true,
+   "by": "Mallorca Webcam",
+   "match": [
+    "mallorca"
+   ],
+   "ch": "https://www.youtube.com/@mallorca-webcam",
+   "lat": 39.57,
+   "lon": 2.65,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Nerja",
+   "view": "en - Balcón de Eur",
+   "country": "Espagne",
+   "area": "Costa del Sol",
+   "id": "liW4_fLCE5A",
+   "embed": true,
+   "by": "meteo365es",
+   "match": [
+    "nerja"
+   ],
+   "ch": "https://www.youtube.com/@meteo365es",
+   "lat": 36.72,
+   "lon": -4.42,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "San Sebastian",
+   "view": "Zurriola Beach - Spain",
+   "country": "Espagne",
+   "area": "Pays basque espagnol",
+   "id": "TSPxixZUmPA",
+   "embed": true,
+   "by": "Spain Live Cams",
+   "match": [
+    "san sebastian"
+   ],
+   "ch": "https://www.youtube.com/@spainlivecams",
+   "lat": 43.32,
+   "lon": -1.98,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Santander",
+   "view": "Bahía de - Cantabria",
+   "country": "Espagne",
+   "area": "Cantabrie & Asturies",
+   "id": "fgzN9ozNA0c",
+   "embed": false,
+   "by": "Tend Networks",
+   "match": [
+    "santander"
+   ],
+   "ch": "https://www.youtube.com/@tendnetworks",
+   "lat": 43.46,
+   "lon": -3.75,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Salinas",
+   "view": "Nautico Este",
+   "country": "Espagne",
+   "area": "Cantabrie & Asturies",
+   "id": "UMWur82iiVI",
+   "embed": true,
+   "by": "REAL CLUB NAUTICO DE SALINAS",
+   "match": [
+    "salinas"
+   ],
+   "ch": "https://www.youtube.com/@realclubnauticodesalinas1958",
+   "lat": 43.46,
+   "lon": -3.75,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Porto",
+   "view": "Moniz harbour Porto de Abrigo",
+   "country": "Portugal",
+   "area": "Porto & Nord",
+   "id": "ZfSOHBWul3o",
+   "embed": true,
+   "by": "Madeira-Web Places",
+   "match": [
+    "porto"
+   ],
+   "ch": "https://www.youtube.com/@MadeiraWebPlacesLive",
+   "lat": 41.15,
+   "lon": -8.67,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Malaga",
+   "view": "Málaga Beach Rincón de la Victoria",
+   "country": "Espagne",
+   "area": "Costa del Sol",
+   "id": "Ib0xbFBU9Wg",
+   "embed": true,
+   "by": "Malaga Live Cam",
+   "match": [
+    "malaga"
+   ],
+   "ch": "https://www.youtube.com/@MalagaLiveCam",
+   "lat": 36.72,
+   "lon": -4.42,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Portimao",
+   "view": "Marina de Portimão - Portugal",
+   "country": "Portugal",
+   "area": "Algarve",
+   "id": "w7rzgn6WXs8",
+   "embed": true,
+   "by": "Playocean",
+   "match": [
+    "portimao"
+   ],
+   "ch": "https://www.youtube.com/@PlayoceanLive",
+   "lat": 37.02,
+   "lon": -8.94,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Caparica",
+   "view": "Costa da 2 Panorâmica, Portugal",
+   "country": "Portugal",
+   "area": "Cascais & Lisbonne",
+   "id": "_LUOa8uffGE",
+   "embed": true,
+   "by": "Playocean",
+   "match": [
+    "caparica"
+   ],
+   "ch": "https://www.youtube.com/@PlayoceanLive",
+   "lat": 38.7,
+   "lon": -9.42,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Caparica",
+   "view": "Costa da 1 Panorâmica",
+   "country": "Portugal",
+   "area": "Cascais & Lisbonne",
+   "id": "oDbKeeojgyk",
+   "embed": true,
+   "by": "Playocean",
+   "match": [
+    "caparica"
+   ],
+   "ch": "https://www.youtube.com/@PlayoceanLive",
+   "lat": 38.7,
+   "lon": -9.42,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Nazare",
+   "view": "Nazaré Big Waves",
+   "country": "Portugal",
+   "area": "Nazaré",
+   "id": "_Gi8UC_HPKM",
+   "embed": true,
+   "by": "Explore Big Surf, Beaches and Sunsets",
+   "match": [
+    "nazare"
+   ],
+   "ch": "https://www.youtube.com/@ExploreBigSurfandBeaches",
+   "lat": 39.6,
+   "lon": -9.07,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Madeira",
+   "view": "Funchal City from São Roque",
+   "country": "Portugal",
+   "area": "Madère & Açores",
+   "id": "_idE_q5kgtA",
+   "embed": true,
+   "by": "Webcamtaxi",
+   "match": [
+    "madeira"
+   ],
+   "ch": "https://www.youtube.com/@WebcamTaxi",
+   "lat": 32.65,
+   "lon": -16.91,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Albufeira",
+   "view": "Peneco Beach - Portugal",
+   "country": "Portugal",
+   "area": "Algarve",
+   "id": "3d3BSdKfJn0",
+   "embed": true,
+   "by": "Mexico Live",
+   "match": [
+    "albufeira"
+   ],
+   "ch": "https://www.youtube.com/@MexicoLive-t6n",
+   "lat": 37.02,
+   "lon": -8.94,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Algarve",
+   "view": "Alfagar Aparthotels - Portugal",
+   "country": "Portugal",
+   "area": "Algarve",
+   "id": "NqWd_-hB5ZA",
+   "embed": true,
+   "by": "World Cams",
+   "match": [
+    "algarve"
+   ],
+   "ch": "https://www.youtube.com/@worldscam-y5q",
+   "lat": 37.02,
+   "lon": -8.94,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Madeira",
+   "view": "Funchal Marina 2 Island",
+   "country": "Portugal",
+   "area": "Madère & Açores",
+   "id": "BYd19W4uy0Y",
+   "embed": true,
+   "by": "Madeira-Web",
+   "match": [
+    "madeira"
+   ],
+   "ch": "https://www.youtube.com/@MadeiraWebLive",
+   "lat": 32.65,
+   "lon": -16.91,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Porto",
+   "view": "Ribeira and Vila Nova de Gaia",
+   "country": "Portugal",
+   "area": "Porto & Nord",
+   "id": "QetuuDxsgig",
+   "embed": true,
+   "by": "Webcamtaxi",
+   "match": [
+    "porto"
+   ],
+   "ch": "https://www.youtube.com/@WebcamTaxi",
+   "lat": 41.15,
+   "lon": -8.67,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "San Sebastian",
+   "view": "Concha Beach - Spain",
+   "country": "Espagne",
+   "area": "Pays basque espagnol",
+   "id": "6Pk_8BViotw",
+   "embed": true,
+   "by": "Spain Live Cams",
+   "match": [
+    "san sebastian"
+   ],
+   "ch": "https://www.youtube.com/@spainlivecams",
+   "lat": 43.32,
+   "lon": -1.98,
+   "approx": true
+  },
+  {
+   "sea": "es",
+   "place": "Nerja",
+   "view": "España - Vistas a",
+   "country": "Espagne",
+   "area": "Costa del Sol",
+   "id": "igTj6wdBhVs",
+   "embed": true,
+   "by": "NerjaViews",
+   "match": [
+    "nerja"
+   ],
+   "ch": "https://www.youtube.com/@NerjaViews",
+   "lat": 36.72,
+   "lon": -4.42,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Venezia",
+   "view": "Hotel Monaco - Italy",
+   "country": "Italie",
+   "area": "Venise",
+   "id": "qVBeoaEl6HQ",
+   "embed": true,
+   "by": "World Cams",
+   "match": [
+    "venezia"
+   ],
+   "ch": "https://www.youtube.com/@worldscam-y5q",
+   "lat": 45.43,
+   "lon": 12.34,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Venice",
+   "view": "Italy - Dorsoduro",
+   "country": "Italie",
+   "area": "Venise",
+   "id": "gzgrofStPJ0",
+   "embed": true,
+   "by": "I Love You Venice",
+   "match": [
+    "venice"
+   ],
+   "ch": "https://www.youtube.com/@iloveyouvenice",
+   "lat": 45.43,
+   "lon": 12.34,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Venice",
+   "view": "San Marco Basin in - ベネチア ライブ",
+   "country": "Italie",
+   "area": "Venise",
+   "id": "ASqGNET31VY",
+   "embed": true,
+   "by": "I Love You Venice",
+   "match": [
+    "venice"
+   ],
+   "ch": "https://www.youtube.com/@iloveyouvenice",
+   "lat": 45.43,
+   "lon": 12.34,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Venice",
+   "view": "on Grand Canal",
+   "country": "Italie",
+   "area": "Venise",
+   "id": "r8N6IsoIkTk",
+   "embed": true,
+   "by": "I Love You Venice",
+   "match": [
+    "venice"
+   ],
+   "ch": "https://www.youtube.com/@iloveyouvenice",
+   "lat": 45.43,
+   "lon": 12.34,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Venezia",
+   "view": "Bacino di San Marco from",
+   "country": "Italie",
+   "area": "Venise",
+   "id": "V7YQ_vYyz38",
+   "embed": true,
+   "by": "I Love You Venice",
+   "match": [
+    "venezia"
+   ],
+   "ch": "https://www.youtube.com/@iloveyouvenice",
+   "lat": 45.43,
+   "lon": 12.34,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Cagliari",
+   "view": "Cagliari - CA",
+   "country": "Italie",
+   "area": "Sardaigne",
+   "id": "E6zG5BG3aBY",
+   "embed": true,
+   "by": "Paesaggi Digitali",
+   "match": [
+    "cagliari"
+   ],
+   "ch": "https://www.youtube.com/@PaesaggiDigitali",
+   "lat": 39.2,
+   "lon": 9.16,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Corfu",
+   "view": "Arillas Corfu Greece",
+   "country": "Grèce",
+   "area": "Îles Ioniennes",
+   "id": "CcnlJI_UXyM",
+   "embed": true,
+   "by": "Arillas Corfu LIVE streaming",
+   "match": [
+    "corfu"
+   ],
+   "ch": "https://www.youtube.com/@arillascorfulivestreaming7536",
+   "lat": 38.63,
+   "lon": 20.6,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Torbole",
+   "view": "al Circolo Surf - TN",
+   "country": "Italie",
+   "area": "Lac de Garde",
+   "id": "dWxWQlAPY9Y",
+   "embed": true,
+   "by": "ReLiveCam",
+   "match": [
+    "torbole"
+   ],
+   "ch": "https://www.youtube.com/@ReLiveCam",
+   "lat": 45.87,
+   "lon": 10.87,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Garda",
+   "view": "Hotel Benacus - Torri del Benaco",
+   "country": "Italie",
+   "area": "Lac de Garde",
+   "id": "cqSiEEjb_WI",
+   "embed": true,
+   "by": "Hotel Benacus | Torri del Benaco | Gardalake",
+   "match": [
+    "garda"
+   ],
+   "ch": "https://www.youtube.com/@hotelbenacustorridelbenaco",
+   "lat": 45.87,
+   "lon": 10.87,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Sardinia",
+   "view": "Maia Pia Beach - Italy",
+   "country": "Italie",
+   "area": "Sardaigne",
+   "id": "kGO2F0KogFQ",
+   "embed": true,
+   "by": "World Cams",
+   "match": [
+    "sardinia"
+   ],
+   "ch": "https://www.youtube.com/@worldscam-y5q",
+   "lat": 39.2,
+   "lon": 9.16,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Sardinia",
+   "view": "Le Saline Beach - Italy",
+   "country": "Italie",
+   "area": "Sardaigne",
+   "id": "zLVEP6BnkLM",
+   "embed": false,
+   "by": "Earth Live Cam",
+   "match": [
+    "sardinia"
+   ],
+   "ch": "https://www.youtube.com/@EarthLiveCam-s5c",
+   "lat": 39.2,
+   "lon": 9.16,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Sardinia",
+   "view": "Piscina Rei - Italy",
+   "country": "Italie",
+   "area": "Sardaigne",
+   "id": "b190jwdTYvg",
+   "embed": false,
+   "by": "Earth Live Cam",
+   "match": [
+    "sardinia"
+   ],
+   "ch": "https://www.youtube.com/@EarthLiveCam-s5c",
+   "lat": 39.2,
+   "lon": 9.16,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Sardegna",
+   "view": "Bari Sardo",
+   "country": "Italie",
+   "area": "Sardaigne",
+   "id": "xNmvMyDRq0I",
+   "embed": true,
+   "by": "Comune di Bari Sardo",
+   "match": [
+    "sardegna"
+   ],
+   "ch": "https://www.youtube.com/@comunedibarisardo1682",
+   "lat": 39.2,
+   "lon": 9.16,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Sardinia",
+   "view": "Le Saline beach - Italy",
+   "country": "Italie",
+   "area": "Sardaigne",
+   "id": "I3G_kTiKkKI",
+   "embed": true,
+   "by": "World Cams",
+   "match": [
+    "sardinia"
+   ],
+   "ch": "https://www.youtube.com/@worldscam-y5q",
+   "lat": 39.2,
+   "lon": 9.16,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Napoli",
+   "view": "Golfo di - NA",
+   "country": "Italie",
+   "area": "Naples & Amalfi",
+   "id": "LO2Fvujwc8M",
+   "embed": true,
+   "by": "Paesaggi Digitali",
+   "match": [
+    "napoli"
+   ],
+   "ch": "https://www.youtube.com/@PaesaggiDigitali",
+   "lat": 40.63,
+   "lon": 14.6,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Croatia",
+   "view": "Lucica Beach - Brela",
+   "country": "Croatie",
+   "area": "Croatie",
+   "id": "hgHEooN8kOI",
+   "embed": true,
+   "by": "World Live Cams",
+   "match": [
+    "croatia"
+   ],
+   "ch": "https://www.youtube.com/@worldlivecams239",
+   "lat": 43.26,
+   "lon": 16.65,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Cefalu",
+   "view": "Cefalù - Panoramica Duomo",
+   "country": "Italie",
+   "area": "Sicile",
+   "id": "SrpspgFyMbI",
+   "embed": true,
+   "by": "Weather Italy - WS Cam",
+   "match": [
+    "cefalu"
+   ],
+   "ch": "https://www.youtube.com/@WeatherItaly",
+   "lat": 37.87,
+   "lon": 12.47,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Rimini",
+   "view": "Torre Pedrera",
+   "country": "Italie",
+   "area": "Rimini & Adriatique",
+   "id": "ZZrEQ2Y5kec",
+   "embed": true,
+   "by": "Live Cam Italia",
+   "match": [
+    "rimini"
+   ],
+   "ch": "https://www.youtube.com/@LiveCamItalia",
+   "lat": 44.06,
+   "lon": 12.58,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Jesolo",
+   "view": "Termini Beach Hotel & Suites",
+   "country": "Italie",
+   "area": "Rimini & Adriatique",
+   "id": "JFpV_LBgK3M",
+   "embed": true,
+   "by": "I Love You Venice",
+   "match": [
+    "jesolo"
+   ],
+   "ch": "https://www.youtube.com/@iloveyouvenice",
+   "lat": 44.06,
+   "lon": 12.58,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Viareggio",
+   "view": "Lega Navale",
+   "country": "Italie",
+   "area": "Toscane",
+   "id": "APd2Se6iNfI",
+   "embed": true,
+   "by": "Cam from Italy",
+   "match": [
+    "viareggio"
+   ],
+   "ch": "https://www.youtube.com/@camfromitaly",
+   "lat": 43.55,
+   "lon": 10.3,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Genova",
+   "view": "Nervi, Sant'Ilario",
+   "country": "Italie",
+   "area": "Ligurie",
+   "id": "b66MhBy9J3o",
+   "embed": true,
+   "by": "Live Cam Italia",
+   "match": [
+    "genova"
+   ],
+   "ch": "https://www.youtube.com/@LiveCamItalia",
+   "lat": 44.35,
+   "lon": 8.58,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Bol",
+   "view": "Bol",
+   "country": "Croatie",
+   "area": "Croatie",
+   "id": "FuDjMuRcSFI",
+   "embed": true,
+   "by": "SaaN.tv",
+   "match": [
+    "bol"
+   ],
+   "ch": "https://www.youtube.com/@saantv",
+   "lat": 43.26,
+   "lon": 16.65,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Bol",
+   "view": "Bol 2",
+   "country": "Croatie",
+   "area": "Croatie",
+   "id": "fNzAfMWDDCE",
+   "embed": true,
+   "by": "SaaN.tv",
+   "match": [
+    "bol"
+   ],
+   "ch": "https://www.youtube.com/@saantv",
+   "lat": 43.26,
+   "lon": 16.65,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Croatia",
+   "view": "Hvar",
+   "country": "Croatie",
+   "area": "Croatie",
+   "id": "0wHWHAFnNh0",
+   "embed": true,
+   "by": "Hvar Live",
+   "match": [
+    "croatia"
+   ],
+   "ch": "https://www.youtube.com/@HvarLive",
+   "lat": 43.26,
+   "lon": 16.65,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Split",
+   "view": "hotel Marvie",
+   "country": "Croatie",
+   "area": "Croatie",
+   "id": "Nc_Np8r8OTI",
+   "embed": true,
+   "by": "SaaN.tv",
+   "match": [
+    "split"
+   ],
+   "ch": "https://www.youtube.com/@saantv",
+   "lat": 43.26,
+   "lon": 16.65,
+   "approx": true
+  },
+  {
+   "sea": "it",
+   "place": "Croatia",
+   "view": "Slanica Beach - Murter",
+   "country": "Croatie",
+   "area": "Croatie",
+   "id": "KNFJTgYbGlc",
+   "embed": true,
+   "by": "World Cams",
+   "match": [
+    "croatia"
+   ],
+   "ch": "https://www.youtube.com/@worldscam-y5q",
+   "lat": 43.26,
+   "lon": 16.65,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Texel",
+   "view": "Paal 17 De Koog",
+   "country": "Pays-Bas",
+   "area": "Pays-Bas",
+   "id": "Hq2Qbcuph4w",
+   "embed": true,
+   "by": "TexelInformatie",
+   "match": [
+    "texel"
+   ],
+   "ch": "https://www.youtube.com/@Texelinformatie",
+   "lat": 52.11,
+   "lon": 4.27,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Helsinki",
+   "view": "Port of - West harbour - north",
+   "country": "Suède",
+   "area": "Suède & Finlande",
+   "id": "JnJhFYhIjFs",
+   "embed": true,
+   "by": "Port of Helsinki",
+   "match": [
+    "helsinki"
+   ],
+   "ch": "https://www.youtube.com/@PortOfHelsinki",
+   "lat": 57.1,
+   "lon": 12.24,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Scheveningen",
+   "view": "Boulevard en Beach",
+   "country": "Pays-Bas",
+   "area": "Pays-Bas",
+   "id": "A5kXiKzbBFs",
+   "embed": true,
+   "by": "Strandweer.nu",
+   "match": [
+    "scheveningen"
+   ],
+   "ch": "https://www.youtube.com/@Strandweernu",
+   "lat": 52.11,
+   "lon": 4.27,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Brouwersdam",
+   "view": "PiXLife",
+   "country": "Pays-Bas",
+   "area": "Pays-Bas",
+   "id": "KjK02QIm4ZI",
+   "embed": true,
+   "by": "Strandweer.nu",
+   "match": [
+    "brouwersdam"
+   ],
+   "ch": "https://www.youtube.com/@Strandweernu",
+   "lat": 52.11,
+   "lon": 4.27,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Oostende",
+   "view": "Hotel Andromeda C-Hotels",
+   "country": "Belgique",
+   "area": "Belgique",
+   "id": "I09L5RCJkjo",
+   "embed": true,
+   "by": "Weercamera",
+   "match": [
+    "oostende"
+   ],
+   "ch": "https://www.youtube.com/@Weercamera",
+   "lat": 51.35,
+   "lon": 3.29,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Nieuwpoort",
+   "view": "Zeedijk - Hotel Sandeshoved",
+   "country": "Belgique",
+   "area": "Belgique",
+   "id": "7KXim_pTDD4",
+   "embed": true,
+   "by": "Weercamera",
+   "match": [
+    "nieuwpoort"
+   ],
+   "ch": "https://www.youtube.com/@Weercamera",
+   "lat": 51.35,
+   "lon": 3.29,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "de Panne",
+   "view": "Brasserie Leopold I - Belgium",
+   "country": "Belgique",
+   "area": "Belgique",
+   "id": "wEeJfBE8ecM",
+   "embed": true,
+   "by": "Weercamera",
+   "match": [
+    "de panne"
+   ],
+   "ch": "https://www.youtube.com/@Weercamera",
+   "lat": 51.35,
+   "lon": 3.29,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Texel",
+   "view": "Haven Oudeschild",
+   "country": "Pays-Bas",
+   "area": "Pays-Bas",
+   "id": "NYGtSbvt6d0",
+   "embed": true,
+   "by": "TexelInformatie",
+   "match": [
+    "texel"
+   ],
+   "ch": "https://www.youtube.com/@Texelinformatie",
+   "lat": 52.11,
+   "lon": 4.27,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Blankenberge",
+   "view": "Hotel Helios C-Hotels",
+   "country": "Belgique",
+   "area": "Belgique",
+   "id": "AZeifyx8GaA",
+   "embed": true,
+   "by": "Weercamera",
+   "match": [
+    "blankenberge"
+   ],
+   "ch": "https://www.youtube.com/@Weercamera",
+   "lat": 51.35,
+   "lon": 3.29,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Poole",
+   "view": "Quay - Oriel on the Quay",
+   "country": "Royaume-Uni",
+   "area": "Sud de l'Angleterre",
+   "id": "mNiI7CbnxyQ",
+   "embed": true,
+   "by": "Beach Life Cams",
+   "match": [
+    "poole"
+   ],
+   "ch": "https://www.youtube.com/@BeachLifeCams",
+   "lat": 50.82,
+   "lon": -0.14,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Margate",
+   "view": "Fishing Pier Loo",
+   "country": "Royaume-Uni",
+   "area": "Sud de l'Angleterre",
+   "id": "rA2dkqcDGM4",
+   "embed": true,
+   "by": "seethisview-ventnor",
+   "match": [
+    "margate"
+   ],
+   "ch": "https://www.youtube.com/@seethisview2",
+   "lat": 50.82,
+   "lon": -0.14,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Egmond",
+   "view": "aan Zee Boulevard en Beach",
+   "country": "Pays-Bas",
+   "area": "Pays-Bas",
+   "id": "mI1Os7TFdGc",
+   "embed": true,
+   "by": "Strandweer.nu",
+   "match": [
+    "egmond"
+   ],
+   "ch": "https://www.youtube.com/@Strandweernu",
+   "lat": 52.11,
+   "lon": 4.27,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Scheveningen",
+   "view": "Hart Beach",
+   "country": "Pays-Bas",
+   "area": "Pays-Bas",
+   "id": "Cbp3Wg44fPo",
+   "embed": true,
+   "by": "Hart Beach",
+   "match": [
+    "scheveningen"
+   ],
+   "ch": "https://www.youtube.com/@Hartbeach",
+   "lat": 52.11,
+   "lon": 4.27,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Knokke",
+   "view": "Zeedijk - Heist",
+   "country": "Belgique",
+   "area": "Belgique",
+   "id": "fPc6v5QFTcE",
+   "embed": true,
+   "by": "Weercamera",
+   "match": [
+    "knokke"
+   ],
+   "ch": "https://www.youtube.com/@Weercamera",
+   "lat": 51.35,
+   "lon": 3.29,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Knokke",
+   "view": "Het Zwin - Heist",
+   "country": "Belgique",
+   "area": "Belgique",
+   "id": "ELUtEnMBS6k",
+   "embed": true,
+   "by": "Weercamera",
+   "match": [
+    "knokke"
+   ],
+   "ch": "https://www.youtube.com/@Weercamera",
+   "lat": 51.35,
+   "lon": 3.29,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Westerland",
+   "view": "Sylt - erleben - Strand",
+   "country": "Allemagne",
+   "area": "Mer du Nord allemande",
+   "id": "kiOefBj8Ju4",
+   "embed": true,
+   "by": "Surfcam Sylt",
+   "match": [
+    "westerland"
+   ],
+   "ch": "https://www.youtube.com/@surfcam-sylt",
+   "lat": 54.91,
+   "lon": 8.31,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Warnemunde",
+   "view": "Warnemünde - mit Leuchtt",
+   "country": "Allemagne",
+   "area": "Baltique allemande",
+   "id": "EYdVPJ_wvHo",
+   "embed": true,
+   "by": "livespotting",
+   "match": [
+    "warnemunde"
+   ],
+   "ch": "https://www.youtube.com/@Livespotting",
+   "lat": 54.18,
+   "lon": 12.08,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Heiligenhafen",
+   "view": "Aktuelle",
+   "country": "Allemagne",
+   "area": "Baltique allemande",
+   "id": "3vf7JzqXOwE",
+   "embed": true,
+   "by": "Ferienwohnungen Kuhse | Heiligenhafen",
+   "match": [
+    "heiligenhafen"
+   ],
+   "ch": "https://www.youtube.com/@heiligenhafen-fewos",
+   "lat": 54.18,
+   "lon": 12.08,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Cuxhaven",
+   "view": "Döse - mit Blic",
+   "country": "Allemagne",
+   "area": "Mer du Nord allemande",
+   "id": "nQs-B8SNcWQ",
+   "embed": true,
+   "by": "Nordseeheilbad Cuxhaven",
+   "match": [
+    "cuxhaven"
+   ],
+   "ch": "https://www.youtube.com/@NordseeheilbadCuxhaven",
+   "lat": 54.91,
+   "lon": 8.31,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Cuxhaven",
+   "view": "Altenbruch - mi",
+   "country": "Allemagne",
+   "area": "Mer du Nord allemande",
+   "id": "FYN4N1pfzjA",
+   "embed": false,
+   "by": "Nordseeheilbad Cuxhaven",
+   "match": [
+    "cuxhaven"
+   ],
+   "ch": "https://www.youtube.com/@NordseeheilbadCuxhaven",
+   "lat": 54.91,
+   "lon": 8.31,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Warnemunde",
+   "view": "Ostseebowling Warnemünde",
+   "country": "Allemagne",
+   "area": "Baltique allemande",
+   "id": "dAHJivjQHlU",
+   "embed": true,
+   "by": "Ostseebowling Warnemünde Rostock",
+   "match": [
+    "warnemunde"
+   ],
+   "ch": "https://www.youtube.com/@bowling.warnemuende",
+   "lat": 54.18,
+   "lon": 12.08,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "St Ives",
+   "view": "of Harbour in Cornwall, UK",
+   "country": "Royaume-Uni",
+   "area": "Cornouailles & Devon",
+   "id": "T83mKGf_c3k",
+   "embed": false,
+   "by": "Aspects Holidays",
+   "match": [
+    "st ives"
+   ],
+   "ch": "https://www.youtube.com/@aspectsholidays",
+   "lat": 50.42,
+   "lon": -5.1,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Weymouth",
+   "view": "Bowleaze Cove Beach - UK",
+   "country": "Royaume-Uni",
+   "area": "Sud de l'Angleterre",
+   "id": "OYVUBm7AB1Y",
+   "embed": true,
+   "by": "Beach Life Cams",
+   "match": [
+    "weymouth"
+   ],
+   "ch": "https://www.youtube.com/@BeachLifeCams",
+   "lat": 50.82,
+   "lon": -0.14,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Weymouth",
+   "view": "Beach - UK - Cactus Tearooms",
+   "country": "Royaume-Uni",
+   "area": "Sud de l'Angleterre",
+   "id": "oKHp1joZDMU",
+   "embed": true,
+   "by": "Beach Life Cams",
+   "match": [
+    "weymouth"
+   ],
+   "ch": "https://www.youtube.com/@BeachLifeCams",
+   "lat": 50.82,
+   "lon": -0.14,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Weymouth",
+   "view": "Harbour - The G",
+   "country": "Royaume-Uni",
+   "area": "Sud de l'Angleterre",
+   "id": "ev1hgKJlnQA",
+   "embed": true,
+   "by": "Beach Life Cams",
+   "match": [
+    "weymouth"
+   ],
+   "ch": "https://www.youtube.com/@BeachLifeCams",
+   "lat": 50.82,
+   "lon": -0.14,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Polzeath",
+   "view": "beach community",
+   "country": "Royaume-Uni",
+   "area": "Cornouailles & Devon",
+   "id": "diIR3SN_c6k",
+   "embed": true,
+   "by": "Polzeath House, webcams and more.",
+   "match": [
+    "polzeath"
+   ],
+   "ch": "https://www.youtube.com/@polzeathhouse",
+   "lat": 50.42,
+   "lon": -5.1,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Weymouth",
+   "view": "Overcombe Beach - UK",
+   "country": "Royaume-Uni",
+   "area": "Sud de l'Angleterre",
+   "id": "2eQlFsurl-s",
+   "embed": true,
+   "by": "Beach Life Cams",
+   "match": [
+    "weymouth"
+   ],
+   "ch": "https://www.youtube.com/@BeachLifeCams",
+   "lat": 50.82,
+   "lon": -0.14,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Scarborough",
+   "view": "Beach",
+   "country": "Royaume-Uni",
+   "area": "Nord & Écosse",
+   "id": "-JZf3deL-Rs",
+   "embed": true,
+   "by": "Scarborough Beach",
+   "match": [
+    "scarborough"
+   ],
+   "ch": "https://www.youtube.com/@ScarboroughBeach",
+   "lat": 55.02,
+   "lon": -1.42,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Varberg",
+   "view": "MEDview - Kåsa Strand",
+   "country": "Suède",
+   "area": "Suède & Finlande",
+   "id": "p49CeURYHUM",
+   "embed": true,
+   "by": "MED - Mediateknik",
+   "match": [
+    "varberg"
+   ],
+   "ch": "https://www.youtube.com/@MEDMediateknik",
+   "lat": 57.1,
+   "lon": 12.24,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Helsinki",
+   "view": "Port of - West harbour - south",
+   "country": "Suède",
+   "area": "Suède & Finlande",
+   "id": "6hPWq2IG08M",
+   "embed": true,
+   "by": "Port of Helsinki",
+   "match": [
+    "helsinki"
+   ],
+   "ch": "https://www.youtube.com/@PortOfHelsinki",
+   "lat": 57.1,
+   "lon": 12.24,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "Iceland",
+   "view": "Northern Lights/Midnight",
+   "country": "Islande",
+   "area": "Islande",
+   "id": "xrX7fD7HOzQ",
+   "embed": true,
+   "by": "TokAir Iceland",
+   "match": [
+    "iceland"
+   ],
+   "ch": "https://www.youtube.com/@TokAir-Iceland",
+   "lat": 64.14,
+   "lon": -21.94,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Venice Beach",
+   "view": "Los Angeles",
+   "country": "États-Unis",
+   "area": "Californie du Sud",
+   "id": "EO_1LWqsCNE",
+   "embed": true,
+   "by": "Teleport.camera",
+   "match": [
+    "venice beach"
+   ],
+   "ch": "https://www.youtube.com/@Teleport.camera",
+   "lat": 33.66,
+   "lon": -118,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Hollywood Beach",
+   "view": "Broadwalk, Florida",
+   "country": "États-Unis",
+   "area": "Floride · Atlantique",
+   "id": "cmkAbDUEoyA",
+   "embed": true,
+   "by": "City of Hollywood",
+   "match": [
+    "hollywood beach"
+   ],
+   "ch": "https://www.youtube.com/@HollywoodFLCH78",
+   "lat": 25.79,
+   "lon": -80.13,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Honolulu",
+   "view": "from Ala Moana, Hawaii",
+   "country": "États-Unis",
+   "area": "Hawaï · Oahu",
+   "id": "f_yY-0miTzo",
+   "embed": true,
+   "by": "WOZ ERE",
+   "match": [
+    "honolulu"
+   ],
+   "ch": "https://www.youtube.com/@wozereme",
+   "lat": 21.28,
+   "lon": -157.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Vancouver",
+   "view": "Cruise Ship",
+   "country": "Canada",
+   "area": "Canada",
+   "id": "rxyNjFKwzJA",
+   "embed": true,
+   "by": "Vancouver City Views",
+   "match": [
+    "vancouver"
+   ],
+   "ch": "https://www.youtube.com/@VancouverCityViews",
+   "lat": 49.15,
+   "lon": -125.9,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Pacifica",
+   "view": "Linda Mar - California",
+   "country": "États-Unis",
+   "area": "Californie du Nord",
+   "id": "TDcKozRHlKs",
+   "embed": true,
+   "by": "Linda Mar Beach Cam",
+   "match": [
+    "pacifica"
+   ],
+   "ch": "https://www.youtube.com/@LindaMarBeachCam",
+   "lat": 36.95,
+   "lon": -122.02,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Waikiki",
+   "view": "Beach - Waikiki",
+   "country": "États-Unis",
+   "area": "Hawaï · Oahu",
+   "id": "4CK0CsimBHs",
+   "embed": true,
+   "by": "Ozolio Live",
+   "match": [
+    "waikiki"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_live",
+   "lat": 21.28,
+   "lon": -157.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Kaanapali",
+   "view": "From Sheraton Maui Resort & Spa",
+   "country": "États-Unis",
+   "area": "Hawaï · Maui",
+   "id": "YXji6UQ0bwY",
+   "embed": true,
+   "by": "Ozolio Live",
+   "match": [
+    "kaanapali"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_live",
+   "lat": 20.93,
+   "lon": -156.36,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "San Diego",
+   "view": "Bay East - San Diego",
+   "country": "États-Unis",
+   "area": "San Diego",
+   "id": "OAk3giBu5_k",
+   "embed": true,
+   "by": "San Diego Web Cam",
+   "match": [
+    "san diego"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 32.8,
+   "lon": -117.26,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "San Diego",
+   "view": "Harbor Island - S",
+   "country": "États-Unis",
+   "area": "San Diego",
+   "id": "fc58f5x18-w",
+   "embed": true,
+   "by": "San Diego Web Cam",
+   "match": [
+    "san diego"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 32.8,
+   "lon": -117.26,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Honolulu",
+   "view": "Park Shore Waikiki Hotel",
+   "country": "États-Unis",
+   "area": "Hawaï · Oahu",
+   "id": "kCPppYpcY_s",
+   "embed": true,
+   "by": "Ozolio Plus",
+   "match": [
+    "honolulu"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_plus",
+   "lat": 21.28,
+   "lon": -157.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "South Padre",
+   "view": "Island - Nor",
+   "country": "États-Unis",
+   "area": "Texas",
+   "id": "kJ_EXhKsH30",
+   "embed": true,
+   "by": "South Padre Island",
+   "match": [
+    "south padre"
+   ],
+   "ch": "https://www.youtube.com/@enjoyspi",
+   "lat": 26.11,
+   "lon": -97.17,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Venice Beach",
+   "view": "Sunset & Surf Vibes",
+   "country": "États-Unis",
+   "area": "Californie du Sud",
+   "id": "0IgjqQzibqE",
+   "embed": true,
+   "by": "Venice Vive",
+   "match": [
+    "venice beach"
+   ],
+   "ch": "https://www.youtube.com/@VeniceVive",
+   "lat": 33.66,
+   "lon": -118,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Maui",
+   "view": "Napili Bay - Beach & Ocean Views",
+   "country": "États-Unis",
+   "area": "Hawaï · Maui",
+   "id": "66P_rc2Cbt8",
+   "embed": true,
+   "by": "Ozolio Plus",
+   "match": [
+    "maui"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_plus",
+   "lat": 20.93,
+   "lon": -156.36,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Miami",
+   "view": "Sunny Isles Beach - FL",
+   "country": "États-Unis",
+   "area": "Floride · Atlantique",
+   "id": "bi7B4EmyHHs",
+   "embed": true,
+   "by": "World Live Cams",
+   "match": [
+    "miami"
+   ],
+   "ch": "https://www.youtube.com/@worldlivecams239",
+   "lat": 25.79,
+   "lon": -80.13,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Siesta",
+   "view": "KEY BEACH",
+   "country": "États-Unis",
+   "area": "Floride · Golfe & Keys",
+   "id": "NLhxcyzXQxM",
+   "embed": true,
+   "by": "SIESTA BEACH LIVE",
+   "match": [
+    "siesta"
+   ],
+   "ch": "https://www.youtube.com/@siestabeachlive4211",
+   "lat": 27.98,
+   "lon": -82.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Destin",
+   "view": "FL - Ocean Reef Resorts",
+   "country": "États-Unis",
+   "area": "Floride · Golfe & Keys",
+   "id": "_Zqi24i0fl4",
+   "embed": true,
+   "by": "Ocean Reef Resorts",
+   "match": [
+    "destin"
+   ],
+   "ch": "https://www.youtube.com/@OceanReefResorts",
+   "lat": 27.98,
+   "lon": -82.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Fort Myers",
+   "view": "Fins Up - Beach Club - M",
+   "country": "États-Unis",
+   "area": "Floride · Golfe & Keys",
+   "id": "spyttB6YiaU",
+   "embed": true,
+   "by": "Margaritaville Beach Resort Fort Myers Beach",
+   "match": [
+    "fort myers"
+   ],
+   "ch": "https://www.youtube.com/@MargaritavilleBeachResortFMB",
+   "lat": 27.98,
+   "lon": -82.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Maui",
+   "view": "Napili Kai Beach Resort",
+   "country": "États-Unis",
+   "area": "Hawaï · Maui",
+   "id": "fwX04Gsb8W4",
+   "embed": true,
+   "by": "Ozolio Live",
+   "match": [
+    "maui"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_live",
+   "lat": 20.93,
+   "lon": -156.36,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Maui",
+   "view": "Napili Bay Beach in West",
+   "country": "États-Unis",
+   "area": "Hawaï · Maui",
+   "id": "EyBALr3Z2iw",
+   "embed": true,
+   "by": "afarTV",
+   "match": [
+    "maui"
+   ],
+   "ch": "https://www.youtube.com/@afartv",
+   "lat": 20.93,
+   "lon": -156.36,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Maui",
+   "view": "Wailea Beach - Wailea Beach Resort",
+   "country": "États-Unis",
+   "area": "Hawaï · Maui",
+   "id": "mrUciA_XZxA",
+   "embed": true,
+   "by": "Ozolio Plus",
+   "match": [
+    "maui"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_plus",
+   "lat": 20.93,
+   "lon": -156.36,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Kaanapali",
+   "view": "Maui - Sheraton Maui Resort & Spa",
+   "country": "États-Unis",
+   "area": "Hawaï · Maui",
+   "id": "HuYWHvFWais",
+   "embed": true,
+   "by": "Ozolio Plus",
+   "match": [
+    "kaanapali"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_plus",
+   "lat": 20.93,
+   "lon": -156.36,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Pipeline",
+   "view": "Banzai - North Shore, Oahu",
+   "country": "États-Unis",
+   "area": "Hawaï · Oahu",
+   "id": "Fp7l8XASb9Y",
+   "embed": true,
+   "by": "Explore Big Surf, Beaches and Sunsets",
+   "match": [
+    "pipeline"
+   ],
+   "ch": "https://www.youtube.com/@ExploreBigSurfandBeaches",
+   "lat": 21.28,
+   "lon": -157.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Kauai",
+   "view": "Sheraton Kauai Resort, Hawaii",
+   "country": "États-Unis",
+   "area": "Hawaï · Kauai & Big Island",
+   "id": "tuj4OvU6UZI",
+   "embed": true,
+   "by": "Ozolio Plus",
+   "match": [
+    "kauai"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_plus",
+   "lat": 21.9,
+   "lon": -159.5,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Honolulu",
+   "view": "Hawaii . Ala Moana, Magic Island",
+   "country": "États-Unis",
+   "area": "Hawaï · Oahu",
+   "id": "y5XS3fMISRk",
+   "embed": true,
+   "by": "WOZ ERE",
+   "match": [
+    "honolulu"
+   ],
+   "ch": "https://www.youtube.com/@wozereme",
+   "lat": 21.28,
+   "lon": -157.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Oceanside",
+   "view": "The Rooftop Bar - Fixed Wide West",
+   "country": "États-Unis",
+   "area": "Californie du Sud",
+   "id": "OYqo4dqYjh0",
+   "embed": true,
+   "by": "San Diego Web Cam",
+   "match": [
+    "oceanside"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 33.66,
+   "lon": -118,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Huntington Beach",
+   "view": "View from Pier",
+   "country": "États-Unis",
+   "area": "Californie du Sud",
+   "id": "mhQjsLBfOoY",
+   "embed": true,
+   "by": "City of Huntington Beach",
+   "match": [
+    "huntington beach"
+   ],
+   "ch": "https://www.youtube.com/@cityofhb",
+   "lat": 33.66,
+   "lon": -118,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "San Diego",
+   "view": "Rotating/Switched Feed",
+   "country": "États-Unis",
+   "area": "San Diego",
+   "id": "edz0ux7JClE",
+   "embed": true,
+   "by": "San Diego Web Cam",
+   "match": [
+    "san diego"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 32.8,
+   "lon": -117.26,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Manhattan Beach",
+   "view": "Manhattan and Surf Report",
+   "country": "États-Unis",
+   "area": "Californie du Sud",
+   "id": "tBEIYdw1HeM",
+   "embed": true,
+   "by": "The Surfers View",
+   "match": [
+    "manhattan beach"
+   ],
+   "ch": "https://www.youtube.com/@TheSurfersView",
+   "lat": 33.66,
+   "lon": -118,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Jacksonville",
+   "view": "From The Best Western In",
+   "country": "États-Unis",
+   "area": "Floride · Atlantique",
+   "id": "bZ4uxyLqV-E",
+   "embed": true,
+   "by": "911 Surf Report",
+   "match": [
+    "jacksonville"
+   ],
+   "ch": "https://www.youtube.com/@eddiewouldknow",
+   "lat": 25.79,
+   "lon": -80.13,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Waikiki",
+   "view": "FLYING OVER OAHU - HAWAII",
+   "country": "États-Unis",
+   "area": "Hawaï · Oahu",
+   "id": "NJm5QIZ6hRc",
+   "embed": true,
+   "by": "Beautiful Places 4K",
+   "match": [
+    "waikiki"
+   ],
+   "ch": "https://www.youtube.com/channel/UCHj38j5HL6EPajczILG-vzQ",
+   "lat": 21.28,
+   "lon": -157.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Miami",
+   "view": "River",
+   "country": "États-Unis",
+   "area": "Floride · Atlantique",
+   "id": "FHzIIYECzmM",
+   "embed": true,
+   "by": "Miami River Camera ",
+   "match": [
+    "miami"
+   ],
+   "ch": "https://www.youtube.com/@MiamiRiverCam",
+   "lat": 25.79,
+   "lon": -80.13,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Tofino",
+   "view": "Beachview - Crystal Cove Beach Resort",
+   "country": "Canada",
+   "area": "Canada",
+   "id": "AovvFApVnKc",
+   "embed": true,
+   "by": "Crystal Cove Beach Resort - Cabins & RV Camping",
+   "match": [
+    "tofino"
+   ],
+   "ch": "https://www.youtube.com/@crystalcovetofino",
+   "lat": 49.15,
+   "lon": -125.9,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Newport Beach",
+   "view": "THE WEDGE",
+   "country": "États-Unis",
+   "area": "Californie du Sud",
+   "id": "YTHMolT2PTM",
+   "embed": true,
+   "by": "Josh Pomer Surfing ",
+   "match": [
+    "newport beach"
+   ],
+   "ch": "https://www.youtube.com/@surfingclipstv",
+   "lat": 33.66,
+   "lon": -118,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Pacifica",
+   "view": "Pier and Beach, Pacifica CA",
+   "country": "États-Unis",
+   "area": "Californie du Nord",
+   "id": "3vqiXAw1Km4",
+   "embed": true,
+   "by": "Chamberlin Nature",
+   "match": [
+    "pacifica"
+   ],
+   "ch": "https://www.youtube.com/@ChamberlinNature",
+   "lat": 36.95,
+   "lon": -122.02,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "San Diego",
+   "view": "Harbor Island",
+   "country": "États-Unis",
+   "area": "San Diego",
+   "id": "iaBfYxbmwXA",
+   "embed": true,
+   "by": "San Diego Web Cam",
+   "match": [
+    "san diego"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 32.8,
+   "lon": -117.26,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "San Diego",
+   "view": "Shelter Island Pier",
+   "country": "États-Unis",
+   "area": "San Diego",
+   "id": "UnTDO-7BV1k",
+   "embed": false,
+   "by": "San Diego Web Cam",
+   "match": [
+    "san diego"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 32.8,
+   "lon": -117.26,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "San Diego",
+   "view": "Shelter Island",
+   "country": "États-Unis",
+   "area": "San Diego",
+   "id": "OUB8NDFSmFI",
+   "embed": false,
+   "by": "San Diego Web Cam",
+   "match": [
+    "san diego"
+   ],
+   "ch": "https://www.youtube.com/@SanDiegoWebCam",
+   "lat": 32.8,
+   "lon": -117.26,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Pacifica",
+   "view": "Sharp Park Beach, CA",
+   "country": "États-Unis",
+   "area": "Californie du Nord",
+   "id": "lmec_rcEIL4",
+   "embed": true,
+   "by": "Chamberlin Nature",
+   "match": [
+    "pacifica"
+   ],
+   "ch": "https://www.youtube.com/@ChamberlinNature",
+   "lat": 36.95,
+   "lon": -122.02,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Pacifica",
+   "view": "Pier Closeup, Pacifica, CA",
+   "country": "États-Unis",
+   "area": "Californie du Nord",
+   "id": "BrUaOjjXgZM",
+   "embed": true,
+   "by": "Chamberlin Nature",
+   "match": [
+    "pacifica"
+   ],
+   "ch": "https://www.youtube.com/@ChamberlinNature",
+   "lat": 36.95,
+   "lon": -122.02,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Tofino",
+   "view": "From Long Beach Lodge",
+   "country": "Canada",
+   "area": "Canada",
+   "id": "sCo9q5S52EM",
+   "embed": true,
+   "by": "Long Beach Lodge Resort",
+   "match": [
+    "tofino"
+   ],
+   "ch": "https://www.youtube.com/@LongBeachLodge",
+   "lat": 49.15,
+   "lon": -125.9,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Outer Banks",
+   "view": "NC from Twiddy & Company",
+   "country": "États-Unis",
+   "area": "Outer Banks & Hatteras",
+   "id": "WEhuDqlxHmM",
+   "embed": true,
+   "by": "Twiddy & Company Vacation Rentals",
+   "match": [
+    "outer banks"
+   ],
+   "ch": "https://www.youtube.com/@twiddyobx",
+   "lat": 35.25,
+   "lon": -75.53,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Jacksonville",
+   "view": "Beach Pier",
+   "country": "États-Unis",
+   "area": "Floride · Atlantique",
+   "id": "c400PBf6adI",
+   "embed": false,
+   "by": "911 Surf Report",
+   "match": [
+    "jacksonville"
+   ],
+   "ch": "https://www.youtube.com/@eddiewouldknow",
+   "lat": 25.79,
+   "lon": -80.13,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Myrtle Beach",
+   "view": "Boardwalk",
+   "country": "États-Unis",
+   "area": "Côte Est",
+   "id": "UKtfCDXhCq0",
+   "embed": true,
+   "by": "Myrtle Beach Today",
+   "match": [
+    "myrtle beach"
+   ],
+   "ch": "https://www.youtube.com/@MyrtleBeachToday",
+   "lat": 36.85,
+   "lon": -75.98,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Outer Banks",
+   "view": "Nags Head - Oceanfront V",
+   "country": "États-Unis",
+   "area": "Outer Banks & Hatteras",
+   "id": "nqzBqUyaWiM",
+   "embed": true,
+   "by": "Sunnyside Up Weather",
+   "match": [
+    "outer banks"
+   ],
+   "ch": "https://www.youtube.com/@SunnysideUpWeather",
+   "lat": 35.25,
+   "lon": -75.53,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Ocean City",
+   "view": "NJ Beach - Storm",
+   "country": "États-Unis",
+   "area": "Côte Est",
+   "id": "1l-nqyyhzro",
+   "embed": true,
+   "by": "ms36K",
+   "match": [
+    "ocean city"
+   ],
+   "ch": "https://www.youtube.com/@ms36000",
+   "lat": 36.85,
+   "lon": -75.98,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Clearwater",
+   "view": "The Edge Hotel Beach",
+   "country": "États-Unis",
+   "area": "Floride · Golfe & Keys",
+   "id": "V7sUbjD_e3I",
+   "embed": true,
+   "by": "Clearwater Beach Live Cams",
+   "match": [
+    "clearwater"
+   ],
+   "ch": "https://www.youtube.com/@ClearwaterBeachLiveCams",
+   "lat": 27.98,
+   "lon": -82.83,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Galveston",
+   "view": "Texas - Beach",
+   "country": "États-Unis",
+   "area": "Texas",
+   "id": "HkHhXsWci7Q",
+   "embed": true,
+   "by": "ABC13 Houston",
+   "match": [
+    "galveston"
+   ],
+   "ch": "https://www.youtube.com/@ABC13Houston",
+   "lat": 26.11,
+   "lon": -97.17,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "South Padre",
+   "view": "Courtyard by Marriott So",
+   "country": "États-Unis",
+   "area": "Texas",
+   "id": "dzylsC0KcOE",
+   "embed": true,
+   "by": "South Padre Island",
+   "match": [
+    "south padre"
+   ],
+   "ch": "https://www.youtube.com/@enjoyspi",
+   "lat": 26.11,
+   "lon": -97.17,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "South Padre",
+   "view": "Isla Blanca Beach Park",
+   "country": "États-Unis",
+   "area": "Texas",
+   "id": "0FaRaPPTS8M",
+   "embed": true,
+   "by": "South Padre Surf Company",
+   "match": [
+    "south padre"
+   ],
+   "ch": "https://www.youtube.com/@spadrevideo",
+   "lat": 26.11,
+   "lon": -97.17,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "South Padre",
+   "view": "La Copa Inn Beach Hotel",
+   "country": "États-Unis",
+   "area": "Texas",
+   "id": "0Y9Du5nVWWA",
+   "embed": true,
+   "by": "South Padre Island",
+   "match": [
+    "south padre"
+   ],
+   "ch": "https://www.youtube.com/@enjoyspi",
+   "lat": 26.11,
+   "lon": -97.17,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Myrtle Beach",
+   "view": "Gorgeous day in",
+   "country": "États-Unis",
+   "area": "Côte Est",
+   "id": "yTfNMKMnK2Y",
+   "embed": true,
+   "by": "Vacation Myrtle Beach",
+   "match": [
+    "myrtle beach"
+   ],
+   "ch": "https://www.youtube.com/@VacationMB",
+   "lat": 36.85,
+   "lon": -75.98,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Myrtle Beach",
+   "view": "View - Capt",
+   "country": "États-Unis",
+   "area": "Côte Est",
+   "id": "GKOyGoRE0Tg",
+   "embed": true,
+   "by": "Vacation Myrtle Beach",
+   "match": [
+    "myrtle beach"
+   ],
+   "ch": "https://www.youtube.com/@VacationMB",
+   "lat": 36.85,
+   "lon": -75.98,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Ocean City",
+   "view": "Fishing Club looking north",
+   "country": "États-Unis",
+   "area": "Côte Est",
+   "id": "9S4VUEFfo_g",
+   "embed": true,
+   "by": "Jim Ginn",
+   "match": [
+    "ocean city"
+   ],
+   "ch": "https://www.youtube.com/@ocbeachli",
+   "lat": 36.85,
+   "lon": -75.98,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Ocean City",
+   "view": "Boardwalk Pan",
+   "country": "États-Unis",
+   "area": "Côte Est",
+   "id": "DFI784Q_S7s",
+   "embed": true,
+   "by": "Jim Ginn",
+   "match": [
+    "ocean city"
+   ],
+   "ch": "https://www.youtube.com/@ocbeachli",
+   "lat": 36.85,
+   "lon": -75.98,
+   "approx": true
+  },
+  {
+   "sea": "usa",
+   "place": "Tofino",
+   "view": "Sea Kayaking Harbour",
+   "country": "Canada",
+   "area": "Canada",
+   "id": "_qN4aao5kWc",
+   "embed": true,
+   "by": "Tofino Sea Kayaking (Paddle TSK)",
+   "match": [
+    "tofino"
+   ],
+   "ch": "https://www.youtube.com/@TofinoSeaKayaking",
+   "lat": 49.15,
+   "lon": -125.9,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Martinique",
+   "view": "Les Anses d'Arlet",
+   "country": "Antilles",
+   "area": "Martinique & Guadeloupe",
+   "id": "CC0gjFqH_u4",
+   "embed": true,
+   "by": "🔴 Vision-Environnement - Webcams LIVE",
+   "match": [
+    "martinique"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 14.6,
+   "lon": -61,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Curacao",
+   "view": "Mambo Beach - Curaçao",
+   "country": "Antilles néerl.",
+   "area": "Aruba, Bonaire & Curaçao",
+   "id": "loHbMM9JfCs",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "curacao"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 12.52,
+   "lon": -70.03,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Curacao",
+   "view": "Handelskade - World Heritage",
+   "country": "Antilles néerl.",
+   "area": "Aruba, Bonaire & Curaçao",
+   "id": "28U-t3fA9ks",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "curacao"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 12.52,
+   "lon": -70.03,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "St Maarten",
+   "view": "Philipsburg",
+   "country": "Antilles",
+   "area": "Saint-Martin & Saint-Barth",
+   "id": "s_UpggS3J9Y",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "st maarten"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 18.04,
+   "lon": -63.12,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Cabo San Lucas",
+   "view": "Baja California Sur",
+   "country": "Mexique",
+   "area": "Mexique · Pacifique",
+   "id": "POijZWZ1qwc",
+   "embed": true,
+   "by": "WebcamsDeMexico Live",
+   "match": [
+    "cabo san lucas"
+   ],
+   "ch": "https://www.youtube.com/@webcamsdemexico_live",
+   "lat": 22.89,
+   "lon": -109.91,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Puerto Vallarta",
+   "view": "Los Muertos Beach - Pier",
+   "country": "Mexique",
+   "area": "Mexique · Pacifique",
+   "id": "xwuuvc86-CI",
+   "embed": true,
+   "by": "El Dorado Restaurant",
+   "match": [
+    "puerto vallarta"
+   ],
+   "ch": "https://www.youtube.com/@eldoradopvr",
+   "lat": 22.89,
+   "lon": -109.91,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Isla Mujeres",
+   "view": "Quintana R",
+   "country": "Mexique",
+   "area": "Riviera Maya",
+   "id": "UnlUBl62aWA",
+   "embed": true,
+   "by": "Webcams de México TV / Canal 8",
+   "match": [
+    "isla mujeres"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsMXCanal8",
+   "lat": 21.16,
+   "lon": -86.85,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Los Cabos",
+   "view": "Cámara - Vista",
+   "country": "Mexique",
+   "area": "Mexique · Pacifique",
+   "id": "DoRxExItSXc",
+   "embed": true,
+   "by": "Hoteles Solaris",
+   "match": [
+    "los cabos"
+   ],
+   "ch": "https://www.youtube.com/@HotelesSolaris",
+   "lat": 22.89,
+   "lon": -109.91,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Florianopolis",
+   "view": "Florianópolis - Campeche",
+   "country": "Brésil",
+   "area": "Sud du Brésil",
+   "id": "rdCrFl1VlUQ",
+   "embed": true,
+   "by": "Maaxcam Ao Vivo",
+   "match": [
+    "florianopolis"
+   ],
+   "ch": "https://www.youtube.com/@maaxcamaovivo",
+   "lat": -27.6,
+   "lon": -48.45,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Curacao",
+   "view": "Klein Curaçao - Miss Ann Boat Trips",
+   "country": "Antilles néerl.",
+   "area": "Aruba, Bonaire & Curaçao",
+   "id": "_P3fgFEG55E",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "curacao"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 12.52,
+   "lon": -70.03,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "St Maarten",
+   "view": "Caribbean Beach - Aruba",
+   "country": "Antilles",
+   "area": "Saint-Martin & Saint-Barth",
+   "id": "Py2qfFiclr4",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "st maarten"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 18.04,
+   "lon": -63.12,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Curacao",
+   "view": "Curaçao - Willemstad - Mambo Beach",
+   "country": "Antilles néerl.",
+   "area": "Aruba, Bonaire & Curaçao",
+   "id": "Z9NH3Os_-iI",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "curacao"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 12.52,
+   "lon": -70.03,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "St John",
+   "view": "Beach Bar St. John",
+   "country": "Porto Rico",
+   "area": "Porto Rico & Îles Vierges",
+   "id": "2wqpy036z24",
+   "embed": true,
+   "by": "St. John USVI",
+   "match": [
+    "st john"
+   ],
+   "ch": "https://www.youtube.com/@GR8XVilla",
+   "lat": 18.34,
+   "lon": -67.25,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "St John",
+   "view": "Blind Donkey - in downtown Cruz Bay",
+   "country": "Porto Rico",
+   "area": "Porto Rico & Îles Vierges",
+   "id": "p4C2WL9Nq9o",
+   "embed": true,
+   "by": "St. John USVI",
+   "match": [
+    "st john"
+   ],
+   "ch": "https://www.youtube.com/@GR8XVilla",
+   "lat": 18.34,
+   "lon": -67.25,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "St John",
+   "view": "Serendip - USVI",
+   "country": "Porto Rico",
+   "area": "Porto Rico & Îles Vierges",
+   "id": "_zv8Ina_Ecs",
+   "embed": true,
+   "by": "Serendip St John",
+   "match": [
+    "st john"
+   ],
+   "ch": "https://www.youtube.com/@SerendipStJohn",
+   "lat": 18.34,
+   "lon": -67.25,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Cancun",
+   "view": "Cancún Quintana Roo, - V",
+   "country": "Mexique",
+   "area": "Riviera Maya",
+   "id": "NeHO46kDJ20",
+   "embed": true,
+   "by": "Webcams de México TV",
+   "match": [
+    "cancun"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsMXCanal4",
+   "lat": 21.16,
+   "lon": -86.85,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Aruba",
+   "view": "Eagle Beach - Costa Lind",
+   "country": "Antilles néerl.",
+   "area": "Aruba, Bonaire & Curaçao",
+   "id": "_ZXMjk5K0_s",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "aruba"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 12.52,
+   "lon": -70.03,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Saint Martin",
+   "view": "Simpson Bay Beach Resort",
+   "country": "Antilles",
+   "area": "Saint-Martin & Saint-Barth",
+   "id": "vxHKAImxUHk",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "saint martin"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 18.04,
+   "lon": -63.12,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Saint Martin",
+   "view": "Boardwalk - Great Bay Beach",
+   "country": "Antilles",
+   "area": "Saint-Martin & Saint-Barth",
+   "id": "N5Mb2bjYwZo",
+   "embed": true,
+   "by": "SHOWME Caribbean",
+   "match": [
+    "saint martin"
+   ],
+   "ch": "https://www.youtube.com/@SHOWMECaribbean",
+   "lat": 18.04,
+   "lon": -63.12,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Jamaica",
+   "view": "Rick's Cafe - Negril",
+   "country": "Antilles",
+   "area": "Jamaïque, Bahamas & Caïmans",
+   "id": "tnw2Jjz3KDw",
+   "embed": true,
+   "by": "Beach Live Cams",
+   "match": [
+    "jamaica"
+   ],
+   "ch": "https://www.youtube.com/@FuryLive-t9y",
+   "lat": 18.47,
+   "lon": -77.92,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Jamaica",
+   "view": "Devon House Kingston - Stoplight",
+   "country": "Antilles",
+   "area": "Jamaïque, Bahamas & Caïmans",
+   "id": "BPNCPQ-UDZA",
+   "embed": true,
+   "by": "See Jamaica ",
+   "match": [
+    "jamaica"
+   ],
+   "ch": "https://www.youtube.com/@SeeJamaica",
+   "lat": 18.47,
+   "lon": -77.92,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Puerto Rico",
+   "view": "The Royal Sonesta San Juan",
+   "country": "Porto Rico",
+   "area": "Porto Rico & Îles Vierges",
+   "id": "taI7GiyvDxE",
+   "embed": true,
+   "by": "Ozolio Live",
+   "match": [
+    "puerto rico"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_live",
+   "lat": 18.34,
+   "lon": -67.25,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Cancun",
+   "view": "Cancún, Quintana Roo - V",
+   "country": "Mexique",
+   "area": "Riviera Maya",
+   "id": "EQgngcJjApk",
+   "embed": true,
+   "by": "Webcams de México TV / Canal 6",
+   "match": [
+    "cancun"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsMXCanal6",
+   "lat": 21.16,
+   "lon": -86.85,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Cancun",
+   "view": "The Royal",
+   "country": "Mexique",
+   "area": "Riviera Maya",
+   "id": "5D8BK_MLd-I",
+   "embed": true,
+   "by": "Royal Resorts",
+   "match": [
+    "cancun"
+   ],
+   "ch": "https://www.youtube.com/@royalresorts7000",
+   "lat": 21.16,
+   "lon": -86.85,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Cancun",
+   "view": "Cancún, Quintana Roo - V",
+   "country": "Mexique",
+   "area": "Riviera Maya",
+   "id": "hAGNCcPGae8",
+   "embed": true,
+   "by": "Webcams de México TV / Canal 6",
+   "match": [
+    "cancun"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsMXCanal6",
+   "lat": 21.16,
+   "lon": -86.85,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Costa Rica",
+   "view": "Tamarindo Diria Beach, - 2",
+   "country": "Costa Rica",
+   "area": "Costa Rica & Panama",
+   "id": "Z_iMJwrTODo",
+   "embed": true,
+   "by": "Earth Watch Live",
+   "match": [
+    "costa rica"
+   ],
+   "ch": "https://www.youtube.com/@EarthWatchLive1",
+   "lat": 10.3,
+   "lon": -85.84,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Costa Rica",
+   "view": "Beach - Playa",
+   "country": "Costa Rica",
+   "area": "Costa Rica & Panama",
+   "id": "jQki_lEGNEs",
+   "embed": true,
+   "by": "LocalView",
+   "match": [
+    "costa rica"
+   ],
+   "ch": "https://www.youtube.com/@localviewlive",
+   "lat": 10.3,
+   "lon": -85.84,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Costa Rica",
+   "view": "San Jose",
+   "country": "Costa Rica",
+   "area": "Costa Rica & Panama",
+   "id": "irZN3wtk2tY",
+   "embed": true,
+   "by": "San Jose Costa Rica 4K Live Cam",
+   "match": [
+    "costa rica"
+   ],
+   "ch": "https://www.youtube.com/@SanJoseCostaRica4KLiveCam",
+   "lat": 10.3,
+   "lon": -85.84,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Cartagena",
+   "view": "Playa Chica",
+   "country": "Colombie",
+   "area": "Colombie & Venezuela",
+   "id": "obYSVVM7RB0",
+   "embed": true,
+   "by": "sanantonioimagen",
+   "match": [
+    "cartagena"
+   ],
+   "ch": "https://www.youtube.com/@sanantonioimagen",
+   "lat": 10.42,
+   "lon": -75.55,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Rio de Janeiro",
+   "view": "Copacabana Posto 6",
+   "country": "Brésil",
+   "area": "Rio de Janeiro",
+   "id": "wyEi0OPai5g",
+   "embed": true,
+   "by": "Homes in Rio",
+   "match": [
+    "rio de janeiro"
+   ],
+   "ch": "https://www.youtube.com/@homesinrio3840",
+   "lat": -22.97,
+   "lon": -43.18,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Rio de Janeiro",
+   "view": "Panorama",
+   "country": "Brésil",
+   "area": "Rio de Janeiro",
+   "id": "Bz9Hkrk1NcY",
+   "embed": true,
+   "by": "Homes in Rio",
+   "match": [
+    "rio de janeiro"
+   ],
+   "ch": "https://www.youtube.com/@homesinrio3840",
+   "lat": -22.97,
+   "lon": -43.18,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Rio de Janeiro",
+   "view": "Copacabana Posto 3",
+   "country": "Brésil",
+   "area": "Rio de Janeiro",
+   "id": "WEl_I5vmuSs",
+   "embed": true,
+   "by": "Homes in Rio",
+   "match": [
+    "rio de janeiro"
+   ],
+   "ch": "https://www.youtube.com/@homesinrio3840",
+   "lat": -22.97,
+   "lon": -43.18,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Florianopolis",
+   "view": "Praia da Lagoinha do Nor",
+   "country": "Brésil",
+   "area": "Sud du Brésil",
+   "id": "MQDs8aq_Bu0",
+   "embed": true,
+   "by": "Maaxcam Ao Vivo",
+   "match": [
+    "florianopolis"
+   ],
+   "ch": "https://www.youtube.com/@maaxcamaovivo",
+   "lat": -27.6,
+   "lon": -48.45,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Acapulco",
+   "view": "Guerrero - Vis",
+   "country": "Mexique",
+   "area": "Mexique · Pacifique",
+   "id": "Ozvr21XUhfY",
+   "embed": true,
+   "by": "Webcams de México TV / Canal 8",
+   "match": [
+    "acapulco"
+   ],
+   "ch": "https://www.youtube.com/@WebcamsMXCanal8",
+   "lat": 22.89,
+   "lon": -109.91,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Mar Del Plata",
+   "view": "ARGENTINA Cámaras de CABA",
+   "country": "Uruguay",
+   "area": "Uruguay & Argentine",
+   "id": "IZlEBiQJJEg",
+   "embed": true,
+   "by": "Argentina 247",
+   "match": [
+    "mar del plata"
+   ],
+   "ch": "https://www.youtube.com/@Argentina-247",
+   "lat": -34.96,
+   "lon": -54.95,
+   "approx": true
+  },
+  {
+   "sea": "afr",
+   "place": "Muizenberg",
+   "view": "Beach - REEF South Africa",
+   "country": "Afrique du Sud",
+   "area": "Le Cap",
+   "id": "eoTaA3a7wkU",
+   "embed": true,
+   "by": "REEF SOUTH AFRICA",
+   "match": [
+    "muizenberg"
+   ],
+   "ch": "https://www.youtube.com/@Reef-SA",
+   "lat": -33.81,
+   "lon": 18.47,
+   "approx": true
+  },
+  {
+   "sea": "afr",
+   "place": "Muizenberg",
+   "view": "Wave Watchers - Surf",
+   "country": "Afrique du Sud",
+   "area": "Le Cap",
+   "id": "xQGZlljQlCM",
+   "embed": true,
+   "by": "Muizenberg Wave Watchers",
+   "match": [
+    "muizenberg"
+   ],
+   "ch": "https://www.youtube.com/@MuizenbergWaveWatchers",
+   "lat": -33.81,
+   "lon": 18.47,
+   "approx": true
+  },
+  {
+   "sea": "afr",
+   "place": "Plettenberg",
+   "view": "TCS bay - Natures Valley",
+   "country": "Afrique du Sud",
+   "area": "Durban & côte Est",
+   "id": "bVtf0Qcc_gY",
+   "embed": true,
+   "by": "TCS Live",
+   "match": [
+    "plettenberg"
+   ],
+   "ch": "https://www.youtube.com/@TCSLiveOnline",
+   "lat": -29.86,
+   "lon": 31.04,
+   "approx": true
+  },
+  {
+   "sea": "afr",
+   "place": "Plettenberg",
+   "view": "TCS bay - Th",
+   "country": "Afrique du Sud",
+   "area": "Durban & côte Est",
+   "id": "sXWLXNSGX68",
+   "embed": true,
+   "by": "TCS Live",
+   "match": [
+    "plettenberg"
+   ],
+   "ch": "https://www.youtube.com/@TCSLiveOnline",
+   "lat": -29.86,
+   "lon": 31.04,
+   "approx": true
+  },
+  {
+   "sea": "afr",
+   "place": "El Gouna",
+   "view": "KBC El Gouna",
+   "country": "Égypte",
+   "area": "Mer Rouge",
+   "id": "vj-h3jvVTzQ",
+   "embed": true,
+   "by": "KBC World",
+   "match": [
+    "el gouna"
+   ],
+   "ch": "https://www.youtube.com/@KBC-WORLD",
+   "lat": 27.39,
+   "lon": 33.68,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Koh Samui",
+   "view": "Crystal Bay Yacht Club Xtra Lamai",
+   "country": "Thaïlande",
+   "area": "Thaïlande",
+   "id": "TQ3E8bjAbFY",
+   "embed": true,
+   "by": "The Real Samui Webcam",
+   "match": [
+    "koh samui"
+   ],
+   "ch": "https://www.youtube.com/@TheRealSamuiWebcam",
+   "lat": 7.89,
+   "lon": 98.3,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Koh Samui",
+   "view": "Crystal Bay Yacht Club Lamai",
+   "country": "Thaïlande",
+   "area": "Thaïlande",
+   "id": "3N3ZwIB_X4Y",
+   "embed": true,
+   "by": "The Real Samui Webcam",
+   "match": [
+    "koh samui"
+   ],
+   "ch": "https://www.youtube.com/@TheRealSamuiWebcam",
+   "lat": 7.89,
+   "lon": 98.3,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Koh Samui",
+   "view": "Crystal Bay Beach Resort - Lamai",
+   "country": "Thaïlande",
+   "area": "Thaïlande",
+   "id": "Fw9hgttWzIg",
+   "embed": true,
+   "by": "The Real Samui Webcam",
+   "match": [
+    "koh samui"
+   ],
+   "ch": "https://www.youtube.com/@TheRealSamuiWebcam",
+   "lat": 7.89,
+   "lon": 98.3,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Koh Samui",
+   "view": "Hush Bar - Soi Green Mango - Chaweng",
+   "country": "Thaïlande",
+   "area": "Thaïlande",
+   "id": "DwKCna1mumk",
+   "embed": true,
+   "by": "The Real Samui Webcam",
+   "match": [
+    "koh samui"
+   ],
+   "ch": "https://www.youtube.com/@TheRealSamuiWebcam",
+   "lat": 7.89,
+   "lon": 98.3,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Koh Phangan",
+   "view": "Beach - House of Sanskara",
+   "country": "Thaïlande",
+   "area": "Thaïlande",
+   "id": "MW3fisTCXRQ",
+   "embed": true,
+   "by": "Teleport.camera",
+   "match": [
+    "koh phangan"
+   ],
+   "ch": "https://www.youtube.com/@Teleport.camera",
+   "lat": 7.89,
+   "lon": 98.3,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Koh Samui",
+   "view": "El Gaucho - Fisherman's Village",
+   "country": "Thaïlande",
+   "area": "Thaïlande",
+   "id": "FyFAqPHBKiQ",
+   "embed": true,
+   "by": "The Real Samui Webcam",
+   "match": [
+    "koh samui"
+   ],
+   "ch": "https://www.youtube.com/@TheRealSamuiWebcam",
+   "lat": 7.89,
+   "lon": 98.3,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Bali",
+   "view": "Weather - Wide Pano",
+   "country": "Indonésie",
+   "area": "Bali & Indonésie",
+   "id": "L1duJDAqbJY",
+   "embed": true,
+   "by": "Bali Weather Live Stream",
+   "match": [
+    "bali"
+   ],
+   "ch": "https://www.youtube.com/@Bali_Weather",
+   "lat": -8.72,
+   "lon": 115.17,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Bali",
+   "view": "Arkaluna Kintamani Weather",
+   "country": "Indonésie",
+   "area": "Bali & Indonésie",
+   "id": "onXhMdHEx54",
+   "embed": true,
+   "by": "Arkaluna Resort & Adventure, Kintamani - Bali.",
+   "match": [
+    "bali"
+   ],
+   "ch": "https://www.youtube.com/@arkalunabali",
+   "lat": -8.72,
+   "lon": 115.17,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Kamakura",
+   "view": "鎌倉 若宮大路 段葛ライブカメラ「置石fm. 」",
+   "country": "Japon",
+   "area": "Japon",
+   "id": "VOix1wTjheQ",
+   "embed": true,
+   "by": "置石fm. 鎌倉ライブカメラ",
+   "match": [
+    "kamakura"
+   ],
+   "ch": "https://www.youtube.com/@okiishi-fm",
+   "lat": 35.3,
+   "lon": 139.48,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Enoshima",
+   "view": "【 】江の島ヨットハーバー ライブカメラ / E",
+   "country": "Japon",
+   "area": "Japon",
+   "id": "DoC_PlS1P_M",
+   "embed": true,
+   "by": "【公式】リビエラ / Riviera Official",
+   "match": [
+    "enoshima"
+   ],
+   "ch": "https://www.youtube.com/@rivieraofficial8715",
+   "lat": 35.3,
+   "lon": 139.48,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Shonan",
+   "view": "七里ヶ浜・江ノ島ライブカメラ（ワイド） 湘南 鎌",
+   "country": "Japon",
+   "area": "Japon",
+   "id": "dHfoc2iKrAo",
+   "embed": true,
+   "by": "湘南ライブカメラ",
+   "match": [
+    "shonan"
+   ],
+   "ch": "https://www.youtube.com/@shonan-livecam",
+   "lat": 35.3,
+   "lon": 139.48,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Kamakura",
+   "view": "Minegahara Wave",
+   "country": "Japon",
+   "area": "Japon",
+   "id": "zn61XDLxZDo",
+   "embed": true,
+   "by": "峰ヒルズcam",
+   "match": [
+    "kamakura"
+   ],
+   "ch": "https://www.youtube.com/@minehillslive",
+   "lat": 35.3,
+   "lon": 139.48,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Haeundae",
+   "view": "뷰 실화?? - 부산 송정 - 해운대 - 해수욕장 실시간",
+   "country": "Corée du Sud",
+   "area": "Corée, Chine & Taïwan",
+   "id": "NBZdNZYF1gI",
+   "embed": true,
+   "by": "올라호텔ᅵ송정 해수욕장",
+   "match": [
+    "haeundae"
+   ],
+   "ch": "https://www.youtube.com/@ollahotel1585",
+   "lat": 35.16,
+   "lon": 129.16,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Haeundae",
+   "view": "실시간 해운대 해수욕장 - Beach",
+   "country": "Corée du Sud",
+   "area": "Corée, Chine & Taïwan",
+   "id": "b0AUiAC7u4w",
+   "embed": true,
+   "by": "Busan Haeundae Live [부산 해운대 라이브]",
+   "match": [
+    "haeundae"
+   ],
+   "ch": "https://www.youtube.com/@BusanHaeundaeLive",
+   "lat": 35.16,
+   "lon": 129.16,
+   "approx": true
   }
- ]
+ ],
+ "updated": "2026-11-13"
 }

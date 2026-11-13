@@ -86,10 +86,11 @@ const SPOTS = [
   ["asia","Polynésie","Tahiti, Fidji & Nouvelle-Calédonie",-17.85,-149.27,["tahiti","teahupoo","moorea","bora bora","fiji","noumea","nouvelle caledonie","rarotonga"]],
 ];
 
+// YouTube coupe la connexion après une dizaine de requêtes rapprochées : on va lentement, et on patiente en cas de refus
 async function get(url) {
-  for (let k = 0; k < 2; k++) {
-    try { const r = await fetch(url, { headers: UA, redirect: "follow" }); if (r.ok) return await r.text(); } catch (e) { /* une nouvelle tentative */ }
-    await sleep(1500);
+  for (let k = 0; k < 4; k++) {
+    try { const r = await fetch(url, { headers: UA, redirect: "follow", signal: AbortSignal.timeout(25000) }); if (r.ok) return await r.text(); } catch (e) { /* on patiente */ }
+    await sleep(30000 + k * 30000);
   }
   return "";
 }
@@ -122,15 +123,15 @@ try { for (const c of JSON.parse(fs.readFileSync(new URL("../webcams/index.json"
 const EXTRA = ["live beach cam", "surf cam live", "kitesurf webcam live", "live webcam beach 4k", "webcam plage en direct", "webcam playa en directo", "webcam spiaggia live", "strand webcam live", "praia ao vivo camera", "harbour webcam live", "live cam island beach", "windsurf webcam live", "surfline live cam", "skylinewebcams live beach", "live cam pier", "marina webcam live", "lake webcam live", "wing foil spot webcam"];
 const pool = new Map(); let q = 0;
 const queries = [];
-for (const sp of SPOTS) { const keys = sp[5]; if (sp[6]) queries.push(sp[6]); for (const k of keys.slice(0, 4)) queries.push(k + " webcam live"); }
+for (const sp of SPOTS) { const keys = sp[5]; if (sp[6]) queries.push(sp[6]); queries.push(keys[0] + " webcam live"); if (keys[1]) queries.push(keys[1] + " live cam"); }
 queries.push(...EXTRA);
 const POOL = OUT + ".pool.json";
 if (fs.existsSync(POOL)) { for (const v of JSON.parse(fs.readFileSync(POOL, "utf8"))) pool.set(v.id, v); console.log("reprise :", pool.size, "directs déjà vus"); }
 else { for (const qq of queries) {
   const vids = videosOf(await get("https://www.youtube.com/results?search_query=" + encodeURIComponent(qq) + "&sp=EgJAAQ%253D%253D"));
   for (const v of vids) if (!pool.has(v.id)) pool.set(v.id, v);
-  q++; if (q % 20 === 0) console.log(q, "/", queries.length, "recherches,", pool.size, "directs vus");
-  await sleep(250);
+  q++; if (q % 10 === 0) fs.writeFileSync(POOL + ".part", JSON.stringify([...pool.values()])); if (q % 10 === 0) console.log(q, "/", queries.length, "recherches,", pool.size, "directs vus");
+  await sleep(5000);
 }
   fs.writeFileSync(POOL, JSON.stringify([...pool.values()])); }
 // 2) on rattache chaque direct à un spot par son titre (mot-clé le plus long d'abord)
@@ -145,12 +146,12 @@ console.log(pool.size, "directs vus,", todo.length, "rattachés à un spot ; vé
 // 3) vérification : en direct maintenant, et lisible dans l'appli
 const per = {}; let done = 0;
 async function worker() { for (;;) { const it = todo.shift(); if (!it) return; const { v, g } = it, sp = g.sp, id = sp[0] + "/" + sp[2];
-    if ((per[id] || 0) >= 6) continue; const st = await check(v.id); await sleep(250); done++;
+    if ((per[id] || 0) >= 6) continue; const st = await check(v.id); await sleep(4000); done++;
     if (!st || !st.live || (per[id] || 0) >= 6) continue; per[id] = (per[id] || 0) + 1;
     found.push({ sea: sp[0], country: sp[1], place: sp[2], key: g.k, id: v.id, embed: st.embed, title: v.t, by: v.by, ch: v.ch ? "https://www.youtube.com" + v.ch : "", lat: sp[3], lon: sp[4] });
     if (found.length % 15 === 0) { console.log(found.length, "retenues"); fs.writeFileSync(OUT, JSON.stringify(found, null, 1)); } } }
 if (process.argv[3] === "collect") process.exit(0);
-await Promise.all([worker(), worker(), worker(), worker()]);
+await Promise.all([worker()]);
 const order = new Map(SPOTS.map((sp, i) => [sp[0] + "/" + sp[2], i]));
 found.sort((a, b) => order.get(a.sea + "/" + a.place) - order.get(b.sea + "/" + b.place));
 fs.writeFileSync(OUT, JSON.stringify(found, null, 1));
