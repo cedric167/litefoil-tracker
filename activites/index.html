@@ -119,6 +119,11 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover .ctrl button{border:0;background:rgba(255,255,255,.14);color:#fff;backdrop-filter:blur(8px);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
 .flyover .ctrl button.primary{background:var(--cyan)}
 .flyover .ctrl{gap:8px;flex-wrap:wrap;padding:0 12px}
+.flyover .seek{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 88px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:18px;padding:8px 10px}
+.flyover .seek button{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;font-weight:700;line-height:1}
+.flyover .seekbar{flex:1;min-width:0}
+.flyover .seekbar input{width:100%;margin:0;accent-color:#ff5a1f;height:26px;touch-action:none}
+.flyover .seeklab{display:flex;justify-content:space-between;color:#fff;font-size:11.5px;opacity:.8;font-variant-numeric:tabular-nums;margin-top:-2px}
 .flyover .spd{display:flex;gap:3px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:4px}
 .flyover .spd button{background:transparent;padding:9px 12px;border-radius:999px;font-size:14px;font-weight:600;color:#fff}
 .flyover .spd button.on{background:var(--cyan)}
@@ -264,6 +269,12 @@ input[type=file]{display:none}
     <button id="flyZout" aria-label="Zoom arriere">−</button>
     <button id="flyRotL" aria-label="Tourner a gauche">⟲</button>
     <button id="flyRotR" aria-label="Tourner a droite">⟳</button>
+  </div>
+  <!-- 13/11 : barre pour avancer / reculer dans le parcours -->
+  <div class="seek">
+    <button id="flyBack" aria-label="Reculer">«</button>
+    <div class="seekbar"><input type="range" id="flySeek" min="0" max="1000" step="1" value="0" aria-label="Position dans le parcours"><div class="seeklab"><span id="flySeekT">0:00</span><span id="flySeekEnd"></span></div></div>
+    <button id="flyFwd" aria-label="Avancer">»</button>
   </div>
   <div class="ctrl">
     <button id="flyPlay" aria-label="Lecture/Pause">⏸</button>
@@ -635,7 +646,15 @@ document.getElementById("btnDel").onclick=()=>{ const a=current; if(!a) return;
   ALL=ALL.filter(x=>String(x.id)!==String(a.id)); document.getElementById("sheet").classList.remove("open"); render(); };
 
 /* ====================== SURVOL 3D ====================== */
-let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1;
+let flyRAF=null, flyProg=0, flyPaused=false, flySpeedMul=1, flyDraw=null, flySeeking=false;
+// avancer / reculer : la barre et les boutons « » déplacent le point sans attendre
+function flySeekTo(v){ flyProg=Math.max(0,Math.min(1,v)); if(flyDraw) flyDraw(true); if(flyProg<1 && flyPaused){ const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="▶"; } }
+(function(){ const sk=document.getElementById("flySeek");
+  sk.addEventListener("input",()=>{ flySeeking=true; flySeekTo(sk.value/1000); });
+  ["change","pointerup","pointercancel","touchend"].forEach(n=>sk.addEventListener(n,()=>{ flySeeking=false; }));
+  document.getElementById("flyBack").onclick=()=>flySeekTo(flyProg-0.05);
+  document.getElementById("flyFwd").onclick=()=>flySeekTo(flyProg+0.05); })();
+function flyClock(s){ s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), x=s%60; return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(x).padStart(2,"0"); }
 function ptGeo(p){ return {type:"Feature",geometry:{type:"Point",coordinates:[p.lon,p.lat]}}; }
 document.getElementById("btnFly").onclick=()=>startFly(current);
 document.getElementById("closeFly").onclick=document.getElementById("flyClose2").onclick=stopFly;
@@ -682,28 +701,41 @@ function runFly(a,pts){
   flyProg=0; flyPaused=false;
   const playBtn=document.getElementById("flyPlay"); if(playBtn) playBtn.textContent="⏸";
   const spd=document.getElementById("flySpeed"), alt=document.getElementById("flyAlt"), dist=document.getElementById("flyDist");
-  const maxSpeedDisplay=a.milieu==="mer"; let runningMax=0; let last=performance.now();
-  const frame=(now)=>{
-    const dt=now-last; last=now;
-    if(!flyPaused){
-      flyProg=Math.min(1, flyProg + (dt/BASE)*flySpeedMul);
-      const fi=flyProg*(N-1); const i=Math.floor(fi); const frac=fi-i;
+  const maxSpeedDisplay=a.milieu==="mer"; let last=performance.now();
+  // vitesse max atteinte jusqu'à chaque point (pour pouvoir sauter n'importe où dans le parcours)
+  const maxTo=new Array(N); { let m=0; for(let k=0;k<N;k++){ m=Math.max(m,+pts[k].speed||0); maxTo[k]=m; } }
+  // temps écoulé : heure des points si elle existe, sinon durée de l'activité répartie sur le parcours
+  const tOf=(q)=>{ const v=(q.t!=null?q.t:(q.time!=null?q.time:null)); return v==null?null:(typeof v==="number"?v:Date.parse(v)); };
+  const t0=tOf(pts[0]), t1=tOf(pts[N-1]); let total=(t0!=null&&t1!=null&&t1>t0)?(t1-t0):0; if(total>1e7) total/=1000; // millisecondes -> secondes
+  if(!total) total=+a.duration||+a.dur||+a.moving_time||0;
+  const sk=document.getElementById("flySeek"), skT=document.getElementById("flySeekT"), skE=document.getElementById("flySeekEnd");
+  skE.textContent= total ? flyClock(total) : ((pts[N-1].dist||0)/1000).toFixed(1)+" km"; sk.value=0;
+  flyDraw=(fromSeek)=>{
+      const fi=flyProg*(N-1); const i=Math.min(N-1,Math.floor(fi)); const frac=fi-i;
       const p0=pts[i], p1=pts[Math.min(i+1,N-1)];
       const lon=p0.lon+(p1.lon-p0.lon)*frac, lat=p0.lat+(p1.lat-p0.lat)*frac;
       const speed=p0.speed+(p1.speed-p0.speed)*frac, altv=p0.alt+(p1.alt-p0.alt)*frac, distv=p0.dist+(p1.dist-p0.dist)*frac;
       flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1).concat([{lon,lat}])));
       flyMap.getSource("flyDot").setData(ptGeo({lon,lat}));
-      runningMax=Math.max(runningMax,speed);
       spd.textContent=Math.round(speed);
-      alt.textContent= maxSpeedDisplay ? Math.round(runningMax) : Math.round(altv);
+      alt.textContent= maxSpeedDisplay ? Math.round(Math.max(maxTo[i],speed)) : Math.round(altv);
       dist.textContent=(distv/1000).toFixed(1);
+      skT.textContent= total ? flyClock(total*flyProg) : (distv/1000).toFixed(1)+" km";
+      if(!flySeeking) sk.value=Math.round(flyProg*1000);
+  };
+  const frame=(now)=>{
+    const dt=now-last; last=now;
+    if(!flyPaused && !flySeeking){
+      flyProg=Math.min(1, flyProg + (dt/BASE)*flySpeedMul);
+      flyDraw(false);
       if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; }
     }
     flyRAF=requestAnimationFrame(frame);
   };
+  flyDraw(false);
   flyRAF=requestAnimationFrame(frame);
 }
-function stopFly(){ cancelAnimationFrame(flyRAF); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
+function stopFly(){ cancelAnimationFrame(flyRAF); flyDraw=null; flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
