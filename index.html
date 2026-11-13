@@ -1891,7 +1891,8 @@
 .tk-chips::-webkit-scrollbar{display:none}
 .tk-sport .sps-btn,.tk-sport select.phsel{display:none !important}
 .tk-chips button{flex:0 0 auto;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:84px;max-width:104px;padding:11px 10px 9px;border-radius:18px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;line-height:1.15;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,background .15s,color .15s}
-.tk-chips button i{font-style:normal;font-size:26px;line-height:1}
+.tk-chips button i{font-style:normal;font-size:30px;line-height:1}
+.tk-now .spi{font-size:15px;margin-right:4px}
 .tk-chips button.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f4fdfc);color:#0b5f5a;transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(20,184,171,.6)}
 .tk-rec{position:relative;overflow:hidden;border-radius:28px;padding:18px 16px 16px;color:#fff;background:linear-gradient(165deg,#07222c 0%,#0b3d47 55%,#0f6a67 100%);box-shadow:0 18px 40px -18px rgba(7,34,44,.75);margin-bottom:14px}
 .tk-rec:before{content:"";position:absolute;right:-80px;top:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(47,211,195,.28),rgba(47,211,195,0) 70%);pointer-events:none}
@@ -3521,12 +3522,12 @@
     running:"🏃", marche:"🚶", rando:"🥾", trail:"⛰️", velo:"🚴", ski:"🎿", snowboard:"🏂", skate:"🛹", longboard:"🛹", surfskate:"🛹", roller:"🛼", longueur:"🦘", perche:"🤸", parapente:"🪂" };
   function tkChips(){ var sel=$("phAct"), box=$("tkChips"); if(!sel || !box) return; box.innerHTML="";
     Array.prototype.forEach.call(sel.options, function(o){ var b=document.createElement("button"); b.type="button"; b.dataset.v=o.value; b.setAttribute("role","option");
-      var i=document.createElement("i"); i.textContent=TK_EMO[o.value]||"✨"; var t=document.createElement("span"); t.textContent=o.text; b.appendChild(i); b.appendChild(t); box.appendChild(b); });
+      var i=document.createElement("i"); if(typeof spIco==="function") i.innerHTML=spIco(o.value); else i.textContent=TK_EMO[o.value]||"✨"; var t=document.createElement("span"); t.textContent=o.text; b.appendChild(i); b.appendChild(t); box.appendChild(b); });
     box.scrollLeft=0; tkPaint(); }
   // met à jour la pastille choisie, le sport affiché dans le tableau de bord et les barres du signal GPS
   function tkPaint(){ var sel=$("phAct"), box=$("tkChips");
     if(sel && box) Array.prototype.forEach.call(box.children, function(b){ var on=b.dataset.v===sel.value; if(b.classList.contains("on")!==on){ b.classList.toggle("on", on); b.setAttribute("aria-selected", on?"true":"false"); } });
-    var now=$("tkNow"); if(now && sel){ var o=sel.options[sel.selectedIndex], tx=o ? (TK_EMO[o.value]||"")+" "+o.text : ""; if(now.dataset.tx!==tx){ now.dataset.tx=tx; now.textContent=tx; } }
+    var now=$("tkNow"); if(now && sel){ var o=sel.options[sel.selectedIndex], tx=o ? (TK_EMO[o.value]||"")+" "+o.text : ""; if(now.dataset.tx!==tx){ now.dataset.tx=tx; if(o && typeof spIco==="function"){ now.innerHTML=spIco(o.value)+" "; now.appendChild(document.createTextNode(o.text)); } else now.textContent=tx; } }
     var g=$("tkGps"), a=$("phAcc"); if(g && a){ var m=parseFloat(a.textContent), q=isFinite(m) ? (m<=10?3:(m<=30?2:1)) : 0; if(g.dataset.q!==String(q)) g.dataset.q=String(q); } }
   function phSetMilieu(m){
     phMilieu = m;
@@ -5712,7 +5713,8 @@
     ok:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>' };
   function lfCallOk(){ return !!(backend && backend.rt && window.RTCPeerConnection && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
   function lfCallBtns(){ var a=$("chatCallA"), v=$("chatCallV"); if(!a||!v) return;
-    var on = chatMode==="dm" && dmPeer && dmPeer.uid!==me.uid && dmPeer.uid!==TEAM_UID && !!(backend && backend.rt); a.hidden=!on; v.hidden=!on; }
+    var C=window.Capacitor, nat=!!(C && C.isNativePlatform && C.isNativePlatform()), okApp=!nat || /LiteFoilCall\//.test(navigator.userAgent);   /* applis natives : seulement celles qui ont le micro et la caméra (1.5.0+) */
+    var on = okApp && chatMode==="dm" && dmPeer && dmPeer.uid!==me.uid && dmPeer.uid!==TEAM_UID && !!(backend && backend.rt); a.hidden=!on; v.hidden=!on; }
   function lfCallTone(kind){ // sonnerie / tonalité sans fichier son
     try{ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return function(){}; var ac=new AC(), stop=false;
       var beep=function(){ if(stop) return; var seq = kind==="in" ? [[660,0,.18],[880,.22,.18],[660,.44,.18],[880,.66,.28]] : [[440,0,.9]];
@@ -5769,7 +5771,7 @@
         c.to=setTimeout(function(){ if(lfCall===c && c.state==="ring") lfCallEnd("miss"); }, 45000); }); }); }
   // appelé : la sonnerie arrive par userDM/<moi>/<appelant>/call
   function lfCallRing(map){ if(!backend || !backend.rt) return; for(var peer in map){ var e=map[peer], k=e&&e.call; if(!k || !k.mid || lfCallSeen[k.mid]) continue; lfCallSeen[k.mid]=1;
-      if(blocked.has(peer) || !window.RTCPeerConnection) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; } lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
+      if(blocked.has(peer) || !window.RTCPeerConnection) continue; var C2=window.Capacitor; if(C2 && C2.isNativePlatform && C2.isNativePlatform() && !/LiteFoilCall\//.test(navigator.userAgent)) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; } lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
   function lfCallIncoming(peer, name, k){ var rt=backend.rt, path="dm/"+pairKey(me.uid,peer)+"/"+k.mid, un=null, done=false;
     un=rt.onValue(rt.ref(path+"/rtc"), function(sn){ var v=sn.val(); if(done) return; if(!v) return; done=true; setTimeout(function(){ try{ un&&un(); }catch(e){} },0);
       if(v.st!=="ring" || !v.offer){ rt.remove(rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); return; }   // appel déjà terminé

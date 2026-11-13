@@ -29,5 +29,6 @@
   "server": {
     "url": "https://cedric167.github.io/litefoil-tracker/",
     "cleartext": false
-  }
+  },
+  "appendUserAgent": " LiteFoilCall/1"
 }
