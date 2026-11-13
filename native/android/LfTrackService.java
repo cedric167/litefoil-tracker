@@ -134,7 +134,8 @@ public class LfTrackService extends Service implements LocationListener {
         count = LfTrackStore.count(this);
         try {
             lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 0f, this, Looper.getMainLooper());
+            // 13/11 : on demande 5 points/s ; la puce GPS du téléphone donne ce qu'elle peut (1 point/s sur la plupart)
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200L, 0f, this, Looper.getMainLooper());
             listening = true;
         } catch (SecurityException e) {
             stopTracking();
@@ -174,7 +175,7 @@ public class LfTrackService extends Service implements LocationListener {
 
     // 12/11 : suivi en direct (sécurité en mer). Si la sortie est partagée (meta.live = {u, k}), la position est
     // envoyée au serveur Lite Foil toutes les ~20 s, même écran éteint / appli fermée.
-    private long liveLast = 0;
+    private long liveLast = 0, livePtT = 0;
     private String liveUrl = null, liveKey = null;
     private boolean liveRead = false;
     private final JSONArray liveBuf = new JSONArray();
@@ -190,6 +191,8 @@ public class LfTrackService extends Service implements LocationListener {
                 }
             }
             if (liveUrl == null || liveKey == null || !liveUrl.startsWith("https://")) return;
+            if (l.getTime() - livePtT < 900) return; // suivi en direct : 1 point/s suffit
+            livePtT = l.getTime();
             JSONObject q = new JSONObject();
             q.put("lat", l.getLatitude()); q.put("lng", l.getLongitude()); q.put("t", l.getTime());
             q.put("spd", l.hasSpeed() ? l.getSpeed() * 3.6 : 0);

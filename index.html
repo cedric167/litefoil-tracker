@@ -3149,6 +3149,10 @@
     lfReady = true;
   }
   function mapOnShow(){ mapInit(); if (lfMap) setTimeout(function(){ lfMap.invalidateSize(); }, 60); }
+  // 13/11 : animation de la carte entre deux points GPS
+  var lfAnim = 0, lfTgt = null, lfTgtT = 0;
+  function mapAnimStop(){ if (lfAnim) { cancelAnimationFrame(lfAnim); lfAnim = 0; }
+    if (lfTgt && lfTrail && lfMe) { var p = lfTrail.getLatLngs(); if (p.length) { p[p.length - 1] = L.latLng(lfTgt); lfTrail.setLatLngs(p); } lfMe.setLatLng(lfTgt); } }
   function mapUpdate(lat, lon, spd){
     mapInit();
     if (!lfMap) return;
@@ -3156,11 +3160,27 @@
     if (!lfMe){
       lfMe = L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 }).addTo(lfMap);
       lfMap.setView(ll, 16); lfFollow = true;
+      lfTrail.setLatLngs(lfTrail.getLatLngs().concat([ll])); lfTgt = ll; lfTgtT = Date.now();
     } else {
-      lfMe.setLatLng(ll);
-      if (lfFollow) lfMap.panTo(ll, { animate: true, duration: 0.5 });
+      var from = lfTgt || ll, now = Date.now(), gap = now - lfTgtT;
+      mapAnimStop();
+      var pts = lfTrail.getLatLngs(); pts.push(ll); if (pts.length > 3000) pts.shift();
+      lfTgt = ll; lfTgtT = now;
+      if (gap > 3000 || gap < 50 || document.hidden || !window.requestAnimationFrame) {
+        lfMe.setLatLng(ll); lfTrail.setLatLngs(pts);
+        if (lfFollow) lfMap.panTo(ll, { animate: true, duration: 0.5 });
+      } else {
+        var dur = Math.min(1000, gap * 0.95), t0 = performance.now(), tip = pts.length - 1;
+        if (lfFollow) lfMap.panTo(ll, { animate: true, duration: dur / 1000, easeLinearity: 1 });
+        var step = function(t){
+          var k = Math.min(1, (t - t0) / dur), cur = [from[0] + (ll[0] - from[0]) * k, from[1] + (ll[1] - from[1]) * k];
+          lfMe.setLatLng(cur); pts[tip] = L.latLng(cur); lfTrail.setLatLngs(pts);
+          lfAnim = k < 1 ? requestAnimationFrame(step) : 0;
+        };
+        pts[tip] = L.latLng(from); lfTrail.setLatLngs(pts);
+        lfAnim = requestAnimationFrame(step);
+      }
     }
-    var pts = lfTrail.getLatLngs(); pts.push(ll); if (pts.length > 3000) pts.shift(); lfTrail.setLatLngs(pts);
     $("mapNote").textContent = "Position en direct" + (spd != null ? " · " + spd.toFixed(1) + " km/h" : "");
   }
   function mapFsToggle(){
@@ -3240,7 +3260,7 @@
     $("phSpdMax").textContent = phNum(phMax)+" km/h";
     if(last){
       $("phSpd").textContent = phNum(last.speed||0)+" km/h"; $("phAcc").textContent = (last.acc!=null?Math.round(last.acc)+" m":"—");
-      try { mapInit(); if(lfMap){ var ll = phPts.slice(-3000).map(function(q){ return [q.lat,q.lon]; }); lfTrail.setLatLngs(ll);
+      try { mapInit(); if(lfMap){ var ll = phPts.slice(-3000).map(function(q){ return [q.lat,q.lon]; }); if(lfAnim){ cancelAnimationFrame(lfAnim); lfAnim=0; } lfTgt=[last.lat,last.lon]; lfTgtT=Date.now(); lfTrail.setLatLngs(ll);
         if(!lfMe){ lfMe = L.circleMarker([last.lat,last.lon], { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 }).addTo(lfMap); lfMap.setView([last.lat,last.lon], 16); lfFollow = true; }
         else { lfMe.setLatLng([last.lat,last.lon]); if(lfFollow) lfMap.panTo([last.lat,last.lon]); } } } catch(e){}
     }
@@ -3405,7 +3425,7 @@
         backgroundMessage: "Ta sortie est en cours d'enregistrement.",
         requestPermissions: true,
         stale: false,
-        distanceFilter: 5
+        distanceFilter: 0
       }, function(location, error){
         if(error){
           if(error.code === "NOT_AUTHORIZED"){
@@ -3427,7 +3447,7 @@
     }, function(err){
       $("phNote").textContent = "GPS refusé ou indisponible"+(err&&err.message?" ("+err.message+")":"")+". Autorise la localisation puis réessaie.";
       if(!phPts.length){ phStopCleanup(); $("phStart").hidden=false; $("phStop").hidden=true; }
-    }, { enableHighAccuracy:true, maximumAge:1000, timeout:20000 });
+    }, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
   }
   function phStopCleanup(){
     if(phNatOn){ var n=phNat(); if(n){ try{ n.stop(); }catch(e){} } phNatDetach(); phNatOn = false; }
