@@ -700,6 +700,8 @@
   .fc-ic{ font-size:24px; margin-top:6px; }
   .spi{ display:inline-flex; align-items:center; justify-content:center; position:relative; width:1.55em; height:1.55em; border-radius:28%; vertical-align:middle; flex:none; box-shadow:0 1px 3px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.35); }
   .spi > svg{ width:64%; height:64%; fill:#fff; }
+  .spi-img{ background:#fff; width:1.75em; height:1.75em; border-radius:24%; box-shadow:0 1px 4px rgba(4,40,90,.28), 0 0 0 1px rgba(255,255,255,.5); }
+  .spi-img img{ width:100%; height:100%; display:block; border-radius:inherit; object-fit:cover; }
   .spi i{ position:absolute; right:-14%; bottom:-14%; width:50%; height:50%; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.25); }
   .spi i svg{ width:72%; height:72%; fill:currentColor; }
   .spi-vol{ background:linear-gradient(145deg,#38d4f0,#0369c9); color:#0369c9; }
@@ -2876,7 +2878,12 @@
   function spKey(k){ k=String(k||"").toLowerCase(); return SP_GLYPH[k] ? k : (SP_ALIAS[k]||"other"); }
   function spSvg(n){ return '<svg viewBox="0 -960 960 960" aria-hidden="true"><path d="'+SP_PATH[n]+'"/></svg>'; }
   // icône pro d'un sport : tuile arrondie dégradée + pictogramme blanc (+ petit badge)
+  // 13/11 : icônes illustrées (img/sports/*.webp) ; les sports sans illustration gardent le pictogramme
+  var SP_IMG = { efoil:"efoil", wingfoil:"wingfoil", windsurf:"windsurf", kitesurf:"kitesurf", pumpfoil:"pumpfoil", surffoil:"pumpfoil", surf:"surf", bodyboard:"bodyboard",
+    sup:"sup", supdownwind:"sup", jetski:"jetski", running:"running", marche:"marche", rando:"rando", trail:"trail", velo:"velo", ski:"ski", snowboard:"snowboard",
+    skate:"skate", longboard:"skate", surfskate:"skate", roller:"roller", perche:"perche", parapente:"parapente" };
   function spIco(k, cls){ var s=spKey(k), g=SP_GLYPH[s], f=SP_FAMC[s]||(s==="trophy"?"gold":"other");
+    if(SP_IMG[s]) return '<span class="spi spi-img'+(cls?" "+cls:"")+'"><img src="img/sports/'+SP_IMG[s]+'.webp?v=1" alt="" decoding="async"></span>';
     return '<span class="spi spi-'+f+(cls?" "+cls:"")+'">'+spSvg(g[0])+(g[1]?'<i>'+spSvg(g[1])+'</i>':'')+'</span>'; }
   // pour les dessins sur canvas (carte partagée)
   function spDraw(x, k, cx, cy, size, color){ var g=SP_GLYPH[spKey(k)]; x.save(); x.translate(cx-size/2, cy-size/2); x.scale(size/960, size/960); x.translate(0,960); x.fillStyle=color||"#fff"; x.fill(new Path2D(SP_PATH[g[0]])); x.restore(); }
