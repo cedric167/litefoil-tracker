@@ -192,6 +192,17 @@
     background:radial-gradient(120% 140% at 100% 0%, #2bb6c0 0%, #0f6f8a 45%, #0b3a55 100%); box-shadow:0 10px 30px rgba(11,58,85,.28); position:relative; overflow:hidden; }
   .home-cond::after{ content:""; position:absolute; inset:auto -10% -38% -10%; height:70%; background:radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.14), transparent 70%); pointer-events:none; }
   .home-cond:active{ transform:scale(.99); }
+  /* 13/11 : accueil compact */
+  .hero .hero-hi{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; min-width:0; }
+  .hero .hero-hi .hh-date{ font-family:"Instrument Sans", system-ui, sans-serif; font-style:normal; font-size:10.5px; font-weight:700; letter-spacing:.07em; color:rgba(255,255,255,.9); text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  .hero .hero-hi .hh-title{ font-size:25px; font-weight:400; line-height:1.05; margin:0; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.6); max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #tab-dash .home-shop{ margin:2px 0 12px; padding:8px 12px 8px 14px; border-radius:18px; gap:12px; }
+  #tab-dash .hs-logo{ width:84px; height:40px; } #tab-dash .hs-logo img{ left:-10px; top:-14px; width:116px; }
+  #tab-dash .hs-tx{ gap:1px; padding-left:12px; } #tab-dash .hs-tx b{ font-size:15px; } #tab-dash .hs-tx small{ font-size:11.5px; }
+  #tab-dash .hs-go{ width:30px; height:30px; }
+  .home-cond{ padding:12px 16px 11px; border-radius:20px; }
+  .home-cond .hc-main{ margin:4px 0 8px; } .home-cond .hc-wind b{ font-size:42px; letter-spacing:-1.5px; }
+  .home-cond .hc-row{ padding-top:8px; font-size:13.5px; }
   .hc-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; opacity:.85; }
   .hc-spot{ text-transform:none; letter-spacing:0; font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%; }
   .hc-main{ display:flex; align-items:flex-end; justify-content:space-between; margin:10px 0 12px; }
@@ -1890,7 +1901,7 @@
     <div class="shade"></div>
     <div class="brand">
       <img src="litefoil-logo.png" alt="Lite Foil" onerror="this.style.display='none'">
-      <span>Tracker GPS<br>&amp; sessions live</span>
+      <span class="hero-hi"><i class="hh-date" id="homeDate"></i><b class="hh-title" id="homeHello">Bonjour 👋</b></span>
     </div>
   </div>
   <div class="tabs">
@@ -1914,9 +1925,11 @@
 
   <section id="tab-dash" class="tabpane">
     <!-- Accueil (refonte 06/11) : bonjour, conditions du moment, mes sorties, appareils, liens Lite Foil -->
-    <div class="home-hello">
-      <div><div class="hh-date" id="homeDate"></div><h2 class="hh-title" id="homeHello">Bonjour 👋</h2></div>
-    </div>
+    <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
+      <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
+      <span class="hs-tx"><b>La boutique</b><small>litefoil.fr · eFoils, foils et accessoires</small></span>
+      <span class="hs-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
     <div class="st-bar" aria-label="Stories"></div>
 
     <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
@@ -2006,11 +2019,6 @@
     </div>
 
     <div class="m-label" style="margin:22px 6px 10px">Lite Foil</div>
-    <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
-      <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
-      <span class="hs-tx"><b>La boutique</b><small>litefoil.fr · eFoils, foils et accessoires</small></span>
-      <span class="hs-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
-    </a>
     <div class="home-links">
       <a href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener"><span class="hl-ic hl-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 7.5v9l7.5-4.5z"/></svg></span><span>YouTube</span></a>
       <a id="lnkFacebook" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener"><span class="hl-ic hl-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/></svg></span><span>Facebook</span></a>
