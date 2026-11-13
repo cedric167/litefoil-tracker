@@ -637,6 +637,9 @@
   .ev-chat-btn{ background:#7a4fe0; display:flex; align-items:center; justify-content:center; gap:8px; }
   .ev-card .evc-go{ display:block; width:100%; border:0; border-top:1px solid var(--line-soft); background:#f1ebff; color:#5b33c4; font-weight:700; font-size:14px; padding:10px; cursor:pointer; }
   .chat-head #chatTransBtn{ margin-left:auto; }
+  .sosm{ display:flex; flex-direction:column; gap:6px; min-width:210px; background:linear-gradient(150deg,#c4162f,#7a0c20); color:#fff; border-radius:14px; padding:12px; margin:-2px -4px 2px; }
+  .sosm b{ font-size:19px; font-weight:900; letter-spacing:.05em; } .sosm i{ font-style:normal; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; opacity:.85; margin-top:-4px; } .sosm span{ font-size:14.5px; }
+  .sosm a{ display:block; text-align:center; text-decoration:none !important; border-radius:12px; padding:10px; font-size:14.5px; font-weight:800; color:#fff !important; background:rgba(255,255,255,.18); } .sosm a.w{ background:#fff; color:#7a0c20 !important; }
   /* 13/11 : appels */
   .chat-call{ flex:none; width:38px; height:38px; min-height:0; padding:0; border:0; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(20,138,144,.12); color:#148a90; cursor:pointer; box-shadow:none; }
   .chat-call[hidden]{ display:none; } .chat-call svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
@@ -5662,6 +5665,11 @@
     q.addEventListener("input", function(){ clearTimeout(tmr); var s=q.value.trim(); tmr=setTimeout(function(){ s?search(s):trending(); },320); });
     trending(); setTimeout(function(){ q.focus(); },60);
   }
+  // message SOS : carte lisible avec boutons (position en direct, itinéraire)
+  function lfSosCard(t){ var urls=String(t).match(/https?:\/\/[^\s]+/g)||[], live=urls.filter(function(u){ return u.indexOf("/l/")>0; })[0]||"", map=urls.filter(function(u){ return u.indexOf("google.com/maps")>0; })[0]||"";
+    var kind=(String(t).match(/SOS \(([^)]*)\)/)||[])[1]||"besoin d'aide";
+    return '<span class="sosm"><b>🆘 SOS</b><i>'+esc(kind.charAt(0).toUpperCase()+kind.slice(1))+'</i><span>J\'ai besoin d\'aide.</span>'
+      +(live?'<a class="w" href="'+esc(live)+'" target="_blank" rel="noopener">📍 Position en direct</a>':'')+(map?'<a href="'+esc(map)+'" target="_blank" rel="noopener">🧭 Itinéraire</a>':'')+(!live&&!map?'<span>Position en cours de recherche.</span>':'')+'</span>'; }
   function renderChat(){
     if(chatMode==="groups"){ renderGroupsList(); return; }
     if(chatMode==="dms"){ renderDMList(); return; }
@@ -5689,7 +5697,9 @@
       const replyBtn = `<button class="msg-reply" data-i="${i}" title="Répondre" aria-label="Répondre">↩︎</button>`;
       // annonce d'événement : la carte remplace le texte (gardé pour les notifications et anciennes versions)
       let bodyText=(m.text&&!m.ev)?esc(m.text):"", note="";
-      if(!mine && autoTrans && m.text && !m.ev && translatable(m.text)){
+      const sosMsg=!!(m.text && !m.ev && /^🆘 SOS/.test(m.text));
+      if(sosMsg){ bodyText=lfSosCard(m.text); }
+      else if(!mine && autoTrans && m.text && !m.ev && translatable(m.text)){
         const c=tcache[tl+"|"+m.text];
         if(c){ const h=strHash(m.text), showOrig=transShowOrig.has(h);
           bodyText=esc(showOrig?m.text:c.tr);
@@ -5737,7 +5747,7 @@
   }
   // ================= 13/11 : appels audio / vidéo entre deux riders (messages privés) =================
   // Le message d'appel (dm/<paire>/<id>) porte la signalisation WebRTC dans « rtc » ; la sonnerie passe par userDM/<destinataire>/<moi>/call.
-  var lfCall=null, lfCallSeen={};
+  var lfCall=null, lfCallSeen={}, lfCallOld=false;
   var LFC_ICE={ iceServers:[{ urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"] },{ urls:"stun:stun.cloudflare.com:3478" }] };
   var LFC_SVG={ mic:'<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
     cam:'<svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="M15 10.5l6-3.5v10l-6-3.5z"/></svg>',
@@ -5747,7 +5757,7 @@
   function lfCallOk(){ return !!(backend && backend.rt && window.RTCPeerConnection && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
   function lfCallBtns(){ var a=$("chatCallA"), v=$("chatCallV"); if(!a||!v) return;
     var C=window.Capacitor, nat=!!(C && C.isNativePlatform && C.isNativePlatform()), okApp=!nat || /LiteFoilCall\//.test(navigator.userAgent);   /* applis natives : seulement celles qui ont le micro et la caméra (1.5.0+) */
-    var on = okApp && chatMode==="dm" && dmPeer && dmPeer.uid!==me.uid && dmPeer.uid!==TEAM_UID && !!(backend && backend.rt); a.hidden=!on; v.hidden=!on; }
+    lfCallOld=!okApp; var on = chatMode==="dm" && dmPeer && dmPeer.uid!==me.uid && dmPeer.uid!==TEAM_UID && !!(backend && backend.rt); a.hidden=!on; v.hidden=!on; }
   function lfCallTone(kind){ // sonnerie / tonalité sans fichier son
     try{ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return function(){}; var ac=new AC(), stop=false;
       var beep=function(){ if(stop) return; var seq = kind==="in" ? [[660,0,.18],[880,.22,.18],[660,.44,.18],[880,.66,.28]] : [[440,0,.9]];
@@ -5788,7 +5798,8 @@
   function lfCallFlush(c){ (c.pend||[]).splice(0).forEach(function(x){ c.pc.addIceCandidate(x).catch(function(){}); }); }
   function lfCallWatch(c){ var rt=backend.rt; c.unSt=rt.onValue(rt.ref(c.path+"/rtc/st"), function(sn){ var v=sn.val(); if(lfCall!==c) return; if(v==="end"||v==="no"||v==="miss"||v==="fail") lfCallEnd(v, true); }); }
   // appelant
-  function lfCallStart(kind){ if(lfCall || !dmPeer) return; if(!lfCallOk()){ alert("Les appels ne sont pas disponibles sur cet appareil (micro inaccessible)."); return; }
+  function lfCallStart(kind){ if(lfCall || !dmPeer) return;
+    if(lfCallOld){ alert("Les appels arrivent avec la prochaine mise à jour de l'application (version 1.5.0, en cours de validation). En attendant, tu peux appeler depuis le site dans Chrome ou Safari."); return; } if(!lfCallOk()){ alert("Les appels ne sont pas disponibles sur cet appareil (micro inaccessible)."); return; }
     var peer=dmPeer.uid, pair=pairKey(me.uid,peer), rt=backend.rt, c=lfCall={ kind:kind, peer:peer, name:dmPeer.pseudo, incoming:false, state:"ring", facing:"user" };
     lfCallUI(c);
     lfCallMedia(c).then(function(){ if(lfCall!==c) return; var pc=lfCallPeer0(c, pair); return pc; }).catch(function(e){ if(lfCall===c){ lfCallEnd("local", true); alert(e && e.name==="NotAllowedError" ? "Autorise le micro"+(kind==="v"?" et la caméra":"")+" pour appeler (réglages de l'application)." : "Appel impossible : "+((e&&e.message)||"micro inaccessible")); } }); }
