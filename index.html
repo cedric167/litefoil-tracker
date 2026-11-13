@@ -1337,6 +1337,12 @@
   .sosx-list{ margin-top:12px; display:flex; flex-direction:column; gap:7px; } .sosx-li{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.1); border-radius:14px; padding:8px 10px; } .sosx-li .sosx-av{ margin:0; border-width:0; }
   .sosx-li b{ flex:1; min-width:0; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .sosx-li em{ font-style:normal; font-size:12px; font-weight:800; padding:4px 9px; border-radius:999px; background:rgba(255,255,255,.16); } .sosx-li em.ok{ background:#19b866; } .sosx-li em.ko{ background:#ff8a00; }
   .sosx-in .sosx-av{ width:104px; height:104px; font-size:44px; margin:26px auto 0; border-width:4px; animation:lfcPulse 1.4s ease-out infinite; } .sosx-in h2{ text-align:center; font-size:30px; font-weight:900; margin:16px 0 4px; color:#fff; } .sosx-in p{ text-align:center; margin:0 10px; font-size:15px; line-height:1.45; color:rgba(255,255,255,.9); }
+  .sec-wa{ margin-top:14px; padding-top:12px; border-top:1px solid #e6ecee; } .sec-wa > b{ font-size:15.5px; }
+  .sec-wa-add{ display:flex; gap:6px; margin-top:8px; } .sec-wa-add input{ flex:1; min-width:0; border:1.5px solid #dfe6e8; border-radius:12px; padding:10px; font:inherit; font-size:15px; } .sec-wa-add input:first-child{ flex:.7; }
+  .sec-wa-add button{ flex:none; min-height:0; border:0; border-radius:12px; padding:0 13px; background:#25d366; color:#fff; font:inherit; font-weight:800; font-size:14px; cursor:pointer; box-shadow:none; }
+  .sec-wa-i{ display:flex; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid #eef2f3; } .sec-wa-i b{ flex:1; min-width:0; font-size:15px; } .sec-wa-i span{ font-size:13px; color:#6b7a80; } .sec-wa-i button{ width:30px; height:30px; min-height:0; padding:0; border:0; border-radius:50%; background:#f1f3f4; color:#6b7a80; cursor:pointer; box-shadow:none; }
+  .sec-wa-l{ display:flex; flex-direction:column; gap:8px; margin:10px 0 12px; } .sec-wa-l.sos{ margin:10px 0 0; }
+  .sec-wa-b{ display:flex; align-items:center; justify-content:center; gap:9px; text-decoration:none; border-radius:16px; padding:13px; background:#25d366; color:#fff !important; font-weight:800; font-size:16px; } .sec-wa-b svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .sec-sosv{ position:fixed; inset:0; z-index:12000; background:#fff; display:flex; flex-direction:column; animation:cfIn .2s ease-out; }
   .sec-sos-h{ display:flex; align-items:center; justify-content:space-between; background:#e8384f; color:#fff; padding:calc(env(safe-area-inset-top) + 14px) 16px 14px; } .sec-sos-h b{ font-size:22px; letter-spacing:.04em; }
   .sec-x{ width:40px; height:40px; border:0; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; font-size:18px; cursor:pointer; }
@@ -9007,8 +9013,15 @@
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12600"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Mes gardiens</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi tes amis et les riders que tu suis. Sans choix, tous tes amis sont prévenus.</p>'
       +(list.length? '<div class="sec-list">'+list.map(function(c){ return '<label class="sec-li"><span class="sec-av" style="background:'+c.col+'">'+(c.av?'<img src="'+c.av+'" alt="">':(c.ps.trim()[0]||"R").toUpperCase())+'</span><b>'+c.ps.replace(/[<>&]/g,"")+'</b><input type="checkbox" class="lfo-tog" value="'+c.uid+'"'+(sel.indexOf(c.uid)>=0?" checked":"")+'></label>'; }).join("")+'</div>'
         : '<p class="sec-p"><b>Tu ne suis encore personne.</b> Suis tes proches riders (bouton Suivre sur leur profil) pour pouvoir les choisir ici. Pour quelqu\'un qui n\'a pas l\'appli, utilise « Partager ma sortie en direct ».</p>')
+      +'<div class="sec-wa"><b>Proches sur WhatsApp</b><p class="sec-p">Pour ceux qui n\'ont pas l\'appli. Au départ, à l\'arrivée et en cas de SOS, un bouton ouvre WhatsApp avec le message prêt à envoyer. Les numéros restent sur ton téléphone.</p><div id="secWaList"></div>'
+      +'<div class="sec-wa-add"><input id="secWaN" placeholder="Prénom" maxlength="24" autocomplete="off"><input id="secWaP" type="tel" inputmode="tel" placeholder="06 12 34 56 78" maxlength="20" autocomplete="off"><button type="button" id="secWaAdd">Ajouter</button></div></div>'
       +'<button class="primary sec-ok2">OK</button></div>';
     document.body.appendChild(ov);
+    var waDraw=function(){ var l=waList(), box=ov.querySelector("#secWaList"); box.innerHTML=l.map(function(c,i){ return '<div class="sec-wa-i"><b>'+String(c.n||"Proche").replace(/[<>&"]/g,"")+'</b><span>+'+waNum(c.p)+'</span><button type="button" data-i="'+i+'" aria-label="Retirer">✕</button></div>'; }).join(""); };
+    waDraw();
+    ov.querySelector("#secWaAdd").addEventListener("click", function(){ var n=ov.querySelector("#secWaN").value.trim(), p=ov.querySelector("#secWaP").value.trim(); if(waNum(p).length<9){ alert("Numéro incomplet. Exemple : 06 12 34 56 78 ou +34 600 000 000."); return; }
+      var l=waList(); if(l.length>=10){ alert("10 proches au maximum."); return; } l.push({ n:n||"Proche", p:p }); ls("lf.sec.wa", JSON.stringify(l)); ov.querySelector("#secWaN").value=""; ov.querySelector("#secWaP").value=""; waDraw(); });
+    ov.querySelector("#secWaList").addEventListener("click", function(e){ var b=e.target.closest("button[data-i]"); if(!b) return; var l=waList(); l.splice(+b.dataset.i,1); ls("lf.sec.wa", JSON.stringify(l)); waDraw(); });
     var done=function(){ var v=[].slice.call(ov.querySelectorAll("input:checked")).map(function(i){ return i.value; }); ls("lf.sec.contacts", JSON.stringify(v)); paintContacts(); ov.remove(); if(S.running && S.live) alert("C'est noté : tes contacts seront pris en compte à ta prochaine sortie."); };
     ov.querySelector(".sec-ok2").addEventListener("click", done); ov.addEventListener("click", function(e){ if(e.target===ov) done(); }); });
   // ---------- partage en direct ----------
@@ -9026,7 +9039,8 @@
       if(gs.length && A.dm){ var txt0="🔴 En direct : je pars en "+(S.cat||"sortie")+". Suis-moi sur la carte : "+S.live.url, okN=0;
         setTimeout(function(){ gs.forEach(function(u){ A.dm(u, txt0).then(function(){ okN++; }, function(){}); });
           setTimeout(function(){ secToast(okN ? "Départ envoyé à "+okN+" proche"+(okN>1?"s":"")+" : ils te suivent en direct" : "Départ non envoyé (vérifie ta connexion)"); }, 2500); }, 1200); }
-      else setTimeout(shareLive, 900);
+      else if(!waList().length) setTimeout(shareLive, 900);
+      if(waList().length){ var txtW="🔴 Je pars en "+(S.cat||"sortie")+". Suis-moi en direct sur la carte : "+S.live.url; setTimeout(function(){ waSheet("Prévenir sur WhatsApp", txtW); }, 1500); }
       ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:S.live, cat:S.cat, milieu:S.milieu })); }
     else ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:null, cat:S.cat, milieu:S.milieu }));
     startTimer(); paintLive();
@@ -9039,11 +9053,19 @@
     S.hist.push(pt); var lim=Date.now()-35*60000; while(S.hist.length && S.hist[0].t<lim) S.hist.shift();
     S.buf.push({ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60);
     if(Date.now()-S.lastPost>20000) post(); });
+  function waList(){ try{ return JSON.parse(ls("lf.sec.wa")||"[]")||[]; }catch(e){ return []; } }
+  function waNum(p){ p=String(p||"").replace(/[^0-9+]/g,""); if(p.indexOf("+")===0) p=p.slice(1); else if(p.indexOf("00")===0) p=p.slice(2); else if(p.length===10 && p[0]==="0") p="33"+p.slice(1); return p.replace(/[^0-9]/g,""); }
+  function waUrl(c, txt){ return "https://wa.me/"+waNum(c.p)+"?text="+encodeURIComponent(txt); }
+  function waBtns(txt){ return waList().map(function(c){ return '<a class="sec-wa-b" target="_blank" rel="noopener" href="'+waUrl(c,txt)+'"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M8.7 8.4c.3 2.9 2.4 5.6 5.6 6.6l1.4-1.5-2-1-.9.8c-.9-.5-1.6-1.2-2.1-2.1l.8-.9-1-2z"/></svg>'+String(c.n||"Proche").replace(/[<>&"]/g,"")+'</a>'; }).join(""); }
+  function waSheet(title, txt){ if(!waList().length) return; var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12650";
+    ov.innerHTML='<div class="mm-card"><div class="at-grab"></div><b class="cs-h">'+title+'</b><p class="sec-p">Un appui ouvre WhatsApp avec le message déjà écrit : il ne reste qu\'à envoyer.</p><div class="sec-wa-l">'+waBtns(txt)+'</div><button class="primary sec-ok2">Terminé</button></div>';
+    document.body.appendChild(ov); ov.addEventListener("click", function(e){ if(e.target===ov || e.target.closest(".sec-ok2")) ov.remove(); }); }
   function secToast(t){ var el=document.createElement("div"); el.textContent=t; el.style.cssText="position:fixed;left:50%;bottom:calc(var(--lf-sab,0px) + 110px);transform:translateX(-50%);z-index:12800;background:#0e1417;color:#fff;font-size:14px;font-weight:700;padding:11px 16px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:88vw;text-align:center"; document.body.appendChild(el); setTimeout(function(){ el.remove(); }, 4200); }
   function fmtMin(ms){ var m=Math.max(1,Math.round(ms/60000)); return m<60 ? m+" min" : Math.floor(m/60)+" h "+(m%60<10?"0":"")+(m%60); }
   document.addEventListener("lf-trk-stop", function(){ try{ var A1=api(), L=S.live; if(L && !L.sos && A1 && A1.dm && L.to && L.to.length){
         var txt1="🏁 Sortie terminée : "+(L.cat||S.cat||"sortie")+" · "+(S.trav/1000).toFixed(2).replace(".",",")+" km en "+fmtMin(Date.now()-S.t0)+". Revoir mon parcours : "+L.url;
-        L.to.forEach(function(u){ A1.dm(u, txt1).catch(function(){}); }); } }catch(e){}
+        L.to.forEach(function(u){ A1.dm(u, txt1).catch(function(){}); }); }
+      if(L && !L.sos && waList().length){ var txt2="🏁 Sortie terminée : "+(L.cat||S.cat||"sortie")+" · "+(S.trav/1000).toFixed(2).replace(".",",")+" km en "+fmtMin(Date.now()-S.t0)+". Mon parcours : "+L.url; setTimeout(function(){ waSheet("Prévenir de ton arrivée", txt2); }, 1200); } }catch(e){}
     try{ var A0=api(); if(S.live && A0 && A0.liveUnpublish) A0.liveUnpublish(); }catch(e){} if(S.live) post("ended"); S.running=false; stopTimer(); closeAsk(); ls("lf.sec.cur", null); paintLive(); });
   function socNow(){ var D=window.__lfDash; return (D && D.soc!=null && isFinite(+D.soc)) ? +D.soc : null; }
   function post(status){ if(!S.live) return Promise.resolve(); var body={ k:S.live.k, pts:S.buf.slice(), soc:socNow() }; if(status) body.status=status;
@@ -9122,6 +9144,7 @@
         +(n?'<div class="sosx-list">'+SOS.to.map(function(u){ var w=A?A.who(u):{ps:"Rider",col:"#888"}, st=sosAck[u]?'<em class="ok">a répondu</em>':(SOS.sent[u]===1?'<em>prévenu ✓</em>':(SOS.sent[u]===-1?'<em class="ko">non envoyé</em>':'<em>envoi…</em>'));
             return '<div class="sosx-li" data-u="'+u+'">'+avHtml(w)+'<b>'+safe(w.ps)+'</b>'+st+'</div>'; }).join("")+'</div>':'')
         +'<div class="sosx-pos"><small>Ta position à donner aux secours</small><b id="sosPosA">Recherche…</b><span id="sosPosB"></span></div>'
+        +(waList().length?'<div class="sec-wa-l sos">'+waBtns("🆘 SOS ("+K.tx+") : j'ai besoin d'aide."+(sosPos?" Ma position : "+mapUrl(sosPos):"")+(SOS.url?" Suivi en direct : "+SOS.url:""))+'</div>':'')
         +'<button type="button" class="sosx-btn" data-a="share">📤 Envoyer ma position ailleurs (SMS, WhatsApp…)</button>'
         +'<button type="button" class="sosx-btn ok" data-a="safe">✅ Je suis en sécurité : arrêter l\'alerte</button>'; }
     else { var kind=sosOv._kind, K2=KINDS[kind], g=guardians(), ws=g.slice(0,4).map(function(u){ return A.who(u); });
