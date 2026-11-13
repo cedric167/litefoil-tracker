@@ -9343,6 +9343,35 @@
 })();
 </script>
 <script>
+/* 14/11 : après la 3e sortie d'au moins 2 km, on propose une fois de noter l'appli sur le store.
+   « Plus tard » repousse de 30 jours ; « Noter » ou « Non merci » : on ne redemande plus. */
+(function(){
+  function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+  function storeUrl(){ var ua=navigator.userAgent||"", C=window.Capacitor, plat=(C&&C.getPlatform&&C.getPlatform())||"";
+    if(plat==="ios" || /iPhone|iPad|iPod/.test(ua)) return "https://apps.apple.com/app/id6827991078?action=write-review";
+    return "https://play.google.com/store/apps/details?id=fr.litefoil.tracker"; }
+  function ask(){ if(document.getElementById("lfRate")) return; var lg="fr"; try{ lg=(localStorage.getItem("lf-lang")||"fr").slice(0,2); }catch(e){}
+    var T={ fr:["Belle sortie !","Si Lite Foil te plaît, un avis sur le store nous aide énormément à faire connaître l'appli.","Noter l'appli","Plus tard","Non merci"],
+      en:["Great session!","If you like Lite Foil, a review on the store really helps other riders find the app.","Rate the app","Later","No thanks"],
+      es:["¡Buena salida!","Si te gusta Lite Foil, una reseña en la tienda nos ayuda muchísimo a dar a conocer la app.","Valorar la app","Más tarde","No, gracias"] }[lg] || null; if(!T) return;
+    var ov=document.createElement("div"); ov.id="lfRate"; ov.setAttribute("data-no-i18n","");
+    ov.style.cssText="position:fixed;inset:0;z-index:11000;background:rgba(8,12,14,.45);display:flex;align-items:flex-end;justify-content:center";
+    ov.innerHTML='<div style="width:100%;max-width:520px;background:#fff;border-radius:24px 24px 0 0;padding:22px 20px calc(var(--lf-sab,0px) + 20px);text-align:center;color:#0e1417"><div style="font-size:34px;letter-spacing:4px;color:#f5b301">★★★★★</div><b style="display:block;font-size:21px;margin:8px 0 6px">'+T[0]+'</b><p style="margin:0 0 16px;font-size:15px;line-height:1.45;color:#5a6a70">'+T[1]+'</p>'
+      +'<a data-a="go" href="'+storeUrl()+'" target="_blank" rel="noopener" style="display:block;text-decoration:none;font-weight:800;font-size:16.5px;padding:15px;border-radius:16px;background:linear-gradient(135deg,#2fc4c0,#0f7f86);color:#fff">'+T[2]+'</a>'
+      +'<button type="button" data-a="later" style="display:block;width:100%;margin-top:8px;border:0;border-radius:16px;padding:13px;font:inherit;font-weight:700;font-size:15px;background:#f1f3f4;color:#0e1417;box-shadow:none;min-height:0">'+T[3]+'</button>'
+      +'<button type="button" data-a="no" style="display:block;width:100%;margin-top:4px;border:0;background:none;padding:10px;font:inherit;font-size:13.5px;color:#8a989d;box-shadow:none;min-height:0">'+T[4]+'</button></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(e){ var b=e.target.closest("[data-a]"); if(!b){ if(e.target===ov){ ls("lf.rate","later:"+Date.now()); ov.remove(); } return; }
+      var a=b.dataset.a; ls("lf.rate", a==="later" ? "later:"+Date.now() : a+":"+Date.now()); setTimeout(function(){ ov.remove(); }, a==="go"?400:0); }); }
+  document.addEventListener("lf-trk-stop", function(){ setTimeout(function(){ try{
+      var st=ls("lf.rate")||""; if(/^(go|no):/.test(st)) return; if(/^later:/.test(st) && Date.now()-(+st.slice(6)||0) < 30*86400000) return;
+      if(/[?&]demo=1/.test(location.search)) return;
+      var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[], good=arr.filter(function(a){ return (+a.distanceM||0)>=2000; });
+      if(good.length<3 || !arr.length || (+arr[0].distanceM||0)<2000) return; ask(); }catch(e){} }, 5000); });
+  window.__lfRateAsk=ask;
+})();
+</script>
+<script>
 /* 14/11 : vent prévu sur « Mes spots » (les spots cherchés dans la Météo) : meilleur créneau de jour dans les 48 h, à partir de 12 nœuds */
 (function(){
   var box=document.getElementById("homeWind"); if(!box) return; var MIN=12;
