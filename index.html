@@ -1138,7 +1138,7 @@
   .vu-strip{ position:relative; height:58px; border-radius:6px; overflow:visible; touch-action:none; cursor:pointer; }
   .vu-frames{ position:absolute; inset:0; display:flex; border-radius:6px; overflow:hidden; background:#222; } .vu-frames span{ flex:1; background-size:cover; background-position:center; opacity:.55; }
   .vu-win{ position:absolute; top:0; bottom:0; border:3px solid #fe2c55; border-radius:6px; box-shadow:0 0 0 9999px rgba(0,0,0,.45); pointer-events:none; } .vu-strip{ overflow:hidden; } .vu-win[hidden]{ display:none; }
-  .vu-win i{ position:absolute; top:50%; width:4px; height:22px; margin-top:-11px; border-radius:2px; background:#fff; } .vu-win i:first-child{ left:3px; } .vu-win i:last-child{ right:3px; }
+  .vu-win i{ position:absolute; top:0; bottom:0; width:14px; background:#fe2c55; } .vu-win i::after{ content:""; position:absolute; left:5px; top:50%; width:4px; height:22px; margin-top:-11px; border-radius:2px; background:#fff; } .vu-win i:first-child{ left:-3px; border-radius:6px 0 0 6px; } .vu-win i:last-child{ right:-3px; border-radius:0 6px 6px 0; }
   .vu-head{ position:absolute; top:0; bottom:0; width:3px; margin-left:-1.5px; background:#fff; border-radius:2px; pointer-events:none; box-shadow:0 0 4px rgba(0,0,0,.5); }
   .vu-head.cov{ width:40px; margin-left:-20px; top:0; bottom:0; background:none; border:3px solid #fff; border-radius:6px; box-shadow:0 0 0 9999px rgba(0,0,0,.35); }
   .vu-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:14px; } .vu-len{ font-size:13.5px; font-weight:700; color:rgba(255,255,255,.85); }
@@ -5998,6 +5998,7 @@
   // 13/11 : bibliothèque de musiques libres (CC0, domaine public) fournie avec l'appli : music/index.json + fichiers MP3
   var vuMusicP=null;
   function vuMusicList(){ if(!vuMusicP) vuMusicP=fetch("music/index.json").then(function(r){ return r.ok ? r.json() : { tracks:[] }; }).then(function(j){ return (j&&j.tracks)||[]; }).catch(function(){ vuMusicP=null; return []; }); return vuMusicP; }
+  var VU_MIN_S=2; // extrait le plus court qu'on peut garder en coupant
   function vuThumbFx(dataUrl, texts){ return new Promise(function(res){ if(!dataUrl || !texts || !texts.length){ res(dataUrl); return; }
     var im=new Image(); im.onload=function(){ try{ var c=document.createElement("canvas"); c.width=im.width; c.height=im.height; var x=c.getContext("2d"); x.drawImage(im,0,0); vuDrawTexts(x,c.width,c.height,texts); res(c.toDataURL("image/jpeg",0.7)); }catch(e){ res(dataUrl); } };
     im.onerror=function(){ res(dataUrl); }; im.src=dataUrl; }); }
@@ -6034,8 +6035,9 @@
       videoThumb(f).then(function(m){ var tooLong=m.dur && m.dur>st.max+0.9;
         if(m.err && !m.dur){ stepCreate(); err("Impossible de lire cette vidéo. Essaie une autre."); return; }
         if((tooLong || f.size>VID_MAX_MB*1048576) && !canTranscode()){ stepCreate(); err(tooLong?("Vidéo trop longue ("+Math.round(m.dur)+" s) et ce téléphone ne sait pas la couper : maximum "+st.max+" secondes."):("Vidéo trop lourde ("+Math.round(f.size/1048576)+" Mo), maximum "+VID_MAX_MB+" Mo.")); return; }
-        st.file=f; st.meta=m; st.dur=m.dur||0; st.start=0; st.cover=Math.min(0.6,st.dur/3); if(st.url) URL.revokeObjectURL(st.url); st.url=URL.createObjectURL(f); st.mode="trim"; stepEdit(); }); }
-    function win(){ return Math.min(st.max, st.dur||st.max); }
+        st.file=f; st.meta=m; st.dur=m.dur||0; st.start=0; st.len=null; st.cover=Math.min(0.6,st.dur/3); if(st.url) URL.revokeObjectURL(st.url); st.url=URL.createObjectURL(f); st.mode="trim"; stepEdit(); }); }
+    // 13/11 : st.len = durée choisie en tirant les bords du cadre (null = la plus longue possible)
+    function win(){ var w=Math.min(st.max, st.dur||st.max); return st.len ? Math.max(Math.min(VU_MIN_S, w), Math.min(st.len, w)) : w; }
     // ---------- 2. Modifier ----------
     function stepEdit(){ vu.className="vu vu-edit";
       var fxOk=canTranscode(); // texte et musique : il faut pouvoir réenregistrer la vidéo dans le téléphone
@@ -6057,7 +6059,8 @@
       vid.addEventListener("loadeddata", frGo); setTimeout(frGo, 2500);
       function paint(){ var D=st.dur||1, W=win();
         if(st.mode==="trim"){ wEl.hidden=false; wEl.style.left=(st.start/D*100)+"%"; wEl.style.width=(W/D*100)+"%"; head.className="vu-head";
-          $("vuHint").textContent = st.dur>st.max+0.9 ? ("Fais glisser le cadre pour choisir tes "+st.max+" secondes") : "Ta vidéo entière sera publiée";
+          $("vuHint").textContent = !fxOk ? (st.dur>st.max+0.9 ? ("Fais glisser le cadre pour choisir tes "+st.max+" secondes") : "Ta vidéo entière sera publiée")
+            : (W<(st.dur||0)-0.4 ? "Tire les bords du cadre pour couper, glisse le cadre pour le déplacer" : "Tire les bords du cadre pour couper le début ou la fin");
           $("vuLen").textContent = fmt(st.start)+" – "+fmt(st.start+W)+" · "+Math.round(W)+" s"; }
         else { wEl.hidden=true; head.className="vu-head cov"; head.style.left=(st.cover/D*100)+"%"; $("vuHint").textContent="Fais glisser pour choisir l'image de couverture"; $("vuLen").textContent="Couverture à "+fmt(st.cover); } }
       paint();
@@ -6161,11 +6164,14 @@
       // glisser sur la bande : déplace l'extrait (Couper) ou l'image (Couverture)
       var drag=null;
       var at=function(e){ var r=strip.getBoundingClientRect(); return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*(st.dur||1); };
-      strip.addEventListener("pointerdown", function(e){ try{ strip.setPointerCapture(e.pointerId); }catch(x){} var t=at(e); drag={off: st.mode==="trim" ? (t>=st.start&&t<=st.start+win() ? t-st.start : win()/2) : 0}; move(e); });
+      strip.addEventListener("pointerdown", function(e){ try{ strip.setPointerCapture(e.pointerId); }catch(x){} var t=at(e); var edge=""; if(st.mode==="trim" && fxOk){ var r=strip.getBoundingClientRect(), grab=26/Math.max(1,r.width)*(st.dur||1), dl=Math.abs(t-st.start), dr=Math.abs(t-(st.start+win())); if(dr<=grab && dr<=dl) edge="r"; else if(dl<=grab) edge="l"; }
+        drag={edge:edge, end:st.start+win(), off: st.mode==="trim" ? (t>=st.start&&t<=st.start+win() ? t-st.start : win()/2) : 0}; move(e); });
       strip.addEventListener("pointermove", function(e){ if(drag) move(e); });
       ["pointerup","pointercancel"].forEach(function(n){ strip.addEventListener(n, function(){ if(!drag) return; drag=null; if(st.mode==="trim"){ vid.currentTime=st.start; play(); } }); });
       function move(e){ var t=at(e);
-        if(st.mode==="trim"){ st.start=Math.max(0,Math.min((st.dur||0)-win(), t-drag.off)); st.start=Math.round(st.start*2)/2; vid.pause(); vid.currentTime=st.start; }
+        if(st.mode==="trim" && drag.edge==="r"){ var mx=Math.min(st.max, (st.dur||0)-st.start); st.len=Math.max(Math.min(VU_MIN_S,mx), Math.min(mx, Math.round((t-st.start)*2)/2)); vid.pause(); vid.currentTime=Math.max(st.start, st.start+win()-0.3); }
+        else if(st.mode==="trim" && drag.edge==="l"){ var ns=Math.round(Math.max(0, Math.max(drag.end-st.max, Math.min(drag.end-VU_MIN_S, t)))*2)/2; st.start=ns; st.len=Math.max(0.5, drag.end-ns); vid.pause(); vid.currentTime=st.start; }
+        else if(st.mode==="trim"){ st.start=Math.max(0,Math.min((st.dur||0)-win(), t-drag.off)); st.start=Math.round(st.start*2)/2; vid.pause(); vid.currentTime=st.start; }
         else { st.cover=Math.min(Math.max(0,(st.dur||0)-0.1), t); vid.currentTime=st.cover; }
         paint(); }
       // lecture en boucle dans l'extrait choisi + tête de lecture
@@ -6174,7 +6180,7 @@
         if(st.mode==="trim"){ if(vid.currentTime>st.start+win()-0.05 || vid.currentTime<st.start-0.3){ vid.currentTime=st.start; } head.style.left=(vid.currentTime/(st.dur||1)*100)+"%"; } },60); }
     // ---------- 3. Publier ----------
     function stepPost(){ if(loopT) clearInterval(loopT); if(vid) vid.pause(); try{ if(st.aud) st.aud.pause(); }catch(e){}
-      var needTrim=st.dur>st.max+0.9, heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode(), hasFx=(st.texts.length>0 || !!st.music || st.origVol<1) && canTranscode();
+      var needTrim=st.dur>st.max+0.9 || (canTranscode() && win()<(st.dur||0)-0.4), heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode(), hasFx=(st.texts.length>0 || !!st.music || st.origVol<1) && canTranscode();
       vu.className="vu vu-post";
       vu.innerHTML='<div class="vu-pbar"><button class="vu-ib" id="vuBack2" aria-label="Retour">'+IC.back+'</button><b>Publier</b><span class="vu-ib"></span></div>'
         +'<div class="vu-pbody"><div class="vu-top2"><div class="vu-capw2"><textarea id="vuCap" maxlength="150" rows="5" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Décris ta session… Ajoute des #hashtags"></textarea><div class="vu-cnt" id="vuCnt">0/150</div></div>'
