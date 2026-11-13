@@ -2389,7 +2389,7 @@
 
     <!-- 13/11 : recherche de spot (couleurs Lite Foil) + webcam en direct du spot quand il y en a une -->
     <div class="ms" id="mtoSearchCard">
-      <div class="ms-top"><div><div class="ms-k">Météo · webcams en direct</div><h3>Trouve ton spot</h3></div><span class="ms-wave" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/></svg></span></div>
+      <div class="ms-top"><div><div class="ms-k">Météo du spot</div><h3>Trouve ton spot</h3></div><span class="ms-wave" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/></svg></span></div>
       <div class="ms-field">
         <svg class="ms-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
         <input id="mtoSearch" type="search" placeholder="Leucate, Hyères, Saint-Malo…" autocomplete="off" enterkeyhint="search" aria-label="Rechercher un spot">
@@ -8757,14 +8757,10 @@
         t=setTimeout(function(){ (async function(){ try{ if(ctrl) ctrl.abort(); ctrl=new AbortController();
           var r=await fetch("https://geocoding-api.open-meteo.com/v1/search?count=6&language=fr&name="+encodeURIComponent(q),{signal:ctrl.signal});
           var j=await r.json(); var list=(j&&j.results)||[];
-          var WC=window.lfWc, camHits=(WC&&WC.find)?WC.find(q):[];
+          var WC=window.lfWc;
           var camBtn=function(c){ return '<button type="button" class="ms-cam" aria-label="Webcam en direct"><img alt="" src="'+WC.thumb(c)+'"><i></i><em>LIVE</em></button>'; };
           res.innerHTML="";
-          if(camHits.length){ var h=document.createElement("div"); h.className="r-h"; h.textContent="Webcams en direct"; res.appendChild(h);
-            camHits.slice(0,4).forEach(function(c){ var d=document.createElement("div"); d.className="r"; d.innerHTML=camBtn(c)+'<span class="r-t"><b>'+escH(c.place)+'</b><small>'+escH(c.view)+' · en direct</small></span>';
-              d.addEventListener("click",function(){ hide(); WC.open(c); }); res.appendChild(d); });
-            if(list.length){ var h2=document.createElement("div"); h2.className="r-h"; h2.style.color="#148a90"; h2.textContent="Spots"; res.appendChild(h2); } }
-          if(!list.length && !camHits.length){ res.innerHTML='<div class="r">Aucun résultat</div>'; res.hidden=false; return; }
+          if(!list.length){ res.innerHTML='<div class="r">Aucun résultat</div>'; res.hidden=false; return; }
           list.forEach(function(it){ var d=document.createElement("div"); d.className="r"; var sub=[it.admin2,it.admin1,it.country].filter(Boolean).join(", "), near=(WC&&WC.near)?WC.near(it.latitude,it.longitude,it.name)[0]:null;
             d.innerHTML='<span class="r-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="r-t"><b>'+escH(it.name)+'</b><small>'+escH(sub)+'</small></span>'+(near?camBtn(near.c):'');
             d.addEventListener("click",function(e){ if(near && e.target.closest(".ms-cam")){ hide(); WC.open(near.c); return; } inp.value=it.name; hide(); inp.blur(); pickSpot({name:it.name,lat:it.latitude,lon:it.longitude}); }); res.appendChild(d); }); res.hidden=false;
