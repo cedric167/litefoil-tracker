@@ -1247,6 +1247,22 @@
   .nm-pa::after{ content:""; position:absolute; left:50%; bottom:-9px; margin-left:-6px; border:6px solid transparent; border-top-color:#fff; }
   .nm-pn i{ font-style:normal; color:#7fe6ec; } .nm-pn{ display:block; margin:12px auto 0; width:max-content; max-width:150px; padding:4px 11px; border-radius:999px; background:rgba(14,20,23,.85); color:#fff; font-size:14px; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transform:translateX(-50%); margin-left:50%; }
   /* 13/11 : pastilles compactes façon Snap Map + groupes */
+  .nm::before{ content:""; position:absolute; left:0; right:0; top:0; height:150px; z-index:1050; pointer-events:none; background:linear-gradient(180deg,rgba(6,24,29,.45),transparent); }
+  .nm .leaflet-marker-icon.nm-pin > span:first-child{ animation:nmPop .28s cubic-bezier(.2,.9,.3,1.4) both; } @keyframes nmPop{ from{ transform:scale(.4); opacity:0; } to{ transform:none; opacity:1; } }
+  .nm-far .nm-pin:not(.me) .nm-pn{ display:none; }
+  .nm-live{ margin:0 16px 12px; } .nm-live[hidden]{ display:none; }
+  .nm-live-h{ display:flex; align-items:center; gap:7px; font-size:11.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#e11d48; margin-bottom:7px; } .nm-live-h i, .nm-lv-h small i{ width:8px; height:8px; border-radius:50%; background:#e11d48; animation:wcPulse 1.4s ease-in-out infinite; display:inline-block; }
+  .nm-live-l{ display:flex; flex-direction:column; gap:7px; max-height:150px; overflow-y:auto; }
+  .nm-live-l button{ display:flex; align-items:center; gap:11px; width:100%; min-height:0; border:0; border-radius:16px; padding:8px 10px; background:linear-gradient(120deg,#fff1f3,#ffe3e8); font:inherit; cursor:pointer; box-shadow:none; text-align:left; color:#0e1417; }
+  .nm-live-a{ flex:none; width:44px; height:44px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 2.5px #e11d48, 0 0 0 5px rgba(225,29,72,.18); } .nm-live-a img, .nm-live-a b{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:17px; }
+  .nm-live-t{ flex:1; min-width:0; display:flex; flex-direction:column; } .nm-live-t b{ font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .nm-live-t small{ font-size:12px; color:#6b7a80; font-weight:600; }
+  .nm-live-l em{ flex:none; font-style:normal; font-size:12.5px; font-weight:800; color:#fff; background:#e11d48; border-radius:999px; padding:7px 13px; }
+  .nm-lv{ position:fixed; inset:0; z-index:12700; background:#06181d; display:flex; flex-direction:column; animation:cfIn .2s ease-out; }
+  .nm-lv-h{ display:flex; align-items:center; gap:12px; padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px; color:#fff; } .nm-lv-h button{ width:42px; height:42px; min-height:0; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; cursor:pointer; box-shadow:none; display:flex; align-items:center; justify-content:center; } .nm-lv-h button svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; }
+  .nm-lv-h b{ display:block; font-size:17px; } .nm-lv-h small{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:rgba(255,255,255,.75); font-weight:600; }
+  .nm-lv iframe{ flex:1; width:100%; border:0; background:#fff; } .nm-lv-demo{ flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:30px; color:rgba(255,255,255,.8); font-size:15px; line-height:1.5; }
+  .nm .rs-empty b{ display:block; color:#0e1417; font-size:15px; margin-bottom:2px; }
+  .nm .leaflet-container{ background:#0b2a33; }
   .nm-pa{ width:44px; height:44px; padding:2px; box-shadow:0 0 0 2.5px var(--c), 0 4px 12px rgba(0,0,0,.4); } .nm-pa img, .nm-pa b{ font-size:17px; }
   .nm-pa::after{ bottom:-8px; margin-left:-5px; border-width:5px; }
   .nm-pin.me .nm-pa{ width:56px; height:56px; padding:3px; }
@@ -2272,6 +2288,7 @@
         <button class="nm-fab" id="commRecenter" aria-label="Me recentrer" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
         <div class="nm-grab"></div>
         <div class="nm-sh-head"><b>Riders autour de toi</b><button class="nm-chat" id="nmChat"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg>Tchat local</button></div>
+        <div class="nm-live" id="nmLive" hidden></div>
         <div class="riders-strip-wrap" id="ridersStripWrap"><div class="riders-strip" id="ridersStrip"></div></div>
         <div class="nm-vis">
           <div class="comm-share">
@@ -2585,7 +2602,7 @@
     <h2>Partage &amp; sécurité</h2>
     <div class="sec-card" id="secCard">
       <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
-      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
+      <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Tes amis te suivent en direct dans l'appli, et tes proches avec un simple lien.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
       <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
       <div class="sec-row"><span><b>Mes gardiens</b><small id="secContactsTxt">Amis prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
       <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
@@ -4994,7 +5011,8 @@
       // notes des Cartes Rider (calculées sur le téléphone, publiées pour les amis)
       saveRatings(o){ return db.set(db.ref(d,"ratings/"+uid), o); },
       watchRatings(cb){ return db.onValue(db.ref(d,"ratings"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
-      getSessions(u){ return db.get(db.query(db.ref(d,"sessions/"+u), db.limitToLast(60))).then(function(s){ var out=[]; s.forEach(function(c){ var v=c.val(); if(v){ v.id=c.key; out.push(v); } }); return out.reverse(); }); },
+      getSessions(u){ return db.get(db.query(db.ref(d,"sessions/"+u), db.limitToLast(60))).then(function(s){ var out=[]; s.forEach(function(c){ var v=c.val(); if(v && !v.live){ v.id=c.key; out.push(v); } }); return out.reverse(); }); },
+      getLiveOf(u){ return db.get(db.ref(d,"sessions/"+u+"/_live")).then(function(s){ return s.val(); }); },
       shareSession(id,o){ return db.set(db.ref(d,"sessions/"+uid+"/"+id), JSON.parse(JSON.stringify(o))); },
       unshareSession(id){ return db.remove(db.ref(d,"sessions/"+uid+"/"+id)); },
       // validation par e-mail : le compte (anonyme) est rattaché à l'adresse, puis Firebase envoie le lien de validation
@@ -5208,6 +5226,7 @@
       getFriends(u){ return Promise.resolve(u==="demo-marine"?{"demo-aurel":true}:{}); },
       sendFriendReq(){ return Promise.resolve(); }, cancelFriendReq(){ return Promise.resolve(); }, acceptFriend(){ return Promise.resolve(); },
       declineFriend(){ return Promise.resolve(); }, removeFriend(){ return Promise.resolve(); },
+      getLiveOf(u){ return Promise.resolve(u==="demo-marine"?{t:Date.now()-600000,d:0,live:"demo",cat:"E-foil"}:null); },
       getSessions(u){ return Promise.resolve(u==="demo-marine"?[{id:"s1",t:Date.now()-86400000,sport:"efoil",d:12400,dur:3300,vmax:31.5,shape:"10,80 25,40 50,20 75,35 90,70 60,85 30,90"}]:[]); },
       shareSession(){ return Promise.resolve(); }, unshareSession(){ return Promise.resolve(); },
       saveRatings(){ return Promise.resolve(); },
@@ -5285,6 +5304,7 @@
     commMapInit(); if(!commMap) return;
     commLayers.clearLayers();
     // 13/11 : riders trop proches à l'écran = une seule pastille « groupe » (on zoome en la touchant)
+    try{ $("commMap").classList.toggle("nm-far", commMap.getZoom()<9); }catch(e){}
     const z=commMap.getZoom(), ids=Object.keys(riders).filter(k=>!blocked.has(k) && riders[k] && isFinite(riders[k].lat)), groups=[];
     ids.forEach(k=>{ const r=riders[k], p=commMap.latLngToLayerPoint([r.lat,r.lng]); let g=groups.find(x=>Math.abs(x.x-p.x)<50 && Math.abs(x.y-p.y)<50);
       if(g){ g.ids.push(k); g.x=(g.x*(g.ids.length-1)+p.x)/g.ids.length; g.y=(g.y*(g.ids.length-1)+p.y)/g.ids.length; } else groups.push({ x:p.x, y:p.y, ids:[k] }); });
@@ -5307,8 +5327,21 @@
   // 12/11 : carte plein écran « Près de moi »
   let nmOpen=false;
   function nearMapOpen(){ var nm=$("nearMap"); if(!nm) return; if(nm.parentNode!==document.body) document.body.appendChild(nm); nm.hidden=false; nmOpen=true; document.body.classList.add("nm-on");
-    commMapInit(); if(!commMap) return; setTimeout(function(){ commMap.invalidateSize(); renderMap(); commRecenter(); nmPaint(); },60); }
-  function nearMapClose(){ var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); }
+    try{ nmLiveLoad(); if(nmLiveIv) clearInterval(nmLiveIv); nmLiveIv=setInterval(nmLiveLoad, 45000); }catch(e){}
+    commMapInit(); if(!commMap) return; setTimeout(function(){ commMap.invalidateSize(); renderMap(); commRecenter(); nmPaint(); },60); setTimeout(function(){ try{ commMap.invalidateSize(); commRecenter(); }catch(e){} },700); }
+  // 13/11 : amis en direct (sortie partagée) : rangée dans la carte, un appui ouvre le suivi en direct
+  var nmLiveIv=null, LIVE_BASE="https://litefoil-communaute-222fd.web.app";
+  function nmLiveLoad(){ var box=$("nmLive"); if(!box || !backend || !backend.getLiveOf) return; var fr=Object.keys(myFriends||{}).filter(function(u){ return !blocked.has(u); }).slice(0,40);
+    Promise.all(fr.map(function(u){ return backend.getLiveOf(u).then(function(v){ return v && v.live && (Date.now()-(+v.t||0) < 12*3600000) ? { u:u, v:v } : null; }).catch(function(){ return null; }); })).then(function(L){ L=L.filter(Boolean);
+      if(!L.length){ box.hidden=true; box.innerHTML=""; return; }
+      box.innerHTML='<div class="nm-live-h"><i></i>En direct maintenant</div><div class="nm-live-l">'+L.map(function(x){ var pr=profileMap[x.u]||{}, nm=pName(x.u), col=avatarColor(x.u), min=Math.max(1,Math.round((Date.now()-(+x.v.t||0))/60000));
+        return '<button type="button" data-sid="'+esc(x.v.live)+'" data-nm="'+esc(nm)+'"><span class="nm-live-a">'+(pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>')+'</span><span class="nm-live-t"><b>'+esc(nm)+'</b><small>'+esc(x.v.cat||"Sortie")+' · depuis '+(min<60?min+' min':Math.floor(min/60)+' h '+(min%60<10?"0":"")+(min%60))+'</small></span><em>Suivre</em></button>'; }).join("")+'</div>';
+      box.hidden=false; }); }
+  function lfLiveView(sid, nm){ var ov=document.createElement("div"); ov.className="nm-lv";
+    ov.innerHTML='<div class="nm-lv-h"><button type="button" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div><b>'+esc(nm)+'</b><small><i></i>Suivi en direct</small></div></div>'+(sid==="demo"?'<div class="nm-lv-demo">Démonstration : ici s\'affiche la carte en direct de ton ami (position, vitesse, trace).</div>':'<iframe src="'+LIVE_BASE+'/l/'+encodeURIComponent(sid)+'" title="Suivi en direct" allow="geolocation"></iframe>');
+    document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); }); }
+  (function(){ var b=$("nmLive"); if(b) b.addEventListener("click", function(e){ var x=e.target.closest("button[data-sid]"); if(x) lfLiveView(x.dataset.sid, x.dataset.nm); }); })();
+  function nearMapClose(){ if(nmLiveIv){ clearInterval(nmLiveIv); nmLiveIv=null; } var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); }
   function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+" rider"+(n>1?"s":"")+" autour de toi") : "Personne autour pour l'instant";
     var g=$("nmGhost"); if(g) g.classList.toggle("off", !sharing); }
   window.__nearOpen=nearMapOpen; window.__nearClose=nearMapClose;
@@ -5320,10 +5353,15 @@
   function riderIcon(k, r, mine){ var pr=mine?{av:me.av}:(profileMap[k]||{}), col=mine?"#148a90":avatarColor(k), nm=mine?(me.pseudo||"Moi"):(r.pseudo||"Rider");
     var inner=pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>';
     return L.divIcon({className:"nm-pin"+(mine?" me":""), iconSize:mine?[64,84]:[52,70], iconAnchor:mine?[32,62]:[26,50], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(nm)+(mine?' <i>· toi</i>':'')+'</span>'}); }
-  function commRecenter(){ if(!commMap) return; const pts=[]; if(sharing&&me.pos) pts.push([me.pos.lat,me.pos.lng]);
-    for(const k in riders) pts.push([riders[k].lat,riders[k].lng]);
+  function commRecenter(){ if(!commMap) return; const mine=(sharing&&me.pos)?[me.pos.lat,me.pos.lng]:null; let pts=[];
+    for(const k in riders){ if(blocked.has(k)) continue; pts.push([riders[k].lat,riders[k].lng]); }
+    // avec ma position : on cadre sur ma zone (riders à moins de 300 km), pas sur toute la planète
+    if(mine){ const near=pts.filter(p=>hdist({lat:mine[0],lng:mine[1]},{lat:p[0],lng:p[1]})<=300); pts=[mine].concat(near); }
     if(!pts.length) return;
-    if(nmOpen){ var sh=$("nmSheet"), hb=(sh?sh.offsetHeight:260)+30; commMap.fitBounds(pts,{paddingTopLeft:[60,140], paddingBottomRight:[60,hb], maxZoom:13}); }
+    const sh=$("nmSheet"), hb=nmOpen?(sh?sh.offsetHeight:260):0, size=commMap.getSize();
+    if(pts.length===1){ commMap.setView(pts[0], 12, {animate:false}); if(nmOpen && hb) commMap.panBy([0, Math.round((hb-70)/2)], {animate:false}); return; }
+    const padB=Math.min(hb+30, Math.max(40, size.y-260));
+    if(nmOpen) commMap.fitBounds(pts,{paddingTopLeft:[50,Math.min(130,size.y/5)], paddingBottomRight:[50,padB], maxZoom:13});
     else commMap.fitBounds(pts,{padding:[45,45],maxZoom:13}); }
 
   // ---------- présence / partage ----------
@@ -5386,7 +5424,7 @@
   function renderList(){
     const el=$("ridersStrip"); if(!el){ renderBlocked(); return; }
     const ks=Object.keys(riders);
-    if(!ks.length){ el.innerHTML='<div class="rs-empty">Personne en ligne pour l\'instant. Active ta visibilité pour voir les riders ici&nbsp;!</div>'; renderBlocked(); return; }
+    if(!ks.length){ el.innerHTML='<div class="rs-empty">'+(sharing?'<b>Tu es le premier rider dans ta zone.</b> Invite tes amis : ils apparaîtront ici dès qu\'ils activent leur visibilité.':'Personne en ligne pour l\'instant. Active ta visibilité pour apparaître sur la carte et voir les riders autour de toi.')+'</div>'; renderBlocked(); return; }
     ks.sort((a,b)=>{ const da=me.pos?hdist(me.pos,riders[a]):0, db2=me.pos?hdist(me.pos,riders[b]):0; return da-db2; });
     el.innerHTML = ks.map(k=>{ const r=riders[k], pr=profileMap[k]||{}, d=me.pos?hdist(me.pos,r):null;
       const sub = d==null?"" : (d<1.2?"à côté":Math.round(d)+" km");
@@ -7535,6 +7573,8 @@
       return Object.keys(set).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }).map(function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; }); },
     liveCreate: function(sid,o){ return backend && backend.liveCreate ? backend.liveCreate(sid,o) : Promise.reject(new Error("hors ligne")); },
     share: function(url,title,text){ shareLink(url,title,text); },
+    livePublish: function(sid,cat){ if(backend && backend.shareSession) return backend.shareSession("_live",{ t:Date.now(), d:0, live:sid, cat:cat||"" }).catch(function(){}); return Promise.resolve(); },
+    liveUnpublish: function(){ if(backend && backend.unshareSession) return backend.unshareSession("_live").catch(function(){}); return Promise.resolve(); },
     friends: function(){ return Object.keys(myFriends||{}).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }); },
     who: function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; },
     dm: function(u,text){ if(!backend || !backend.sendMessage) return Promise.reject(new Error("hors ligne")); try{ return Promise.resolve(backend.sendMessage("dm:"+pairKey(me.uid,u), text)); }catch(e){ return Promise.reject(e); } },
@@ -8969,7 +9009,7 @@
     var A=api();
     if(cLive.checked && A && A.me().ready){ var sid=rnd(12), k=rnd(24), me=A.me(), ct={}; contacts().forEach(function(u){ ct[u]=true; });
       S.live={ sid:sid, k:k, url:BASE+"/l/"+sid, api:BASE+"/api/live/"+sid };
-      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:S.cat, contacts:ct }).catch(function(){});
+      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:S.cat, contacts:ct }).then(function(){ if(A.livePublish) A.livePublish(sid, S.cat); }).catch(function(){});
       ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:S.live, cat:S.cat, milieu:S.milieu }));
       setTimeout(shareLive, 900); }
     else ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:null, cat:S.cat, milieu:S.milieu }));
@@ -8983,7 +9023,7 @@
     S.hist.push(pt); var lim=Date.now()-35*60000; while(S.hist.length && S.hist[0].t<lim) S.hist.shift();
     S.buf.push({ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60);
     if(Date.now()-S.lastPost>20000) post(); });
-  document.addEventListener("lf-trk-stop", function(){ if(S.live) post("ended"); S.running=false; stopTimer(); closeAsk(); ls("lf.sec.cur", null); paintLive(); });
+  document.addEventListener("lf-trk-stop", function(){ try{ var A0=api(); if(S.live && A0 && A0.liveUnpublish) A0.liveUnpublish(); }catch(e){} if(S.live) post("ended"); S.running=false; stopTimer(); closeAsk(); ls("lf.sec.cur", null); paintLive(); });
   function socNow(){ var D=window.__lfDash; return (D && D.soc!=null && isFinite(+D.soc)) ? +D.soc : null; }
   function post(status){ if(!S.live) return Promise.resolve(); var body={ k:S.live.k, pts:S.buf.slice(), soc:socNow() }; if(status) body.status=status;
     S.lastPost=Date.now(); var sent=S.buf.length;
