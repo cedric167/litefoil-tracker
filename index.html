@@ -5983,7 +5983,7 @@
       rec.ondataavailable=function(e){ if(e.data && e.data.size) chunks.push(e.data); };
       rec.onstop=function(){ cleanup(); var type=(mime.split(";")[0])||"video/webm"; res(new File(chunks, "video."+(type.indexOf("mp4")>=0?"mp4":"webm"), {type:type})); };
       var end=Math.min(v.duration||dur, start+dur);
-      function draw(){ if(stopped) return; x.drawImage(v,0,0,W,H); if(fx&&fx.texts&&fx.texts.length) vuDrawTexts(x,W,H,fx.texts); var t=v.currentTime; if(onProg) onProg(Math.max(0,Math.min(1,(t-start)/(end-start||1))));
+      function draw(){ if(stopped) return; x.drawImage(v,0,0,W,H); if(fx&&fx.track) vuDrawTrack(x,W,H,fx.track); if(fx&&fx.texts&&fx.texts.length) vuDrawTexts(x,W,H,fx.texts); var t=v.currentTime; if(onProg) onProg(Math.max(0,Math.min(1,(t-start)/(end-start||1))));
         if(t>=end-0.05 || v.ended){ stopped=true; try{ rec.stop(); }catch(e){} return; }
         if(v.requestVideoFrameCallback) v.requestVideoFrameCallback(draw); else requestAnimationFrame(draw); }
       v.addEventListener("seeked", function go(){ v.removeEventListener("seeked", go); rec.start(1000); if(mus){ try{ mus.start(0, Math.max(0,+fx.musicOff||0)); }catch(e){} } var p=v.play(); if(p&&p.catch) p.catch(function(e){ stopped=true; cleanup(); rej(e); }); draw(); });
@@ -6017,6 +6017,30 @@
   var vuMusicP=null;
   function vuMusicList(){ if(!vuMusicP) vuMusicP=fetch("music/index.json").then(function(r){ return r.ok ? r.json() : { tracks:[] }; }).then(function(j){ return (j&&j.tracks)||[]; }).catch(function(){ vuMusicP=null; return []; }); return vuMusicP; }
   var VU_MIN_S=2; // extrait le plus court qu'on peut garder en coupant
+  // 13/11 (demande de Cédric) : tracé GPS d'une sortie posé en transparence sur la vidéo.
+  // vuTrackOf(sortie) -> { pts:[[x,y]…] de 0 à 1, ar (largeur/hauteur du tracé), km, vmax, dur, name } ; vuDrawTrack le dessine en haut à gauche.
+  function vuTrackOf(sess){ var src=(sess&&sess.points)||[]; if(src.length<2) return null; var step=Math.max(1,Math.ceil(src.length/400)), p=[]; for(var i=0;i<src.length;i+=step) p.push(src[i]); if(p[p.length-1]!==src[src.length-1]) p.push(src[src.length-1]);
+    var la0=Infinity, la1=-Infinity, lo0=Infinity, lo1=-Infinity; p.forEach(function(q){ if(q.lat<la0) la0=q.lat; if(q.lat>la1) la1=q.lat; if(q.lon<lo0) lo0=q.lon; if(q.lon>lo1) lo1=q.lon; });
+    var k=Math.cos((la0+la1)/2*Math.PI/180), w=Math.max(1e-9,(lo1-lo0)*k), h=Math.max(1e-9,la1-la0);
+    return { pts:p.map(function(q){ return [((q.lon-lo0)*k)/w, 1-(q.lat-la0)/h]; }), ar:Math.max(0.4,Math.min(2.5,w/h)), km:(+sess.distanceM||0)/1000, vmax:+sess.maxSpeedKmh||0, dur:+sess.durationSec||0, name:String(sess.cat||sess.name||"Sortie") }; }
+  function vuDrawTrack(ctx, W, H, tr){ if(!tr || !tr.pts || tr.pts.length<2) return;
+    var u=Math.min(W,H)/100, pad=2.4*u, boxW=Math.min(W*0.46, 46*u), mapH=Math.min(boxW/tr.ar, 34*u), mapW=mapH*tr.ar; if(mapW>boxW-2*pad){ mapW=boxW-2*pad; mapH=mapW/tr.ar; }
+    var txH=9.6*u, bw=boxW, bh=mapH+2*pad+txH, x0=Math.max(3*u, W*0.13), y0=Math.max(3*u, H*0.09), r=2.6*u; /* 13 % du bord : reste visible quand la vidéo est rognée sur un écran haut */
+    ctx.save();
+    ctx.globalAlpha=0.30; ctx.fillStyle="#04161b"; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x0,y0,bw,bh,r); else ctx.rect(x0,y0,bw,bh); ctx.fill();
+    var mx=x0+(bw-mapW)/2, my=y0+pad; ctx.lineJoin="round"; ctx.lineCap="round";
+    var path=function(){ ctx.beginPath(); tr.pts.forEach(function(q,i){ var px=mx+q[0]*mapW, py=my+q[1]*mapH; if(i) ctx.lineTo(px,py); else ctx.moveTo(px,py); }); };
+    ctx.globalAlpha=0.55; ctx.strokeStyle="#04161b"; ctx.lineWidth=1.5*u; path(); ctx.stroke();
+    ctx.globalAlpha=0.95; ctx.strokeStyle="#5ff0c8"; ctx.lineWidth=0.75*u; path(); ctx.stroke();
+    var a=tr.pts[0], b=tr.pts[tr.pts.length-1];
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(mx+a[0]*mapW, my+a[1]*mapH, 0.9*u, 0, 6.3); ctx.fill();
+    ctx.fillStyle="#fe2c55"; ctx.beginPath(); ctx.arc(mx+b[0]*mapW, my+b[1]*mapH, 1.1*u, 0, 6.3); ctx.fill();
+    ctx.globalAlpha=1; ctx.textBaseline="top"; ctx.fillStyle="#fff"; ctx.shadowColor="rgba(0,0,0,.55)"; ctx.shadowBlur=0.8*u;
+    var ty=my+mapH+1.4*u, fnt=function(px,wt){ ctx.font=wt+" "+px+"px system-ui,sans-serif"; };
+    fnt(4.3*u,"800"); ctx.fillText(tr.km.toFixed(tr.km<10?2:1).replace(".",",")+" km", x0+pad, ty);
+    fnt(2.7*u,"700"); var d=Math.round(tr.dur), dm=Math.floor(d/60), sub=(tr.vmax?"max "+tr.vmax.toFixed(1).replace(".",",")+" km/h":"")+(d?(tr.vmax?" · ":"")+(dm>=60?Math.floor(dm/60)+" h "+String(dm%60).padStart(2,"0"):dm+" min"):"");
+    ctx.globalAlpha=0.92; ctx.fillText(sub, x0+pad, ty+4.9*u);
+    ctx.restore(); }
   // 13/11 : musique sur les stories. Feuille de choix (bibliothèque de l'appli) : onUse({ name, buf }) quand un morceau est prêt.
   function musicSheet(parent, onUse){ var old=parent.querySelector(".stm"); if(old){ if(old._stop) old._stop(); old.remove(); }
     var sh=document.createElement("div"); sh.className="stm"; var prev=null, prevBtn=null;
@@ -6066,7 +6090,7 @@
     // 13/11 : le Swip derrière est mis en pause et libéré (plus de son en fond, et le téléphone garde
     // ses décodeurs vidéo pour la vidéo qu'on ajoute) ; il reprend à la fermeture.
     var vf0=$("vf"); if(vf0 && !vf0.hidden){ vf0.querySelectorAll(".vf-item").forEach(vfUnload); vfActive=-1; }
-    var st={ max:+(localStorage.getItem("lf.vu.max")||60)||60, file:null, meta:null, dur:0, start:0, cover:0, url:null, mode:"trim", texts:[], music:null, aud:null, murl:null, origVol:1 };
+    var st={ max:+(localStorage.getItem("lf.vu.max")||60)||60, file:null, meta:null, dur:0, start:0, cover:0, url:null, mode:"trim", texts:[], music:null, aud:null, murl:null, origVol:1, track:null };
     var musClear=function(){ try{ if(st.aud) st.aud.pause(); }catch(e){} if(st.murl){ try{ URL.revokeObjectURL(st.murl); }catch(e){} } st.music=null; st.aud=null; st.murl=null; };
     if([15,30,60].indexOf(st.max)<0) st.max=60;
     var vu=document.createElement("div"); vu.id="vu"; vu.className="vu"; document.body.appendChild(vu); document.body.style.overflow="hidden";
@@ -6103,14 +6127,14 @@
       vu.innerHTML='<video id="vuV" playsinline webkit-playsinline loop preload="auto"></video><canvas id="vuTx" class="vu-tx"></canvas>'
         +'<div class="vu-bar"><button class="vu-ib" id="vuBack" aria-label="Retour">'+IC.back+'</button><b></b><span class="vu-ib"></span></div>'
         +'<div class="vu-tools"><button data-m="trim" class="'+(st.mode==="trim"?"on":"")+'"><i>'+IC.cut+'</i>Couper</button><button data-m="cover" class="'+(st.mode==="cover"?"on":"")+'"><i>'+IC.cov+'</i>Couverture</button>'
-          +(fxOk?'<button data-x="text" id="vuTText"><i><b class="vu-aa">Aa</b></i>Texte</button><button data-x="music" id="vuTMus"><i><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></i>Musique</button>':'')+'</div>'
+          +(fxOk?'<button data-x="text" id="vuTText"><i><b class="vu-aa">Aa</b></i>Texte</button><button data-x="music" id="vuTMus"><i><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></i>Musique</button><button data-x="track" id="vuTTrk"><i><svg viewBox="0 0 24 24"><path d="M5 19c2-6 5 2 7-4s4 1 7-9"/><circle cx="5" cy="19" r="1.6"/><circle cx="19" cy="6" r="1.6"/></svg></i>Tracé</button>':'')+'</div>'
         +'<div class="vu-panel"><div class="vu-hint" id="vuHint"></div><div class="vu-strip" id="vuStrip"><div class="vu-frames" id="vuFrames"></div><div class="vu-win" id="vuWin"><i></i><i></i></div><div class="vu-head" id="vuHead"></div></div>'
         +'<div class="vu-foot"><span class="vu-len" id="vuLen"></span><button class="vu-next" id="vuNext">Suivant</button></div></div>';
       vid=$("vuV"); vid.src=st.url; vid.muted=false;
       var play=function(){ var p=vid.play(); if(p&&p.catch) p.catch(function(){ vid.muted=true; vid.play().catch(function(){}); }); };
       vid.addEventListener("loadedmetadata", function(){ vid.style.objectFit = vid.videoHeight>=vid.videoWidth ? "cover" : "contain"; vid.currentTime=st.mode==="cover"?st.cover:st.start; if(st.mode==="trim") play(); });
       vid.addEventListener("click", function(){ if(st.mode!=="trim") return; if(vid.paused) play(); else vid.pause(); });
-      $("vuBack").addEventListener("click", function(){ st.file=null; st.texts=[]; st.origVol=1; musClear(); stepCreate(); });
+      $("vuBack").addEventListener("click", function(){ st.file=null; st.texts=[]; st.origVol=1; st.track=null; musClear(); stepCreate(); });
       vu.querySelectorAll(".vu-tools button[data-m]").forEach(function(b){ b.addEventListener("click", function(){ st.mode=b.dataset.m; vu.querySelectorAll(".vu-tools button[data-m]").forEach(function(x){ x.classList.toggle("on",x===b); }); paint(); if(st.mode==="cover"){ vid.pause(); vid.currentTime=st.cover; } else { vid.currentTime=st.start; play(); } }); });
       $("vuNext").addEventListener("click", stepPost);
       var strip=$("vuStrip"), wEl=$("vuWin"), head=$("vuHead");
@@ -6130,7 +6154,7 @@
       function txRect(){ var vw=vid.videoWidth||9, vh=vid.videoHeight||16, ew=vu.clientWidth||1, eh=vu.clientHeight||1, sc=vh>=vw?Math.max(ew/vw,eh/vh):Math.min(ew/vw,eh/vh), w=vw*sc, h=vh*sc; return { l:(ew-w)/2, t:(eh-h)/2, w:w, h:h, ew:ew, eh:eh }; }
       function txDraw(){ if(!txC || !document.body.contains(txC)) return; var r=txRect(), dpr=Math.min(2, window.devicePixelRatio||1), W=Math.max(2,Math.round(r.w*dpr)), H=Math.max(2,Math.round(r.h*dpr));
         txC.style.left=r.l+"px"; txC.style.top=r.t+"px"; txC.style.width=r.w+"px"; txC.style.height=r.h+"px"; if(txC.width!==W || txC.height!==H){ txC.width=W; txC.height=H; }
-        var cx=txC.getContext("2d"); cx.clearRect(0,0,W,H); txBoxes=vuDrawTexts(cx,W,H,st.texts).map(function(b){ return { x:b.x/dpr, y:b.y/dpr, w:b.w/dpr, h:b.h/dpr }; });
+        var cx=txC.getContext("2d"); cx.clearRect(0,0,W,H); if(st.track) vuDrawTrack(cx,W,H,st.track); var kb=$("vuTTrk"); if(kb) kb.classList.toggle("has", !!st.track); txBoxes=vuDrawTexts(cx,W,H,st.texts).map(function(b){ return { x:b.x/dpr, y:b.y/dpr, w:b.w/dpr, h:b.h/dpr }; });
         var tb=$("vuTText"); if(tb) tb.classList.toggle("has", st.texts.length>0); var mb=$("vuTMus"); if(mb) mb.classList.toggle("has", !!st.music || st.origVol<1); }
       function txHit(e){ var b=txC.getBoundingClientRect(), px=e.clientX-b.left, py=e.clientY-b.top, m=14; for(var i=txBoxes.length-1;i>=0;i--){ var q=txBoxes[i]; if(px>=q.x-m && px<=q.x+q.w+m && py>=q.y-m && py<=q.y+q.h+m) return i; } return -1; }
       // écrire / modifier un texte : saisie, couleur, fond, taille
@@ -6219,7 +6243,20 @@
           if(a==="pick") $("vuMFile").click(); else if(a==="rm"){ musClear(); musOpen(); txDraw(); } else if(a==="ok"){ if(sh._stopPrev) sh._stopPrev(); sh.remove(); } });
         if(st.mode==="trim" && vid.paused) play(); }
       vu.querySelectorAll(".vu-tools button[data-x]").forEach(function(b){ b.addEventListener("click", function(){
-        if(b.dataset.x==="text"){ if(st.texts.length>=6){ $("vuHint").textContent="6 textes maximum."; return; } txEdit(-1); } else musOpen(); }); });
+        if(b.dataset.x==="text"){ if(st.texts.length>=6){ $("vuHint").textContent="6 textes maximum."; return; } txEdit(-1); } else if(b.dataset.x==="track") trkOpen(); else musOpen(); }); });
+      // choix de la sortie dont on pose le tracé sur la vidéo (sorties enregistrées avec le téléphone)
+      function trkOpen(){ var old=vu.querySelector(".vu-tsheet"); if(old) old.remove(); var list=[]; try{ list=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; }catch(x){}
+        list=list.filter(function(q){ return q && q.points && q.points.length>1; }).slice(0,20);
+        var sh=document.createElement("div"); sh.className="vu-sheet vu-msheet vu-tsheet";
+        sh.innerHTML='<div class="vu-mh"><b>Tracé GPS sur la vidéo</b><button type="button" class="vu-ib" data-a="x" aria-label="Fermer">✕</button></div>'
+          +(list.length ? '<div class="vu-mnote" style="margin:6px 0 4px">Choisis une sortie : son parcours s\'affiche en transparence sur ta vidéo, avec la distance et la vitesse max.</div><div class="vu-mlist">'
+              +list.map(function(q,i){ var d=new Date(q.startedAt||q.t0||+String(q.id||"").replace("phone-","")||Date.now()); return '<div class="vu-mrow"><span class="vu-mt"><b>'+esc(q.cat||"Sortie")+'</b><small>'+esc(d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}))+' · '+((+q.distanceM||0)/1000).toFixed(2).replace(".",",")+' km · max '+(+q.maxSpeedKmh||0).toFixed(1).replace(".",",")+' km/h</small></span><button type="button" class="vu-muse" data-k="'+i+'">Choisir</button></div>'; }).join("")+'</div>'
+            : '<div class="vu-mnote" style="margin:14px 0">Aucune sortie enregistrée avec ce téléphone pour le moment. Lance une sortie dans l\'onglet Tracking, puis reviens ici.</div>')
+          +(st.track?'<button type="button" class="vu-mpick" data-a="rm"><span>🗑</span><b>Retirer le tracé</b></button>':'');
+        vu.appendChild(sh); vid.pause();
+        sh.addEventListener("click", function(e){ var b=e.target.closest("button"); if(!b) return;
+          if(b.dataset.k!=null){ var t=vuTrackOf(list[+b.dataset.k]); if(t) st.track=t; } else if(b.dataset.a==="rm") st.track=null;
+          sh.remove(); txDraw(); if(st.mode==="trim") play(); }); }
       // glisser sur la bande : déplace l'extrait (Couper) ou l'image (Couverture)
       var drag=null;
       var at=function(e){ var r=strip.getBoundingClientRect(); return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*(st.dur||1); };
@@ -6239,7 +6276,7 @@
         if(st.mode==="trim"){ if(vid.currentTime>st.start+win()-0.05 || vid.currentTime<st.start-0.3){ vid.currentTime=st.start; } head.style.left=(vid.currentTime/(st.dur||1)*100)+"%"; } },60); }
     // ---------- 3. Publier ----------
     function stepPost(){ if(loopT) clearInterval(loopT); if(vid) vid.pause(); try{ if(st.aud) st.aud.pause(); }catch(e){}
-      var needTrim=st.dur>st.max+0.9 || (canTranscode() && win()<(st.dur||0)-0.4), heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode(), hasFx=(st.texts.length>0 || !!st.music || st.origVol<1) && canTranscode();
+      var needTrim=st.dur>st.max+0.9 || (canTranscode() && win()<(st.dur||0)-0.4), heavy=st.file.size>VID_COMPRESS_MB*1048576, needCompress=!needTrim && heavy && canTranscode(), hasFx=(st.texts.length>0 || !!st.music || st.origVol<1 || !!st.track) && canTranscode();
       vu.className="vu vu-post";
       vu.innerHTML='<div class="vu-pbar"><button class="vu-ib" id="vuBack2" aria-label="Retour">'+IC.back+'</button><b>Publier</b><span class="vu-ib"></span></div>'
         +'<div class="vu-pbody"><div class="vu-top2"><div class="vu-capw2"><textarea id="vuCap" maxlength="150" rows="5" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Décris ta session… Ajoute des #hashtags"></textarea><div class="vu-cnt" id="vuCnt">0/150</div></div>'
@@ -6265,7 +6302,7 @@
         var pr=$("vuProg"), bar=pr.querySelector("i"); pr.hidden=false; bar.style.width="0%";
         var prep=(needTrim||needCompress||hasFx) ? (function(){ btn.textContent="Préparation…";
             return transcodeVideo(st.file, needTrim?st.start:0, needTrim?win():(st.dur||VID_MAX_S), function(p){ bar.style.width=Math.round(p*50)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; },
-                hasFx ? { texts:st.texts, origVol:st.origVol, musicBuf:st.music?st.music.buf:null, musicOff:st.music?st.music.off:0, musicVol:st.music?st.music.vol:0 } : null)
+                hasFx ? { texts:st.texts, track:st.track, origVol:st.origVol, musicBuf:st.music?st.music.buf:null, musicOff:st.music?st.music.off:0, musicVol:st.music?st.music.vol:0 } : null)
               .then(function(out){ if(out.size>VID_MAX_MB*1048576) throw new Error("vidéo encore trop lourde après compression"); return out; }); })()
           : Promise.resolve(st.file);
         prep.then(function(file){ var base=(needTrim||needCompress||hasFx)?50:0;
