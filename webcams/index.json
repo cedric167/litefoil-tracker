@@ -2544,6 +2544,40 @@
    "approx": true
   },
   {
+   "sea": "nord",
+   "place": "Rugen",
+   "view": "Insel Rügen - Kiting-/Su",
+   "country": "Allemagne",
+   "area": "Baltique allemande",
+   "id": "Nn2zaO5Wddk",
+   "embed": true,
+   "by": "Meerblick in Wiek auf Rügen",
+   "match": [
+    "rugen"
+   ],
+   "ch": "https://www.youtube.com/@meerblickinwiekaufrugen7350",
+   "lat": 54.18,
+   "lon": 12.08,
+   "approx": true
+  },
+  {
+   "sea": "nord",
+   "place": "St Ives",
+   "view": "Harbour - Cornwall, England",
+   "country": "Royaume-Uni",
+   "area": "Cornouailles & Devon",
+   "id": "Iu5zg5iqVmw",
+   "embed": true,
+   "by": "Ozolio Plus",
+   "match": [
+    "st ives"
+   ],
+   "ch": "https://www.youtube.com/@ozolio_plus",
+   "lat": 50.42,
+   "lon": -5.1,
+   "approx": true
+  },
+  {
    "sea": "usa",
    "place": "Venice Beach",
    "view": "Los Angeles",
@@ -3479,6 +3513,23 @@
    "approx": true
   },
   {
+   "sea": "usa",
+   "place": "Carolina Beach",
+   "view": "North & Fishing Pier",
+   "country": "États-Unis",
+   "area": "Outer Banks & Hatteras",
+   "id": "CnbwpC4eYKc",
+   "embed": true,
+   "by": "usaoutdoors8851 (北卡钓鱼佬)",
+   "match": [
+    "carolina beach"
+   ],
+   "ch": "https://www.youtube.com/@usaoutdoors8851",
+   "lat": 35.25,
+   "lon": -75.53,
+   "approx": true
+  },
+  {
    "sea": "car",
    "place": "Martinique",
    "view": "Les Anses d'Arlet",
@@ -4074,6 +4125,74 @@
    "approx": true
   },
   {
+   "sea": "car",
+   "place": "Santos",
+   "view": "Praia de em - em santos",
+   "country": "Brésil",
+   "area": "Sud du Brésil",
+   "id": "QoRcKpBBaiU",
+   "embed": true,
+   "by": "Olhar 013",
+   "match": [
+    "santos"
+   ],
+   "ch": "https://www.youtube.com/@olhar013",
+   "lat": -27.6,
+   "lon": -48.45,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Balneario Camboriu",
+   "view": "BALNEÁRIO CAMBORIÚ SC",
+   "country": "Brésil",
+   "area": "Sud du Brésil",
+   "id": "lFlovxrE9Og",
+   "embed": true,
+   "by": "ConexãoDCTV - Oficial",
+   "match": [
+    "balneario camboriu"
+   ],
+   "ch": "https://www.youtube.com/@ConexaoDCTVoficial",
+   "lat": -27.6,
+   "lon": -48.45,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Natal",
+   "view": "PRAIA DE PONTA NEGRA - N",
+   "country": "Brésil",
+   "area": "Nordeste",
+   "id": "jhIKYFLSJmY",
+   "embed": true,
+   "by": "Live Cam Natal",
+   "match": [
+    "natal"
+   ],
+   "ch": "https://www.youtube.com/@LiveCamNatal",
+   "lat": -2.8,
+   "lon": -40.51,
+   "approx": true
+  },
+  {
+   "sea": "car",
+   "place": "Natal",
+   "view": "PRAIA DE PONTA NEGRA - N",
+   "country": "Brésil",
+   "area": "Nordeste",
+   "id": "S4TO6ayde9g",
+   "embed": true,
+   "by": "Live Cam Natal",
+   "match": [
+    "natal"
+   ],
+   "ch": "https://www.youtube.com/@LiveCamNatal",
+   "lat": -2.8,
+   "lon": -40.51,
+   "approx": true
+  },
+  {
    "sea": "afr",
    "place": "Muizenberg",
    "view": "Beach - REEF South Africa",
@@ -4156,6 +4275,23 @@
    "ch": "https://www.youtube.com/@KBC-WORLD",
    "lat": 27.39,
    "lon": 33.68,
+   "approx": true
+  },
+  {
+   "sea": "afr",
+   "place": "Seychelles",
+   "view": "Ocean Sunset NO ADS",
+   "country": "Tanzanie",
+   "area": "Zanzibar, Kenya & Seychelles",
+   "id": "xA7txncoo6o",
+   "embed": true,
+   "by": "Luxury Island",
+   "match": [
+    "seychelles"
+   ],
+   "ch": "https://www.youtube.com/@luxislandss",
+   "lat": -6.14,
+   "lon": 39.5,
    "approx": true
   },
   {
@@ -4394,6 +4530,74 @@
    "ch": "https://www.youtube.com/@BusanHaeundaeLive",
    "lat": 35.16,
    "lon": 129.16,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Busan",
+   "view": "광안리 실시간 라이브캠 - 광안대교 24시간 생중계",
+   "country": "Corée du Sud",
+   "area": "Corée, Chine & Taïwan",
+   "id": "GZ8MwCX_n14",
+   "embed": true,
+   "by": "Busan Live Cam - Gwangan Bridge",
+   "match": [
+    "busan"
+   ],
+   "ch": "https://www.youtube.com/@BusanLive",
+   "lat": 35.16,
+   "lon": 129.16,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Newcastle",
+   "view": "Port of Harbour",
+   "country": "Australie",
+   "area": "Sydney & Nouvelle-Galles",
+   "id": "dypAtzvl24s",
+   "embed": true,
+   "by": "Port of Newcastle",
+   "match": [
+    "newcastle"
+   ],
+   "ch": "https://www.youtube.com/@portofnewcastle",
+   "lat": -33.89,
+   "lon": 151.28,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Raglan",
+   "view": "Raglan Bar",
+   "country": "Nouvelle-Zélande",
+   "area": "Nouvelle-Zélande",
+   "id": "eOnZBBVqwb0",
+   "embed": true,
+   "by": "Raglan Sportfishing",
+   "match": [
+    "raglan"
+   ],
+   "ch": "https://www.youtube.com/@raglansportfishing8588",
+   "lat": -37.8,
+   "lon": 174.87,
+   "approx": true
+  },
+  {
+   "sea": "asia",
+   "place": "Wellington",
+   "view": "Lyall Bay, New Zealand",
+   "country": "Nouvelle-Zélande",
+   "area": "Nouvelle-Zélande",
+   "id": "AajdfhglWd8",
+   "embed": true,
+   "by": "John Young",
+   "match": [
+    "wellington"
+   ],
+   "ch": "https://www.youtube.com/@wlgwetaworker",
+   "lat": -37.8,
+   "lon": 174.87,
    "approx": true
   }
  ],
