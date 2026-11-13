@@ -1267,6 +1267,40 @@
   .sec-big{ display:block; width:100%; border:0; border-radius:16px; padding:15px; font:inherit; font-weight:800; font-size:16.5px; margin-top:10px; cursor:pointer; background:#f1f3f4; color:#0e1417; text-decoration:none; }
   .sec-big.ok{ background:linear-gradient(135deg,#1fc3cd,#118b92); color:#fff; } .sec-big.sos{ background:#e8384f; color:#fff; } .sec-big:disabled{ opacity:.8; }
   .sec-ask.bat .sec-ask-c{ border-top:6px solid #ffb020; }
+  .ab-sos{ flex:none; min-height:0; height:30px; padding:0 11px; border:0; border-radius:999px; background:#e8384f; color:#fff; font:inherit; font-weight:900; font-size:12px; letter-spacing:.08em; cursor:pointer; box-shadow:0 3px 9px rgba(232,56,79,.35); }
+  .ab-sos.on{ animation:sosBlink 1s ease-in-out infinite; } @keyframes sosBlink{ 50%{ background:#ff8a00; box-shadow:0 0 0 5px rgba(255,138,0,.25); } }
+  .sosx{ position:fixed; inset:0; z-index:12000; display:flex; flex-direction:column; color:#fff; background:radial-gradient(120% 70% at 50% 0%, #b3142c 0%, #6d0a1c 46%, #24060c 100%); animation:cfIn .2s ease-out; }
+  .sosx.calm{ background:radial-gradient(120% 70% at 50% 0%, #1c3d45 0%, #0d2228 50%, #06181d 100%); }
+  .sosx-h{ display:flex; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 6px; } .sosx-h b{ flex:1; font-size:21px; font-weight:900; letter-spacing:.06em; }
+  .sosx-h button{ width:40px; height:40px; min-height:0; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.16); color:#fff; font-size:18px; cursor:pointer; box-shadow:none; }
+  .sosx-b{ flex:1; overflow-y:auto; padding:6px 16px calc(var(--lf-sab, 0px) + 22px); display:flex; flex-direction:column; }
+  .sosx-kinds{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:6px 0 2px; }
+  .sosx-kinds button{ min-height:0; border:1.5px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); color:#fff; border-radius:16px; padding:10px 4px 8px; font:inherit; font-size:12px; font-weight:700; cursor:pointer; box-shadow:none; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .sosx-kinds button i{ font-style:normal; font-size:22px; line-height:1; } .sosx-kinds button.on{ background:#fff; color:#7a0c20; border-color:#fff; }
+  .sosx-hold{ position:relative; width:206px; height:206px; margin:22px auto 8px; flex:none; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; touch-action:none; }
+  .sosx-hold svg{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); } .sosx-hold circle{ fill:none; stroke-width:8; }
+  .sosx-hold .tr{ stroke:rgba(255,255,255,.18); } .sosx-hold .pg{ stroke:#fff; stroke-linecap:round; stroke-dasharray:578; stroke-dashoffset:578; }
+  .sosx-hold.go .pg{ transition:stroke-dashoffset 1.6s linear; stroke-dashoffset:0; }
+  .sosx-hold button{ position:absolute; inset:17px; min-height:0; padding:0; border:0; border-radius:50%; background:radial-gradient(circle at 35% 28%, #ff6b7d, #e8384f 55%, #b91530); color:#fff; font:inherit; cursor:pointer; box-shadow:0 14px 34px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.35); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; touch-action:none; }
+  .sosx-hold button b{ font-size:46px; font-weight:900; letter-spacing:.05em; line-height:1; } .sosx-hold button small{ font-size:12.5px; font-weight:700; opacity:.92; }
+  .sosx-hold.go button{ transform:scale(.95); } .sosx-hold::before{ content:""; position:absolute; inset:0; border-radius:50%; animation:lfcPulse 1.8s ease-out infinite; }
+  .sosx-hint{ text-align:center; font-size:14px; color:rgba(255,255,255,.85); margin:0 8px; line-height:1.4; }
+  .sosx-g{ margin:16px 0 4px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:11px 12px; display:flex; align-items:center; gap:10px; }
+  .sosx-avs{ display:flex; flex:none; } .sosx-av{ width:34px; height:34px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:#fff; border:2px solid rgba(255,255,255,.85); margin-left:-9px; } .sosx-av:first-child{ margin-left:0; } .sosx-av img{ width:100%; height:100%; object-fit:cover; }
+  .sosx-g span{ flex:1; min-width:0; font-size:13.5px; line-height:1.3; } .sosx-g span b{ display:block; font-size:14.5px; }
+  .sosx-g button, .sosx-link{ flex:none; min-height:0; border:0; border-radius:999px; background:rgba(255,255,255,.18); color:#fff; font:inherit; font-size:12.5px; font-weight:800; padding:8px 12px; cursor:pointer; box-shadow:none; }
+  .sosx-calls{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+  .sosx-calls a{ display:block; text-decoration:none; color:#fff; background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.16); border-radius:16px; padding:11px 12px; } .sosx-calls a b{ display:block; font-size:19px; font-weight:900; } .sosx-calls a small{ font-size:11.5px; opacity:.85; }
+  .sosx-calls a.main{ background:#fff; color:#7a0c20; border-color:#fff; }
+  .sosx-pos{ margin-top:10px; background:rgba(0,0,0,.25); border-radius:16px; padding:11px 12px; text-align:center; } .sosx-pos small{ display:block; font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; opacity:.7; }
+  .sosx-pos b{ display:block; font-family:ui-monospace,Menlo,monospace; font-size:16.5px; margin-top:4px; } .sosx-pos span{ display:block; font-size:12px; opacity:.75; margin-top:2px; }
+  .sosx-btn{ display:block; width:100%; min-height:0; margin-top:10px; border:0; border-radius:16px; padding:14px; font:inherit; font-size:15.5px; font-weight:800; cursor:pointer; background:rgba(255,255,255,.16); color:#fff; box-shadow:none; }
+  .sosx-btn.ok{ background:#19b866; } .sosx-btn.w{ background:#fff; color:#7a0c20; }
+  .sosx-sent{ text-align:center; margin:14px 0 6px; } .sosx-sent i{ font-style:normal; display:inline-flex; width:74px; height:74px; border-radius:50%; align-items:center; justify-content:center; font-size:36px; background:rgba(255,255,255,.16); animation:lfcPulse 1.8s ease-out infinite; }
+  .sosx-sent h2{ margin:12px 0 4px; font-size:24px; font-weight:900; color:#fff; } .sosx-sent p{ margin:0; font-size:14px; color:rgba(255,255,255,.85); line-height:1.4; }
+  .sosx-list{ margin-top:12px; display:flex; flex-direction:column; gap:7px; } .sosx-li{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.1); border-radius:14px; padding:8px 10px; } .sosx-li .sosx-av{ margin:0; border-width:0; }
+  .sosx-li b{ flex:1; min-width:0; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .sosx-li em{ font-style:normal; font-size:12px; font-weight:800; padding:4px 9px; border-radius:999px; background:rgba(255,255,255,.16); } .sosx-li em.ok{ background:#19b866; } .sosx-li em.ko{ background:#ff8a00; }
+  .sosx-in .sosx-av{ width:104px; height:104px; font-size:44px; margin:26px auto 0; border-width:4px; animation:lfcPulse 1.4s ease-out infinite; } .sosx-in h2{ text-align:center; font-size:30px; font-weight:900; margin:16px 0 4px; color:#fff; } .sosx-in p{ text-align:center; margin:0 10px; font-size:15px; line-height:1.45; color:rgba(255,255,255,.9); }
   .sec-sosv{ position:fixed; inset:0; z-index:12000; background:#fff; display:flex; flex-direction:column; animation:cfIn .2s ease-out; }
   .sec-sos-h{ display:flex; align-items:center; justify-content:space-between; background:#e8384f; color:#fff; padding:calc(env(safe-area-inset-top) + 14px) 16px 14px; } .sec-sos-h b{ font-size:22px; letter-spacing:.04em; }
   .sec-x{ width:40px; height:40px; border:0; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; font-size:18px; cursor:pointer; }
@@ -1958,6 +1992,7 @@
   <div class="appbar" id="appbar">
     <button type="button" class="ab-logo" data-goto="dash" aria-label="Accueil"><img src="litefoil-logo.png" alt="Lite Foil"></button>
     <div class="ab-title" id="abTitle">Lite Foil</div>
+    <button type="button" class="ab-sos" id="abSos" aria-label="SOS">SOS</button>
     <button type="button" class="ab-me" id="abMe" data-goto="profil" aria-label="Mon profil"><span id="abMeAv">👤</span></button>
   </div>
   <div class="hero" id="hero">
@@ -2533,10 +2568,10 @@
   <div class="tk-opts">
     <h2>Partage &amp; sécurité</h2>
     <div class="sec-card" id="secCard">
-      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité en mer</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
+      <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
       <label class="sec-row"><span><b>Partager ma sortie en direct</b><small>Un proche suit ta position sur une carte, sans appli.</small></span><input type="checkbox" class="lfo-tog" id="secLive"></label>
       <div class="sec-row sec-sub" id="secLiveOn" hidden><span><small id="secLiveTxt">Suivi en direct actif.</small></span><button type="button" class="sec-btn" id="secLiveShare">Envoyer le lien</button></div>
-      <div class="sec-row"><span><b>Contacts de sécurité</b><small id="secContactsTxt">Riders Lite Foil prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
+      <div class="sec-row"><span><b>Mes gardiens</b><small id="secContactsTxt">Amis prévenus en cas d'alerte ou de SOS.</small></span><button type="button" class="sec-btn" id="secContactsBtn">Choisir</button></div>
       <label class="sec-row"><span><b>Alerte si je ne bouge plus</b><small>« Tout va bien ? » puis alerte à tes proches sans réponse.</small></span>
         <select id="secIdle" class="sec-sel"><option value="0">Non</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label>
       <div class="sec-row"><span><b>Alerte batterie retour</b><small>Automatique quand ta batterie est connectée : prévient s'il ne reste plus assez pour revenir.</small></span><span class="sec-ok">Auto</span></div>
@@ -5843,7 +5878,7 @@
     if(chatMode==="groups") renderGroupsList();
     recomputeBadges();
   }
-  function onMyDMs(map){ myDMs=map||{}; try{ lfCallRing(myDMs); }catch(e){}
+  function onMyDMs(map){ myDMs=map||{}; try{ if(window.__secOnDMs) window.__secOnDMs(myDMs); }catch(e){} try{ lfCallRing(myDMs); }catch(e){}
     if(dmNotifInit){
       for(var peer in myDMs){ var e=myDMs[peer]; if(!e) continue; var t=+e.t||0;
         var viewing=(chatMode==="dm"&&dmPeer&&dmPeer.uid===peer);
@@ -7460,7 +7495,11 @@
     contacts: function(){ var set={}; Object.keys(myFriends||{}).forEach(function(u){ set[u]=1; }); followingOf(me.uid).forEach(function(u){ set[u]=1; });
       return Object.keys(set).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }).map(function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; }); },
     liveCreate: function(sid,o){ return backend && backend.liveCreate ? backend.liveCreate(sid,o) : Promise.reject(new Error("hors ligne")); },
-    share: function(url,title,text){ shareLink(url,title,text); }
+    share: function(url,title,text){ shareLink(url,title,text); },
+    friends: function(){ return Object.keys(myFriends||{}).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }); },
+    who: function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; },
+    dm: function(u,text){ if(!backend || !backend.sendMessage) return Promise.reject(new Error("hors ligne")); try{ return Promise.resolve(backend.sendMessage("dm:"+pairKey(me.uid,u), text)); }catch(e){ return Promise.reject(e); } },
+    openDM: function(u){ try{ var b=document.querySelector('[data-nav="communaute"]'); if(b) b.click(); }catch(e){} setTimeout(function(){ try{ openDM(u, pName(u)); }catch(e){} }, 250); }
   };
   function openFollowList(uid, which){ var o=gOverlay(); o.hidden=false; var tab=which||"followers";
     if(uid===me.uid && tab==="followers"){ followSeen=Date.now(); try{ localStorage.setItem("lf.fol.seen", String(followSeen)); }catch(e){} try{ renderProfil(); }catch(e){} }
@@ -8876,7 +8915,7 @@
   function paintContacts(){ var n=contacts().length, t=$("secContactsTxt"); if(t) t.textContent = n ? (n+" contact"+(n>1?"s":"")+" prévenu"+(n>1?"s":"")+" en cas d'alerte ou de SOS") : "Riders Lite Foil prévenus en cas d'alerte ou de SOS."; }
   paintContacts();
   $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), sel=contacts();
-    var ov=document.createElement("div"); ov.className="mm-ov"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Contacts de sécurité</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi les riders que tu suis.</p>'
+    var ov=document.createElement("div"); ov.className="mm-ov"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Mes gardiens</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi tes amis et les riders que tu suis. Sans choix, tous tes amis sont prévenus.</p>'
       +(list.length? '<div class="sec-list">'+list.map(function(c){ return '<label class="sec-li"><span class="sec-av" style="background:'+c.col+'">'+(c.av?'<img src="'+c.av+'" alt="">':(c.ps.trim()[0]||"R").toUpperCase())+'</span><b>'+c.ps.replace(/[<>&]/g,"")+'</b><input type="checkbox" class="lfo-tog" value="'+c.uid+'"'+(sel.indexOf(c.uid)>=0?" checked":"")+'></label>'; }).join("")+'</div>'
         : '<p class="sec-p"><b>Tu ne suis encore personne.</b> Suis tes proches riders (bouton Suivre sur leur profil) pour pouvoir les choisir ici. Pour quelqu\'un qui n\'a pas l\'appli, utilise « Partager ma sortie en direct ».</p>')
       +'<button class="primary sec-ok2">OK</button></div>';
@@ -8944,26 +8983,97 @@
       var ov=document.createElement("div"); ov.className="sec-ask bat"; ov.innerHTML='<div class="sec-ask-c"><div class="sec-ask-ic">🔋</div><h2>Rentre maintenant</h2><p>Il te reste <b>'+Math.round(soc)+' %</b>. Pour revenir à ton point de départ ('+home.toFixed(1).replace(".",",")+' km), il faut environ <b>'+Math.min(100,need)+' %</b>.</p><button class="sec-big ok">OK, je rentre</button></div>';
       document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); }); } }
   // ---------- SOS ----------
-  function openSos(){ var A=api(), ov=document.createElement("div"); ov.className="sec-sosv";
-    ov.innerHTML='<div class="sec-sos-h"><b>🆘 SOS</b><button class="sec-x" aria-label="Fermer">✕</button></div><div class="sec-sos-b">'
-      +'<a class="sec-call" href="tel:196"><b>Appeler le 196</b><small>CROSS · secours en mer (gratuit, 24 h/24)</small></a>'
-      +'<a class="sec-call alt" href="tel:112"><b>Appeler le 112</b><small>Numéro d\'urgence européen</small></a>'
-      +'<div class="sec-pos"><small>Ta position à donner aux secours</small><b id="secPos">Recherche de ta position…</b><span id="secPos2"></span></div>'
-      +'<button class="sec-big" id="secSendPos">📤 Envoyer ma position (SMS, WhatsApp…)</button>'
-      +(S.live?'<button class="sec-big sos" id="secAlertAll">🔴 Prévenir mes proches (SOS)</button>':'')
-      +'<p class="sec-p2">Reste avec ta planche : elle flotte et se voit de loin. Garde ton téléphone au sec et allumé.</p></div>';
-    document.body.appendChild(ov); vib(200);
-    ov.querySelector(".sec-x").addEventListener("click", function(){ ov.remove(); });
-    var pos=S.last?{lat:S.last.lat,lon:S.last.lon,acc:null}:null;
-    function paint(){ if(!pos) return; $("secPos").textContent=dms(pos.lat,"N","S")+"   "+dms(pos.lon,"E","O"); $("secPos2").textContent=pos.lat.toFixed(5)+", "+pos.lon.toFixed(5)+(pos.acc?" · ±"+Math.round(pos.acc)+" m":""); }
-    paint();
-    try{ navigator.geolocation.getCurrentPosition(function(p){ pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy}; paint(); }, function(){ if(!pos) $("secPos").textContent="Position indisponible (active la localisation)"; }, {enableHighAccuracy:true,timeout:15000,maximumAge:30000}); }catch(e){}
-    $("secSendPos").addEventListener("click", function(){ if(!pos){ alert("Position pas encore trouvée, patiente quelques secondes."); return; }
-      var map="https://www.google.com/maps/search/?api=1&query="+pos.lat.toFixed(5)+","+pos.lon.toFixed(5);
-      var txt="🆘 J'ai besoin d'aide en mer. Ma position : "+dms(pos.lat,"N","S")+" "+dms(pos.lon,"E","O")+(S.live?" · Suivi en direct : "+S.live.url:"");
-      if(A) A.share(map,"SOS Lite Foil",txt); else location.href="sms:?&body="+encodeURIComponent(txt+" "+map); });
-    var aa=$("secAlertAll"); if(aa) aa.addEventListener("click", function(){ if(!confirm("Déclencher le SOS ? Tes proches qui suivent ta sortie et tes contacts de sécurité seront alertés.")) return;
-      post("sos"); aa.textContent="✓ SOS envoyé à tes proches"; aa.disabled=true; vib([300,100,300]); }); }
+  var KINDS={ mer:{ ic:"🌊", lb:"En mer", tx:"en mer", calls:[["196","CROSS · secours en mer",1],["112","Urgences"]] },
+    blesse:{ ic:"🤕", lb:"Blessure", tx:"blessure / malaise", calls:[["15","SAMU",1],["112","Urgences"]] },
+    danger:{ ic:"🛡️", lb:"Agression", tx:"agression / danger", calls:[["17","Police · gendarmerie",1],["112","Urgences"]], quiet:true },
+    autre:{ ic:"❗", lb:"Autre", tx:"besoin d'aide", calls:[["112","Urgences",1],["15","SAMU"]] } };
+  var SOS=null; try{ SOS=JSON.parse(ls("lf.sec.sos")||"null"); }catch(e){} if(SOS && !(Date.now()-SOS.t < 3*3600000)) SOS=null;
+  var sosIv=null, sosWatch=null, sosPos=null, sosOv=null, sosAck={};
+  function guardians(){ var A=api(); if(!A) return []; var ok={}; A.contacts().forEach(function(c){ ok[c.uid]=1; }); var sel=contacts().filter(function(u){ return ok[u]; });
+    return sel.length ? sel : A.friends(); }   // sans choix : tous mes amis
+  function avHtml(w){ return '<span class="sosx-av" style="background:'+w.col+'">'+(w.av?'<img src="'+w.av+'" alt="">':String(w.ps||"R").trim().charAt(0).toUpperCase())+'</span>'; }
+  function safe(t){ return String(t==null?"":t).replace(/[<>&"]/g,""); }
+  function sosSave(){ ls("lf.sec.sos", SOS?JSON.stringify(SOS):null); var b=$("abSos"); if(b) b.classList.toggle("on", !!SOS); }
+  function sosTrack(){ // pendant un SOS : position envoyée toutes les 20 s tant que l'appli est ouverte
+    if(sosIv) return; try{ sosWatch=navigator.geolocation.watchPosition(function(p){ sosPos={ lat:p.coords.latitude, lon:p.coords.longitude, acc:p.coords.accuracy }; if(!S.running){ S.buf.push({ lat:sosPos.lat, lng:sosPos.lon, t:Date.now(), spd:Math.round(((p.coords.speed||0)*3.6)*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60); } }, function(){}, { enableHighAccuracy:true, maximumAge:5000 }); }catch(e){}
+    sosIv=setInterval(function(){ if(!SOS){ sosUntrack(); return; } if(!S.running && S.live && S.buf.length) post(); }, 20000); }
+  function sosUntrack(){ if(sosIv) clearInterval(sosIv); sosIv=null; try{ if(sosWatch!=null) navigator.geolocation.clearWatch(sosWatch); }catch(e){} sosWatch=null; }
+  function mapUrl(p){ return "https://www.google.com/maps/search/?api=1&query="+p.lat.toFixed(5)+","+p.lon.toFixed(5); }
+  function sosFire(kind, pos){ var A=api(), K=KINDS[kind]||KINDS.autre, g=guardians(), me=A&&A.me();
+    if(!K.quiet){ vib([300,100,300,100,600]); beep(1200); }
+    var started=false;
+    if(!S.live && A && me && me.ready){ var sid=rnd(12), k=rnd(24), ct={}; g.forEach(function(u){ ct[u]=true; });
+      S.live={ sid:sid, k:k, url:BASE+"/l/"+sid, api:BASE+"/api/live/"+sid, sos:true }; started=true;
+      if(pos) S.buf.push({ lat:pos.lat, lng:pos.lon, t:Date.now(), spd:0 });
+      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:"SOS · "+K.lb, contacts:ct }).then(function(){ return post("sos"); }).catch(function(){}); }
+    else if(S.live) post("sos");
+    var url=S.live?S.live.url:"", txt="🆘 SOS ("+K.tx+") : j'ai besoin d'aide."+(pos?" Ma position : "+mapUrl(pos):" Position en cours de recherche.")+(url?" Suivi en direct : "+url:"");
+    SOS={ t:Date.now(), kind:kind, to:g.slice(0,25), sent:{}, live:S.live&&S.live.sos?S.live:null, url:url }; sosAck={}; sosSave();
+    SOS.to.forEach(function(u){ if(!A) return; A.dm(u, txt).then(function(){ if(SOS){ SOS.sent[u]=1; sosSave(); sosPaint(); } }, function(){ if(SOS){ SOS.sent[u]=-1; sosSave(); sosPaint(); } }); });
+    sosTrack(); sosPaint(); }
+  function sosCancel(){ if(!SOS) return; var A=api(), to=SOS.to||[]; if(S.live){ post(S.live.sos?"ended":"ok"); if(S.live.sos) S.live=null; }
+    to.forEach(function(u){ if(A && SOS.sent[u]===1) A.dm(u, "✅ Fin d'alerte : je suis en sécurité. Merci !").catch(function(){}); });
+    SOS=null; sosSave(); sosUntrack(); if(sosOv){ sosOv.remove(); sosOv=null; } }
+  function sosPaint(){ if(!sosOv) return; var A=api(), b=sosOv.querySelector(".sosx-b"); if(!b) return;
+    if(SOS){ var K=KINDS[SOS.kind]||KINDS.autre, n=(SOS.to||[]).length; sosOv.classList.toggle("calm", !!K.quiet);
+      b.innerHTML='<div class="sosx-sent"><i>'+(K.quiet?"🛡️":"🆘")+'</i><h2>'+(n?"SOS envoyé":"Appelle les secours")+'</h2><p>'+(n?(n+" gardien"+(n>1?"s":"")+" prévenu"+(n>1?"s":"")+" avec ta position"+(SOS.url?" et ton suivi en direct":"")+". Garde l'appli ouverte : ta position continue d'être envoyée."):"Tu n'as pas encore de gardien dans l'appli : appelle directement.")+'</p></div>'
+        +'<div class="sosx-calls">'+K.calls.map(function(c){ return '<a href="tel:'+c[0]+'" class="'+(c[2]?"main":"")+'"><b>📞 '+c[0]+'</b><small>'+c[1]+'</small></a>'; }).join("")+'</div>'
+        +(K.quiet?'<a class="sosx-btn" style="text-align:center;text-decoration:none;box-sizing:border-box" href="sms:114">✉️ 114 par SMS (sans parler)</a>':'')
+        +(n?'<div class="sosx-list">'+SOS.to.map(function(u){ var w=A?A.who(u):{ps:"Rider",col:"#888"}, st=sosAck[u]?'<em class="ok">a répondu</em>':(SOS.sent[u]===1?'<em>prévenu ✓</em>':(SOS.sent[u]===-1?'<em class="ko">non envoyé</em>':'<em>envoi…</em>'));
+            return '<div class="sosx-li" data-u="'+u+'">'+avHtml(w)+'<b>'+safe(w.ps)+'</b>'+st+'</div>'; }).join("")+'</div>':'')
+        +'<div class="sosx-pos"><small>Ta position à donner aux secours</small><b id="sosPosA">Recherche…</b><span id="sosPosB"></span></div>'
+        +'<button type="button" class="sosx-btn" data-a="share">📤 Envoyer ma position ailleurs (SMS, WhatsApp…)</button>'
+        +'<button type="button" class="sosx-btn ok" data-a="safe">✅ Je suis en sécurité : arrêter l\'alerte</button>'; }
+    else { var kind=sosOv._kind, K2=KINDS[kind], g=guardians(), ws=g.slice(0,4).map(function(u){ return A.who(u); });
+      sosOv.classList.toggle("calm", false);
+      b.innerHTML='<div class="sosx-kinds">'+Object.keys(KINDS).map(function(k){ return '<button type="button" data-k="'+k+'" class="'+(k===kind?"on":"")+'"><i>'+KINDS[k].ic+'</i>'+KINDS[k].lb+'</button>'; }).join("")+'</div>'
+        +'<div class="sosx-hold" id="sosHold"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="92"/><circle class="pg" cx="100" cy="100" r="92"/></svg><button type="button" aria-label="Maintenir pour envoyer le SOS"><b>SOS</b><small>Maintiens 2 secondes</small></button></div>'
+        +'<p class="sosx-hint">'+(g.length?"Maintiens le bouton : tes gardiens reçoivent ton alerte, ta position et ton suivi en direct.":"Maintiens le bouton pour lancer l'alerte, puis appelle les secours.")+(K2.quiet?" Mode discret : aucun son.":"")+'</p>'
+        +'<div class="sosx-g">'+(g.length?'<div class="sosx-avs">'+ws.map(avHtml).join("")+'</div><span><b>'+g.length+' gardien'+(g.length>1?"s":"")+'</b>'+(contacts().length?"choisis par toi":"tous tes amis")+'</span>':'<span><b>Aucun gardien</b>Ajoute des amis dans la communauté pour qu\'ils soient prévenus.</span>')+'<button type="button" data-a="pick">Choisir</button></div>'
+        +'<div class="sosx-calls">'+K2.calls.map(function(c){ return '<a href="tel:'+c[0]+'" class="'+(c[2]?"main":"")+'"><b>📞 '+c[0]+'</b><small>'+c[1]+'</small></a>'; }).join("")+'</div>'
+        +'<div class="sosx-pos"><small>Ta position</small><b id="sosPosA">Recherche…</b><span id="sosPosB"></span></div>';
+      var h=$("sosHold"), t=null, start=function(e){ if(e) e.preventDefault(); if(t) return; h.classList.add("go"); vib(60); t=setTimeout(function(){ t=null; h.classList.remove("go"); sosFire(sosOv._kind, sosPos); }, 1600); },
+        stop=function(){ if(!t) return; clearTimeout(t); t=null; h.classList.remove("go"); };
+      h.addEventListener("pointerdown", start); ["pointerup","pointercancel","pointerleave"].forEach(function(ev){ h.addEventListener(ev, stop); }); h.addEventListener("contextmenu", function(e){ e.preventDefault(); }); }
+    posPaint(); }
+  function posPaint(){ var a=$("sosPosA"), b=$("sosPosB"); if(!a) return; var p=sosPos; if(!p){ a.textContent="Recherche de ta position…"; return; }
+    a.textContent=dms(p.lat,"N","S")+"   "+dms(p.lon,"E","O"); if(b) b.textContent=p.lat.toFixed(5)+", "+p.lon.toFixed(5)+(p.acc?" · ±"+Math.round(p.acc)+" m":""); }
+  function openSos(){ if(sosOv) sosOv.remove(); var ov=sosOv=document.createElement("div"); ov.className="sosx";
+    ov._kind = (S.running ? S.milieu==="mer" : (document.body.getAttribute("data-tab")==="tracking" && (function(){ var b=document.querySelector('#phSeg [aria-selected="true"]'); return !b || b.dataset.m==="mer"; })())) ? "mer" : "autre";
+    ov.innerHTML='<div class="sosx-h"><b>SOS</b><button type="button" data-a="x" aria-label="Fermer">✕</button></div><div class="sosx-b"></div>';
+    document.body.appendChild(ov);
+    if(!sosPos && S.last) sosPos={ lat:S.last.lat, lon:S.last.lon, acc:null };
+    try{ navigator.geolocation.getCurrentPosition(function(p){ sosPos={ lat:p.coords.latitude, lon:p.coords.longitude, acc:p.coords.accuracy }; posPaint(); }, function(){ var a=$("sosPosA"); if(a && !sosPos) a.textContent="Position indisponible (active la localisation)"; }, { enableHighAccuracy:true, timeout:15000, maximumAge:20000 }); }catch(e){}
+    ov.addEventListener("click", function(e){ var k=e.target.closest("button[data-k]"); if(k){ ov._kind=k.dataset.k; sosPaint(); return; }
+      var b=e.target.closest("[data-a]"); if(!b) return; var a=b.dataset.a, A=api();
+      if(a==="x"){ ov.remove(); sosOv=null; }
+      else if(a==="pick"){ $("secContactsBtn").click(); var iv=setInterval(function(){ if(!document.querySelector(".sec-pick")){ clearInterval(iv); if(sosOv) sosPaint(); } }, 400); }
+      else if(a==="share"){ if(!sosPos){ alert("Position pas encore trouvée, patiente quelques secondes."); return; } var K=KINDS[(SOS&&SOS.kind)||ov._kind]||KINDS.autre;
+        var txt="🆘 SOS ("+K.tx+") : j'ai besoin d'aide. Ma position : "+dms(sosPos.lat,"N","S")+" "+dms(sosPos.lon,"E","O")+(SOS&&SOS.url?" · Suivi en direct : "+SOS.url:"");
+        if(A) A.share(mapUrl(sosPos),"SOS Lite Foil",txt); else location.href="sms:?&body="+encodeURIComponent(txt+" "+mapUrl(sosPos)); }
+      else if(a==="safe"){ if(confirm("Arrêter l'alerte ? Tes gardiens seront prévenus que tu es en sécurité.")) sosCancel(); } });
+    sosPaint(); }
+  // --- côté gardien : un SOS reçu ouvre un écran d'alerte ; côté émetteur : on voit qui a répondu ---
+  var sosInOv=null, sosInIv=null;
+  function sosIncoming(peer, e){ var A=api(); if(!A || sosInOv) return; var w=A.who(peer), urls=String(e.text||"").match(/https?:\/\/[^\s]+/g)||[], live=urls.filter(function(u){ return u.indexOf("/l/")>0; })[0]||"", map=urls.filter(function(u){ return u.indexOf("google.com/maps")>0; })[0]||"";
+    var kind=(String(e.text||"").match(/SOS \(([^)]*)\)/)||[])[1]||"besoin d'aide";
+    var ov=sosInOv=document.createElement("div"); ov.className="sosx sosx-in";
+    ov.innerHTML='<div class="sosx-h"><b>ALERTE</b><button type="button" data-a="x" aria-label="Fermer">✕</button></div><div class="sosx-b">'+avHtml(w)+'<h2>SOS de '+safe(w.ps)+'</h2><p>'+safe(kind.charAt(0).toUpperCase()+kind.slice(1))+'. Regarde sa position et dis-lui que tu as vu son alerte.</p>'
+      +'<div style="margin-top:auto"></div>'+(live||map?'<a class="sosx-btn w" style="text-align:center;text-decoration:none;box-sizing:border-box" target="_blank" rel="noopener" href="'+safe(live||map)+'">📍 Voir sa position'+(live?" en direct":"")+'</a>':'')
+      +(live&&map?'<a class="sosx-btn" style="text-align:center;text-decoration:none;box-sizing:border-box" target="_blank" rel="noopener" href="'+safe(map)+'">🧭 Itinéraire (Google Maps)</a>':'')
+      +'<button type="button" class="sosx-btn ok" data-a="ack">👍 Bien reçu, je m\'en occupe</button><button type="button" class="sosx-btn" data-a="dm">💬 Lui écrire</button>'
+      +'<div class="sosx-calls"><a href="tel:112" class="main"><b>📞 112</b><small>Urgences</small></a><a href="tel:196"><b>📞 196</b><small>Secours en mer</small></a></div></div>';
+    document.body.appendChild(ov); var ring=function(){ vib([500,150,500]); beep(1100); setTimeout(function(){ beep(800); }, 350); }; ring(); sosInIv=setInterval(ring, 2500);
+    var close=function(){ if(sosInIv) clearInterval(sosInIv); sosInIv=null; ov.remove(); sosInOv=null; };
+    ov.addEventListener("click", function(ev){ if(sosInIv){ clearInterval(sosInIv); sosInIv=null; } var b=ev.target.closest("button[data-a]"); if(!b) return; var a=b.dataset.a;
+      if(a==="x") close(); else if(a==="dm"){ close(); A.openDM(peer); }
+      else if(a==="ack"){ b.disabled=true; b.textContent="Envoi…"; A.dm(peer, "👍 Bien reçu, je m'en occupe. Tiens bon !").then(function(){ b.textContent="✓ "+safe(w.ps)+" sait que tu as vu son alerte"; }, function(){ b.disabled=false; b.textContent="Réessayer : bien reçu"; }); } }); }
+  window.__secOnDMs=function(map){ var now=Date.now(), seen={}; try{ seen=JSON.parse(ls("lf.sec.sosSeen")||"{}")||{}; }catch(e){}
+    for(var peer in map){ var e=map[peer]; if(!e || e.by!==peer || typeof e.t!=="number") continue;
+      if(SOS && (SOS.to||[]).indexOf(peer)>=0 && e.t>SOS.t && !sosAck[peer] && !/^🆘/.test(e.text||"")){ sosAck[peer]=1; if(!(KINDS[SOS.kind]||{}).quiet){ vib(200); beep(660); } sosPaint(); }
+      if(/^🆘 SOS/.test(e.text||"") && now-e.t < 45*60000 && seen[peer]!==e.t){ seen[peer]=e.t; ls("lf.sec.sosSeen", JSON.stringify(seen)); sosIncoming(peer, e); } } };
+  if(SOS){ sosSave(); if(SOS.live && !S.live) S.live=SOS.live; sosTrack(); }
+  (function(){ var b=$("abSos"); if(b) b.addEventListener("click", function(e){ e.stopPropagation(); openSos(); }); })();
   $("secSosBtn").addEventListener("click", openSos);
   var fab=document.createElement("button"); fab.id="secFab"; fab.className="sec-fab"; fab.hidden=true; fab.textContent="SOS"; fab.setAttribute("aria-label","SOS"); document.body.appendChild(fab);
   fab.addEventListener("click", openSos);
