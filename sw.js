@@ -1,7 +1,7 @@
 // Service worker for the Lite Foil Tracker page: makes it installable ("add to home
 // screen") and keeps it usable without network — the Bluetooth link to the tracker
 // needs none. Bump CACHE when the page changes so installed copies refresh.
-const CACHE = "lf-tracker-v206";
+const CACHE = "lf-tracker-v207";
 
 // Firebase Cloud Messaging : notifications « appli fermée ». Le worker reçoit le push
 // envoyé par la Cloud Function et affiche la notification même quand l'appli n'est pas
