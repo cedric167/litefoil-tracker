@@ -14,6 +14,7 @@
 <!-- MapLibre GL : carte 2D + globe 3D avec relief (survol façon Strava). Pas de clé. -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
+<script src="../i18n/i18n.js"></script>
 <style>
 :root{
   --bg:#f4f6f7; --card:#ffffff; --fg:#0e1417; --muted:#6a7a80; --line:#e6ecee;
@@ -639,7 +640,8 @@ document.getElementById("logGo").onclick=async()=>{
 };
 document.getElementById("logPass").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("logGo").click(); });
 function fmtDur(s){ s=Math.round(s); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h${String(m).padStart(2,"0")}`:`${m} min`; }
-function fmtDate(d){ return d? d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) : ""; }
+function lfLoc(){ let l="fr"; try{ l=localStorage.getItem("lf-lang")||"fr"; }catch(e){} return l==="en"?"en-GB":l==="es"?"es-ES":"fr-FR"; }
+function fmtDate(d){ return d? d.toLocaleDateString(lfLoc(),{weekday:"short",day:"numeric",month:"short"})+" · "+d.toLocaleTimeString(lfLoc(),{hour:"2-digit",minute:"2-digit"}) : ""; }
 // Vignette = photo satellite dézoomée autour du parcours (on voit le spot), avec la trace par-dessus.
 function mapThumb(pts){
   if(!pts||pts.length<2) return "";
@@ -695,7 +697,7 @@ function render(){
     const badge = a.milieu==="mer"?"badge-mer":"badge-terre";
     const d=a.startedAt, mk=d?d.getFullYear()+"-"+d.getMonth():"?";
     if(mk!==curM){ curM=mk; const grp=items.filter(x=>{ const y=x.startedAt; return (y?y.getFullYear()+"-"+y.getMonth():"?")===mk; });
-      const h=document.createElement("div"); h.className="mth"; h.innerHTML=`<b>${d?d.toLocaleDateString("fr-FR",{month:"long",year:"numeric"}):"Sans date"}</b><span>${grp.length} sortie${grp.length>1?"s":""} · ${fr(grp.reduce((s,x)=>s+x.distanceM,0)/1000,1)} km</span>`; L.appendChild(h); }
+      const h=document.createElement("div"); h.className="mth"; h.innerHTML=`<b>${d?d.toLocaleDateString(lfLoc(),{month:"long",year:"numeric"}):"Sans date"}</b><span>${grp.length} sortie${grp.length>1?"s":""} · ${fr(grp.reduce((s,x)=>s+x.distanceM,0)/1000,1)} km</span>`; L.appendChild(h); }
     const el=document.createElement("div"); el.className="act";
     const parts=String(a.name||"").split(" · "), title=parts.length>1?parts.slice(1).join(" · "):a.name, spd=a.avgSpeedKmh||(a.durationSec?a.distanceM/a.durationSec*3.6:0);
     el.innerHTML=`

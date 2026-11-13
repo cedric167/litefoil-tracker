@@ -8914,8 +8914,8 @@
   (function(){
     var $h=function(id){ return document.getElementById(id); };
     function hello(){ var d=new Date(), ps=""; try{ ps=localStorage.getItem("lf.comm.pseudo")||""; }catch(e){}
-      var h=d.getHours(), w=(h<5||h>=18)?"Bonsoir":"Bonjour";
-      if($h("homeDate")) $h("homeDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+      var h=d.getHours(), lg=(document.documentElement.lang||"fr").slice(0,2), eve=(h<5||h>=18), w=lg==="en"?(eve?"Good evening":"Hello"):lg==="es"?(eve?"Buenas tardes":"Hola"):(eve?"Bonsoir":"Bonjour"), loc=lg==="en"?"en-GB":lg==="es"?"es-ES":"fr-FR";
+      if($h("homeDate")) $h("homeDate").textContent=d.toLocaleDateString(loc,{weekday:"long",day:"numeric",month:"long"});
       if($h("homeHello")) $h("homeHello").textContent=w+(ps?" "+ps:"")+" 👋"; }
     function stats(){ var n=0, km=0, sec=0;
       try{ var s=JSON.parse(localStorage.getItem("lf_my_stats")||"null"); if(s){ n=+s.n||0; km=+s.km||0; sec=+s.sec||0; } }catch(e){}
