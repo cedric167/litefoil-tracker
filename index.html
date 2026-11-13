@@ -247,6 +247,11 @@
   .hs-logo{ flex:none; width:104px; height:52px; overflow:hidden; position:relative; } .hs-logo img{ position:absolute; left:-13px; top:-17px; width:144px; height:auto; display:block; }
   .hs-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; border-left:1px solid rgba(255,255,255,.16); padding-left:14px; } .hs-tx b{ font-size:16px; font-weight:800; letter-spacing:.1px; } .hs-tx small{ font-size:12px; color:rgba(255,255,255,.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hs-go{ flex:none; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; } .hs-go svg{ width:18px; height:18px; }
+  .home-invite{ display:flex; align-items:center; gap:12px; width:100%; margin:16px 0 0; padding:13px 14px; border:0; border-radius:20px; text-align:left; font:inherit; cursor:pointer; color:#06262b; background:linear-gradient(120deg,#bff3ec,#7fe6dc); box-shadow:0 8px 20px rgba(20,138,144,.2); }
+  .home-invite:active{ transform:scale(.985); } .hi-ic{ flex:none; width:42px; height:42px; border-radius:14px; background:#06262b; color:#7fe6dc; display:flex; align-items:center; justify-content:center; } .hi-ic svg{ width:22px; height:22px; }
+  .hi-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; } .hi-tx b{ font-size:16px; font-weight:800; } .hi-tx small{ font-size:12px; line-height:1.3; opacity:.8; }
+  .hi-go{ flex:none; font-size:13px; font-weight:800; background:#06262b; color:#fff; border-radius:999px; padding:8px 13px; }
+  .nm-inv{ display:block; width:calc(100% - 32px); margin:0 16px 10px; min-height:0; border:0; border-radius:14px; padding:11px; font:inherit; font-size:14px; font-weight:800; color:#06262b; background:#bff3ec; cursor:pointer; box-shadow:none; }
   .home-links{ display:grid; grid-template-columns:repeat(auto-fit,minmax(70px,1fr)); gap:10px; }
   .home-links a{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:14px 6px 12px; background:#fff; border:1px solid var(--line-soft); border-radius:18px; box-shadow:var(--sh-sm); text-decoration:none; color:var(--text); font-size:12.5px; font-weight:700; }
   .home-links a[hidden]{ display:none; }
@@ -2163,6 +2168,11 @@
       </div>
     </div>
 
+    <button type="button" class="home-invite" data-invite>
+      <span class="hi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-6A3.5 3.5 0 0 0 3 18.5V20"/><circle cx="9.5" cy="8" r="3.5"/><path d="M19 8v6M16 11h6"/></svg></span>
+      <span class="hi-tx"><b>Invite tes amis</b><small>Plus on est de riders, plus c'est utile : carte, défis, SOS entre amis.</small></span>
+      <span class="hi-go">Partager</span>
+    </button>
     <div class="m-label" style="margin:22px 6px 10px">Lite Foil</div>
     <div class="home-links">
       <a href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener"><span class="hl-ic hl-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 7.5v9l7.5-4.5z"/></svg></span><span>YouTube</span></a>
@@ -2299,6 +2309,7 @@
         <div class="nm-grab"></div>
         <div class="nm-sh-head"><b>Riders autour de toi</b><button class="nm-chat" id="nmChat"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg>Tchat local</button></div>
         <div class="nm-live" id="nmLive" hidden></div>
+        <button type="button" class="nm-inv" data-invite>＋ Inviter mes amis sur Lite Foil</button>
         <div class="riders-strip-wrap" id="ridersStripWrap"><div class="riders-strip" id="ridersStrip"></div></div>
         <div class="nm-vis">
           <div class="comm-share">
@@ -9268,6 +9279,20 @@
   // chargé à la première ouverture de l'onglet Météo
   var pane=document.getElementById("tab-meteo"); if(!pane) return;
   if(!pane.hidden) load(); else { try{ new MutationObserver(function(){ if(!pane.hidden) load(); }).observe(pane,{attributes:true,attributeFilter:["hidden"]}); }catch(e){ load(); } }
+})();
+</script>
+<script>
+/* 14/11 : inviter des amis (lien de téléchargement, texte dans la langue de l'appli) */
+(function(){
+  var URL="https://cedric167.github.io/litefoil-tracker/get/";
+  var TX={ fr:["Rejoins-moi sur Lite Foil","Je suis sur Lite Foil, l'appli des riders : suivi GPS, SOS entre amis, météo et webcams des spots, vidéos. C'est gratuit :"],
+    en:["Join me on Lite Foil","I'm on Lite Foil, the riders' app: GPS tracking, SOS between friends, spot weather and webcams, videos. It's free:"],
+    es:["Únete a mí en Lite Foil","Estoy en Lite Foil, la app de los riders: seguimiento GPS, SOS entre amigos, meteo y webcams de los spots, vídeos. Es gratis:"] };
+  document.addEventListener("click", function(e){ var b=e.target.closest && e.target.closest("[data-invite]"); if(!b) return; e.preventDefault();
+    var lg="fr"; try{ lg=(localStorage.getItem("lf-lang")||document.documentElement.lang||"fr").slice(0,2); }catch(x){} var t=TX[lg]||TX.fr;
+    try{ if(window.__secApi && window.__secApi.share){ window.__secApi.share(URL, t[0], t[1]); return; } }catch(x){}
+    if(navigator.share){ navigator.share({ title:t[0], text:t[1], url:URL }).catch(function(){}); return; }
+    try{ navigator.clipboard.writeText(t[1]+" "+URL); alert(lg==="en"?"Link copied.":lg==="es"?"Enlace copiado.":"Lien copié."); }catch(x){ window.open("https://wa.me/?text="+encodeURIComponent(t[1]+" "+URL), "_blank"); } });
 })();
 </script>
 </body>
