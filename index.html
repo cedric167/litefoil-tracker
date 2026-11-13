@@ -229,6 +229,13 @@
   #tab-dash .devcard .dev-st{ font-size:12px; align-self:start; }
   #tab-dash .devcard.on .dev-ic{ background:#e3f7ee; color:var(--ok); }
   #tab-dash .devcard + .card, #tab-dash .dev-grid + .card{ margin-top:10px !important; padding:10px 12px; border-radius:18px; }
+  /* 13/11 : la boutique en bandeau, avec le logo du site */
+  .home-shop{ display:flex; align-items:center; gap:14px; margin:0 0 10px; padding:14px 14px 14px 16px; border-radius:20px; text-decoration:none; color:#fff; background:linear-gradient(120deg,#06181d 0%,#0b3138 55%,#0f5a5c 100%); box-shadow:0 10px 24px rgba(6,40,46,.22); position:relative; overflow:hidden; }
+  .home-shop::after{ content:""; position:absolute; right:-40px; top:-60px; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle,rgba(95,240,200,.22),transparent 65%); pointer-events:none; }
+  .home-shop:active{ transform:scale(.985); }
+  .hs-logo{ flex:none; width:104px; height:52px; overflow:hidden; position:relative; } .hs-logo img{ position:absolute; left:-13px; top:-17px; width:144px; height:auto; display:block; }
+  .hs-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; border-left:1px solid rgba(255,255,255,.16); padding-left:14px; } .hs-tx b{ font-size:16px; font-weight:800; letter-spacing:.1px; } .hs-tx small{ font-size:12px; color:rgba(255,255,255,.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hs-go{ flex:none; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; } .hs-go svg{ width:18px; height:18px; }
   .home-links{ display:grid; grid-template-columns:repeat(auto-fit,minmax(70px,1fr)); gap:10px; }
   .home-links a{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:14px 6px 12px; background:#fff; border:1px solid var(--line-soft); border-radius:18px; box-shadow:var(--sh-sm); text-decoration:none; color:var(--text); font-size:12.5px; font-weight:700; }
   .home-links a[hidden]{ display:none; }
@@ -1926,8 +1933,12 @@
     </div>
 
     <div class="m-label" style="margin:22px 6px 10px">Lite Foil</div>
+    <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
+      <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
+      <span class="hs-tx"><b>La boutique</b><small>litefoil.fr · eFoils, foils et accessoires</small></span>
+      <span class="hs-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
     <div class="home-links">
-      <a href="https://litefoil.fr/" target="_blank" rel="noopener"><span class="hl-ic hl-site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span><span>Boutique</span></a>
       <a href="https://www.youtube.com/@LiteFoil66" target="_blank" rel="noopener"><span class="hl-ic hl-yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 7.5v9l7.5-4.5z"/></svg></span><span>YouTube</span></a>
       <a id="lnkFacebook" href="https://www.facebook.com/share/18QfSxSkUT/" target="_blank" rel="noopener"><span class="hl-ic hl-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/></svg></span><span>Facebook</span></a>
       <a id="lnkInstagram" href="#" target="_blank" rel="noopener" hidden><span class="hl-ic hl-ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.8" cy="7.2" r=".9" fill="currentColor" stroke="none"/></svg></span><span>Instagram</span></a>
