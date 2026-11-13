@@ -88,7 +88,8 @@ if good and not added:
 
 certs = []
 for p in profs:
-    certs += [c["id"] for c in call("GET", "/profiles/" + p["id"] + "/certificates")["data"]]
+    try: certs += [c["id"] for c in call("GET", "/profiles/" + p["id"] + "/certificates")["data"]]
+    except Exception: pass  # profil périmé : Apple ne donne plus ses certificats
 if not certs:
     certs = [c["id"] for c in call("GET", "/certificates?filter[certificateType]=DISTRIBUTION,IOS_DISTRIBUTION&limit=200")["data"]]
 certs = sorted(set(certs))
