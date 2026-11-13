@@ -23,6 +23,12 @@ except ImportError:
 # La clé peut arriver avec des \n littéraux, sur une seule ligne ou sans en-tête PEM : on la remet en forme.
 import re, textwrap
 NL = chr(10)
+# Codemagic peut donner la clé sous la forme « @file:chemin » ou « @env:NOM » (convention de ses outils)
+for _ in range(3):
+    if KEY.startswith("@file:"): KEY = open(os.path.expanduser(KEY[6:])).read()
+    elif KEY.startswith("@env:"): KEY = os.environ.get(KEY[5:], "")
+    elif os.path.isfile(os.path.expanduser(KEY.strip())): KEY = open(os.path.expanduser(KEY.strip())).read()
+print("clé API : longueur", len(KEY), "| en-tête PEM :", "BEGIN" in KEY, "| lignes :", KEY.count(NL) + 1)
 _k = KEY.replace(chr(92) + "n", NL).strip()
 _b = re.sub(r"-----[A-Z ]+-----|\s", "", _k)
 KEY = "-----BEGIN PRIVATE KEY-----" + NL + NL.join(textwrap.wrap(_b, 64)) + NL + "-----END PRIVATE KEY-----" + NL
