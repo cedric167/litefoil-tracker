@@ -744,7 +744,7 @@ let flyView="all", flyFree=false, flyFit=null, flyBear=null, flyBearOff=0, flyAu
    Clé Google Maps du projet « Lite Foil Street View », limitée au site cedric167.github.io. Vide = vue masquée.
    Proposée seulement pour les sorties à terre (aucune photo de rue sur l'eau). Google compte un affichage par ouverture
    de la vue (5 000 gratuits par mois) : on limite aussi à SV_PER_DAY ouvertures par jour et par téléphone. */
-const GSV_KEY="";
+const GSV_KEY="AIzaSyBQLQBVez5-dMrMSwLk_prwiFdqAVBzKlk";
 const SV_PER_DAY=8;
 let svLoadP=null, svPano=null, svSvc=null, svLast=null, svBusy=false, svT=0;
 function svAllowed(a){ return !!GSV_KEY && !!a && a.milieu!=="mer"; }
