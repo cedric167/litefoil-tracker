@@ -731,6 +731,11 @@
   .stc-foot{ position:absolute; left:0; right:0; bottom:0; z-index:3; padding:40px 14px calc(var(--lf-sab, 0px) + 16px); background:linear-gradient(0deg,rgba(0,0,0,.85),transparent); }
   .stc-foot input{ width:100%; border:0; outline:none; border-radius:14px; background:rgba(255,255,255,.16); color:#fff; font:inherit; font-size:16px; padding:13px 14px; } .stc-foot input::placeholder{ color:rgba(255,255,255,.65); }
   .stc-go{ width:100%; margin-top:6px; height:54px; border:0; border-radius:18px; background:linear-gradient(135deg,#5ff0c8,#22cdbd); color:#06282a; font:inherit; font-size:17px; font-weight:800; cursor:pointer; } .stc-go:disabled{ opacity:.75; }
+  .stc-strip{ display:flex; gap:8px; overflow-x:auto; margin:0 -14px 10px; padding:2px 14px; scrollbar-width:none; } .stc-strip::-webkit-scrollbar{ display:none; }
+  .stc-th{ flex:none; width:46px; height:64px; padding:0; border:2px solid rgba(255,255,255,.35); border-radius:10px; overflow:hidden; background:rgba(255,255,255,.14); color:#fff; font:inherit; font-size:18px; cursor:pointer; box-shadow:none; display:flex; align-items:center; justify-content:center; min-height:0; }
+  .stc-th img{ width:100%; height:100%; object-fit:cover; display:block; } .stc-th.on{ border-color:#5ff0c8; box-shadow:0 0 0 2px rgba(95,240,200,.35); }
+  .stc-more{ border-style:dashed; font-size:22px; font-weight:700; }
+  .stc.busy .stc-strip, .stc.busy #stcRm, .stc.busy #stcBack, .stc.busy #stcCap{ pointer-events:none; opacity:.55; }
   .stc-prog{ height:4px; border-radius:4px; background:rgba(255,255,255,.2); margin-top:10px; overflow:hidden; } .stc-prog i{ display:block; height:100%; width:0; background:#5ff0c8; transition:width .2s; }
   /* 13/11 : texte et musique sur la vidéo qu'on publie */
   .vu-tx{ position:absolute; z-index:1; touch-action:none; }
@@ -6221,10 +6226,10 @@
   let storiesOk=false; // faux tant que le serveur n'a pas répondu (ou refuse) : la barre reste masquée
   function onStories(list){ storiesOk=!!list; stories=list||[]; renderStories(); }
   function renderStories(){ var bars=document.querySelectorAll(".st-bar"); if(!bars.length) return; if(!storiesOk){ bars.forEach(function(b){ b.innerHTML=""; }); return; } var gs=stGroups(), mine=gs.filter(function(g){ return g.uid===me.uid; })[0];
-    var h='<button type="button" class="st-it'+(mine?(mine.unseen?" new":" seen"):" add")+'" data-st="'+(mine?"me":"add")+'"><span class="st-ring"><span class="st-av">'+stAv(me.uid, me.pseudo||"M", me.av)+'</span>'+(mine?'':'<i class="st-plus">+</i>')+'</span><b>Ta story</b></button>';
+    var h='<button type="button" class="st-it'+(mine?(mine.unseen?" new":" seen"):" add")+'" data-st="'+(mine?"me":"add")+'"><span class="st-ring"><span class="st-av">'+stAv(me.uid, me.pseudo||"M", me.av)+'</span>'+'<i class="st-plus" data-stadd="1">+</i></span><b>Ta story</b></button>';
     gs.forEach(function(g){ if(g.uid===me.uid) return; var l=g.last, off=isOfficial(g.uid), name=(off&&g.uid===TEAM_UID)?TEAM_NAME:(l.pseudo||"Rider");
       h+='<button type="button" class="st-it '+(g.unseen?"new":"seen")+'" data-st="'+esc(g.uid)+'"><span class="st-ring"><span class="st-av">'+stAv(g.uid, name, l.av||(g.uid===TEAM_UID?TEAM_AV:""))+'</span></span><b>'+esc(name)+'</b></button>'; });
-    bars.forEach(function(bar){ bar.innerHTML=h; bar.querySelectorAll("[data-st]").forEach(function(b){ b.addEventListener("click", function(){ var k=b.dataset.st; if(k==="add") openStoryCreate(); else openStories(k==="me"?me.uid:k); }); }); }); }
+    bars.forEach(function(bar){ bar.innerHTML=h; bar.querySelectorAll("[data-st]").forEach(function(b){ b.addEventListener("click", function(e){ var k=b.dataset.st; if(k==="add" || (e.target && e.target.closest && e.target.closest("[data-stadd]"))) openStoryCreate(); else openStories(k==="me"?me.uid:k); }); }); }); }
 
   // ---------- visionneuse ----------
   function openStories(uid){ var groups=stGroups(), gi=-1; for(var i=0;i<groups.length;i++){ if(groups[i].uid===uid){ gi=i; break; } } if(gi<0) return;
@@ -6287,47 +6292,72 @@
   function openStoryCreate(){ if(!charterOk){ showTab("communaute"); showCharter(); return; } if(!profileReady()){ askProfile("Valide ton profil pour publier une story."); return; }
     var old=$("stc"); if(old) old.remove();
     var el=document.createElement("div"); el.id="stc"; el.className="stc"; document.body.appendChild(el); var prevOv=document.body.style.overflow; document.body.style.overflow="hidden";
-    var st={ file:null, type:"", url:null, dur:0, thumb:"" }, busy=false;
-    var close=function(){ if(st.url) URL.revokeObjectURL(st.url); el.remove(); document.body.style.overflow=prevOv; };
+    // 13/11 : plusieurs stories d'un coup (jusqu'à STORY_MAX photos / vidéos choisies dans la galerie), chacune avec son texte
+    var STORY_MAX=10, items=[], cur=0, busy=false;
+    var close=function(){ items.forEach(function(it){ if(it.url) URL.revokeObjectURL(it.url); }); el.remove(); document.body.style.overflow=prevOv; };
     function pick(){ el.className="stc stc-pick";
       el.innerHTML='<div class="stc-bar"><button type="button" class="stv-ib" id="stcX" aria-label="Fermer">✕</button><b>Nouvelle story</b><span class="stv-ib"></span></div>'
-        +'<div class="stc-hero"><div class="stc-emo">✨</div><b>Partage un moment</b><p>Une photo ou une vidéo de 15 secondes, visible 24 heures par la communauté.</p></div>'
-        +'<div class="stc-btns"><button type="button" data-i="stcCam"><span>📷</span>Prendre une photo</button><button type="button" data-i="stcVid"><span>🎥</span>Filmer</button><button type="button" data-i="stcGal"><span>🖼️</span>Galerie</button></div>'
-        +'<input id="stcCam" type="file" accept="image/*" capture="environment" hidden><input id="stcVid" type="file" accept="video/*" capture="environment" hidden><input id="stcGal" type="file" accept="image/*,video/*" hidden><div class="stc-err" id="stcErr"></div>';
+        +'<div class="stc-hero"><div class="stc-emo">✨</div><b>Partage un moment</b><p>Des photos ou des vidéos de 15 secondes, visibles 24 heures par la communauté. Tu peux en choisir plusieurs d\'un coup.</p></div>'
+        +'<div class="stc-btns"><button type="button" data-i="stcCam"><span>📷</span>Prendre une photo</button><button type="button" data-i="stcVid"><span>🎥</span>Filmer</button><button type="button" data-i="stcGal"><span>🖼️</span>Galerie (une ou plusieurs)</button></div>'
+        +'<input id="stcCam" type="file" accept="image/*" capture="environment" hidden><input id="stcVid" type="file" accept="video/*" capture="environment" hidden><input id="stcGal" type="file" accept="image/*,video/*" multiple hidden><div class="stc-err" id="stcErr"></div>';
       $("stcX").addEventListener("click", close);
       el.querySelectorAll(".stc-btns button").forEach(function(b){ b.addEventListener("click", function(){ $(b.dataset.i).click(); }); });
-      ["stcCam","stcVid","stcGal"].forEach(function(id){ $(id).addEventListener("change", function(e){ var f=e.target.files&&e.target.files[0]; if(f) load(f); }); }); }
+      ["stcCam","stcVid","stcGal"].forEach(function(id){ $(id).addEventListener("change", function(e){ add(e.target.files); e.target.value=""; }); }); }
     function err(tx){ var e=$("stcErr"); if(e) e.textContent=tx||""; }
-    function load(f){ var isVid=/^video\//.test(f.type) || /\.(mp4|mov|webm|m4v|3gp)$/i.test(f.name||"");
-      if(!isVid && !/^image\//.test(f.type) && !/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||"")){ err("Choisis une photo ou une vidéo."); return; }
-      st.file=f; st.type=isVid?"vid":"img"; if(st.url) URL.revokeObjectURL(st.url); st.url=URL.createObjectURL(f); preview(); }
-    function preview(){ el.className="stc stc-prev";
-      el.innerHTML='<div class="stv-media">'+(st.type==="vid"?'<video id="stcV" playsinline webkit-playsinline loop muted autoplay></video>':'<img class="stv-img" id="stcI" alt="">')+'</div>'
-        +'<div class="stc-bar"><button type="button" class="stv-ib" id="stcBack" aria-label="Retour">‹</button><b></b><span class="stv-ib"></span></div>'
-        +'<div class="stc-foot"><input id="stcCap" maxlength="100" placeholder="Ajoute un texte… (facultatif)" spellcheck="true" autocorrect="on" autocapitalize="sentences"><div class="stc-prog" id="stcProg" hidden><i></i></div><div class="stc-err" id="stcErr"></div>'
-        +'<button type="button" class="stc-go" id="stcGo">Publier ma story</button></div>';
-      if(st.type==="vid"){ var v=$("stcV"); v.src=st.url; v.addEventListener("loadedmetadata", function(){ v.style.objectFit = v.videoHeight>=v.videoWidth ? "cover" : "contain"; }); v.addEventListener("error", function(){ err("Impossible de lire cette vidéo. Essaie une autre."); }); }
-      else { var im=$("stcI"); im.onerror=function(){ err("Impossible de lire cette photo. Essaie une autre."); }; im.src=st.url; }
-      $("stcBack").addEventListener("click", function(){ if(!busy) pick(); });
+    // ajoute les fichiers choisis à la liste (photos et vidéos seulement, STORY_MAX au plus)
+    function add(files){ var list=Array.prototype.slice.call(files||[]), bad=0, over=0, n0=items.length;
+      list.forEach(function(f){ var isVid=/^video\//.test(f.type) || /\.(mp4|mov|webm|m4v|3gp)$/i.test(f.name||"");
+        if(!isVid && !/^image\//.test(f.type) && !/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||"")){ bad++; return; }
+        if(items.length>=STORY_MAX){ over++; return; }
+        items.push({ file:f, type:isVid?"vid":"img", url:URL.createObjectURL(f), cap:"" }); });
+      if(!items.length){ err(bad ? "Choisis une photo ou une vidéo." : ""); return; }
+      if(items.length>n0) cur=n0;
+      preview(over ? "Tu peux publier "+STORY_MAX+" stories à la fois : les suivantes n\'ont pas été ajoutées." : (bad ? "Certains fichiers ne sont ni des photos ni des vidéos : ils ont été ignorés." : "")); }
+    function keepCap(){ var c=$("stcCap"); if(c && items[cur]) items[cur].cap=(c.value||"").trim(); }
+    function goLabel(){ return items.length>1 ? "Publier mes "+items.length+" stories" : "Publier ma story"; }
+    function preview(note){ var it=items[cur]; if(!it){ pick(); return; } el.className="stc stc-prev";
+      el.innerHTML='<div class="stv-media">'+(it.type==="vid"?'<video id="stcV" playsinline webkit-playsinline loop muted autoplay></video>':'<img class="stv-img" id="stcI" alt="">')+'</div>'
+        +'<div class="stc-bar"><button type="button" class="stv-ib" id="stcBack" aria-label="Retour">‹</button><b>'+(items.length>1?(cur+1)+" / "+items.length:"")+'</b><button type="button" class="stv-ib" id="stcRm" aria-label="Retirer">🗑</button></div>'
+        +'<div class="stc-foot"><div class="stc-strip" id="stcStrip">'+items.map(function(x,k){ return '<button type="button" class="stc-th'+(k===cur?" on":"")+'" data-k="'+k+'" aria-label="Story '+(k+1)+'">'+(x.type==="vid"?'<span>▶</span>':'<img src="'+esc(x.url)+'" alt="">')+'</button>'; }).join("")
+          +(items.length<STORY_MAX?'<button type="button" class="stc-th stc-more" id="stcMore" aria-label="Ajouter">＋</button>':'')+'</div>'
+        +'<input id="stcAddIn" type="file" accept="image/*,video/*" multiple hidden>'
+        +'<input id="stcCap" maxlength="100" placeholder="Ajoute un texte… (facultatif)" spellcheck="true" autocorrect="on" autocapitalize="sentences"><div class="stc-prog" id="stcProg" hidden><i></i></div><div class="stc-err" id="stcErr"></div>'
+        +'<button type="button" class="stc-go" id="stcGo"></button></div>';
+      $("stcCap").value=it.cap||""; $("stcGo").textContent=goLabel(); err(note||"");
+      if(it.type==="vid"){ var v=$("stcV"); v.src=it.url; v.addEventListener("loadedmetadata", function(){ v.style.objectFit = v.videoHeight>=v.videoWidth ? "cover" : "contain"; }); v.addEventListener("error", function(){ err("Impossible de lire cette vidéo. Retire-la (🗑) ou essaie une autre."); }); }
+      else { var im=$("stcI"); im.onerror=function(){ err("Impossible de lire cette photo. Retire-la (🗑) ou essaie une autre."); }; im.src=it.url; }
+      $("stcBack").addEventListener("click", function(){ if(busy) return; if(items.length>1 && !confirm("Abandonner ces "+items.length+" stories ?")) return; items.forEach(function(x){ URL.revokeObjectURL(x.url); }); items=[]; cur=0; pick(); });
+      $("stcRm").addEventListener("click", function(){ if(busy) return; var x=items.splice(cur,1)[0]; if(x) URL.revokeObjectURL(x.url); if(cur>=items.length) cur=Math.max(0,items.length-1); preview(); });
+      $("stcStrip").addEventListener("click", function(e){ if(busy) return; var b=e.target.closest("button"); if(!b) return; if(b.id==="stcMore"){ keepCap(); $("stcAddIn").click(); return; } var k=+b.dataset.k; if(k===cur || !items[k]) return; keepCap(); cur=k; preview(); });
+      $("stcAddIn").addEventListener("change", function(e){ keepCap(); add(e.target.files); });
       $("stcGo").addEventListener("click", publish); }
-    function publish(){ if(busy || !backend || !backend.publishStory) return; busy=true; err(""); var btn=$("stcGo"), pr=$("stcProg"), bar=pr.querySelector("i"), cap=($("stcCap").value||"").trim(); btn.disabled=true; pr.hidden=false; bar.style.width="5%";
-      var fail=function(e){ busy=false; btn.disabled=false; btn.textContent="Publier ma story"; pr.hidden=true; err(typeof e==="string" ? e : ("Envoi impossible : "+((e&&(e.code||e.message))||"erreur"))); };
-      var done=function(){ close(); renderStories(); setTimeout(function(){ openStories(me.uid); },350); };
-      if(st.type==="img"){ btn.textContent="Préparation…";
-        compressImage(st.file, 1280, 0.72).then(function(img){ return stSmall(img, 160).then(function(th){ bar.style.width="40%"; btn.textContent="Envoi…";
-            return backend.publishStory({ type:"img", img:img, thumb:th, cap:cap }, function(){ bar.style.width="100%"; }); }); }).then(done, function(e){ fail(e && e.code ? e : "Impossible de lire cette photo. Essaie une autre."); });
-        return; }
-      btn.textContent="Préparation…";
-      videoThumb(st.file).then(function(m){ if(m.err && !m.dur) throw "Impossible de lire cette vidéo. Essaie une autre.";
+    // envoie une story ; say(texte) et bar(0…1) suivent l'avancement
+    function sendOne(it, say, bar){
+      if(it.type==="img"){ say("Préparation…");
+        return compressImage(it.file, 1280, 0.72).then(function(img){ return stSmall(img, 160).then(function(th){ bar(0.4); say("Envoi…");
+            return backend.publishStory({ type:"img", img:img, thumb:th, cap:it.cap }, function(){ bar(1); }); }); }, function(){ throw "Impossible de lire cette photo. Retire-la (🗑) ou essaie une autre."; }); }
+      say("Préparation…");
+      return videoThumb(it.file).then(function(m){ if(m.err && !m.dur) throw "Impossible de lire cette vidéo. Retire-la (🗑) ou essaie une autre.";
         var dur=m.dur||0, long=dur>STORY_VID_S+0.9;
-        if(!canTranscode()){ if(long) throw "Vidéo trop longue pour une story : "+STORY_VID_S+" secondes maximum."; if(st.file.size>60*1048576) throw "Vidéo trop lourde pour une story.";
-          return { file:st.file, dur:dur, thumb:m.thumb }; }
+        if(!canTranscode()){ if(long) throw "Vidéo trop longue pour une story : "+STORY_VID_S+" secondes maximum."; if(it.file.size>60*1048576) throw "Vidéo trop lourde pour une story.";
+          return { file:it.file, dur:dur, thumb:m.thumb }; }
         // réenregistrée en 720p (15 s au plus) : légère, et lisible sur tous les téléphones
-        return transcodeVideo(st.file, 0, Math.min(dur||STORY_VID_S, STORY_VID_S), function(p){ bar.style.width=Math.round(5+p*45)+"%"; btn.textContent="Préparation "+Math.round(p*100)+" %"; })
+        return transcodeVideo(it.file, 0, Math.min(dur||STORY_VID_S, STORY_VID_S), function(p){ bar(0.05+p*0.45); say("Préparation "+Math.round(p*100)+" %"); })
           .then(function(out){ return { file:out, dur:Math.min(dur||STORY_VID_S, STORY_VID_S), thumb:m.thumb }; }); })
-      .then(function(o){ return stSmall(o.thumb, 160).then(function(th){ btn.textContent="Envoi…";
-          return backend.publishStory({ type:"vid", file:o.file, thumb:th, dur:Math.round(o.dur), cap:cap }, function(p){ bar.style.width=Math.round(50+p*50)+"%"; btn.textContent="Envoi "+Math.round(p*100)+" %"; }); }); })
-      .then(done, fail); }
+      .then(function(o){ return stSmall(o.thumb, 160).then(function(th){ say("Envoi…");
+          return backend.publishStory({ type:"vid", file:o.file, thumb:th, dur:Math.round(o.dur), cap:it.cap }, function(p){ bar(0.5+p*0.5); say("Envoi "+Math.round(p*100)+" %"); }); }); }); }
+    // publie toute la liste, l'une après l'autre ; en cas d'échec, celles déjà publiées sont retirées de la liste
+    function publish(){ if(busy || !backend || !backend.publishStory || !items.length) return; keepCap(); busy=true; err(""); el.classList.add("busy");
+      var total=items.length, sent=0;
+      var ui=function(){ return { btn:$("stcGo"), pr:$("stcProg") }; };
+      var next=function(){
+        if(!items.length){ busy=false; close(); renderStories(); setTimeout(function(){ openStories(me.uid); },350); return; }
+        cur=0; preview(); el.classList.add("busy"); var u=ui(); u.btn.disabled=true; u.pr.hidden=false; var fill=u.pr.querySelector("i"), pre=total>1 ? "Story "+(sent+1)+"/"+total+" · " : "";
+        sendOne(items[0], function(tx){ var b=$("stcGo"); if(b) b.textContent=pre+tx; }, function(f){ fill.style.width=Math.round(Math.max(0.05,Math.min(1,f))*100)+"%"; })
+          .then(function(){ var x=items.shift(); if(x) URL.revokeObjectURL(x.url); sent++; next(); },
+                function(e){ busy=false; el.classList.remove("busy"); var u2=ui(); u2.btn.disabled=false; u2.btn.textContent=goLabel(); u2.pr.hidden=true; renderStories();
+                  err((sent ? sent+" publiée"+(sent>1?"s":"")+". " : "")+(typeof e==="string" ? e : ("Envoi impossible : "+((e&&(e.code||e.message))||"erreur")))); }); };
+      next(); }
     pick(); }
 
   /* ================= ÉVÉNEMENTS (agenda : créer une sortie, s'inscrire) ================= */
