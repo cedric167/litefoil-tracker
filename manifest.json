@@ -1,7 +1,7 @@
 {
   "name": "Lite Foil",
   "short_name": "Lite Foil",
-  "description": "Lite Foil: your GPS tracker over Bluetooth (sportstracklive account, start and stop, live status) and the litefoil.fr site.",
+  "description": "Lite Foil, l'appli des riders : suivi GPS, replay 3D, SOS entre amis, météo et webcams des spots, vidéos Swip.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -10,7 +10,17 @@
   "theme_color": "#ffffff",
   "lang": "fr",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
