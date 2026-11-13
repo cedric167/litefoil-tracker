@@ -417,6 +417,11 @@
   .ms-cam img{ width:100%; height:100%; object-fit:cover; display:block; } .ms-cam i{ position:absolute; left:5px; top:5px; width:7px; height:7px; border-radius:50%; background:#ff2d55; box-shadow:0 0 0 2px rgba(255,255,255,.85); animation:wcPulse 1.4s ease-in-out infinite; }
   .ms-cam em{ position:absolute; right:4px; bottom:3px; font-style:normal; font-size:8.5px; font-weight:800; letter-spacing:.05em; color:#fff; text-shadow:0 1px 3px #000; }
   .ms #mtoResults .r-h{ padding:8px 13px 4px; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#e11d48; cursor:default; border-top:1px solid #e8eef0; } .ms #mtoResults .r-h:first-child{ border-top:0; }
+  .ms-favs{ display:flex; align-items:center; gap:7px; overflow-x:auto; margin-top:10px; scrollbar-width:none; } .ms-favs::-webkit-scrollbar{ display:none; } .ms-favs[hidden]{ display:none; }
+  .ms-favs-h{ flex:none; font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#7fe6dc; margin-right:2px; }
+  .ms-fav{ flex:none; display:inline-flex; align-items:center; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:999px; overflow:hidden; }
+  .ms-fav button{ min-height:0; border:0; background:none; color:#fff; font:inherit; font-size:13.5px; font-weight:700; padding:7px 4px 7px 12px; cursor:pointer; box-shadow:none; white-space:nowrap; }
+  .ms-fav button.x{ padding:7px 10px 7px 5px; font-size:11px; opacity:.6; }
   /* webcam en direct du spot choisi */
   #mtoLive{ margin-top:10px; }
   .ms-live{ display:flex; align-items:stretch; gap:12px; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:8px; }
@@ -2485,6 +2490,7 @@
         <button id="mtoGeo" type="button" aria-label="Utiliser ma position actuelle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/><circle cx="12" cy="12" r="7.5"/></svg></button>
       </div>
       <div id="mtoResults" hidden></div>
+      <div id="mtoFavs" class="ms-favs" hidden></div>
       <div id="mtoLive" hidden></div>
       <div class="ms-note">Vent, vagues et prévisions du spot, avec sa webcam en direct quand il en a une.</div>
     </div>
@@ -8896,6 +8902,14 @@
     function pickSpot(p){ apply({lat:p.lat,lng:p.lon},p.name); if(p.wg){ selectWg(p.wg); } else if(!wgMatch(p.lat,p.lon)){ var c1=document.getElementById("wgCustom"); if(c1) c1.hidden=false; } }
     (function(){ var box=document.getElementById("mtoChips"); if(!box) return; box.innerHTML=""; SPOTS.forEach(function(s){ var b=document.createElement("button"); b.type="button"; b.textContent=s.name; b.addEventListener("click",function(){ pickSpot(s); window.scrollTo({top:0,behavior:"smooth"}); }); box.appendChild(b); }); })();
     (function(){ var inp=document.getElementById("mtoSearch"), res=document.getElementById("mtoResults"); if(!inp||!res) return; var t=null, ctrl=null;
+      // mes spots : les 8 derniers spots choisis, en raccourcis (gardés sur le téléphone)
+      var favBox=document.getElementById("mtoFavs");
+      function favs(){ try{ return JSON.parse(localStorage.getItem("lf.meteo.favs")||"[]")||[]; }catch(e){ return []; } }
+      function favSave(l){ try{ localStorage.setItem("lf.meteo.favs", JSON.stringify(l.slice(0,8))); }catch(e){} favDraw(); }
+      function favAdd(p){ if(!p || !p.name || !isFinite(p.lat) || !isFinite(p.lon)) return; var l=favs().filter(function(x){ return x.name!==p.name; }); l.unshift({ name:p.name, lat:+(+p.lat).toFixed(4), lon:+(+p.lon).toFixed(4) }); favSave(l); }
+      function favDraw(){ if(!favBox) return; var l=favs(); favBox.hidden=!l.length; favBox.innerHTML=l.length?'<span class="ms-favs-h">Mes spots</span>'+l.map(function(x,i){ return '<span class="ms-fav"><button type="button" data-i="'+i+'">'+escH(x.name)+'</button><button type="button" class="x" data-x="'+i+'" aria-label="Retirer ce spot">✕</button></span>'; }).join(""):""; }
+      if(favBox){ favBox.addEventListener("click", function(e){ var x=e.target.closest("button[data-x]"); if(x){ var l=favs(); l.splice(+x.dataset.x,1); favSave(l); return; }
+          var b=e.target.closest("button[data-i]"); if(!b) return; var p=favs()[+b.dataset.i]; if(!p) return; inp.value=p.name; pickSpot({ name:p.name, lat:p.lat, lon:p.lon }); favAdd(p); }); favDraw(); }
       function hide(){ res.hidden=true; res.innerHTML=""; }
       inp.addEventListener("input",function(){ var q=inp.value.trim(); if(t) clearTimeout(t); if(q.length<2){ hide(); return; }
         t=setTimeout(function(){ (async function(){ try{ if(ctrl) ctrl.abort(); ctrl=new AbortController();
@@ -8907,7 +8921,7 @@
           if(!list.length){ res.innerHTML='<div class="r">Aucun résultat</div>'; res.hidden=false; return; }
           list.forEach(function(it){ var d=document.createElement("div"); d.className="r"; var sub=[it.admin2,it.admin1,it.country].filter(Boolean).join(", "), near=(WC&&WC.near)?WC.near(it.latitude,it.longitude,it.name)[0]:null;
             d.innerHTML='<span class="r-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="r-t"><b>'+escH(it.name)+'</b><small>'+escH(sub)+'</small></span>'+(near?camBtn(near.c):'');
-            d.addEventListener("click",function(e){ if(near && e.target.closest(".ms-cam")){ hide(); WC.open(near.c); return; } inp.value=it.name; hide(); inp.blur(); pickSpot({name:it.name,lat:it.latitude,lon:it.longitude}); }); res.appendChild(d); }); res.hidden=false;
+            d.addEventListener("click",function(e){ if(near && e.target.closest(".ms-cam")){ hide(); WC.open(near.c); return; } inp.value=it.name; hide(); inp.blur(); pickSpot({name:it.name,lat:it.latitude,lon:it.longitude}); favAdd({name:it.name,lat:it.latitude,lon:it.longitude}); }); res.appendChild(d); }); res.hidden=false;
         }catch(e){} })(); },320); });
       document.addEventListener("click",function(e){ if(!res.contains(e.target)&&e.target!==inp) hide(); });
     })();
