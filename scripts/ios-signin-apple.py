@@ -22,14 +22,10 @@ except ImportError:
 
 # La clé peut arriver avec des \n littéraux, sur une seule ligne ou sans en-tête PEM : on la remet en forme.
 import re, textwrap
-_k = KEY.replace("\n", "
-").strip()
-_b = re.sub(r"-----[A-Z ]+-----|s", "", _k)
-KEY = "-----BEGIN PRIVATE KEY-----
-" + "
-".join(textwrap.wrap(_b, 64)) + "
------END PRIVATE KEY-----
-"
+NL = chr(10)
+_k = KEY.replace(chr(92) + "n", NL).strip()
+_b = re.sub(r"-----[A-Z ]+-----|\s", "", _k)
+KEY = "-----BEGIN PRIVATE KEY-----" + NL + NL.join(textwrap.wrap(_b, 64)) + NL + "-----END PRIVATE KEY-----" + NL
 TOKEN = jwt.encode({"iss": ISS, "iat": int(time.time()), "exp": int(time.time()) + 900, "aud": "appstoreconnect-v1"}, KEY, algorithm="ES256", headers={"kid": KID})
 API = "https://api.appstoreconnect.apple.com/v1"
 
