@@ -111,6 +111,10 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 /* ---------- Survol 3D (flyover) ---------- */
 .flyover{position:fixed;inset:0;z-index:60;background:#05070a;display:none}
 .flyover.open{display:block}
+.flyover #flySV{position:absolute;inset:0;z-index:2;background:#05070a}
+.flyover #flySV[hidden]{display:none}
+.flyover .svmsg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;max-width:78%;text-align:center;background:rgba(10,14,18,.72);color:#fff;font-size:14px;font-weight:600;line-height:1.4;padding:12px 16px;border-radius:16px;pointer-events:none}
+.flyover .svmsg[hidden]{display:none}
 .flyover #flyMap{position:absolute;inset:0;background:linear-gradient(180deg,#2f7fcb 0%,#7fb9ea 22%,#d9eefc 46%,#d9eefc 100%)}
 .flyover .topband{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 34px;background:linear-gradient(180deg,rgba(5,8,12,.78) 0%,rgba(5,8,12,.45) 55%,rgba(5,8,12,0) 100%);pointer-events:none;z-index:5;text-align:center;color:#fff}
 .flyover .brand{font-weight:700;letter-spacing:.22em;font-size:12px;opacity:.9}
@@ -284,6 +288,9 @@ input[type=file]{display:none}
 <!-- ============ Survol 3D ============ -->
 <div class="flyover" id="flyover">
   <div id="flyMap"></div>
+  <!-- 13/11 : vue Street View (photos de rue Google) pour les sorties à terre. Affichée par-dessus la carte. -->
+  <div id="flySV" hidden></div>
+  <div class="svmsg" id="flySVMsg" hidden></div>
   <div class="topband">
     <div class="brand">LITE <b>FOIL</b></div>
     <div class="aname" id="flyName">—</div>
@@ -314,6 +321,7 @@ input[type=file]{display:none}
       <button data-v="all" class="on">Ensemble</button>
       <button data-v="follow">Suivre</button>
       <button data-v="board">À bord</button>
+      <button data-v="street" id="flyViewStreet" hidden>Street View</button>
     </div>
     <button id="flyPlay" class="fplay" aria-label="Lecture/Pause">⏸</button>
     <div class="seekbar"><input type="range" id="flySeek" min="0" max="1000" step="1" value="0" aria-label="Position dans le parcours"><div class="seeklab"><span id="flySeekT">0:00</span><span id="flySeekEnd"></span></div></div>
@@ -732,6 +740,39 @@ function flySeekTo(v){ flyProg=Math.max(0,Math.min(1,v)); if(flyDraw) flyDraw(tr
 // "board" = caméra basse derrière le point, tournée dans le sens de la marche (comme si on y était).
 // flyFree = l'utilisateur a déplacé la carte à la main : on ne la bouge plus tant qu'il n'a pas touché « Recentrer ».
 let flyView="all", flyFree=false, flyFit=null, flyBear=null, flyBearOff=0, flyAuto=false;
+/* ---- Street View (13/11) ----
+   Clé Google Maps du projet « Lite Foil Street View », limitée au site cedric167.github.io. Vide = vue masquée.
+   Proposée seulement pour les sorties à terre (aucune photo de rue sur l'eau). Google compte un affichage par ouverture
+   de la vue (5 000 gratuits par mois) : on limite aussi à SV_PER_DAY ouvertures par jour et par téléphone. */
+const GSV_KEY="";
+const SV_PER_DAY=8;
+let svLoadP=null, svPano=null, svSvc=null, svLast=null, svBusy=false, svT=0;
+function svAllowed(a){ return !!GSV_KEY && !!a && a.milieu!=="mer"; }
+function svMsg(tx){ const m=document.getElementById("flySVMsg"); if(!m) return; m.textContent=tx||""; m.hidden=!tx; }
+function svQuota(){ try{ const d=new Date().toISOString().slice(0,10), o=JSON.parse(localStorage.getItem("lf.sv.n")||"{}"); if(o.d!==d){ o.d=d; o.n=0; } if(o.n>=SV_PER_DAY) return false; o.n++; localStorage.setItem("lf.sv.n",JSON.stringify(o)); return true; }catch(e){ return true; } }
+function svLoad(){ if(svLoadP) return svLoadP;
+  svLoadP=new Promise((res,rej)=>{ if(window.google && google.maps && google.maps.StreetViewPanorama){ res(); return; }
+    window.__lfSvReady=()=>res(); const sc=document.createElement("script"); sc.async=true; sc.onerror=()=>{ svLoadP=null; rej(new Error("chargement")); };
+    sc.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GSV_KEY)+"&v=weekly&loading=async&callback=__lfSvReady"; document.head.appendChild(sc);
+    setTimeout(()=>{ if(!(window.google && google.maps)){ svLoadP=null; rej(new Error("délai")); } },15000); });
+  return svLoadP; }
+function svOpen(){ const box=document.getElementById("flySV"); box.hidden=false; svMsg("Chargement de Street View…"); svLast=null;
+  if(svPano){ svMsg(""); return; }
+  if(!svQuota()){ svMsg("Street View a déjà été ouvert plusieurs fois aujourd'hui sur ce téléphone. Réessaie demain, ou utilise la vue « À bord »."); return; }
+  svLoad().then(()=>{ if(flyView!=="street") return;
+    svSvc=new google.maps.StreetViewService();
+    svPano=new google.maps.StreetViewPanorama(box,{ visible:true, addressControl:false, linksControl:false, panControl:false, zoomControl:false, fullscreenControl:false, motionTracking:false, motionTrackingControl:false, showRoadLabels:false, enableCloseButton:false, clickToGo:false, disableDefaultUI:true });
+    svMsg(""); if(flyDraw) flyDraw(true);
+  }).catch(()=>{ svMsg("Street View est indisponible pour le moment. Vérifie ta connexion."); }); }
+function svClose(){ const box=document.getElementById("flySV"); if(box) box.hidden=true; svMsg(""); }
+// déplace la photo de rue vers le point du parcours (au plus une recherche toutes les 1,2 s, et seulement si on a bougé de 12 m)
+function svUpdate(lon,lat,heading,force){ if(!svPano || !svSvc || svBusy) return; const now=Date.now(); if(!force && now-svT<1200) return;
+  if(svLast){ const dx=(lon-svLast.lon)*Math.cos(lat*Math.PI/180)*111320, dy=(lat-svLast.lat)*110540; if(!force && Math.sqrt(dx*dx+dy*dy)<12){ try{ svPano.setPov({heading:heading,pitch:0}); }catch(e){} return; } }
+  svBusy=true; svT=now; svLast={lon,lat};
+  const done=()=>{ svBusy=false; };
+  try{ svSvc.getPanorama({ location:{lat:lat,lng:lon}, radius:60, preference:google.maps.StreetViewPreference.NEAREST, source:google.maps.StreetViewSource.OUTDOOR })
+    .then((r)=>{ if(flyView==="street" && r && r.data && r.data.location){ svPano.setPano(r.data.location.pano); svPano.setPov({heading:heading,pitch:0}); svMsg(""); } done(); })
+    .catch(()=>{ if(flyView==="street") svMsg("Pas de photo Street View à cet endroit du parcours."); done(); }); }catch(e){ done(); } }
 function flyAngLerp(a,b,k){ let d=((b-a+540)%360)-180; return (a+d*k+360)%360; }
 function flyBearing(p,q){ const r=Math.PI/180, y=Math.sin((q.lon-p.lon)*r)*Math.cos(q.lat*r), x=Math.cos(p.lat*r)*Math.sin(q.lat*r)-Math.sin(p.lat*r)*Math.cos(q.lat*r)*Math.cos((q.lon-p.lon)*r); return (Math.atan2(y,x)/r+360)%360; }
 function flyCam(o){ if(!flyMap) return; flyAuto=true; try{ flyMap.jumpTo(o); }finally{ flyAuto=false; } }
@@ -739,6 +780,7 @@ function flySetFree(v){ flyFree=v; const b=document.getElementById("flyRecenter"
 function flySetView(v){ flyView=v; flyBear=null; flyBearOff=0; flySetFree(false);
   document.querySelectorAll("#flyView button").forEach(x=>{ x.classList.toggle("on",x.dataset.v===v); if(x.dataset.v===v) document.getElementById("flyViewBtn").textContent=x.textContent; });
   document.getElementById("flyView").hidden=true; flyWake();
+  if(v==="street") svOpen(); else svClose();
   if(!flyMap) return;
   if(v==="all"){ if(flyFit) flyMap.easeTo({center:flyFit.center,zoom:flyFit.zoom,pitch:55,bearing:0,duration:600}); }
   else if(v==="follow"){ flyCam({zoom:Math.max(flyMap.getZoom(),15.5),pitch:55}); }
@@ -772,6 +814,7 @@ async function startFly(a){
   const pts=a.points; if(!pts||pts.length<2) return;
   const ov=document.getElementById("flyover"); ov.classList.add("open");
   document.getElementById("flyName").textContent=a.name;
+  { const sb=document.getElementById("flyViewStreet"); if(sb) sb.hidden=!svAllowed(a); if(flyView==="street" && !svAllowed(a)){ flyView="all"; document.querySelectorAll("#flyView button").forEach(x=>x.classList.toggle("on",x.dataset.v==="all")); document.getElementById("flyViewBtn").textContent="Ensemble"; } if(flyView!=="street") svClose(); else svOpen(); }
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
   document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : " m";
   if(!flyMap){
@@ -841,6 +884,7 @@ function runFly(a,pts){
       const speed=p0.speed+(p1.speed-p0.speed)*frac, altv=p0.alt+(p1.alt-p0.alt)*frac, distv=p0.dist+(p1.dist-p0.dist)*frac;
       flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1).concat([{lon,lat}])));
       flyMap.getSource("flyDot").setData(ptGeo({lon,lat}));
+      if(flyView==="street"){ const ah=pts[Math.min(N-1, i+Math.max(2,Math.round(N/80)))]; svUpdate(lon,lat,(ah.lon!==lon||ah.lat!==lat)?flyBearing({lon,lat},ah):0, !!fromSeek); }
       if(!flyFree && flyView==="follow") flyCam({center:[lon,lat]});
       else if(!flyFree && flyView==="board"){
         // cap : vers un point un peu plus loin sur le parcours (évite les à-coups), lissé d'une image à l'autre
@@ -868,7 +912,7 @@ function runFly(a,pts){
   try{ flyDraw(false); }catch(e){}
   flyRAF=requestAnimationFrame(frame);
 }
-function stopFly(){ cancelAnimationFrame(flyRAF); flyDraw=null; clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
+function stopFly(){ cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
