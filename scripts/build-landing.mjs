@@ -151,3 +151,5 @@ const today = new Date().toISOString().slice(0, 10);
 fs.writeFileSync(new URL("../sitemap.xml", import.meta.url), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` + langs.map((x) => `  <url><loc>${url(x)}</loc><lastmod>${today}</lastmod></url>`).join("\n") + `\n  <url><loc>${SITE}/get/</loc><lastmod>${today}</lastmod></url>\n</urlset>\n`);
 fs.writeFileSync(new URL("../robots.txt", import.meta.url), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log("pages :", langs.map(url).join(" "));
+// les pages Swip réécrivent le plan de site complet (appli + Swip)
+await import("./build-swip.mjs");
