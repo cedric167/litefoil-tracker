@@ -5769,7 +5769,7 @@
         c.to=setTimeout(function(){ if(lfCall===c && c.state==="ring") lfCallEnd("miss"); }, 45000); }); }); }
   // appelé : la sonnerie arrive par userDM/<moi>/<appelant>/call
   function lfCallRing(map){ if(!backend || !backend.rt) return; for(var peer in map){ var e=map[peer], k=e&&e.call; if(!k || !k.mid || lfCallSeen[k.mid]) continue; lfCallSeen[k.mid]=1;
-      if(blocked.has(peer) || !window.RTCPeerConnection) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; }   // vieille sonnerie lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
+      if(blocked.has(peer) || !window.RTCPeerConnection) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; } lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
   function lfCallIncoming(peer, name, k){ var rt=backend.rt, path="dm/"+pairKey(me.uid,peer)+"/"+k.mid, un=null, done=false;
     un=rt.onValue(rt.ref(path+"/rtc"), function(sn){ var v=sn.val(); if(done) return; if(!v) return; done=true; setTimeout(function(){ try{ un&&un(); }catch(e){} },0);
       if(v.st!=="ring" || !v.offer){ rt.remove(rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); return; }   // appel déjà terminé
