@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cedric167.github.io/litefoil-tracker/sitemap.xml
