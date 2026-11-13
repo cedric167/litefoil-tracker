@@ -3195,7 +3195,7 @@
   // ---------------- Suivre avec mon téléphone (GPS du navigateur, sans boîtier) ----------------
   // Enregistre une sortie avec le GPS du téléphone, l'affiche en direct sur la carte, puis
   // la stocke en local (clé lf_phone_sessions) pour qu'elle apparaisse dans Activités.
-  var phWatch = null, phBgId = null, phPts = [], phT0 = 0, phMax = 0, phTimer = null, phLast = null, phWake = null;
+  var phWatch = null, phPoll = null, phBgId = null, phPts = [], phT0 = 0, phMax = 0, phTimer = null, phLast = null, phWake = null;
   // Plugin natif de suivi en arrière-plan (présent seulement dans l'app installée Android/iOS).
   function phBgPlugin(){
     try {
@@ -3338,7 +3338,7 @@
   // 13/11 : diagnostic du GPS affiché pendant l'enregistrement : rythme réel des points, source, version de la page
   function phDiag(){ var n=phPts.length, k=Math.min(10, n-1), tx="";
     if(k>=2){ var dt=(phPts[n-1].t-phPts[n-1-k].t)/k; if(dt>0) tx="1 point toutes les "+phNum(dt)+" s"; }
-    return " ["+(tx?tx+" · ":"")+"GPS "+(phNatOn?"natif":(phBgId!=null?"module":"web"))+" · v163]"; }
+    return " ["+(tx?tx+" · ":"")+"GPS "+(phNatOn?"natif":(phBgId!=null?"module":"web"))+" · v164]"; }
   function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); tkPaint(); }
   // Traite une position normalisée (native OU web) : {lat, lon, acc, alt, speedMs, heading, tMs}
   function phOnPos(o, bulk){
@@ -3445,8 +3445,15 @@
     // Web (navigateur) : pas de service premier plan → écran allumé requis.
     $("phNote").textContent = "Recherche du signal GPS… garde l'écran allumé.";
     try { if(navigator.wakeLock && navigator.wakeLock.request) navigator.wakeLock.request("screen").then(function(w){ phWake = w; }).catch(function(){}); } catch(e){}
+    // 13/11 : certains téléphones ne donnent presque rien avec watchPosition (1 point puis plus rien pendant de longues
+    // secondes). On redemande donc la position chaque seconde tant qu'aucun point frais n'est arrivé.
+    var webT = 0, webAt = 0, webBusy = false;
+    var webPos = function(pos){ if(!pos || !pos.coords || !(pos.timestamp > webT)) return; webT = pos.timestamp; webAt = Date.now(); var c = pos.coords;
+      phOnPos({ lat:c.latitude, lon:c.longitude, acc:c.accuracy, alt:c.altitude, speedMs:c.speed, heading:c.heading, tMs:pos.timestamp }); };
+    phPoll = setInterval(function(){ if(webBusy || Date.now()-webAt < 950) return; webBusy = true;
+      navigator.geolocation.getCurrentPosition(function(pos){ webBusy = false; webPos(pos); }, function(){ webBusy = false; }, { enableHighAccuracy:true, maximumAge:0, timeout:4000 }); }, 250);
     phWatch = navigator.geolocation.watchPosition(function(pos){
-      var c = pos.coords;
+      return webPos(pos); var c = pos.coords;
       phOnPos({ lat:c.latitude, lon:c.longitude, acc:c.accuracy, alt:c.altitude, speedMs:c.speed, heading:c.heading, tMs:pos.timestamp });
     }, function(err){
       $("phNote").textContent = "GPS refusé ou indisponible"+(err&&err.message?" ("+err.message+")":"")+". Autorise la localisation puis réessaie.";
@@ -3456,7 +3463,7 @@
   function phStopCleanup(){
     if(phNatOn){ var n=phNat(); if(n){ try{ n.stop(); }catch(e){} } phNatDetach(); phNatOn = false; }
     if(phBgId!=null){ var bg=phBgPlugin(); if(bg){ try{ bg.removeWatcher({ id: phBgId }); }catch(e){} } phBgId = null; }
-    if(phWatch!=null && navigator.geolocation) navigator.geolocation.clearWatch(phWatch); phWatch = null;
+    if(phWatch!=null && navigator.geolocation) navigator.geolocation.clearWatch(phWatch); phWatch = null; if(phPoll){ clearInterval(phPoll); phPoll = null; }
     if(phTimer) clearInterval(phTimer); phTimer = null;
     phMotionStop();
     try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}
