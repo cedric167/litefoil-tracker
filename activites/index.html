@@ -131,7 +131,7 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover .seekbar input{width:100%;margin:0;accent-color:#ff5a1f;height:26px;touch-action:none}
 .flyover .seeklab{display:flex;justify-content:space-between;color:#fff;font-size:11.5px;opacity:.8;font-variant-numeric:tabular-nums;margin-top:-2px}
 .flyover .spd{display:flex;gap:3px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:4px}
-.flyover .spd button{background:transparent;padding:9px 12px;border-radius:999px;font-size:14px;font-weight:600;color:#fff}
+.flyover .spd button{background:transparent;padding:9px 8px;border-radius:999px;font-size:13px;font-weight:600;color:#fff}
 .flyover .spd button.on{background:var(--cyan)}
 .flyover .ctrl #flyPlay,.flyover .ctrl #flyReplay{min-width:48px;justify-content:center}
 .flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px)}
@@ -292,6 +292,8 @@ input[type=file]{display:none}
   <div class="ctrl">
     <button id="flyPlay" aria-label="Lecture/Pause">⏸</button>
     <div class="spd" id="flySpd">
+      <button data-s="0.1">0,1×</button>
+      <button data-s="0.25">0,25×</button>
       <button data-s="0.5">0,5×</button>
       <button data-s="1" class="on">1×</button>
       <button data-s="2">2×</button>
