@@ -1246,6 +1246,19 @@
   .nm-pa img, .nm-pa b{ width:100% !important; height:100% !important; max-width:none !important; max-height:none !important; border-radius:50%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; font-weight:800; padding:0 !important; margin:0 !important; }
   .nm-pa::after{ content:""; position:absolute; left:50%; bottom:-9px; margin-left:-6px; border:6px solid transparent; border-top-color:#fff; }
   .nm-pn i{ font-style:normal; color:#7fe6ec; } .nm-pn{ display:block; margin:12px auto 0; width:max-content; max-width:150px; padding:4px 11px; border-radius:999px; background:rgba(14,20,23,.85); color:#fff; font-size:14px; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transform:translateX(-50%); margin-left:50%; }
+  /* 13/11 : pastilles compactes façon Snap Map + groupes */
+  .nm-pa{ width:44px; height:44px; padding:2px; box-shadow:0 0 0 2.5px var(--c), 0 4px 12px rgba(0,0,0,.4); } .nm-pa img, .nm-pa b{ font-size:17px; }
+  .nm-pa::after{ bottom:-8px; margin-left:-5px; border-width:5px; }
+  .nm-pin.me .nm-pa{ width:56px; height:56px; padding:3px; }
+  .nm-pn{ margin-top:9px; padding:2px 8px; font-size:11.5px; max-width:110px; } .nm-pin.me .nm-pn{ font-size:12.5px; padding:3px 9px; }
+  .nm-grp{ display:flex; align-items:center; justify-content:center; }
+  .nm-gf{ position:relative; display:block; height:46px; } .nm-gf.n2{ width:66px; } .nm-gf.n3{ width:84px; }
+  .nm-gf img, .nm-gf b{ position:absolute; top:0; width:46px !important; height:46px !important; max-width:none !important; border-radius:50%; object-fit:cover; border:2.5px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; font-weight:800; box-sizing:border-box; }
+  .nm-gf > :nth-child(1){ left:0; z-index:3; } .nm-gf > :nth-child(2){ left:20px; z-index:2; } .nm-gf > :nth-child(3){ left:38px; z-index:1; }
+  .nm-gc{ position:absolute; right:-4px; top:-6px; min-width:24px; height:24px; padding:0 6px; border-radius:999px; background:#e8384f; color:#fff; font-size:12.5px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.35); z-index:5; }
+  .nm-gl{ display:flex; flex-direction:column; gap:4px; margin-top:8px; max-height:50vh; overflow-y:auto; }
+  .nm-gl button{ display:flex; align-items:center; gap:12px; width:100%; min-height:0; border:0; background:none; padding:8px 6px; border-radius:14px; font:inherit; font-size:16px; cursor:pointer; box-shadow:none; color:inherit; text-align:left; } .nm-gl button:active{ background:#f0f5f6; }
+  .nm-ga{ flex:none; width:44px; height:44px; border-radius:50%; overflow:hidden; display:block; } .nm-ga img, .nm-ga b{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; }
   .nm-pin.me .nm-pa{ animation:nmPulse 2s ease-out infinite; } @keyframes nmPulse{ 0%{ box-shadow:0 0 0 3px #19c3cf, 0 0 0 3px rgba(25,195,207,.5), 0 6px 16px rgba(0,0,0,.4); } 100%{ box-shadow:0 0 0 3px #19c3cf, 0 0 0 22px rgba(25,195,207,0), 0 6px 16px rgba(0,0,0,.4); } }
   /* ===== 12/11 : sécurité en mer ===== */
   .sec-card{ margin-top:14px; border-radius:18px; background:linear-gradient(160deg,#eaf8f9,#f6fbfb); border:1.5px solid #cdeef0; padding:12px 14px 6px; }
@@ -5265,18 +5278,28 @@
     commLayers = L.layerGroup().addTo(commMap);
     commMap.on("popupopen", e=>{ const a=e.popup._contentNode&&e.popup._contentNode.querySelector("[data-dm]");
       if(a) a.addEventListener("click", ev=>{ ev.preventDefault(); commMap.closePopup(); openDM(a.dataset.dm,a.dataset.ps); }); });
+    commMap.on("zoomend", function(){ try{ renderMap(); }catch(e){} });
     commReady=true;
   }
   function renderMap(){
     commMapInit(); if(!commMap) return;
     commLayers.clearLayers();
-    for(const k in riders){ const r=riders[k], col=avatarColor(k);
-      if(blocked.has(k)) continue;
-      L.circle([r.lat,r.lng],{radius:900,color:col,weight:0,fillColor:col,fillOpacity:.14,interactive:false}).addTo(commLayers);
-      L.marker([r.lat,r.lng],{icon:riderIcon(k,r,false), riseOnHover:true}).on("click", (function(u){ return function(){ openUserProfile(u); }; })(k)).addTo(commLayers);
-    }
+    // 13/11 : riders trop proches à l'écran = une seule pastille « groupe » (on zoome en la touchant)
+    const z=commMap.getZoom(), ids=Object.keys(riders).filter(k=>!blocked.has(k) && riders[k] && isFinite(riders[k].lat)), groups=[];
+    ids.forEach(k=>{ const r=riders[k], p=commMap.latLngToLayerPoint([r.lat,r.lng]); let g=groups.find(x=>Math.abs(x.x-p.x)<50 && Math.abs(x.y-p.y)<50);
+      if(g){ g.ids.push(k); g.x=(g.x*(g.ids.length-1)+p.x)/g.ids.length; g.y=(g.y*(g.ids.length-1)+p.y)/g.ids.length; } else groups.push({ x:p.x, y:p.y, ids:[k] }); });
+    groups.forEach(g=>{
+      if(g.ids.length===1){ const k=g.ids[0], r=riders[k], col=avatarColor(k);
+        if(z>=12) L.circle([r.lat,r.lng],{radius:900,color:col,weight:0,fillColor:col,fillOpacity:.14,interactive:false}).addTo(commLayers);
+        L.marker([r.lat,r.lng],{icon:riderIcon(k,r,false), riseOnHover:true}).on("click", (function(u){ return function(){ openUserProfile(u); }; })(k)).addTo(commLayers); return; }
+      const ll=commMap.layerPointToLatLng([g.x,g.y]), bounds=L.latLngBounds(g.ids.map(k=>[riders[k].lat,riders[k].lng]));
+      const faces=g.ids.slice(0,3).map(function(k){ var pr=profileMap[k]||{}, col=avatarColor(k), nm=(riders[k].pseudo||"R"); return pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>'; }).join("");
+      L.marker(ll,{icon:L.divIcon({className:"nm-pin nm-grp", iconSize:[84,60], iconAnchor:[42,30], html:'<span class="nm-gf n'+Math.min(3,g.ids.length)+'">'+faces+'</span><span class="nm-gc">'+g.ids.length+'</span>'}), zIndexOffset:200})
+        .on("click", function(){ const same=bounds.getNorthEast().distanceTo(bounds.getSouthWest())<60;
+          if(same || z>=17) nmGroupList(g.ids); else commMap.fitBounds(bounds.pad(0.6), { maxZoom:Math.min(18,z+4), animate:true }); }).addTo(commLayers);
+    });
     if(sharing && me.pos){
-      L.circle([me.pos.lat,me.pos.lng],{radius:900,color:"#19c3cf",weight:0,fillColor:"#19c3cf",fillOpacity:.18,interactive:false}).addTo(commLayers);
+      if(commMap.getZoom()>=12) L.circle([me.pos.lat,me.pos.lng],{radius:900,color:"#19c3cf",weight:0,fillColor:"#19c3cf",fillOpacity:.18,interactive:false}).addTo(commLayers);
       L.marker([me.pos.lat,me.pos.lng],{icon:riderIcon(me.uid,{},true), zIndexOffset:500}).on("click", function(){ nearMapClose(); var nb=document.querySelector('#bnav [data-nav="profil"]'); if(nb) nb.click(); else showTab("profil"); }).addTo(commLayers);
     }
     nmPaint();
@@ -5289,9 +5312,14 @@
   function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+" rider"+(n>1?"s":"")+" autour de toi") : "Personne autour pour l'instant";
     var g=$("nmGhost"); if(g) g.classList.toggle("off", !sharing); }
   window.__nearOpen=nearMapOpen; window.__nearClose=nearMapClose;
+  // liste des riders d'un groupe (même endroit) : on choisit qui ouvrir
+  function nmGroupList(ids){ var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12600";
+    ov.innerHTML='<div class="mm-card"><div class="at-grab"></div><b class="cs-h">'+ids.length+' riders ici</b><div class="nm-gl">'+ids.map(function(k){ var pr=profileMap[k]||{}, col=avatarColor(k), nm=(riders[k]&&riders[k].pseudo)||"Rider";
+      return '<button type="button" data-u="'+esc(k)+'"><span class="nm-ga">'+(pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>')+'</span><b>'+esc(nm)+'</b></button>'; }).join("")+'</div></div>';
+    document.body.appendChild(ov); ov.addEventListener("click", function(e){ var b=e.target.closest("button[data-u]"); if(b){ ov.remove(); openUserProfile(b.dataset.u); return; } if(e.target===ov) ov.remove(); }); }
   function riderIcon(k, r, mine){ var pr=mine?{av:me.av}:(profileMap[k]||{}), col=mine?"#148a90":avatarColor(k), nm=mine?(me.pseudo||"Moi"):(r.pseudo||"Rider");
     var inner=pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>';
-    return L.divIcon({className:"nm-pin"+(mine?" me":""), iconSize:[72,96], iconAnchor:[36,78], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(nm)+(mine?' <i>· toi</i>':'')+'</span>'}); }
+    return L.divIcon({className:"nm-pin"+(mine?" me":""), iconSize:mine?[64,84]:[52,70], iconAnchor:mine?[32,62]:[26,50], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(nm)+(mine?' <i>· toi</i>':'')+'</span>'}); }
   function commRecenter(){ if(!commMap) return; const pts=[]; if(sharing&&me.pos) pts.push([me.pos.lat,me.pos.lng]);
     for(const k in riders) pts.push([riders[k].lat,riders[k].lng]);
     if(!pts.length) return;
