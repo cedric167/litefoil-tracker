@@ -5962,7 +5962,7 @@
         c.tone=lfCallTone("out"); lfCallWatch(c);
         c.unAns=rt.onValue(rt.ref(c.path+"/rtc/answer"), function(sn){ var a=sn.val(); if(!a || lfCall!==c || c.gotAns) return; c.gotAns=true; c.state="conn"; lfCallDraw();
           pc.setRemoteDescription(new RTCSessionDescription(a)).then(function(){ lfCallFlush(c); }).catch(function(){ lfCallEnd("fail"); }); });
-        c.to=setTimeout(function(){ if(lfCall===c && c.state==="ring") lfCallEnd("miss"); }, 45000); }); }); }
+        c.to=setTimeout(function(){ if(lfCall===c && c.state==="ring") lfCallEnd("miss"); }, 60000); }); }); }
   // appelé : la sonnerie arrive par userDM/<moi>/<appelant>/call
   function lfCallRing(map){ if(!backend || !backend.rt) return; for(var peer in map){ var e=map[peer], k=e&&e.call; if(!k || !k.mid || lfCallSeen[k.mid]) continue; lfCallSeen[k.mid]=1;
       if(blocked.has(peer) || !window.RTCPeerConnection) continue; var C2=window.Capacitor; if(C2 && C2.isNativePlatform && C2.isNativePlatform() && !/LiteFoilCall\//.test(navigator.userAgent)) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; } lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
@@ -5998,7 +5998,12 @@
   // aperçu de l’écran d’appel (contrôle visuel) : lfCallPreview("a"|"v", entrant, enLigne)
   window.lfCallPreview=function(kind,inc,live){ if(lfCall) return; lfCall={ kind:kind||"a", peer:"demo", name:"Most Charly", incoming:!!inc, accepted:!!live, state:live?"on":"ring", t0:Date.now()-83000, facing:"user" }; lfCallUI(lfCall); };
 
+  // ferme tout ce qui peut recouvrir la conversation (carte Près de moi, fil vidéo ouvert par-dessus, fiches)
+  function dmClearLayers(){ try{ nearMapClose(); }catch(e){} try{ var vf=$("vf"); if(vf && !vf.hidden && vfMode!=="tab") closeFeed(); }catch(e){} try{ closeOverlay(); }catch(e){}
+    try{ var cs=$("commSheet"); if(cs) cs.hidden=true; }catch(e){} try{ document.querySelectorAll(".mm-ov, .nm-lv").forEach(function(x){ x.remove(); }); }catch(e){}
+    try{ if(document.body.dataset.tab!=="communaute") goToCommunaute(); }catch(e){} }
   function openDM(uid,ps){ var pr=profileMap[uid]||{};
+    if(!(uid!==me.uid && pr.dm==="none")) dmClearLayers();
     if(uid!==me.uid && pr.dm==="none"){ alert((ps||"Ce rider")+" n'accepte pas les messages privés."); return; }
     dmPeer={uid:uid,pseudo:ps,av:pr.av,bio:pr.bio}; chatMode="dm";
     dmSeen[uid]=Date.now(); saveDmSeen(); dmNotif[uid]=dmSeen[uid]; clearDeliveredNotifs(); if(backend.markDMRead) backend.markDMRead(uid); if(backend.clearUnread) backend.clearUnread("d_"+uid);
@@ -7983,8 +7988,8 @@
     var cur=sel?C.d[sel]:null, sp=sel?LF_SP[sel]:null;
     var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel&&!mdSel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>'+spIco("trophy")+' Globale</span></button>'
       +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("")
-      +MD.map(function(m,i){ return '<button type="button" class="fc-th md'+m.r+(mdSel===m?' on':'')+'" data-cs="md:'+i+'"><b>'+MD_ICO[m.r-1]+'</b><span>'+MD_NAME[m.r-1]+' · '+esc(LF_SP[m.s].name)+'</span></button>'; }).join("");
-    var legend = mdSel ? '<div class="gc-count">Carte '+MD_NAME[mdSel.r-1]+' de la semaine : '+mdSel.r+(mdSel.r===1?"er":"e")+' du défi '+esc(LF_SP[mdSel.s].name)+', semaine du '+esc(mdWeekLabel(mdSel.w))+'.</div>' : sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+spStats(sel).map(function(s,i){ var cv=cardVal(cur,s,i,sel), inf=stInfo(sel,s); return '<div><span><b>'+esc(inf[0])+'</b> · '+esc(inf[1])+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+'</b></div>'; }).join("")+'</div>'
+      +MD.map(function(m,i){ return '<button type="button" class="fc-th md'+m.r+(mdSel===m?' on':'')+'" data-cs="md:'+i+'"><b>'+MD_ICO[m.r-1]+'</b><span>'+esc(LF_SP[m.s].name)+'</span></button>'; }).join("");
+    var legend = mdSel ? '<div class="gc-count"><b>Carte '+MD_NAME[mdSel.r-1]+' de la semaine</b> · <b>'+esc(LF_SP[mdSel.s].name)+'</b> · <span>semaine du</span> <span data-no-i18n>'+esc(mdWeekLabel(mdSel.w))+'</span></div>' : sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+spStats(sel).map(function(s,i){ var cv=cardVal(cur,s,i,sel), inf=stInfo(sel,s); return '<div><span><b>'+esc(inf[0])+'</b> · '+esc(inf[1])+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+'</b></div>'; }).join("")+'</div>'
         +(mine&&!cur.n?'<div class="gc-count">Enregistre une sortie de '+esc(sp.name)+' dans Tracking pour faire monter cette carte.</div>':'')
       : '<div class="gc-count">La carte principale fait la moyenne de tes sports, en comptant plus ceux que tu pratiques le plus.</div>';
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Mes Cartes Rider":"Cartes Rider")+'</b><span></span></div><div class="gc-body">'
@@ -8190,7 +8195,7 @@
     setTimeout(function(){ try{ if(LF_SP[k] && typeof phSetMilieu==="function") phSetMilieu(LF_SP[k].mil); }catch(e){} var sel=$("phAct"); if(sel && sel.querySelector('option[value="'+k+'"]') && sel.value!==k){ sel.value=k; sel.dispatchEvent(new Event("change")); }
       var b=$("phStart"); if(b && !b.hidden) b.scrollIntoView({block:"center", behavior:"smooth"}); },250); }
   const MD_NAME=["Or","Argent","Bronze"], MD_ICO=["🥇","🥈","🥉"];
-  function mdWeekLabel(w){ try{ return new Date(w+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }catch(e){ return w; } }
+  function mdWeekLabel(w){ try{ var lg="fr"; try{ lg=(localStorage.getItem("lf-lang")||"fr").slice(0,2); }catch(e){} return new Date(w+"T12:00:00").toLocaleDateString(lg==="en"?"en-GB":lg==="es"?"es-ES":"fr-FR",{day:"numeric",month:"short"}); }catch(e){ return w; } }
   function medalsOf(uid){ var a = uid===me.uid ? medals() : ((commStats[uid]||{}).md||[]); return (Array.isArray(a)?a:[]).filter(function(x){ return x && LF_SP[x.s] && x.r>=1 && x.r<=3; }).slice(0,12); }
   function medalCardHtml(uid, m){ var mine=uid===me.uid, pr=profileMap[uid]||{}, sp=LF_SP[m.s], ps=mine?me.pseudo:(pr.pseudo||pName(uid)), cimg=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
     var photo=cimg?'<img class="fc-photo" src="'+esc(cimg)+'" alt="">':(av?'<img class="fc-av" src="'+esc(av)+'" alt="">':'<div class="fc-avl">'+esc((ps||"R").charAt(0).toUpperCase())+'</div>');
@@ -8198,7 +8203,7 @@
       +'<div class="fc-l"><div class="fc-ovr">'+m.r+'</div><div class="fc-pos">'+esc(sp.name.toUpperCase().slice(0,10))+'</div><div class="fc-ic">'+sp.ic+'</div></div>'
       +'<div class="fc-tier">'+MD_NAME[m.r-1].toUpperCase()+' DE LA SEMAINE</div>'+photo
       +'<div class="fc-name">'+esc(ps||"Rider")+'</div><div class="fc-line"></div>'
-      +'<div class="fc-stats fc-real c2"><div><b>'+(Math.round((+m.km||0)*10)/10).toLocaleString("fr-FR")+'</b><span>KM</span></div><div><b>'+esc(mdWeekLabel(m.w))+'</b><span>SEMAINE DU</span></div></div>'
+      +'<div class="fc-stats fc-real c2"><div><b>'+(Math.round((+m.km||0)*10)/10).toLocaleString("fr-FR")+'</b><span>KM</span></div><div><b data-no-i18n>'+esc(mdWeekLabel(m.w))+'</b><span>SEMAINE DU</span></div></div>'
       +'<div class="fc-foot">Défi de la semaine · Lite Foil</div></div>'; }
   // remise des cartes : au premier chargement du classement, on regarde le podium de la semaine dernière dans chaque discipline
   let medalsChecked=false;
@@ -8212,7 +8217,7 @@
     }catch(e){} }, 6000); }
   function showMedalWin(m, n){ var g=$("gOverlay"); if(g && !g.hidden) return; var o=gOverlay(); o.hidden=false;
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="mwClose">✕</button><b>Défi de la semaine</b><span></span></div><div class="gc-body md-win">'+medalCardHtml(me.uid,m)
-      +'<h3>'+MD_ICO[m.r-1]+' Bravo !</h3><p>Tu termines '+m.r+(m.r===1?"er":"e")+' du défi '+esc(LF_SP[m.s].name)+' de la semaine dernière : tu gagnes la carte '+MD_NAME[m.r-1]+' de la semaine.'+(n>1?' Tu as aussi gagné '+(n-1)+' autre'+(n>2?"s":"")+' carte'+(n>2?"s":"")+'.':'')+'</p>'
+      +'<h3>'+MD_ICO[m.r-1]+' <span>Bravo !</span></h3><p><span>Défi de la semaine dernière :</span> <b>'+esc(LF_SP[m.s].name)+'</b><br><span>Tu termines sur le podium et tu gagnes :</span> <b>Carte '+MD_NAME[m.r-1]+' de la semaine</b>'+(n>1?'<br><span>Autres cartes gagnées : '+(n-1)+'</span>':'')+'</p>'
       +'<button class="primary" id="mwGo">Voir mes cartes</button></div></div>';
     $("mwClose").addEventListener("click", closeOverlay); $("mwGo").addEventListener("click", function(){ openRiderCard(me.uid, "md:0"); }); }
   function defiName(uid){ return uid===me.uid ? (me.pseudo||"Moi") : ((profileMap[uid]||{}).pseudo||"Rider"); }
@@ -8227,7 +8232,7 @@
     var meHtml;
     if(r){ var nxt=r>1?b[r-2]:null, pct=nxt?Math.max(6,Math.min(100,Math.round(mk/nxt.km*100))):100;
       meHtml='<div class="dm-r">'+r+(r===1?"er":"e")+'</div><div class="dm-t">Tu as '+fk(mk)+'<small>'+(nxt?("Encore "+fk(Math.max(0.1,nxt.km-mk))+" pour passer "+(r-1)+(r-1===1?"er":"e")):"Tu mènes le classement 🔥")+'</small><div class="dm-bar"><i style="width:'+pct+'%"></i></div></div><div class="dm-go">›</div>'; }
-    else meHtml='<div class="dm-r">'+spSvgBolt()+'</div><div class="dm-t">Entre dans la course<small>Enregistre une sortie '+esc(spn)+' pour être classé</small></div><div class="dm-go">›</div>';
+    else meHtml='<div class="dm-r">'+spSvgBolt()+'</div><div class="dm-t">Entre dans la course<small><span>Enregistre une sortie</span> <b>'+esc(spn)+'</b> <span>pour être classé</span></small></div><div class="dm-go">›</div>';
     el.innerHTML='<div class="defi" id="defiOpen"><div class="defi-top"><span class="defi-tag"><i><svg viewBox="0 -960 960 960"><path d="'+SP_PATH.trophy+'"/></svg></i>Défi de la semaine</span>'
       +'<span class="defi-time'+(left<=1?" last":"")+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+tl+'</span></div>'
       +'<div class="defi-sps">'+defiChips()+'</div>'
@@ -8250,13 +8255,13 @@
       var avh=av?'<span class="cav"><img src="'+av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(x.uid)+'">'+esc((defiName(x.uid).trim()[0]||"R").toUpperCase())+'</span>';
       var st=x.uid===me.uid?(myStats()||{}):(commStats[x.uid]||{});
       return '<div class="lb-row'+(x.uid===me.uid?" me":"")+'" data-uid="'+esc(x.uid)+'"><span class="lb-pos p'+(i+1)+'">'+(i+1)+'</span>'+avh+'<span class="pick-ps">'+esc(defiName(x.uid))+(x.uid===me.uid?" (toi)":"")+'</span>'+(!world&&i<3?'<span class="lb-md m'+(i+1)+'">'+MD_NAME[i].toUpperCase()+'</span>':'')+'<span class="lb-note">'+riderNote(riderXP(st))+'</span><span class="lb-km">'+(Math.round(x.km*10)/10).toLocaleString("fr-FR")+' km</span></div>'; }).join("");
-    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>'+(world?"🌍 Classement mondial":"🏆 Défi "+esc(spn)+" de la semaine")+'</b><span></span></div><div class="gc-body">'
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>'+(world?"🌍 Classement mondial":"🏆 Défi de la semaine · "+esc(spn))+'</b><span></span></div><div class="gc-body">'
       +'<div class="lb-seg s3"><button type="button" data-m="week" class="'+(world||last?"":"on")+'">Cette semaine</button><button type="button" data-m="last" class="'+(last?"on":"")+'">Semaine dernière</button><button type="button" data-m="world" class="'+(world?"on":"")+'">Mondial</button></div>'
       +(world?'':'<div class="lb-sps">'+defiChips(last)+'</div>')
       +(DEFI_LOT?'<div class="defi-lot" style="background:#fff1d6;color:#8a5a00">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
-      +'<div class="gc-count">'+(world?'Tous les riders, tous les sports : total des kilomètres enregistrés avec l\'appli depuis leur inscription.':(last?'Podium de la semaine dernière en '+esc(spn)+'. Le 1er gagne la carte Or de la semaine, le 2e la carte Argent, le 3e la carte Bronze : elles s\'ajoutent à leurs Cartes Rider.':'Classement des km parcourus en '+esc(spn)+' cette semaine (du lundi au dimanche), enregistrés avec le suivi GPS de l\'appli. Dimanche soir, le 1er gagne la carte Or de la semaine, le 2e la carte Argent, le 3e la carte Bronze.'))+'</div>'
-      +(rows||'<div class="comm-empty">'+(world||!last?'Personne pour l\'instant : la première sortie '+esc(spn)+' de la semaine prend la tête !':'Personne n\'a été classé dans cette discipline la semaine dernière.')+'</div>')
-      +'<button class="primary df-go" id="dfGo">▶ Enregistrer une sortie '+esc(spn)+'</button><div class="df-help">Lance le suivi dans l\'onglet Tracking avant d\'aller sur l\'eau, puis appuie sur Terminer en sortant : tes km comptent tout de suite pour le classement.</div>'
+      +'<div class="gc-count">'+(world?'Tous les riders, tous les sports : total des kilomètres enregistrés avec l\'appli depuis leur inscription.':(last?'<span>Podium de la semaine dernière :</span> <b>'+esc(spn)+'</b><br><span>Le 1er gagne la carte Or de la semaine, le 2e la carte Argent, le 3e la carte Bronze : elles s\'ajoutent à leurs Cartes Rider.</span>':'<span>Classement de la semaine, du lundi au dimanche :</span> <b>'+esc(spn)+'</b><br><span>Les km sont enregistrés avec le suivi GPS de l\'appli. Dimanche soir, le 1er gagne la carte Or de la semaine, le 2e la carte Argent, le 3e la carte Bronze.</span>'))+'</div>'
+      +(rows||'<div class="comm-empty">'+(world||!last?'<span>Personne pour l\'instant : la première sortie de la semaine prend la tête !</span>':'Personne n\'a été classé dans cette discipline la semaine dernière.')+'</div>')
+      +'<button class="primary df-go" id="dfGo"><span>▶ Enregistrer une sortie</span> <b>'+esc(spn)+'</b></button><div class="df-help">Lance le suivi dans l\'onglet Tracking avant d\'aller sur l\'eau, puis appuie sur Terminer en sortant : tes km comptent tout de suite pour le classement.</div>'
       +'</div></div>';
     $("dfClose").addEventListener("click", closeOverlay); $("dfGo").addEventListener("click", function(){ goTrackSp(defiSp); });
     o.querySelectorAll("[data-dsp]").forEach(function(c){ c.addEventListener("click", function(){ setDefiSp(c.dataset.dsp); try{ renderDefi(); }catch(e){} openDefiBoard(mode); }); });

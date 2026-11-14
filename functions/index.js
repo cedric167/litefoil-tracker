@@ -180,6 +180,15 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
     if (!uids.length) return;
   }
   const badges = await bumpUnread(uids, "d_" + m.uid);
+  // 14/11 : appel audio ou vidéo → notification d'appel (l'appli sonne dès qu'on l'ouvre, pendant 60 s)
+  if (m.call) {
+    await sendToUids(uids, {
+      type: "call", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
+      title: (m.call.k === "v" ? "📹 " : "📞 ") + (m.pseudo || "Rider") + " t'appelle",
+      body: (m.call.k === "v" ? "Appel vidéo" : "Appel audio") + " Lite Foil · appuie pour répondre"
+    }, { badges });
+    return;
+  }
   await sendToUids(uids, {
     type: "dm",
     channel: "dm:" + m.uid,
