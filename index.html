@@ -6015,7 +6015,7 @@
 
   // ferme tout ce qui peut recouvrir la conversation (carte Près de moi, fil vidéo ouvert par-dessus, fiches)
   function dmClearLayers(){ try{ nearMapClose(); }catch(e){} try{ var vf=$("vf"); if(vf && !vf.hidden && vfMode!=="tab") closeFeed(); }catch(e){} try{ closeOverlay(); }catch(e){}
-    try{ var cs=$("commSheet"); if(cs) cs.hidden=true; }catch(e){} try{ document.querySelectorAll(".mm-ov, .nm-lv").forEach(function(x){ x.remove(); }); }catch(e){}
+    try{ var cs=$("commSheet"); if(cs) cs.hidden=true; }catch(e){} try{ document.querySelectorAll(".mm-ov, .nm-lv, .ts-ov").forEach(function(x){ x.remove(); }); document.body.style.overflow=""; }catch(e){}
     try{ if(document.body.dataset.tab!=="communaute") goToCommunaute(); }catch(e){} }
   function openDM(uid,ps){ var pr=profileMap[uid]||{};
     if(!(uid!==me.uid && pr.dm==="none")) dmClearLayers();
