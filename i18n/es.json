@@ -1868,5 +1868,21 @@
  "Air": "Aire",
  "Autre (air)": "Otro (aire)",
  "Tes vols": "Tus vuelos",
- "Vol": "Vuelo"
+ "Vol": "Vuelo",
+ "Voiture": "Coche",
+ "Moto": "Moto",
+ "Autre véhicule": "Otro vehículo",
+ "Itinéraire": "Itinerario",
+ "Aller à": "Ir a",
+ "À pied": "A pie",
+ "Calcul de l'itinéraire…": "Calculando el itinerario…",
+ "Arrivée": "Llegada",
+ "À ton arrivée sur le spot": "Cuando llegues al spot",
+ "rafales": "rachas",
+ "À vol d'oiseau": "En línea recta",
+ "Lance le guidage pour voir le trajet complet.": "Inicia la navegación para ver el trayecto completo.",
+ "Position indisponible : autorise la localisation pour voir le trajet ici. Le guidage, lui, fonctionne quand même.": "Ubicación no disponible: autoriza la localización para ver el trayecto aquí. La navegación funciona igualmente.",
+ "Trajet indisponible pour le moment. Le guidage fonctionne quand même.": "Trayecto no disponible por ahora. La navegación funciona igualmente.",
+ "Démarrer le guidage": "Iniciar navegación",
+ "Voir le trajet et la durée": "Ver el trayecto y la duración"
 }

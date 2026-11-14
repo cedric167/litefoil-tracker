@@ -1825,5 +1825,22 @@
  "Air": "Air",
  "Autre (air)": "Other (air)",
  "Tes vols": "Your flights",
- "Vol": "Flight"
+ "Vol": "Flight",
+ "Voiture": "Car",
+ "Moto": "Motorbike",
+ "Autre véhicule": "Other vehicle",
+ "Itinéraire": "Directions",
+ "Aller à": "Go to",
+ "À pied": "On foot",
+ "Calcul de l'itinéraire…": "Working out the route…",
+ "Arrivée": "Arrival",
+ "Distance": "Distance",
+ "À ton arrivée sur le spot": "When you get to the spot",
+ "rafales": "gusts",
+ "À vol d'oiseau": "As the crow flies",
+ "Lance le guidage pour voir le trajet complet.": "Start navigation to see the full route.",
+ "Position indisponible : autorise la localisation pour voir le trajet ici. Le guidage, lui, fonctionne quand même.": "Location unavailable: allow location to see the route here. Navigation still works.",
+ "Trajet indisponible pour le moment. Le guidage fonctionne quand même.": "Route unavailable right now. Navigation still works.",
+ "Démarrer le guidage": "Start navigation",
+ "Voir le trajet et la durée": "See the route and duration"
 }
