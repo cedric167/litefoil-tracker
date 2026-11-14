@@ -137,9 +137,11 @@ async function sendToUids(uids, data, opts) {
   if (!messages.length) return;
 
   const dead = [];
+  let okN = 0; const koCodes = {};
   for (let i = 0; i < messages.length; i += 500) {
     const resp = await getMessaging().sendEach(messages.slice(i, i + 500));
     resp.responses.forEach((r, j) => {
+      if (r.success) okN++; else { const cc = (r.error && r.error.code) || "?"; koCodes[cc] = (koCodes[cc] || 0) + 1; }
       if (!r.success) {
         const code = r.error && r.error.code;
         if (code === "messaging/registration-token-not-registered" ||
@@ -150,6 +152,7 @@ async function sendToUids(uids, data, opts) {
       }
     });
   }
+  console.log("push", data.type, "envoyes", okN, "sur", messages.length, JSON.stringify(koCodes));
   if (dead.length) await Promise.all(dead);
 }
 
