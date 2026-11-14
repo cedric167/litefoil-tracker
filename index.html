@@ -258,7 +258,7 @@
   .hs-go{ flex:none; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; } .hs-go svg{ width:18px; height:18px; }
   .home-br{ display:flex; align-items:center; gap:12px; width:100%; margin:12px 0 0; border:0; cursor:pointer; font-family:inherit; text-align:left; color:#fff; border-radius:20px; padding:13px 15px;
     background:linear-gradient(135deg,#1a1206 0%,#3a2608 50%,#b87300 130%); box-shadow:0 8px 20px rgba(58,38,8,.24); } .home-br[hidden]{ display:none; }
-  .home-br .hb-ic{ width:54px; height:54px; border-radius:15px; background:#fff; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 4px 12px rgba(0,0,0,.25); } .home-br .hb-ic img{ width:46px; height:auto; display:block; }
+  .home-br .hb-ic{ width:74px; height:50px; flex:none; background:linear-gradient(135deg,#ffe29a 0%,#f5a623 60%,#c97d00 100%); -webkit-mask:url(onb-logo.png) center/contain no-repeat; mask:url(onb-logo.png) center/contain no-repeat; }
   .home-br .hb-tx{ flex:1; min-width:0; } .home-br b{ display:block; font-size:16px; font-weight:800; } .home-br small{ display:block; font-size:12.5px; opacity:.85; margin-top:2px; } .home-br .hb-go{ font-size:24px; opacity:.8; }
   .home-ulm{ display:flex; align-items:center; gap:12px; width:100%; margin:12px 0 0; border:0; cursor:pointer; font-family:inherit; text-align:left; color:#fff; border-radius:20px; padding:13px 15px;
     background:linear-gradient(135deg,#0a2a55 0%,#12408a 55%,#1b63c9 100%); box-shadow:0 8px 20px rgba(10,42,85,.24); } .home-ulm[hidden]{ display:none; }
@@ -2180,7 +2180,7 @@
       <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
     </button>
     <div class="home-wind" id="homeWind" hidden></div>
-    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic"><img src="onb-logo.png" alt="Lite Foil"></span><span class="hb-tx"><b>Le Bon Ride</b><small>Matériel neuf, occasion et location entre riders</small></span><span class="hb-go">›</span></button>
+    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Le Bon Ride</b><small>Matériel neuf, occasion et location entre riders</small></span><span class="hb-go">›</span></button>
     <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm" hidden><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
 
     <div class="home-card">
