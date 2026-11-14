@@ -2554,6 +2554,19 @@
     .mto-chips button:active,.mto-chips button:hover{background:var(--mist)}
 .mto-geo{display:block;width:100%;margin-top:10px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;color:inherit;font-family:inherit}
 .mto-geo:active,.mto-geo:hover{background:var(--mist)}
+.gx-cur{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-radius:18px;padding:14px;color:#fff;background:linear-gradient(135deg,#2a9fd6 0%,#49c0e8 60%,#8fdcf2 100%)}
+.gx-cur.night{background:linear-gradient(135deg,#0b1f3f 0%,#1b3a6b 60%,#34558c 100%)}
+.gx-ic{font-size:54px;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}.gx-t{flex:1;min-width:0}.gx-t b{display:block;font-size:52px;font-weight:800;line-height:1;letter-spacing:-2px}.gx-t b small{font-size:24px;vertical-align:top}.gx-t span{display:block;font-size:15px;font-weight:700;margin-top:2px;opacity:.95}
+.gx-chips{display:flex;gap:6px;flex-wrap:wrap;width:100%}.gx-chips>span{background:rgba(255,255,255,.2);border-radius:100px;padding:6px 11px;font-size:12.5px;font-weight:600}.gx-chips b{font-weight:800}
+.gx-ar{display:inline-block;font-style:normal;font-weight:900;margin:0 2px}
+.gx-stale{margin-top:10px;font-size:12.5px;line-height:1.4;background:#fff3d6;color:#7a4b00;border-radius:12px;padding:9px 11px}
+.gx-strip{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 2px 6px;scroll-snap-type:x proximity}.gx-strip::-webkit-scrollbar{display:none}
+.gx-h{flex:0 0 auto;width:60px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;border-radius:18px;background:linear-gradient(180deg,#eaf6fd,#f6fbfe);scroll-snap-align:start}
+.gx-h.night{background:linear-gradient(180deg,#152a4e,#223c69);color:#fff}.gx-h.now{background:linear-gradient(180deg,#0f6a6c,#19b3ad);color:#fff;box-shadow:0 6px 14px rgba(15,106,108,.3)}
+.gx-hh{font-size:11.5px;font-weight:700;opacity:.75}.gx-h.now .gx-hh{opacity:1}.gx-hi{font-size:27px;line-height:1.1}.gx-h b{font-size:17px;font-weight:800}.gx-hw{font-size:11.5px;font-weight:700;opacity:.85}.gx-hp{font-size:10.5px;font-weight:700;color:#1b78c2}.gx-h.night .gx-hp,.gx-h.now .gx-hp{color:#bfe6ff}
+.gx-days{display:flex;flex-direction:column}.gx-d{display:flex;align-items:center;gap:8px;padding:9px 2px;border-top:1px solid var(--line)}.gx-d:first-child{border-top:0}
+.gx-dn{width:38px;font-size:14px;font-weight:700}.gx-di{font-size:23px;width:30px;text-align:center}.gx-dp{width:44px;font-size:11.5px;font-weight:700;color:#1b78c2}.gx-dm{width:30px;text-align:right;font-size:14px;color:var(--muted)}.gx-d b{width:30px;font-size:15px;font-weight:800}
+.gx-bar{flex:1;height:7px;border-radius:4px;background:var(--mist,#eef2f5);position:relative;min-width:40px}.gx-bar i{position:absolute;top:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#49c0e8,#f5a623)}
 .gw-cur{display:flex;align-items:center;gap:14px;padding:2px 2px 14px;border-bottom:1px solid var(--line);margin-bottom:12px}
 .gw-cur .big{font-size:58px;font-weight:800;line-height:1;letter-spacing:-2px}
 .gw-cur .big small{font-size:24px;font-weight:700;vertical-align:top}
@@ -4298,7 +4311,7 @@
     ["homeUlm","mtoUlm"].forEach(function(id){ var el=document.getElementById(id); if(el) el.hidden=!on; }); };
   window.ulmOnShow = function(){ var p=document.getElementById("tab-ulm"); if(!p) return; if(window.LFUlm){ window.LFUlm.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=7"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
+    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=8"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
@@ -9129,21 +9142,37 @@
           +'</table></div>';
       }catch(e){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles pour ce spot.</div>'; }
     }
+    // 14/11 : météo du moment refaite. Heure par heure sur 24 h (température, vent, risque de pluie, jour / nuit), 6 jours avec barre mini / maxi.
+    // La dernière météo reçue est gardée sur le téléphone : si le fournisseur ne répond pas, on l'affiche avec son heure au lieu d'un écran vide.
+    function nowDraw(box, d, stale){
+      var cur=d.current||{}, H=d.hourly||{}, D=d.daily||{}, wc=wcode(cur.weather_code,cur.is_day), arrow=function(deg){ return '<i class="gx-ar" style="transform:rotate('+(((+deg||0)+180)%360)+'deg)">↑</i>'; };
+      var h='<div class="gx-cur'+(cur.is_day===0?" night":"")+'"><div class="gx-ic">'+wc[0]+'</div><div class="gx-t"><b>'+(cur.temperature_2m!=null?Math.round(cur.temperature_2m):"—")+'<small>°</small></b><span>'+wc[1]+'</span></div>'
+        +'<div class="gx-chips">'+(cur.apparent_temperature!=null?'<span>🌡️ <span>ressenti</span> <b data-no-i18n>'+Math.round(cur.apparent_temperature)+'°</b></span>':"")+(cur.wind_speed_10m!=null?'<span>💨 <b data-no-i18n>'+Math.round(cur.wind_speed_10m)+' nds</b> '+arrow(cur.wind_direction_10m)+'</span>':"")+'</div></div>';
+      var hours=""; if(H.time){ var now=Date.now(), cnt=0;
+        for(var i=0;i<H.time.length;i++){ var dt=new Date(H.time[i]); if(dt.getTime()<now-3600000) continue; var dh=dt.getHours(), day=H.is_day?H.is_day[i]:((dh>=7&&dh<=20)?1:0), hw=wcode(H.weather_code[i],day), pp=H.precipitation_probability?H.precipitation_probability[i]:null, ws=H.wind_speed_10m?H.wind_speed_10m[i]:null;
+          hours+='<div class="gx-h'+(cnt===0?" now":"")+(day?"":" night")+'"><span class="gx-hh">'+(cnt===0?"Maint.":'<span data-no-i18n>'+dh+' h</span>')+'</span><span class="gx-hi">'+hw[0]+'</span><b data-no-i18n>'+Math.round(H.temperature_2m[i])+'°</b>'
+            +(ws!=null?'<span class="gx-hw" data-no-i18n>'+arrow(H.wind_direction_10m[i])+Math.round(ws)+'</span>':"")+'<span class="gx-hp" data-no-i18n>'+(pp!=null&&pp>=20?"💧"+Math.round(pp)+"%":"&nbsp;")+'</span></div>'; cnt++; if(cnt>=24) break; } }
+      var dn=["dim.","lun.","mar.","mer.","jeu.","ven.","sam."], dd="";
+      if(D.time){ var lo=1e9, hi=-1e9, k; for(k=0;k<D.time.length;k++){ lo=Math.min(lo,D.temperature_2m_min[k]); hi=Math.max(hi,D.temperature_2m_max[k]); } var span=Math.max(1,hi-lo);
+        for(k=0;k<D.time.length;k++){ var dt2=new Date(D.time[k]+"T12:00"), dw=wcode(D.weather_code[k],1), mn=D.temperature_2m_min[k], mx=D.temperature_2m_max[k], pm=D.precipitation_probability_max?D.precipitation_probability_max[k]:null;
+          dd+='<div class="gx-d"><span class="gx-dn">'+(k===0?"Auj.":dn[dt2.getDay()])+'</span><span class="gx-di">'+dw[0]+'</span><span class="gx-dp" data-no-i18n>'+(pm!=null&&pm>=20?"💧"+Math.round(pm)+"%":"")+'</span><span class="gx-dm" data-no-i18n>'+Math.round(mn)+'°</span><span class="gx-bar"><i style="left:'+((mn-lo)/span*100).toFixed(0)+'%;right:'+((hi-mx)/span*100).toFixed(0)+'%"></i></span><b data-no-i18n>'+Math.round(mx)+'°</b></div>'; } }
+      box.innerHTML=h+(stale?'<div class="gx-stale">⏳ <span>Dernière météo reçue à</span> <b data-no-i18n>'+stale+'</b>. <span>Nouvel essai dans une minute.</span></div>':"")
+        +'<div class="gw-sect">Heure par heure</div><div class="gx-strip">'+hours+'</div><div class="gw-sect">Prochains jours</div><div class="gx-days">'+dd+'</div>'; }
+    var nowRetry=null;
     async function loadNow(p){
-      var box=$m("mtoNow"); if(!box) return;
-      box.innerHTML='<div class="comm-empty">Chargement…</div>';
+      var box=$m("mtoNow"); if(!box) return; if(nowRetry){ clearTimeout(nowRetry); nowRetry=null; }
+      var key=(+p.lat).toFixed(2)+","+(+p.lng).toFixed(2), cache=null; try{ cache=JSON.parse(localStorage.getItem("lf.meteo.now")||"null"); }catch(e){}
+      if(cache && cache.k===key && cache.d && Date.now()-cache.t<6*3600000){ try{ nowDraw(box, cache.d, ""); }catch(e){} if(Date.now()-cache.t<10*60000) return; }
+      else box.innerHTML='<div class="comm-empty">Chargement…</div>';
       try{
-        var u="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=temperature_2m,weather_code,apparent_temperature,is_day&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=6";
-        var d=await fetch(u).then(function(r){return r.json();});
-        var cur=d.current||{}, H=d.hourly||{}, D=d.daily||{};
-        var wc=wcode(cur.weather_code,cur.is_day);
-        var curHtml='<div class="gw-cur"><div class="big">'+(cur.temperature_2m!=null?Math.round(cur.temperature_2m):"—")+'<small>°</small></div><div class="ic">'+wc[0]+'</div><div class="tx"><b>'+wc[1]+'</b><span>'+(cur.apparent_temperature!=null?("ressenti "+Math.round(cur.apparent_temperature)+"°"):"")+'</span></div></div>';
-        var hours=""; if(H.time){ var now=Date.now(), cnt=0;
-          for(var i=0;i<H.time.length;i++){ var dt=new Date(H.time[i]); if(dt.getTime()<now-3600000) continue; var dh=dt.getHours(); var hw=wcode(H.weather_code[i],(dh>=7&&dh<=20)?1:0); var lbl=(cnt===0)?"Maint.":(dh+"h"); hours+='<div class="gw-h"><span>'+lbl+'</span><span class="i">'+hw[0]+'</span><b>'+Math.round(H.temperature_2m[i])+'°</b></div>'; cnt++; if(cnt>=9) break; } }
-        var dn=["dim.","lun.","mar.","mer.","jeu.","ven.","sam."], dd="";
-        if(D.time){ for(var k=0;k<D.time.length;k++){ var dt2=new Date(D.time[k]+"T12:00"); var dw=wcode(D.weather_code[k],1); var lbl2=(k===0)?"Auj.":dn[dt2.getDay()]; dd+='<div class="gw-d"><span>'+lbl2+'</span><span class="i">'+dw[0]+'</span><b>'+Math.round(D.temperature_2m_max[k])+'°</b><small>'+Math.round(D.temperature_2m_min[k])+'°</small></div>'; } }
-        box.innerHTML=curHtml+'<div class="gw-sect">Par heure</div><div class="gw-strip">'+hours+'</div><div class="gw-sect">Prochains jours</div><div class="gw-strip">'+dd+'</div>';
-      }catch(e){ box.innerHTML='<div class="comm-empty">Météo indisponible pour le moment.</div>'; }
+        var u="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=temperature_2m,weather_code,apparent_temperature,is_day,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,is_day,wind_speed_10m,wind_direction_10m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&wind_speed_unit=kn&timezone=auto&forecast_days=6";
+        var r=await fetch(u), d=await r.json(); if(!r.ok || !d || !d.hourly || !d.hourly.time || !d.current) throw new Error("meteo");
+        nowDraw(box, d, ""); try{ localStorage.setItem("lf.meteo.now", JSON.stringify({ k:key, t:Date.now(), d:d })); }catch(e){}
+      }catch(e){
+        if(cache && cache.d && cache.k===key){ var t=new Date(cache.t); try{ nowDraw(box, cache.d, (t.getHours()<10?"0":"")+t.getHours()+":"+(t.getMinutes()<10?"0":"")+t.getMinutes()); }catch(x){} }
+        else box.innerHTML='<div class="comm-empty">Météo momentanément indisponible. Nouvel essai dans une minute.</div>';
+        nowRetry=setTimeout(function(){ nowRetry=null; if(pos && (+pos.lat).toFixed(2)+","+(+pos.lng).toFixed(2)===key) loadNow(pos); }, 65000);
+      }
     }
     function apply(p,label){ pos=p; try{ if(window.lfWc && window.lfWc.spot) window.lfWc.spot(p.lat, p.lng, label||p.name||""); }catch(e){} try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
     async function reverseName(lat,lon){

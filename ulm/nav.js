@@ -277,7 +277,7 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; killMap();
   document.body.appendChild(el);
   FLY={ el:el, pts:JSON.parse(JSON.stringify(P.pts)), i:1, pos:null, trk:null, follow:true, voice:true, trail:[], last:null, done:false, sim:!!sim, said:{}, aspT:0, wxSug:null };
   if(window.LFSafe) window.LFSafe.loadAsp().catch(function(){});
-  FLY.wxT=setInterval(flyWx, 240000); setTimeout(flyWx, sim?4000:25000);
+  FLY.wxT=setInterval(flyWx, 600000); setTimeout(flyWx, sim?4000:25000);
   var m=L.map(el.querySelector("#nvFMap"),{ zoomControl:false, attributionControl:true }); FLY.map=m; tiles(m); m.setView([FLY.pts[0].lat,FLY.pts[0].lon],11);
   FLY.line=L.polyline(FLY.pts.map(function(p){ return [p.lat,p.lon]; }),{ color:"#ff5ad2", weight:5, opacity:.95, interactive:false }).addTo(m); FLY.act=L.polyline([],{ color:"#fff", weight:2.5, dashArray:"6 7", interactive:false }).addTo(m); FLY.tr=L.polyline([],{ color:"#35d0ff", weight:3, opacity:.9, interactive:false }).addTo(m);
   FLY.pts.forEach(function(p,i){ L.marker([p.lat,p.lon],{ icon:mkIcon(i,FLY.pts.length), interactive:false }).addTo(m); });
@@ -296,7 +296,7 @@ function flyAsp(g){ var F=FLY, S=window.LFSafe; if(!F || !S || !S.ready() || Dat
   if(!here && F.trk!=null && F.gs>8){ var ah=destPt(F.pos, F.trk, F.gs*120); next=S.at(ah.lat, ah.lon, alt, 0).filter(function(x){ return x.sev>=1; })[0]; }
   var x=here||next; if(!x){ ban.hidden=true; return; } var a=x.a, txt=(here?T("Tu es dans"):T("Dans 2 minutes :"))+" "+a.n+" · "+x.msg+(a.f?" · "+a.f+" MHz":"");
   ban.className="nv-ban "+(x.sev>=3?"r":"a"); ban.textContent=(x.sev>=3?"⛔ ":"⚠️ ")+txt; ban.hidden=false; var key=(here?"in:":"nx:")+a.i; if(!F.said[key]){ F.said[key]=1; say((here?T("Tu es dans"):T("Dans 2 minutes :"))+" "+a.n+". "+x.msg); } }
-// météo devant : nouvelle analyse toutes les 4 minutes sur le reste de la route
+// météo devant : nouvelle analyse toutes les 10 minutes sur le reste de la route
 function flyWx(){ var F=FLY, S=window.LFSafe; if(!F || !S || F.done) return; var here=F.pos||F.pts[0], pts=[{ name:"", code:"", lat:here.lat, lon:here.lon }].concat(F.pts.slice(F.i)), tas=(+P.ac.tas||150)/1.852, ban=F.el.querySelector("#nvBanW"); if(pts.length<2 || !ban) return;
   S.routeWx(pts, tas, new Date()).then(function(r){ if(FLY!==F) return; if(r.worst<2){ ban.hidden=true; F.wxSug=null; return; } var bad=r.legs.filter(function(l){ return l.lvl>=2; })[0], why=bad?bad.why.join(", "):"";
     ban.textContent="⛈️ "+T("Météo dégradée devant")+(why?" : "+why:"")+". "+T("Pose-toi ou fais demi-tour"); ban.hidden=false; if(!F.said.wx){ F.said.wx=1; say(T("Météo dégradée devant")+". "+why); }

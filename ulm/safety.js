@@ -83,8 +83,8 @@ function avoid(pts, altFt, level, terFt){ var res={ pts:[], zones:[], blocked:[]
   res.pts.push(pts[pts.length-1]); res.zones=Object.keys(zs).map(function(k){ return zs[k]; }); res.blocked=Object.keys(bs).map(function(k){ return bs[k]; }); return res; }
 
 // ---------- météo le long de la route ----------
-function samplesOf(pts, legT, dep){ var S=[{ lat:pts[0].lat, lon:pts[0].lon, leg:0, t:+dep }], cum=0; for(var i=0;i<pts.length-1;i++){ var d=distM(pts[i],pts[i+1])/NM, k=Math.max(1,Math.round(d/14)); for(var q=1;q<=k;q++){ var p=mid(pts[i],pts[i+1],q/k); S.push({ lat:p.lat, lon:p.lon, leg:i, t:+dep+(cum+legT[i]*q/k)*60000 }); } cum+=legT[i]; }
-  if(S.length>44){ var st=Math.ceil(S.length/44), o=[]; for(var j=0;j<S.length;j++) if(j%st===0 || j===S.length-1) o.push(S[j]); S=o; } return S; }
+function samplesOf(pts, legT, dep){ var S=[{ lat:pts[0].lat, lon:pts[0].lon, leg:0, t:+dep }], cum=0; for(var i=0;i<pts.length-1;i++){ var d=distM(pts[i],pts[i+1])/NM, k=Math.max(1,Math.round(d/28)); for(var q=1;q<=k;q++){ var p=mid(pts[i],pts[i+1],q/k); S.push({ lat:p.lat, lon:p.lon, leg:i, t:+dep+(cum+legT[i]*q/k)*60000 }); } cum+=legT[i]; }
+  if(S.length>14){ var st=Math.ceil(S.length/14), o=[]; for(var j=0;j<S.length;j++) if(j%st===0 || j===S.length-1) o.push(S[j]); S=o; } return S; }
 function fetchRaw(S){ return fetch("https://api.open-meteo.com/v1/forecast?latitude="+S.map(function(s){ return s.lat.toFixed(3); }).join(",")+"&longitude="+S.map(function(s){ return s.lon.toFixed(3); }).join(",")+"&hourly=visibility,cloud_cover_low,temperature_2m,dew_point_2m,precipitation,weather_code,wind_gusts_10m&wind_speed_unit=kn&timeformat=unixtime&forecast_days=2")
   .then(function(r){ return r.json(); }).then(function(j){ var arr=Array.isArray(j)?j:[j]; if(!arr.length || !arr[0].hourly) throw new Error("meteo"); return arr.map(function(x){ return x.hourly; }); }); }
 function judge(H, tMs){ var t=tMs/1000, bi=0, bd=1e12; for(var k=0;k<H.time.length;k++){ var dd=Math.abs(H.time[k]-t); if(dd<bd){ bd=dd; bi=k; } }
@@ -100,7 +100,10 @@ function evalRoute(S, raw, shiftMs, nLegs){ var legs=[], worst=0; for(var i=0;i<
   S.forEach(function(s,i){ var j=judge(raw[i], s.t+(shiftMs||0)); s.lvl=j.lvl; s.why=j.why; var l=legs[s.leg]; if(j.lvl>l.lvl){ l.lvl=j.lvl; l.why=j.why.slice(0,2); } else if(j.lvl===l.lvl && j.lvl>0 && !l.why.length) l.why=j.why.slice(0,2); if(j.lvl>worst) worst=j.lvl; }); return { legs:legs, worst:worst, S:S }; }
 function legTimes(pts, tasKt, legT){ if(legT && legT.length===pts.length-1) return legT; var o=[]; for(var i=0;i<pts.length-1;i++) o.push(distM(pts[i],pts[i+1])/NM/Math.max(20,tasKt)*60); return o; }
 // météo d'une route : { legs:[{lvl,why}], worst, S, raw }
-function routeWx(pts, tasKt, dep, legT){ var lt=legTimes(pts,tasKt,legT), S=samplesOf(pts, lt, dep); return fetchRaw(S).then(function(raw){ var r=evalRoute(S, raw, 0, pts.length-1); r.raw=raw; r.dep=+dep; return r; }); }
+var wxMem={};
+function routeWx(pts, tasKt, dep, legT){ var lt=legTimes(pts,tasKt,legT), S=samplesOf(pts, lt, dep), key=S.map(function(s){ return s.lat.toFixed(2)+","+s.lon.toFixed(2); }).join(";"), m=wxMem[key];
+  var done=function(raw){ var r=evalRoute(S, raw, 0, pts.length-1); r.raw=raw; r.dep=+dep; return r; }; if(m && Date.now()-m.t<15*60000) return Promise.resolve(done(m.raw));
+  return fetchRaw(S).then(function(raw){ wxMem[key]={ t:Date.now(), raw:raw }; var ks=Object.keys(wxMem); if(ks.length>30) delete wxMem[ks[0]]; return done(raw); }); }
 function totalNM(pts){ var d=0; for(var i=0;i<pts.length-1;i++) d+=distM(pts[i],pts[i+1]); return d/NM; }
 // propose une route qui évite la branche touchée (via un terrain proche de préférence), sinon un départ décalé
 function suggest(pts, tasKt, dep, cur, api){ var bad=-1; for(var i=0;i<cur.legs.length;i++) if(cur.legs[i].lvl>=2){ bad=i; break; } if(bad<0) return Promise.resolve(null);
@@ -114,7 +117,9 @@ function suggest(pts, tasKt, dep, cur, api){ var bad=-1; for(var i=0;i<cur.legs.
     [[90,14],[-90,14],[90,28],[-90,28],[90,45],[-90,45]].forEach(function(o){ var p=dest(w0,(t2+o[0]+360)%360,o[1]*NM), f=null; try{ var n=api.nearest(p.lat,p.lon,1,function(x){ return x.code!==w0.code; })[0]; if(n && n[0]<16) f=n[1]; }catch(e){}
       var wp=f ? { name:f.name, code:f.code, lat:f.lat, lon:f.lon, elev:f.elev } : { name:T("Contournement"), code:"", lat:p.lat, lon:p.lon }, key="r"+(wp.code||wp.lat.toFixed(2)+wp.lon.toFixed(2)); if(seen[key]) return; seen[key]=1;
       var np=pts.slice(0,bi).concat([wp], pts.slice(bi+1)), ex=totalNM(np)-base; if(ex<base*0.6+25) cands.push({ pts:np, via:wp, extra:ex, repl:w0 }); }); }
-  return Promise.all(cands.map(function(c){ return routeWx(c.pts, tasKt, dep).then(function(r){ c.wx=r; return c; }).catch(function(){ c.wx=null; return c; }); })).then(function(L){ L=L.filter(function(c){ return c.wx && c.wx.worst<cur.worst; }); L.sort(function(x,y){ return x.wx.worst-y.wx.worst || x.extra-y.extra; });
+  cands.sort(function(x,y){ return x.extra-y.extra; }); cands=cands.slice(0,4); var tried=[];
+  var chain=cands.reduce(function(pr,c){ return pr.then(function(stop){ if(stop) return true; return routeWx(c.pts, tasKt, dep).then(function(r){ c.wx=r; tried.push(c); return r.worst===0; }).catch(function(){ return false; }); }); }, Promise.resolve(false));
+  return chain.then(function(){ var L=tried.filter(function(c){ return c.wx && c.wx.worst<cur.worst; }); L.sort(function(x,y){ return x.wx.worst-y.wx.worst || x.extra-y.extra; });
     var out={ route:L[0]||null, delay:null }; if(cur.raw){ for(var h=1;h<=8;h++){ var e=evalRoute(cur.S.map(function(s){ return { lat:s.lat, lon:s.lon, leg:s.leg, t:s.t }; }), cur.raw, h*3600000, pts.length-1); if(e.worst<2){ out.delay={ h:h, worst:e.worst }; break; } } }
     if(out.route) out.route.extraMin=out.route.extra/Math.max(20,tasKt)*60; return (out.route||out.delay)?out:null; }); }
 // METAR des stations proches de la route (observations réelles)

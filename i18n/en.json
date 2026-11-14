@@ -1844,5 +1844,10 @@
  "Démarrer le guidage": "Start navigation",
  "Voir le trajet et la durée": "See the route and duration",
  "Le Bon Ride": "Le Bon Ride",
- "Matériel neuf, occasion et location entre riders": "New and used gear, rental between riders"
+ "Matériel neuf, occasion et location entre riders": "New and used gear, rental between riders",
+ "Heure par heure": "Hour by hour",
+ "Dernière météo reçue à": "Last weather received at",
+ "Nouvel essai dans une minute.": "Retrying in a minute.",
+ "Météo momentanément indisponible. Nouvel essai dans une minute.": "Weather temporarily unavailable. Retrying in a minute.",
+ "ressenti": "feels like"
 }
