@@ -5506,7 +5506,7 @@
     const el=$("ridersStrip"); if(!el){ renderBlocked(); return; }
     const ks=Object.keys(riders);
     if(!ks.length){ el.innerHTML='<div class="rs-empty">'+(sharing?'<b>Tu es le premier rider dans ta zone.</b> Invite tes amis : ils apparaîtront ici dès qu\'ils activent leur visibilité.':'Aucun rider visible pour l\'instant. Active ta visibilité pour apparaître sur la carte et voir les riders autour de toi.')+'</div>'; renderBlocked(); return; }
-    ks.sort((a,b)=>{ const da=me.pos?hdist(me.pos,riders[a]):0, db2=me.pos?hdist(me.pos,riders[b]):0; return da-db2; });
+    ks.sort((a,b)=>{ const oa=riders[a].on===false?1:0, ob=riders[b].on===false?1:0; if(oa!==ob) return oa-ob; const da=me.pos?hdist(me.pos,riders[a]):0, db2=me.pos?hdist(me.pos,riders[b]):0; return da-db2; });
     el.innerHTML = ks.map(k=>{ const r=riders[k], pr=profileMap[k]||{}, d=me.pos?hdist(me.pos,r):null;
       const off = r.on===false, ago = off ? seenAgo(r.t) : "";
       const sub = (d==null?"" : (d<1.2?"à côté":Math.round(d)+" km")) + (off ? (d==null?"":" · ")+ago : "");
