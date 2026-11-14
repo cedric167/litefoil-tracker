@@ -51,7 +51,9 @@ function checkRoute(pts, altFt, elev){ var res={ hits:[], near:[], worst:0, ok:!
 
 // ---------- contournement automatique des zones non autorisées ----------
 // niveau 1 : zones interdites (P) et classe A ; niveau 2 : + zones réglementées (R) ; niveau 3 : + zones dangereuses et espaces à clairance (classes B, C, D)
-function isObs(a, level){ return a.t==="P" || a.c==="A" || (level>=2 && a.t==="R") || (level>=3 && (a.t==="Q" || a.c==="B" || a.c==="C" || a.c==="D")); }
+// choix libres : p = zones interdites (P) et classe A ; r = zones réglementées (R) ; c = zones dangereuses et espaces à clairance (classes B, C, D)
+function flags(f){ if(typeof f==="number") return { p:f>=1, r:f>=2, c:f>=3 }; return f||{}; }
+function isObs(a, f){ f=flags(f); return !!((f.p && (a.t==="P" || a.c==="A")) || (f.r && a.t==="R") || (f.c && (a.t==="Q" || a.c==="B" || a.c==="C" || a.c==="D"))); }
 function hull(p){ p=p.slice().sort(function(a,b){ return a[0]-b[0] || a[1]-b[1]; }); var cr=function(o,a,b){ return (a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); }, lo=[], up=[], i;
   for(i=0;i<p.length;i++){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],p[i])<=0) lo.pop(); lo.push(p[i]); } for(i=p.length-1;i>=0;i--){ while(up.length>=2 && cr(up[up.length-2],up[up.length-1],p[i])<=0) up.pop(); up.push(p[i]); } lo.pop(); up.pop(); return lo.concat(up); }
 function grow(h, c, d){ return h.map(function(v){ var dx=v[0]-c[0], dy=v[1]-c[1], l=Math.hypot(dx,dy)||1; return [v[0]+dx/l*d, v[1]+dy/l*d]; }); }
@@ -76,8 +78,8 @@ function avoidLeg(a, b, altFt, level, terFt){ var lat0=(a.lat+b.lat)/2, kx=60*Ma
     if(!added){ if(dist[1]>len*3+60) return out; out.fail=false; out.pts=path.slice(1,-1).map(function(nd){ return { name:T("Contournement")+" · "+String(nd.o.a.n).slice(0,26), code:"", lat:nd.p[1]/60, lon:nd.p[0]/kx, auto:true }; }); out.zones=S.map(function(o){ return o.a; }); out.extra=dist[1]-len; return out; } }
   return out; }
 // route complète : insère des points de contournement (marqués auto) entre les points choisis par le pilote
-function avoid(pts, altFt, level, terFt){ var res={ pts:[], zones:[], blocked:[], extra:0, n:0 }; if(!ASP || pts.length<2 || !level){ res.pts=pts.slice(); return res; } var zs={}, bs={};
-  for(var i=0;i<pts.length-1;i++){ res.pts.push(pts[i]); var r=avoidLeg(pts[i], pts[i+1], altFt, level, terFt); if(r.fail && level>1){ var r1=avoidLeg(pts[i], pts[i+1], altFt, 1, terFt); r1.blocked=r.blocked; r=r1; res.partial=true; } r.pts.forEach(function(p){ res.pts.push(p); res.n++; }); r.zones.forEach(function(z){ zs[z.i]=z; }); r.blocked.forEach(function(z){ bs[z.i]=z; }); res.extra+=r.extra||0; }
+function avoid(pts, altFt, level, terFt){ var res={ pts:[], zones:[], blocked:[], extra:0, n:0 }; level=flags(level); if(!ASP || pts.length<2 || !(level.p||level.r||level.c)){ res.pts=pts.slice(); return res; } var zs={}, bs={};
+  for(var i=0;i<pts.length-1;i++){ res.pts.push(pts[i]); var r=avoidLeg(pts[i], pts[i+1], altFt, level, terFt); if(r.fail && level.p && (level.r||level.c)){ var r1=avoidLeg(pts[i], pts[i+1], altFt, { p:true }, terFt); r1.blocked=r.blocked; r=r1; res.partial=true; } r.pts.forEach(function(p){ res.pts.push(p); res.n++; }); r.zones.forEach(function(z){ zs[z.i]=z; }); r.blocked.forEach(function(z){ bs[z.i]=z; }); res.extra+=r.extra||0; }
   res.pts.push(pts[pts.length-1]); res.zones=Object.keys(zs).map(function(k){ return zs[k]; }); res.blocked=Object.keys(bs).map(function(k){ return bs[k]; }); return res; }
 
 // ---------- météo le long de la route ----------
