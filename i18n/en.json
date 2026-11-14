@@ -1803,5 +1803,9 @@
  "Athlétisme & Explosivité": "Athletics & Explosiveness",
  "📩 Si un compte existe avec cette adresse, un mail vient de partir : touche le lien (regarde aussi les spams), choisis ton nouveau mot de passe, puis reviens te connecter ici. Rien reçu ? Ton compte utilise sans doute une autre adresse, ou la connexion Google ou Apple.": "📩 If an account exists with this address, an email has just been sent: tap the link (check your spam too), choose your new password, then come back and sign in here. Nothing received? Your account probably uses another address, or Google or Apple sign-in.",
  "Active les notifications": "Turn on notifications",
- "Messages, appels et SOS de tes amis, même appli fermée.": "Messages, calls and SOS from your friends, even when the app is closed."
+ "Messages, appels et SOS de tes amis, même appli fermée.": "Messages, calls and SOS from your friends, even when the app is closed.",
+ "il y a 3 min": "3 min ago",
+ "il y a 3 h": "3 h ago",
+ "il y a 3 j": "3 d ago",
+ "Seule une zone d'environ 1 km est partagée, jamais ta position exacte. Tu restes visible dans cette zone même appli fermée, tant que la visibilité est cochée.": "Only an area of about 1 km is shared, never your exact position. You stay visible in that area even when the app is closed, as long as visibility is on."
 }

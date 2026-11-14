@@ -1821,7 +1821,8 @@
   .rs-avwrap{ position:relative; }
   .rs-av{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:21px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.12); border:2.5px solid #fff; }
   .rs-av img{ width:100%; height:100%; object-fit:cover; }
-  .rs-dot{ position:absolute; right:1px; bottom:1px; width:14px; height:14px; border-radius:50%; background:#2ec36b; border:2.5px solid var(--card); }
+  .rs-dot{ position:absolute; right:1px; bottom:1px; width:14px; height:14px; border-radius:50%; background:#2ec36b; border:2.5px solid var(--card); } .rs-dot.off{ background:#a9b4ba; }
+  .nm-pin.off .nm-pa{ filter:grayscale(.55); opacity:.82; }
   .rs-nm{ font-size:11.5px; font-weight:600; color:var(--text); max-width:66px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .rs-sub{ font-size:10px; color:var(--muted); margin-top:-3px; }
   .rs-empty{ font-size:13px; color:var(--muted); padding:10px 4px; }
@@ -2359,7 +2360,7 @@
         <div class="nm-vis">
           <div class="comm-share">
             <span class="d" id="commDot"></span>
-            <div class="sw-txt"><b id="commStatTxt">Visibilité désactivée</b><div class="note" id="commMapNote">Seule une zone d'environ 1 km est partagée, jamais ta position exacte.</div></div>
+            <div class="sw-txt"><b id="commStatTxt">Visibilité désactivée</b><div class="note" id="commMapNote">Seule une zone d'environ 1 km est partagée, jamais ta position exacte. Tu restes visible dans cette zone même appli fermée, tant que la visibilité est cochée.</div></div>
             <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
           </div>
           <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
@@ -5003,7 +5004,8 @@
     const d = db.getDatabase(app);
     const inc = (typeof db.increment==="function") ? db.increment : null; // compteur atomique de non-lus (si dispo)
     const presRef = db.ref(d, "presence/"+uid);
-    db.onDisconnect(presRef).remove();
+    // 14/11 : la zone partagée reste visible appli fermée (elle n'est retirée que si le rider décoche la visibilité)
+    try{ db.onDisconnect(presRef).cancel(); }catch(e){}
     db.onDisconnect(db.ref(d,"typing/"+uid)).remove();
     // chemin RTDB d'un canal : salon public, groupe privé ou message direct
     const pathFor = (ch)=> ch==="salon" ? "chat" : (ch.indexOf("group:")===0 ? "groupMessages/"+ch.slice(6) : (ch.indexOf("ev:")===0 ? "eventMessages/"+ch.slice(3) : "dm/"+ch.slice(3)));
@@ -5021,7 +5023,7 @@
         db.onValue(db.ref(d,".info/connected"), function(sn){ if(sn.val()!==true) return; db.onDisconnect(ref).remove().then(function(){ return db.set(ref,{t:db.serverTimestamp()}); }).catch(function(){}); }); },
       watchOnline(cb){ return db.onValue(db.ref(d,"online"), function(sn){ cb(sn.val()||{}); }, function(){ cb({}); }); },
       watchPresence(cb){ return db.onValue(db.ref(d,"presence"), snap=>{ const now=Date.now(), out={}, v=snap.val()||{};
-        for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>STALE) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t}; } cb(out); }); },
+        for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>30*86400000) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t,on:(now-t<=STALE)}; } cb(out); }); },
       sendMessage(ch,text,img,reply,extra){ const path = pathFor(ch);
         const o={uid,pseudo:me.pseudo,text:text||"",t:db.serverTimestamp(),topic:(ch==="salon"?((extra&&extra.topic)||chatTopic):null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null};
         if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
@@ -5430,7 +5432,7 @@
     document.body.appendChild(ov); ov.addEventListener("click", function(e){ var b=e.target.closest("button[data-u]"); if(b){ ov.remove(); openUserProfile(b.dataset.u); return; } if(e.target===ov) ov.remove(); }); }
   function riderIcon(k, r, mine){ var pr=mine?{av:me.av}:(profileMap[k]||{}), col=mine?"#148a90":avatarColor(k), nm=mine?(me.pseudo||"Moi"):(r.pseudo||"Rider");
     var inner=pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>';
-    return L.divIcon({className:"nm-pin"+(mine?" me":""), iconSize:mine?[64,84]:[52,70], iconAnchor:mine?[32,62]:[26,50], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(nm)+(mine?' <i>· toi</i>':'')+'</span>'}); }
+    return L.divIcon({className:"nm-pin"+(mine?" me":"")+(!mine&&r&&r.on===false?" off":""), iconSize:mine?[64,84]:[52,70], iconAnchor:mine?[32,62]:[26,50], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(nm)+(mine?' <i>· toi</i>':'')+'</span>'}); }
   function commRecenter(){ if(!commMap) return; const mine=(sharing&&me.pos)?[me.pos.lat,me.pos.lng]:null; let pts=[];
     for(const k in riders){ if(blocked.has(k)) continue; pts.push([riders[k].lat,riders[k].lng]); }
     // avec ma position : on cadre sur ma zone (riders à moins de 300 km), pas sur toute la planète
@@ -5492,6 +5494,7 @@
   }
 
   // ---------- liste ----------
+  function seenAgo(t){ var m=Math.max(1,Math.round((Date.now()-(+t||0))/60000)); if(m<60) return "il y a "+m+" min"; var h=Math.round(m/60); if(h<48) return "il y a "+h+" h"; return "il y a "+Math.round(h/24)+" j"; }
   function onPresence(map){
     lastPresenceRaw = map || {};
     riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
@@ -5502,13 +5505,14 @@
   function renderList(){
     const el=$("ridersStrip"); if(!el){ renderBlocked(); return; }
     const ks=Object.keys(riders);
-    if(!ks.length){ el.innerHTML='<div class="rs-empty">'+(sharing?'<b>Tu es le premier rider dans ta zone.</b> Invite tes amis : ils apparaîtront ici dès qu\'ils activent leur visibilité.':'Personne en ligne pour l\'instant. Active ta visibilité pour apparaître sur la carte et voir les riders autour de toi.')+'</div>'; renderBlocked(); return; }
+    if(!ks.length){ el.innerHTML='<div class="rs-empty">'+(sharing?'<b>Tu es le premier rider dans ta zone.</b> Invite tes amis : ils apparaîtront ici dès qu\'ils activent leur visibilité.':'Aucun rider visible pour l\'instant. Active ta visibilité pour apparaître sur la carte et voir les riders autour de toi.')+'</div>'; renderBlocked(); return; }
     ks.sort((a,b)=>{ const da=me.pos?hdist(me.pos,riders[a]):0, db2=me.pos?hdist(me.pos,riders[b]):0; return da-db2; });
     el.innerHTML = ks.map(k=>{ const r=riders[k], pr=profileMap[k]||{}, d=me.pos?hdist(me.pos,r):null;
-      const sub = d==null?"" : (d<1.2?"à côté":Math.round(d)+" km");
+      const off = r.on===false, ago = off ? seenAgo(r.t) : "";
+      const sub = (d==null?"" : (d<1.2?"à côté":Math.round(d)+" km")) + (off ? (d==null?"":" · ")+ago : "");
       const ini=((r.pseudo||"?").trim().charAt(0)||"?").toUpperCase();
       const av = pr.av ? '<span class="rs-av"><img src="'+pr.av+'" alt=""></span>' : '<span class="rs-av" style="background:'+avatarColor(k)+'">'+esc(ini)+'</span>';
-      return '<button class="rs-item" data-uid="'+esc(k)+'" data-ps="'+esc(r.pseudo||"Rider")+'"><span class="rs-avwrap">'+av+'<span class="rs-dot"></span></span><span class="rs-nm">'+esc(r.pseudo||"Rider")+'</span>'+(sub?'<span class="rs-sub">'+esc(sub)+'</span>':'')+'</button>';
+      return '<button class="rs-item" data-uid="'+esc(k)+'" data-ps="'+esc(r.pseudo||"Rider")+'"><span class="rs-avwrap">'+av+'<span class="rs-dot'+(off?' off':'')+'"></span></span><span class="rs-nm">'+esc(r.pseudo||"Rider")+'</span>'+(sub?'<span class="rs-sub">'+esc(sub)+'</span>':'')+'</button>';
     }).join("");
     el.querySelectorAll(".rs-item").forEach(b=> b.addEventListener("click", ()=>{ const r=riders[b.dataset.uid]; if(commMap && r && nmOpen){ commMap.flyTo([r.lat,r.lng],13,{duration:.6}); setTimeout(()=>openUserProfile(b.dataset.uid),650); } else openUserProfile(b.dataset.uid); }));
     renderBlocked();
