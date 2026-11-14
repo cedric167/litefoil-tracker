@@ -26,10 +26,13 @@ npm run build:www
 npm install @capacitor-firebase/messaging@6.3.1 @capacitor-firebase/authentication@6.3.1 firebase@10.12.5
 rm -rf android
 npx cap add android
-git checkout package.json package-lock.json
 cp android-assets/google-services.json android/app/google-services.json
 bash scripts/android-setup.sh
 npx cap sync android
+# les modules Firebase doivent rester dans package.json jusqu ici : cap sync ne garde que les modules qui y figurent
+# (le 13/11 et le 14/11, package.json etait remis trop tot : builds 15 et 16 sans notifications ni connexion Google)
+git checkout package.json package-lock.json
+grep -q capacitor-firebase-messaging android/capacitor.settings.gradle || { echo "ERREUR : module de notifications absent du projet Android" >&2; exit 1; }
 
 # L'appli charge le site en ligne (server.url) : inutile d'embarquer les gros dossiers (48 Mo de firmware…)
 rm -rf android/app/src/main/assets/public/firmware android/app/src/main/assets/public/store android/app/src/main/assets/public/manuel
