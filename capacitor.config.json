@@ -30,5 +30,5 @@
     "url": "https://cedric167.github.io/litefoil-tracker/",
     "cleartext": false
   },
-  "appendUserAgent": " LiteFoilCall/1"
+  "appendUserAgent": " LiteFoilCall/1 LiteFoilRing/1"
 }

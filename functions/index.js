@@ -112,6 +112,16 @@ async function sendToUids(uids, data, opts) {
           apns: { payload: { aps: Object.assign({ sound: "default", "thread-id": data.channel || "lf" }, badge != null ? { badge } : {}) } },
           android: { priority: "high", notification: Object.assign({ sound: "default", tag: data.channel || "lf" }, badge != null ? { notificationCount: badge } : {}) }
         };
+        // 14/11 : appel ou SOS → sonnerie longue intégrée à l'appli (les anciennes versions gardent le son par défaut)
+        if (opts.ring === "call" || opts.ring === "sos") {
+          const snd = opts.ring === "call" ? "lf_ring" : "lf_sos";
+          msg.apns.payload.aps.sound = snd + ".wav";
+          msg.android.notification.sound = snd;
+          msg.android.notification.channelId = opts.ring === "call" ? "lf_calls" : "lf_sos";
+          msg.android.notification.visibility = "public";
+          msg.android.notification.defaultVibrateTimings = true;
+          if (opts.ring === "call") { msg.android.ttl = 60000; msg.apns.headers = { "apns-expiration": String(Math.floor(Date.now() / 1000) + 60), "apns-priority": "10" }; }
+        }
       } else {
         msg = {
           token: tok,
@@ -186,7 +196,7 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
       type: "call", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
       title: (m.call.k === "v" ? "📹 " : "📞 ") + (m.pseudo || "Rider") + " t'appelle",
       body: (m.call.k === "v" ? "Appel vidéo" : "Appel audio") + " Lite Foil · appuie pour répondre"
-    }, { badges });
+    }, { badges, ring: "call" });
     return;
   }
   // 14/11 : SOS envoyé à un proche → notification d'alerte bien visible
@@ -195,7 +205,7 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
       type: "sos", channel: "sos:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
       title: "🆘 SOS de " + (m.pseudo || "Rider"),
       body: String(m.text).split(" ").filter((w) => w.indexOf("http") !== 0).join(" ").slice(0, 160)
-    }, { badges });
+    }, { badges, ring: "sos" });
     return;
   }
   await sendToUids(uids, {

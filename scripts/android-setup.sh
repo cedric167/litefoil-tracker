@@ -17,6 +17,10 @@ mkdir -p "$PKG_DIR"
 cp "$ROOT/native/android/LfTrackStore.java" "$ROOT/native/android/LfTrackService.java" \
    "$ROOT/native/android/LfTrackPlugin.java" "$ROOT/native/android/MainActivity.java" "$PKG_DIR/"
 
+# 1 bis) Sonneries (appel, SOS) jouées par les notifications, même appli fermée
+mkdir -p "$MAIN/res/raw"
+cp "$ROOT/native/sounds/lf_ring.ogg" "$ROOT/native/sounds/lf_sos.ogg" "$MAIN/res/raw/"
+
 # 2) Permissions : localisation, service de premier plan (Android 14+), notification (Android 13+)
 for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION WAKE_LOCK POST_NOTIFICATIONS RECORD_AUDIO MODIFY_AUDIO_SETTINGS CAMERA; do
   grep -q "android.permission.$P\"" "$MANIFEST" || \

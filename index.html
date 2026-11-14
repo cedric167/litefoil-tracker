@@ -5647,6 +5647,10 @@
       if(st.receive!=="granted") return false;
       if(nativePushReady) return true;
       const plat=(window.Capacitor.getPlatform&&window.Capacitor.getPlatform())||"native";
+      // 14/11 : canaux Android avec leur propre sonnerie (le son est dans l'appli à partir de la version marquée LiteFoilRing)
+      if(plat==="android" && /LiteFoilRing\//.test(navigator.userAgent) && FM.createChannel){
+        try{ await FM.createChannel({ id:"lf_calls", name:"Appels", description:"Appels audio et vidéo", importance:5, visibility:1, sound:"lf_ring", vibration:true, lights:true }); }catch(e){}
+        try{ await FM.createChannel({ id:"lf_sos", name:"SOS", description:"Alertes SOS de tes proches", importance:5, visibility:1, sound:"lf_sos", vibration:true, lights:true }); }catch(e){} }
       const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken) await backend.savePushToken(r.token, plat);
       FM.addListener("tokenReceived", function(ev){ if(ev && ev.token && backend && backend.savePushToken) backend.savePushToken(ev.token, plat); });
       FM.addListener("notificationActionPerformed", function(ev){ openFromPush((ev && ev.notification && ev.notification.data) || {}); });

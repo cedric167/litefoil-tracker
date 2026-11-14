@@ -156,6 +156,21 @@ if [ -f "$GSI" ]; then
       p.save
     end
   ' "$APP/App.xcodeproj"
+  # sonneries (appel, SOS) jouées par les notifications, même appli fermée
+  cp "$ROOT/native/sounds/lf_ring.wav" "$ROOT/native/sounds/lf_sos.wav" "$APP/App/"
+  /usr/bin/ruby -e '
+    require "xcodeproj"
+    p = Xcodeproj::Project.open(ARGV[0])
+    t = p.targets.find { |x| x.name == "App" }
+    g = p.main_group.find_subpath("App", false)
+    ch = false
+    ["lf_ring.wav", "lf_sos.wav"].each do |n|
+      unless g.files.any? { |f| f.path == n }
+        t.add_resources([g.new_reference(n)]); ch = true
+      end
+    end
+    p.save if ch
+  ' "$APP/App.xcodeproj"
   # droit « notifications push » (aps-environment) : l'identifiant d'app doit avoir Push Notifications activé chez Apple
   cat > "$APP/App/App.entitlements" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
