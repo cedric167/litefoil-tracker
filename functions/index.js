@@ -189,6 +189,15 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
     }, { badges });
     return;
   }
+  // 14/11 : SOS envoyé à un proche → notification d'alerte bien visible
+  if (m.text && String(m.text).trim().indexOf("🆘") === 0) {
+    await sendToUids(uids, {
+      type: "sos", channel: "sos:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
+      title: "🆘 SOS de " + (m.pseudo || "Rider"),
+      body: String(m.text).split(" ").filter((w) => w.indexOf("http") !== 0).join(" ").slice(0, 160)
+    }, { badges });
+    return;
+  }
   await sendToUids(uids, {
     type: "dm",
     channel: "dm:" + m.uid,
