@@ -29,6 +29,16 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// 14/11 : prévisions Open-Meteo. Si le fournisseur refuse ce téléphone (trop de demandes), on repasse par le relais du serveur pendant 30 minutes.
+(function(){ var F=window.fetch, RELAY="https://europe-west1-litefoil-communaute-222fd.cloudfunctions.net/omProxy?u=", until=0; try{ until=+sessionStorage.getItem("lf.om.block")||0; }catch(e){}
+  function relay(u){ return F(RELAY+encodeURIComponent(u)); }
+  window.fetch=function(input, init){ var u=typeof input==="string"?input:(input&&input.url)||"";
+    if(!/^https:\/\/(api|marine-api)\.open-meteo\.com\/v1\/(forecast|marine|elevation)\?/.test(u)) return F.apply(this, arguments);
+    if(Date.now()<until) return relay(u).then(function(r){ return r.ok ? r : F(u, init); }, function(){ return F(u, init); });
+    return F(u, init).then(function(r){ if(r.status!==429 && r.status<500) return r; if(r.status===429){ until=Date.now()+30*60000; try{ sessionStorage.setItem("lf.om.block", String(until)); }catch(e){} }
+      return relay(u).then(function(r2){ return r2.ok ? r2 : r; }, function(){ return r; }); }, function(err){ return relay(u).then(function(r2){ if(r2.ok) return r2; throw err; }, function(){ throw err; }); }); }; })();
+</script>
 <title>Lite Foil : l'appli des riders (GPS, SOS, météo, webcams, Swip)</title>
 <meta name="description" content="Suivi GPS de vos sessions, replay 3D et Street View, SOS entre amis, météo des spots avec webcams en direct, communauté et vidéos Swip. Gratuite sur Android et iPhone.">
 <link rel="canonical" href="https://cedric167.github.io/litefoil-tracker/">
@@ -9153,6 +9163,17 @@
       var dn=["dim.","lun.","mar.","mer.","jeu.","ven.","sam."], dd="";
       if(D.time){ for(var k=0;k<D.time.length;k++){ var dt2=new Date(D.time[k]+"T12:00"); var dw=wcode(D.weather_code[k],1); var lbl2=(k===0)?"Auj.":dn[dt2.getDay()]; dd+='<div class="gw-d"><span>'+lbl2+'</span><span class="i">'+dw[0]+'</span><b>'+Math.round(D.temperature_2m_max[k])+'°</b><small>'+Math.round(D.temperature_2m_min[k])+'°</small></div>'; } }
       box.innerHTML=curHtml+(stale?'<div class="gx-stale">⏳ <span>Dernière météo reçue à</span> <b data-no-i18n>'+stale+'</b>. <span>Nouvel essai dans une minute.</span></div>':"")+'<div class="gw-sect">Par heure</div><div class="gw-strip">'+hours+'</div><div class="gw-sect">Prochains jours</div><div class="gw-strip">'+dd+'</div>'; }
+    // conversion des prévisions MET Norway vers le format utilisé par l'affichage
+    function metnoToOm(j){ var ts=j && j.properties && j.properties.timeseries; if(!ts || !ts.length) return null;
+      var code=function(sy){ sy=String(sy||""); if(/thunder/.test(sy)) return 95; if(/snow/.test(sy)) return /heavy/.test(sy)?75:/light/.test(sy)?71:73; if(/sleet/.test(sy)) return 63; if(/rainshowers/.test(sy)) return /heavy/.test(sy)?82:80; if(/rain/.test(sy)) return /heavy/.test(sy)?65:/light/.test(sy)?61:63; if(/fog/.test(sy)) return 45; if(/partlycloudy/.test(sy)) return 2; if(/cloudy/.test(sy)) return 3; if(/fair/.test(sy)) return 1; return 0; };
+      var sym=function(e){ var dd=e.data||{}; return ((dd.next_1_hours||dd.next_6_hours||dd.next_12_hours||{}).summary||{}).symbol_code||""; };
+      var H={ time:[], temperature_2m:[], weather_code:[] }, days={}, order=[];
+      ts.forEach(function(e){ var t=e.data && e.data.instant && e.data.instant.details; if(!t || t.air_temperature==null) return; var sy=sym(e), dt=new Date(e.time), k=dt.getFullYear()+"-"+("0"+(dt.getMonth()+1)).slice(-2)+"-"+("0"+dt.getDate()).slice(-2);
+        if(H.time.length<60){ H.time.push(e.time); H.temperature_2m.push(t.air_temperature); H.weather_code.push(code(sy)); }
+        var g=days[k]; if(!g){ g=days[k]={ mn:1e9, mx:-1e9, c:null, best:99 }; order.push(k); } g.mn=Math.min(g.mn,t.air_temperature); g.mx=Math.max(g.mx,t.air_temperature); var off=Math.abs(dt.getHours()-13); if(sy && off<g.best){ g.best=off; g.c=code(sy); } });
+      if(!H.time.length) return null; var first=ts[0], f0=first.data.instant.details, s0=sym(first), D={ time:[], weather_code:[], temperature_2m_max:[], temperature_2m_min:[] };
+      order.slice(0,6).forEach(function(k){ D.time.push(k); D.weather_code.push(days[k].c==null?3:days[k].c); D.temperature_2m_max.push(days[k].mx); D.temperature_2m_min.push(days[k].mn); });
+      var hr=new Date().getHours(); return { current:{ temperature_2m:f0.air_temperature, apparent_temperature:f0.air_temperature, weather_code:code(s0), is_day:/_night/.test(s0)?0:(/_day/.test(s0)?1:((hr>=7&&hr<=20)?1:0)) }, hourly:H, daily:D }; }
     var nowRetry=null;
     async function loadNow(p){
       var box=$m("mtoNow"); if(!box) return; if(nowRetry){ clearTimeout(nowRetry); nowRetry=null; }
@@ -9164,6 +9185,9 @@
         var r=await fetch(u), d=await r.json(); if(!r.ok || !d || !d.hourly || !d.hourly.time || !d.current) throw new Error("meteo");
         nowDraw(box, d, ""); try{ localStorage.setItem("lf.meteo.now2", JSON.stringify({ k:key, t:Date.now(), d:d })); }catch(e){}
       }catch(e){
+        // second fournisseur (MET Norway) quand le premier ne répond pas
+        try{ var mj=await fetch("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat="+(+p.lat).toFixed(3)+"&lon="+(+p.lng).toFixed(3)).then(function(r2){ if(!r2.ok) throw new Error("metno"); return r2.json(); });
+          var d2=metnoToOm(mj); if(d2){ nowDraw(box, d2, ""); try{ localStorage.setItem("lf.meteo.now2", JSON.stringify({ k:key, t:Date.now(), d:d2 })); }catch(x){} return; } }catch(e2){}
         if(cache && cache.d && cache.k===key){ var t=new Date(cache.t); try{ nowDraw(box, cache.d, (t.getHours()<10?"0":"")+t.getHours()+":"+(t.getMinutes()<10?"0":"")+t.getMinutes()); }catch(x){} }
         else box.innerHTML='<div class="comm-empty">Météo momentanément indisponible. Nouvel essai dans une minute.</div>';
         nowRetry=setTimeout(function(){ nowRetry=null; if(pos && (+pos.lat).toFixed(2)+","+(+pos.lng).toFixed(2)===key) loadNow(pos); }, 65000);

@@ -908,3 +908,23 @@ exports.aeroWx = onRequest({ region: "europe-west1", memory: "256MiB", maxInstan
     })));
   } catch (e) { console.error("aeroWx", e && e.message); res.status(500).json({ error: "serveur" }); }
 });
+
+// ---------- 14/11 : relais de secours des prévisions Open-Meteo ----------
+// Le fournisseur limite les demandes par connexion : quand il refuse un téléphone (erreur 429), l'appli repasse par ici.
+// Les réponses sont gardées 10 minutes en mémoire pour ne pas multiplier les demandes.
+const omCache = new Map();
+exports.omProxy = onRequest({ region: "europe-west1", memory: "256MiB", maxInstances: 5, cors: true }, async (req, res) => {
+  try {
+    const u = String(req.query.u || "");
+    if (u.length > 3000 || !/^https:\/\/(api|marine-api)\.open-meteo\.com\/v1\/(forecast|marine|elevation)\?[A-Za-z0-9_.,=&%:+\-]+$/.test(u)) return res.status(400).json({ error: "parametres" });
+    const now = Date.now(), hit = omCache.get(u);
+    if (hit && now - hit.t < 600000) { res.set("Cache-Control", "public, max-age=300"); res.set("Content-Type", "application/json"); return res.status(200).send(hit.body); }
+    const r = await fetch(u, { headers: { "User-Agent": "weather-relay" } });
+    const body = await r.text();
+    if (r.status !== 200) return res.status(r.status === 429 ? 429 : 502).json({ error: "source", status: r.status });
+    omCache.set(u, { t: now, body });
+    if (omCache.size > 400) { const first = omCache.keys().next().value; omCache.delete(first); }
+    res.set("Cache-Control", "public, max-age=300"); res.set("Content-Type", "application/json");
+    res.status(200).send(body);
+  } catch (e) { console.error("omProxy", e && e.message); res.status(500).json({ error: "serveur" }); }
+});
