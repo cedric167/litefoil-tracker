@@ -1820,5 +1820,10 @@
  "Temps de vol": "Flight time",
  "Retour départ": "Back to departure",
  "Altitude": "Altitude",
- "Altitude et vario mesurés par le GPS du téléphone : valeurs indicatives, qui ne remplacent pas les instruments de bord.": "Altitude and vertical speed come from the phone's GPS: indicative values that do not replace the aircraft instruments."
+ "Altitude et vario mesurés par le GPS du téléphone : valeurs indicatives, qui ne remplacent pas les instruments de bord.": "Altitude and vertical speed come from the phone's GPS: indicative values that do not replace the aircraft instruments.",
+ "✈️ Air": "✈️ Air",
+ "Air": "Air",
+ "Autre (air)": "Other (air)",
+ "Tes vols": "Your flights",
+ "Vol": "Flight"
 }

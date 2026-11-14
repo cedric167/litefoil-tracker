@@ -2635,6 +2635,7 @@
     <div class="phseg" id="phSeg">
       <button type="button" data-m="mer" aria-selected="true">🌊 Mer</button>
       <button type="button" data-m="terre" aria-selected="false">⛰️ Terre</button>
+      <button type="button" data-m="air" aria-selected="false">✈️ Air</button>
     </div>
     <div class="tk-chips" id="tkChips" role="listbox" aria-label="Choix de l'activité"></div>
     <select class="phsel" id="phAct" aria-label="Choix de l'activité" hidden></select>
@@ -3670,7 +3671,8 @@
     mer: [["efoil","E-foil"],["wingfoil","Wing foil"],["parawing","Para wing"],["windsurf","Windsurf"],["pumpfoil","Pump foil"],["kitesurf","Kitesurf"],["surffoil","Surf foil"],["supdownwind","SUP Downwind"],
       ["surf","Surf"],["bodyboard","Bodyboard"],["sup","Stand up paddle"],["canoe","Canoë / Kayak"],["deriveur","Dériveur"],["jetski","Jetski"],["swim","Nage"],["other","Autre (eau)"]],
     terre: [["running","Running"],["marche","Marche athlétique"],["rando","Randonnée"],["trail","Trail"],["velo","Vélo"],["ski","Ski"],["snowboard","Snowboard"],["skate","Skateboard"],["longboard","Longboard"],
-      ["surfskate","Surfskate"],["roller","Roller"],["longueur","Saut en longueur"],["perche","Saut à la perche"],["parapente","Parapente"],["ulm","ULM / Avion"],["other","Autre (terre)"]]
+      ["surfskate","Surfskate"],["roller","Roller"],["longueur","Saut en longueur"],["perche","Saut à la perche"],["other","Autre (terre)"]],
+    air: [["ulm","ULM / Avion"],["parapente","Parapente"],["other","Autre (air)"]]
   };
   function phFillActs(){
     var sel = $("phAct"); if(!sel) return;
@@ -3898,7 +3900,7 @@
     for(var i=0;i<src.length;i++){ if(i>0) cum += phHaversine(src[i-1],src[i]); out.push({ lat:src[i].lat, lon:src[i].lon, speed:+(src[i].speed||0).toFixed(1), bearing:Math.round(src[i].bearing||0), dist:Math.round(cum), alt:Math.round(src[i].alt||0), t:Math.round(src[i].t-t0) }); }
     var durationSec = out[out.length-1].t, distanceM = Math.round(cum);
     var maxAltM = Math.round(Math.max.apply(null, out.map(function(p){return p.alt;})));
-    var milieu = phMilieu, cat = phCat || (milieu==="mer"?"Sortie eau":"Sortie terre"); // choisi par l'utilisateur
+    var milieu = phMilieu, cat = phCat || (milieu==="mer"?"Sortie eau":milieu==="air"?"Vol":"Sortie terre"); // choisi par l'utilisateur
     var avgSpeedKmh = durationSec>0 ? +(distanceM/durationSec*3.6).toFixed(1) : 0;
     return {
       id: "phone-"+phT0,
@@ -7614,7 +7616,7 @@
     ["trail","Trail","terre","⛰️","terre",20,60,3], ["velo","Vélo","terre","🚴","terre",60,150,8], ["ski","Ski","terre","🎿","terre",100,60,6],
     ["snowboard","Snowboard","terre","🏂","terre",90,50,6], ["skate","Skateboard","terre","🛹","terre",35,20,5], ["longboard","Longboard","terre","🛹","terre",60,30,6],
     ["surfskate","Surfskate","terre","🛹","terre",30,15,4], ["roller","Roller","terre","🛼","terre",40,40,6],
-    ["longueur","Saut en longueur","explo","🦘","terre",36,3,6], ["perche","Saut à la perche","explo","🤸","terre",34,3,6], ["parapente","Parapente","explo","🪂","terre",70,100,8], ["ulm","ULM / Avion","explo","✈️","terre",200,300,40] ];
+    ["longueur","Saut en longueur","explo","🦘","terre",36,3,6], ["perche","Saut à la perche","explo","🤸","terre",34,3,6], ["parapente","Parapente","explo","🪂","air",70,100,8], ["ulm","ULM / Avion","explo","✈️","air",200,300,40] ];
   const LF_SP = {}; LF_SPORTS.forEach(function(x){ LF_SP[x[0]]={ k:x[0], name:x[1], fam:x[2], ic:spIco(x[0]), mil:x[4], vref:x[5], dref:x[6], thr:x[7] }; });
   // 14/11 (demande de Cédric) : stats réelles de chaque carte, sport par sport. [libellé sur la carte, description, unité]
   const LF_ST = { SMX:["SPD MAX","Vitesse maximum (meilleure activité)","km/h"], SGN:["SPD GEN","Vitesse moyenne de toutes les sessions","km/h"], DIS:["DIS","Distance la plus longue parcourue","km"],
