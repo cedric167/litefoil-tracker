@@ -7347,7 +7347,7 @@
   function sendPwLink(email){ if(!backend || !backend.sendPasswordLink) return;
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email||"")){ setLoginNote("Entre d'abord l'e-mail de ton profil."); showLogin(true); return; }
     backend.sendPasswordLink(email).then(function(){ try{ localStorage.removeItem("lf.comm.k"); }catch(x){} showLogin(true); var le=$("commLoginEmail"); if(le) le.value=email;
-      setLoginNote("📩 Mail envoyé à "+email+" (regarde aussi les spams). Clique sur le lien, choisis ton mot de passe, puis reviens ici et connecte-toi."); })
+      setLoginNote("📩 Si un compte existe avec "+email+", un mail vient de partir (regarde aussi les spams). Clique sur le lien, choisis ton mot de passe, puis reviens ici et connecte-toi. Rien reçu ? Ton compte utilise sans doute une autre adresse, ou la connexion Google ou Apple."); })
       .catch(function(err){ setLoginNote(loginErr(err&&err.code)); }); }
   function openProfileSheet(){ var sp=$("commSportsPick"); if(sp){ sp.innerHTML=sportsPickerHtml(mySports); bindSportsPicker(sp); } var s=$("profEditSheet"); if(!s) return; var dp=$("commDmPref"); if(dp) dp.value=dmPref; fillBrand(); $("commPseudo").value=me.pseudo; checkPseudo(); renderVerif(); s.hidden=false; }
   function askProfile(msg){ openProfileSheet();
@@ -8700,7 +8700,7 @@
   function lfoForgot(){ var e=($("lfoLiEmail").value||"").trim();
     if(!LFO_MAIL.test(e)){ lfoErr("lfoLiErr","Entre d'abord l'adresse e-mail de ton compte."); return; }
     if(!backend || !backend.sendPasswordLink) return;
-    backend.sendPasswordLink(e).then(function(){ lfoErr("lfoLiErr","📩 Mail envoyé : touche le lien (regarde aussi les spams), choisis ton nouveau mot de passe, puis reviens te connecter ici.",true); })
+    backend.sendPasswordLink(e).then(function(){ lfoErr("lfoLiErr","📩 Si un compte existe avec cette adresse, un mail vient de partir : touche le lien (regarde aussi les spams), choisis ton nouveau mot de passe, puis reviens te connecter ici. Rien reçu ? Ton compte utilise sans doute une autre adresse, ou la connexion Google ou Apple.",true); })
       .catch(function(err){ lfoErr("lfoLiErr", lfoAuthMsg(err&&err.code)); }); }
   function lfoFillProfile(){ var pr=(profileMap&&profileMap[me.uid])||{}, ps=$("lfoPseudo"); if(ps && !ps.value) ps.value=me.pseudo||pr.pseudo||"";
     if(!me.av && pr.av){ try{ setAvatar(pr.av); }catch(e){ me.av=pr.av; } } if(me.av) $("lfoAvImg").src=me.av;
