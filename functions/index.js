@@ -454,6 +454,49 @@ const TIPS = {
   ]
 };
 
+// ---------- 14/11 : alerte vent sur les spots favoris (chaque matin, une notification au plus par rider) ----------
+exports.windAlert = onSchedule({ schedule: "30 7 * * *", timeZone: "Europe/Paris", region: "europe-west1" }, async () => {
+  const db = getDatabase();
+  const all = (await db.ref("pushTokens").get()).val() || {};
+  const cache = {};
+  let sent = 0;
+  for (const uid of Object.keys(all)) {
+    const w = all[uid] && all[uid]._wind;
+    if (!w || !Array.isArray(w.spots) || !w.spots.length) continue;
+    let best = null;
+    for (const sp of w.spots.slice(0, 5)) {
+      const lat = +sp.lat, lon = +sp.lon;
+      if (!isFinite(lat) || !isFinite(lon)) continue;
+      const key = lat.toFixed(2) + "," + lon.toFixed(2);
+      if (!(key in cache)) {
+        try {
+          const r = await (await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon +
+            "&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&wind_speed_unit=kn&timezone=auto&forecast_days=1")).json();
+          const H = r.hourly || {};
+          let b = null;
+          (H.time || []).forEach((t, i) => {
+            const h = +String(t).slice(11, 13);
+            if (h < 9 || h > 19) return;
+            const k = Math.round((H.wind_speed_10m || [])[i] || 0);
+            if (!b || k > b.k) b = { k, h, g: Math.round((H.wind_gusts_10m || [])[i] || 0), d: (H.wind_direction_10m || [])[i] };
+          });
+          cache[key] = b;
+        } catch (e) { cache[key] = null; }
+      }
+      const b = cache[key];
+      if (b && b.k >= 12 && (!best || b.k > best.k)) best = Object.assign({ name: String(sp.n || "ton spot").slice(0, 40) }, b);
+    }
+    if (!best) continue;
+    await sendToUids([uid], {
+      type: "wind", channel: "wind",
+      title: "💨 Du vent sur " + best.name,
+      body: best.k + " nds de " + dirName(best.d) + " vers " + best.h + " h, rafales " + best.g + " nds. Bonne session !"
+    });
+    sent++;
+  }
+  console.log("windAlert", sent, "alertes");
+});
+
 exports.weeklyTip = onSchedule({ schedule: "0 18 * * 2", timeZone: "Europe/Paris", region: "europe-west1" }, async () => {
   const week = Math.floor(Date.now() / (7 * 86400000));
   await ensureTeamProfile();

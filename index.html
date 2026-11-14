@@ -5011,6 +5011,7 @@
     const pathFor = (ch)=> ch==="salon" ? "chat" : (ch.indexOf("group:")===0 ? "groupMessages/"+ch.slice(6) : (ch.indexOf("ev:")===0 ? "eventMessages/"+ch.slice(3) : "dm/"+ch.slice(3)));
     return {
       uid, app,
+      saveWindSpots(o){ return o ? db.set(db.ref(d,"pushTokens/"+uid+"/_wind"), o) : db.remove(db.ref(d,"pushTokens/"+uid+"/_wind")); },
       savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_");
         return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",t:db.serverTimestamp()}); },
       // compteurs de non-lus tenus par le serveur (chiffre sur l'icône) : on remet à zéro en lisant
@@ -5672,8 +5673,18 @@
       nativePushReady=true; return true;
     }catch(e){ console.warn("Notifications natives indisponibles :", e); return false; }
   }
+  // 14/11 : alerte vent. Les spots favoris (Météo → Mes spots) sont envoyés au serveur, qui prévient le matin s'il y a 12 nœuds ou plus.
+  function publishWindSpots(){ try{ if(!backend || !backend.saveWindSpots || !me.pseudo) return; var on=true; try{ on=localStorage.getItem("lf.wind.alert")!=="0"; }catch(e){}
+      var l=[]; try{ l=(JSON.parse(localStorage.getItem("lf.meteo.favs")||"[]")||[]).slice(0,5); }catch(e){}
+      l=l.filter(function(x){ return x && x.name && isFinite(x.lat) && isFinite(x.lon); }).map(function(x){ return { n:String(x.name).slice(0,40), lat:+x.lat, lon:+x.lon }; });
+      var sig=(on&&l.length)?JSON.stringify(l):"", prev=""; try{ prev=localStorage.getItem("lf.wind.sent")||""; }catch(e){} if(sig===prev) return;
+      var p=sig ? backend.saveWindSpots({ spots:l, t:Date.now() }) : backend.saveWindSpots(null);
+      Promise.resolve(p).then(function(){ try{ localStorage.setItem("lf.wind.sent", sig); }catch(e){} }).catch(function(){}); }catch(e){} }
+  document.addEventListener("lf-favs", function(){ setTimeout(publishWindSpots, 500); });
+  setTimeout(publishWindSpots, 9000);
   // toucher une notification → ouvre la bonne conversation
   function openFromPush(d){ if(!d) return;
+    if(d.type==="wind"){ try{ var mt=document.querySelector('.tab[data-tab="meteo"]'); if(mt) mt.click(); }catch(e){} return; }
     if(d.follower){ setTimeout(function(){ openUserProfile(d.follower); },400); return; } // 12/11 : nouvel abonné → son profil
     goToCommunaute();
     setTimeout(function(){
@@ -9069,10 +9080,12 @@
       // mes spots : les 8 derniers spots choisis, en raccourcis (gardés sur le téléphone)
       var favBox=document.getElementById("mtoFavs");
       function favs(){ try{ return JSON.parse(localStorage.getItem("lf.meteo.favs")||"[]")||[]; }catch(e){ return []; } }
-      function favSave(l){ try{ localStorage.setItem("lf.meteo.favs", JSON.stringify(l.slice(0,8))); }catch(e){} favDraw(); }
+      function favSave(l){ try{ localStorage.setItem("lf.meteo.favs", JSON.stringify(l.slice(0,8))); }catch(e){} favDraw(); try{ document.dispatchEvent(new Event("lf-favs")); }catch(e){} }
+      function windOn(){ try{ return localStorage.getItem("lf.wind.alert")!=="0"; }catch(e){ return true; } }
       function favAdd(p){ if(!p || !p.name || !isFinite(p.lat) || !isFinite(p.lon)) return; var l=favs().filter(function(x){ return x.name!==p.name; }); l.unshift({ name:p.name, lat:+(+p.lat).toFixed(4), lon:+(+p.lon).toFixed(4) }); favSave(l); }
-      function favDraw(){ if(!favBox) return; var l=favs(); favBox.hidden=!l.length; favBox.innerHTML=l.length?'<span class="ms-favs-h">Mes spots</span>'+l.map(function(x,i){ return '<span class="ms-fav"><button type="button" data-i="'+i+'">'+escH(x.name)+'</button><button type="button" class="x" data-x="'+i+'" aria-label="Retirer ce spot">✕</button></span>'; }).join(""):""; }
-      if(favBox){ favBox.addEventListener("click", function(e){ var x=e.target.closest("button[data-x]"); if(x){ var l=favs(); l.splice(+x.dataset.x,1); favSave(l); return; }
+      function favDraw(){ if(!favBox) return; var l=favs(); favBox.hidden=!l.length; favBox.innerHTML=l.length?'<span class="ms-favs-h">Mes spots</span>'+l.map(function(x,i){ return '<span class="ms-fav"><button type="button" data-i="'+i+'">'+escH(x.name)+'</button><button type="button" class="x" data-x="'+i+'" aria-label="Retirer ce spot">✕</button></span>'; }).join("")+'<label class="ms-alert" style="display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.85);cursor:pointer"><input type="checkbox" id="mtoWindAl"'+(windOn()?' checked':'')+' style="width:18px;height:18px;flex:none;accent-color:#2fc4c0"><span>🔔 M\'alerter le matin quand il y a du vent sur mes spots</span></label>':""; }
+      if(favBox){ favBox.addEventListener("change", function(e){ if(e.target && e.target.id==="mtoWindAl"){ try{ localStorage.setItem("lf.wind.alert", e.target.checked?"1":"0"); }catch(x){} try{ document.dispatchEvent(new Event("lf-favs")); }catch(x){} } });
+        favBox.addEventListener("click", function(e){ var x=e.target.closest("button[data-x]"); if(x){ var l=favs(); l.splice(+x.dataset.x,1); favSave(l); return; }
           var b=e.target.closest("button[data-i]"); if(!b) return; var p=favs()[+b.dataset.i]; if(!p) return; inp.value=p.name; pickSpot({ name:p.name, lat:p.lat, lon:p.lon }); favAdd(p); }); favDraw(); }
       function hide(){ res.hidden=true; res.innerHTML=""; }
       inp.addEventListener("input",function(){ var q=inp.value.trim(); if(t) clearTimeout(t); if(q.length<2){ hide(); return; }
