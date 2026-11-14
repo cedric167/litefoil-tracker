@@ -381,9 +381,11 @@ function tendView(){ if(hist==="err") return '<div class="ul-card"><div class="u
   if(C.some(function(p){ return p[1]!=null; })) h+='<div class="ul-ch"><b>'+esc(T("Plafond (ft)"))+'</b>'+lineChart([C],["#66727d"],{min:0,span:2000})+'</div>';
   return h+'</div>'; }
 function modeBar(){ return '<div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div>'; }
-function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, field:F };
+function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, parseMetar:parseMetar, field:F,
+    metarBox:function(b){ return jget(API+"?bbox="+b.map(function(x){ return x.toFixed(2); }).join(","), 9000); } };
   if(window.LFNav){ window.LFNav.show(el, api); return; } el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>'; if(showNav.ld) return; showNav.ld=true;
-  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=1"; sc.onload=function(){ var e2=root.querySelector("#ulNav"); if(e2 && window.LFNav) window.LFNav.show(e2, api); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
+  var s0=document.createElement("script"); s0.src="ulm/safety.js?v=1"; document.head.appendChild(s0);
+  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=2"; sc.onload=function(){ var go=function(k){ var e2=root.querySelector("#ulNav"); if(!e2 || !window.LFNav) return; if(!window.LFSafe && k<20) return setTimeout(function(){ go(k+1); }, 150); window.LFNav.show(e2, api); }; go(0); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
 function render(state){ if(!root) return; var h="";
   if(mode==="nav"){ if(root.querySelector("#ulNav")) return; root.innerHTML=modeBar()+'<div id="ulNav"></div>'; showNav(); return; }
   h=modeBar();
