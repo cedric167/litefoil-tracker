@@ -883,3 +883,28 @@ function load(){fetch("/l/"+SID+".json",{cache:"no-store"}).then(function(r){ret
 load();setInterval(load,10000);
 </script></body></html>`);
 }
+
+// ---------- 14/11 : espace ULM / Avion. Relais des METAR et TAF publics (aviationweather.gov n'autorise pas l'appel direct depuis l'appli) ----------
+exports.aeroWx = onRequest({ region: "europe-west1", memory: "256MiB", maxInstances: 5, cors: true }, async (req, res) => {
+  try {
+    const ids = String(req.query.ids || "").toUpperCase(), bbox = String(req.query.bbox || "");
+    const hours = Math.min(36, Math.max(0, parseInt(req.query.hours, 10) || 0));
+    let q = "";
+    if (/^[A-Z]{4}(,[A-Z]{4}){0,5}$/.test(ids)) q = "ids=" + ids;
+    else {
+      const b = bbox.split(",").map(Number);
+      if (b.length === 4 && b.every(isFinite) && Math.abs(b[0]) <= 90 && Math.abs(b[2]) <= 90 && Math.abs(b[1]) <= 180 && Math.abs(b[3]) <= 180 &&
+        b[2] > b[0] && b[3] > b[1] && b[2] - b[0] <= 8 && b[3] - b[1] <= 12) q = "bbox=" + b.map((x) => x.toFixed(2)).join(",");
+    }
+    if (!q) return res.status(400).json({ error: "parametres" });
+    const r = await fetch("https://aviationweather.gov/api/data/metar?" + q + "&format=json&taf=true" + (hours ? "&hours=" + hours : ""),
+      { headers: { "User-Agent": "aero-weather-relay" } });
+    let list = [];
+    if (r.status === 200) { try { list = await r.json(); } catch (e) { list = []; } }
+    else if (r.status !== 204) return res.status(502).json({ error: "source" });
+    res.set("Cache-Control", "public, max-age=120, s-maxage=120");
+    res.json((Array.isArray(list) ? list : []).slice(0, 400).map((x) => ({
+      id: x.icaoId, name: x.name, lat: x.lat, lon: x.lon, elev: x.elev, t: x.obsTime, raw: x.rawOb, taf: x.rawTaf || ""
+    })));
+  } catch (e) { console.error("aeroWx", e && e.message); res.status(500).json({ error: "serveur" }); }
+});

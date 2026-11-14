@@ -1808,5 +1808,9 @@
  "il y a 3 h": "3 h ago",
  "il y a 3 j": "3 d ago",
  "Seule une zone d'environ 1 km est partagée, jamais ta position exacte. Tu restes visible dans cette zone même appli fermée, tant que la visibilité est cochée.": "Only an area of about 1 km is shared, never your exact position. You stay visible in that area even when the app is closed, as long as visibility is on.",
- "🔔 M'alerter le matin quand il y a du vent sur mes spots": "🔔 Alert me in the morning when there is wind at my spots"
+ "🔔 M'alerter le matin quand il y a du vent sur mes spots": "🔔 Alert me in the morning when there is wind at my spots",
+ "ULM / Avion": "Ultralight / Aircraft",
+ "Espace ULM / Avion": "Ultralight / Aircraft area",
+ "METAR, TAF, vent sur la piste, prévisions": "METAR, TAF, wind on the runway, forecast",
+ "Connexion nécessaire pour ouvrir cet espace.": "A connection is needed to open this area."
 }
