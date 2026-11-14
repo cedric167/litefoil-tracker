@@ -256,6 +256,10 @@
   .hs-logo{ flex:none; width:104px; height:52px; overflow:hidden; position:relative; } .hs-logo img{ position:absolute; left:-13px; top:-17px; width:144px; height:auto; display:block; }
   .hs-tx{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; border-left:1px solid rgba(255,255,255,.16); padding-left:14px; } .hs-tx b{ font-size:16px; font-weight:800; letter-spacing:.1px; } .hs-tx small{ font-size:12px; color:rgba(255,255,255,.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hs-go{ flex:none; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; } .hs-go svg{ width:18px; height:18px; }
+  .home-br{ display:flex; align-items:center; gap:12px; width:100%; margin:12px 0 0; border:0; cursor:pointer; font-family:inherit; text-align:left; color:#fff; border-radius:20px; padding:13px 15px;
+    background:linear-gradient(135deg,#1a1206 0%,#3a2608 50%,#b87300 130%); box-shadow:0 8px 20px rgba(58,38,8,.24); } .home-br[hidden]{ display:none; }
+  .home-br .hb-ic{ width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#ffd77a,#f5a623); display:flex; align-items:center; justify-content:center; font-size:23px; flex:none; }
+  .home-br .hb-tx{ flex:1; min-width:0; } .home-br b{ display:block; font-size:16px; font-weight:800; } .home-br small{ display:block; font-size:12.5px; opacity:.85; margin-top:2px; } .home-br .hb-go{ font-size:24px; opacity:.8; }
   .home-ulm{ display:flex; align-items:center; gap:12px; width:100%; margin:12px 0 0; border:0; cursor:pointer; font-family:inherit; text-align:left; color:#fff; border-radius:20px; padding:13px 15px;
     background:linear-gradient(135deg,#0a2a55 0%,#12408a 55%,#1b63c9 100%); box-shadow:0 8px 20px rgba(10,42,85,.24); } .home-ulm[hidden]{ display:none; }
   .home-ulm .hu-ic{ width:44px; height:44px; border-radius:14px; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center; font-size:23px; flex:none; }
@@ -2146,6 +2150,7 @@
     <button class="tab" data-tab="profil">Profil</button>
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <button class="tab" data-tab="ulm" hidden>ULM / Avion</button>
+    <button class="tab" data-tab="bonride" hidden>Le Bon Ride</button>
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
   <nav class="bnav" id="bnav" aria-label="Menu">
@@ -2175,6 +2180,7 @@
       <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
     </button>
     <div class="home-wind" id="homeWind" hidden></div>
+    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic">🏄</span><span class="hb-tx"><b>Le Bon Ride</b><small>Matériel neuf, occasion et location entre riders</small></span><span class="hb-go">›</span></button>
     <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm" hidden><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
 
     <div class="home-card">
@@ -2480,6 +2486,7 @@
   </section>
 
   <section id="tab-ulm" class="tabpane" hidden></section>
+  <section id="tab-bonride" class="tabpane" hidden></section>
   <section id="tab-profil" class="tabpane" hidden>
     <!-- 07/11 : profil façon Instagram (photo, compteurs, carte, vidéos, sessions, amis) -->
     <!-- 13/11 : en-tête redessiné (bandeau, photo, nom, bio, compteurs dans une seule carte) -->
@@ -4256,13 +4263,14 @@
     if (name === "communaute" && window.commOnShow) window.commOnShow();
     if (name === "meteo" && window.meteoOnShow) window.meteoOnShow();
     if (name === "ulm" && window.ulmOnShow) window.ulmOnShow();
+    if (name === "bonride" && window.bonrideOnShow) window.bonrideOnShow();
     if (window.ulmSync) window.ulmSync();
     if (name === "videos" && window.videosOnShow) window.videosOnShow();
     if (name === "profil" && window.profilOnShow) window.profilOnShow();
     syncBottomNav(name);
     // barre du haut : titre de la page ; animation douce à l'ouverture d'un onglet
     document.body.dataset.tab = name;
-    var _t=$("abTitle"); if(_t) _t.textContent = ({meteo:"Météo", ulm:"ULM / Avion", communaute:"Communauté", tracking:"Tracking", profil:"Mon profil", videos:"Swip", ultra:"Lite Foil Ultra", tracker:"Tracker GPS", batterie:"Batterie", moteur:"Moteur", remote:"Télécommande"})[name] || "Lite Foil";
+    var _t=$("abTitle"); if(_t) _t.textContent = ({meteo:"Météo", ulm:"ULM / Avion", bonride:"Le Bon Ride", communaute:"Communauté", tracking:"Tracking", profil:"Mon profil", videos:"Swip", ultra:"Lite Foil Ultra", tracker:"Tracker GPS", batterie:"Batterie", moteur:"Moteur", remote:"Télécommande"})[name] || "Lite Foil";
     var _pn=document.getElementById("tab-"+name); if(_pn){ _pn.classList.remove("pane-in"); void _pn.offsetWidth; _pn.classList.add("pane-in"); }
   }
   for (const tab of document.querySelectorAll(".tab")) {
@@ -4292,6 +4300,14 @@
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
     var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=1"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
+  window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
+    p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
+    var sc=document.createElement("script"); sc.src="market/market.js?v=1"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
+    sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
+  // la carte d'accueil n'apparaît que lorsque la place de marché répond (règles de la base en service), ou en démonstration
+  (function(){ var n=0; function probe(){ var el=document.getElementById("homeBr"); if(!el || !el.hidden) return; if(/[?&]demo=1/.test(location.search)){ el.hidden=false; return; }
+      var h=null; try{ h=window.lfMk && window.lfMk(); }catch(e){} if(h){ h.last("market",1).then(function(){ el.hidden=false; }).catch(function(){}); } if(++n<6) setTimeout(probe, n<3?5000:20000); }
+    setTimeout(probe, 2500); })();
   document.addEventListener("lf-sports", window.ulmSync); window.ulmSync(); setTimeout(window.ulmSync, 4000);
   for (const b of document.querySelectorAll("[data-goto]")) b.addEventListener("click", () => { showTab(b.dataset.goto); try { localStorage.setItem("lf.tab", b.dataset.goto); } catch (err) {} });
   // raccourcis de l'Accueil qui ouvrent un écran précis dans un autre onglet
@@ -5137,7 +5153,8 @@
           db.update(db.ref(d,"userDM/"+uid+"/"+peer),{text:prev,by:uid,t:db.serverTimestamp(),unread:0}).catch(function(){}); } }
         return p; },
       markDMRead(peer){ if(!peer) return Promise.resolve(); return db.update(db.ref(d,"userDM/"+uid+"/"+peer),{unread:0}).catch(function(){}); },
-      rt:{ ref:function(p){ return db.ref(d,p); }, set:db.set, update:db.update, remove:db.remove, push:db.push, onValue:db.onValue, onChildAdded:db.onChildAdded, ts:db.serverTimestamp },
+      rt:{ ref:function(p){ return db.ref(d,p); }, set:db.set, update:db.update, remove:db.remove, push:db.push, onValue:db.onValue, onChildAdded:db.onChildAdded, ts:db.serverTimestamp, get:db.get, query:db.query, limitToLast:db.limitToLast },
+      since(){ var u=auth.currentUser; try{ return (u && u.metadata && u.metadata.creationTime) ? Date.parse(u.metadata.creationTime) : 0; }catch(e){ return 0; } },
       markGroupRead(gid){ if(!gid) return Promise.resolve(); return db.set(db.ref(d,"groups/"+gid+"/unread/"+uid),0).catch(function(){}); },
       watchMessages(ch,cb){ const path = pathFor(ch);
         // onChildAdded (et non onValue) : RTDB livre un instantané incomplet avec onValue+limitToLast
@@ -7815,7 +7832,15 @@
     var ul=$("folList"); if(ul && ul._redraw) ul._redraw(); var up=$("upFolWrap"); if(up && up._redraw) up._redraw(); }
   // liste Abonnements / Abonnés (façon TikTok)
   // 12/11 : accès du module « sécurité en mer » (contacts = riders que je suis ou amis)
-  window.__secApi = {
+  // 14/11 : Le Bon Ride (market/market.js) : accès limité aux annonces, photos, avis vendeur et quiver
+   window.lfMk = function(){ if(!backend || !backend.rt || !backend.rt.get || !me.uid) return null; var rt=backend.rt, ok=function(p){ if(!/^(market|marketMedia|marketReviews|quiver)(\/[A-Za-z0-9_-]+){0,3}$/.test(p)) throw new Error("chemin"); return rt.ref(p); };
+     return { uid:me.uid, pseudo:me.pseudo, av:me.av||"", ready:profileReady(), since:backend.since?backend.since():0, sessions:(function(){ try{ return localSess().length; }catch(e){ return 0; } })(), friends:Object.keys(myFriends||{}).filter(function(u){ return u!==me.uid && u!==TEAM_UID; }).length,
+       get:function(p){ return rt.get(ok(p)).then(function(sn){ return sn.val(); }); }, last:function(p,n){ return rt.get(rt.query(ok(p), rt.limitToLast(n||100))).then(function(sn){ return sn.val(); }); },
+       set:function(p,v){ return v==null ? rt.remove(ok(p)) : rt.set(ok(p), v); }, key:function(p){ return rt.push(ok(p)).key; }, ts:function(){ return rt.ts(); },
+       who:function(u){ var pr=profileMap[u]||{}; return { ps:pr.pseudo||"", av:(u===me.uid?me.av:pr.av)||"", off:isOfficial(u) }; },
+       report:function(o){ if(backend.sendReport) backend.sendReport(o); },
+       openDM:function(u,text){ try{ var b=document.querySelector('[data-nav="communaute"]'); if(b) b.click(); }catch(e){} setTimeout(function(){ try{ openDM(u, pName(u)); var i=$("chatInput"); if(i && text && !i.value){ i.value=text; i.dispatchEvent(new Event("input",{bubbles:true})); } }catch(e){} }, 300); } }; };
+   window.__secApi = {
     me: function(){ return { uid:me.uid, pseudo:me.pseudo||"Rider", ready:profileReady() }; },
     contacts: function(){ var set={}; Object.keys(myFriends||{}).forEach(function(u){ set[u]=1; }); followingOf(me.uid).forEach(function(u){ set[u]=1; });
       return Object.keys(set).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }).map(function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; }); },
