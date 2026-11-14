@@ -6,6 +6,7 @@
 (function(){
 "use strict";
 var API = "https://europe-west1-litefoil-communaute-222fd.cloudfunctions.net/aeroWx";
+var mode = "wx"; try{ if(localStorage.getItem("lf.ulm.mode")==="nav") mode="nav"; }catch(e){}
 var root = null, DB = null, dbP = null, F = null, WX = null, view = "metar", rwSel = "", hist = null, fc = null, seq = 0, lastLoad = 0, apiDown = false;
 
 // ---------- langue (fr / en / es) ----------
@@ -68,6 +69,7 @@ var TR = {
  "brume":["mist","neblina"], "brouillard":["fog","niebla"], "fumée":["smoke","humo"], "cendres volcaniques":["volcanic ash","ceniza volcánica"], "poussière":["dust","polvo"], "sable":["sand","arena"],
  "brume sèche":["haze","calima"], "tourbillons de poussière":["dust whirls","remolinos de polvo"], "grains":["squalls","turbonadas"], "trombe":["funnel cloud","tromba"],
  "tempête de sable":["sandstorm","tormenta de arena"], "tempête de poussière":["duststorm","tormenta de polvo"], "pas de temps significatif":["no significant weather","sin tiempo significativo"],
+ "Météo terrain":["Airfield weather","Meteo del campo"],"Plan de vol":["Flight plan","Plan de vuelo"],
  "Espace ULM / Avion":["Ultralight / Aircraft area","Zona ULM / Avión"], "ou plus":["or more","o más"]
 };
 function lang(){ var l=""; try{ l=localStorage.getItem("lf-lang")||""; }catch(e){} if(!l) l=(navigator.language||"fr").slice(0,2); l=l.toLowerCase(); return l==="en"?1:l==="es"?2:0; }
@@ -178,6 +180,7 @@ function loadWx(f){ return (apiDown ? Promise.reject(new Error("api")) : fromApi
 // ---------- styles ----------
 var CSS=""
 +"#tab-ulm{padding-bottom:20px}"
++".ul-mode{display:flex;gap:4px;background:var(--tile,#f7f9fb);border-radius:16px;padding:4px}.ul-mode button{flex:1;border:0;background:transparent;border-radius:13px;padding:11px 4px;font:inherit;font-size:14.5px;font-weight:800;color:var(--muted,#66727d);cursor:pointer}.ul-mode button.on{background:#12408a;color:#fff;box-shadow:0 4px 12px rgba(18,64,138,.3)}"
 +".ul-card{background:#fff;border:1px solid var(--line-soft,#eef2f5);border-radius:20px;padding:14px;margin-top:12px;box-shadow:0 4px 14px rgba(13,40,45,.06)}"
 +".ul-sky{color:#fff;background:linear-gradient(160deg,#0a2a55 0%,#12408a 55%,#1b63c9 100%);border:0;box-shadow:0 12px 28px rgba(10,42,85,.28)}"
 +".ul-h{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted,#66727d);margin:0 0 10px}"
@@ -377,9 +380,15 @@ function tendView(){ if(hist==="err") return '<div class="ul-card"><div class="u
   h+='<div class="ul-ch"><b>'+esc(T("Température et point de rosée (°C)"))+'</b>'+lineChart([Tt,D],["#d1343f","#2f8fe0"],{span:6,dash:true})+'</div>';
   if(C.some(function(p){ return p[1]!=null; })) h+='<div class="ul-ch"><b>'+esc(T("Plafond (ft)"))+'</b>'+lineChart([C],["#66727d"],{min:0,span:2000})+'</div>';
   return h+'</div>'; }
+function modeBar(){ return '<div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div>'; }
+function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, field:F };
+  if(window.LFNav){ window.LFNav.show(el, api); return; } el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>'; if(showNav.ld) return; showNav.ld=true;
+  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=1"; sc.onload=function(){ var e2=root.querySelector("#ulNav"); if(e2 && window.LFNav) window.LFNav.show(e2, api); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
 function render(state){ if(!root) return; var h="";
-  if(!F){ h=searchCard(); }
-  else { h=headCard();
+  if(mode==="nav"){ if(root.querySelector("#ulNav")) return; root.innerHTML=modeBar()+'<div id="ulNav"></div>'; showNav(); return; }
+  h=modeBar();
+  if(!F){ h+=searchCard(); }
+  else { h+=headCard();
     if(state==="load") h+='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>';
     else if(state==="err") h+='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'<button data-act="reload">'+esc(T("Réessayer"))+'</button></div></div>';
     else if(!WX && view!=="prev" && view!=="terrain") h+=segHtml()+'<div class="ul-card"><div class="ul-msg">'+esc(T("Aucun METAR disponible près de ce terrain pour le moment."))+'</div></div>';
@@ -402,6 +411,8 @@ function select(f){ F=f; WX=null; hist=null; fc=null; rwSel=""; view="metar"; ls
 function reload(){ if(!F) return; var my=++seq; hist=null; render("load");
   loadWx(F).then(function(o){ if(my!==seq) return; WX=o; lastLoad=Date.now(); render(); if(view==="tend") loadHist(); if(view==="prev" && !fc) loadFc(); }).catch(function(){ if(my!==seq) return; render("err"); }); }
 function onClick(e){ var b=e.target.closest("button"); if(!b || !root.contains(b)) return;
+  if(b.dataset.mode){ mode=b.dataset.mode; lset("lf.ulm.mode", mode); root.innerHTML=""; render(); return; }
+  if(mode==="nav") return;
   if(b.dataset.code){ loadDB().then(function(){ var f=byCode(b.dataset.code); if(f) select(f); }); return; }
   if(b.id==="ulNear") return nearMe();
   if(b.id==="ulFav"){ favToggle(F.code); return render(); }
