@@ -1812,5 +1812,13 @@
  "ULM / Avion": "Ultralight / Aircraft",
  "Espace ULM / Avion": "Ultralight / Aircraft area",
  "METAR, TAF, vent sur la piste, prévisions": "METAR, TAF, wind on the runway, forecast",
- "Connexion nécessaire pour ouvrir cet espace.": "A connection is needed to open this area."
+ "Connexion nécessaire pour ouvrir cet espace.": "A connection is needed to open this area.",
+ "Hauteur / départ": "Height / departure",
+ "Vario": "Vertical speed",
+ "Vitesse sol": "Ground speed",
+ "Route": "Track",
+ "Temps de vol": "Flight time",
+ "Retour départ": "Back to departure",
+ "Altitude": "Altitude",
+ "Altitude et vario mesurés par le GPS du téléphone : valeurs indicatives, qui ne remplacent pas les instruments de bord.": "Altitude and vertical speed come from the phone's GPS: indicative values that do not replace the aircraft instruments."
 }

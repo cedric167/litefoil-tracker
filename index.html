@@ -2051,6 +2051,11 @@
 .tk-stats>div+div{border-left:1px solid rgba(255,255,255,.14)}
 .tk-stats b{font-size:18.5px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
 .tk-stats span{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.65;white-space:nowrap}
+.tk-aero{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.tk-aero[hidden]{display:none}
+.tk-aero>div{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:10px 4px;border-radius:14px;background:linear-gradient(160deg,rgba(18,64,138,.75),rgba(27,99,201,.55));border:1px solid rgba(255,255,255,.14)}
+.tk-aero b{font-size:17px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}.tk-aero b small{font-size:11px;font-weight:700;opacity:.75;margin-left:2px}
+.tk-aero span{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.7;white-space:nowrap}
+.tk-aero p{grid-column:1/-1;margin:2px 4px 0;font-size:11px;line-height:1.4;opacity:.6;text-align:center}
 .tk-extra{display:flex;gap:10px;margin-top:10px}
 .tk-extra:not(:has(.kv:not([hidden]))){display:none}
 .tk-extra .kv{flex:1;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);text-align:center}
@@ -2651,6 +2656,18 @@
     <div class="tk-extra">
       <div class="kv" id="phStepsKv" hidden><div class="k">👣 Pas</div><div class="v" id="phSteps">0</div></div>
       <div class="kv" id="phJumpsKv" hidden><div class="k">🦘 Sauts</div><div class="v" id="phJumps">—</div></div>
+    </div>
+    <div class="tk-aero" id="phAero" hidden>
+      <div><b id="phAeAlt">—</b><span>Altitude</span></div>
+      <div><b id="phAeAgl">—</b><span>Hauteur / départ</span></div>
+      <div><b id="phAeVs">—</b><span>Vario</span></div>
+      <div><b id="phAeGs">—</b><span>Vitesse sol</span></div>
+      <div><b id="phAeHdg">—</b><span>Route</span></div>
+      <div><b id="phAeMax">—</b><span>Altitude max</span></div>
+      <div><b id="phAeNm">—</b><span>Distance</span></div>
+      <div><b id="phAeFly">—</b><span>Temps de vol</span></div>
+      <div><b id="phAeHome">—</b><span>Retour départ</span></div>
+      <p>Altitude et vario mesurés par le GPS du téléphone : valeurs indicatives, qui ne remplacent pas les instruments de bord.</p>
     </div>
     <div class="note" id="phMotNote" hidden>Pour compter les pas et mesurer les sauts, garde le téléphone <b>fixé au corps</b> (brassard ou ceinture). Le GPS continue écran verrouillé dans l'appli ; les pas et les sauts, eux, se mesurent écran allumé.</div>
     <div class="tk-go">
@@ -3741,6 +3758,32 @@
   function phMotionStop(){ try{ window.removeEventListener("devicemotion", phOnMotion); }catch(e){} phMot.on=false; }
   function phMotionTick(){ if(!phMot.on) return; $("phSteps").textContent=phMot.steps.toLocaleString("fr-FR");
     if(phMot.jumps.length){ var b=phMot.jumps.reduce(function(x,j){ return (j.d||j.h)>(x.d||x.h)?j:x; }); $("phJumps").textContent=phMot.jumps.length+" · "+(b.d?(b.d.toFixed(2).replace(".",",")+" m"):(Math.round(b.h*100)+" cm")); } }
+  // 14/11 : instruments de vol (ULM / Avion), recalculés chaque seconde à partir des points GPS
+  var phAe = { i:0, fly:0, a0:null, amax:null };
+  function phAeAltAt(i){ var sm=0, n=0; for(var k=Math.max(0,i-2); k<=i; k++){ var a=+phPts[k].alt; if(isFinite(a) && a!==0){ sm+=a; n++; } } return n ? sm/n : null; }
+  function phAeBrg(a,b){ var r=Math.PI/180, y=Math.sin((b.lon-a.lon)*r)*Math.cos(b.lat*r), x=Math.cos(a.lat*r)*Math.sin(b.lat*r)-Math.sin(a.lat*r)*Math.cos(b.lat*r)*Math.cos((b.lon-a.lon)*r); return (Math.atan2(y,x)/r+360)%360; }
+  function phAeDeg(d){ d=Math.round(d)%360; if(d===0) d=360; return (d<100?"0":"")+(d<10?"0":"")+d+"°"; }
+  function phAeNum(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,"\u202f"); }
+  function phAeroPaint(){ var box=$("phAero"); if(!box) return; var on=(phType==="ulm"); if(box.hidden===on) box.hidden=!on; if(!on) return;
+    var n=phPts.length, set=function(id,v){ var e=$(id); if(e && e.dataset.v!==v){ e.dataset.v=v; e.innerHTML=v; } };
+    if(!n || phAe.i>n) phAe={ i:0, fly:0, a0:null, amax:null };
+    if(!n){ ["phAeAlt","phAeAgl","phAeVs","phAeGs","phAeHdg","phAeMax","phAeNm","phAeFly","phAeHome"].forEach(function(id){ set(id,"—"); }); return; }
+    for(; phAe.i<n; phAe.i++){ var p=phPts[phAe.i], a=+p.alt;
+      if(isFinite(a) && a!==0){ if(phAe.a0==null) phAe.a0=a; if(phAe.amax==null || a>phAe.amax) phAe.amax=a; }
+      if(phAe.i>0){ var q=phPts[phAe.i-1], dt=p.t-q.t; if(dt>0 && dt<30 && (+p.speed||0)>=40) phAe.fly+=dt; } }
+    var L=phPts[n-1], alt=phAeAltAt(n-1), FT=3.28084, U=function(x){ return "<small>"+x+"</small>"; };
+    set("phAeAlt", alt==null ? "—" : phAeNum(alt*FT)+U("ft"));
+    set("phAeAgl", (alt==null || phAe.a0==null) ? "—" : phAeNum(Math.max(0,(alt-phAe.a0))*FT)+U("ft"));
+    set("phAeMax", phAe.amax==null ? "—" : phAeNum(phAe.amax*FT)+U("ft"));
+    var vs=null; if(alt!=null){ for(var j=n-2; j>=0; j--){ var d2=L.t-phPts[j].t; if(d2>20) break; if(d2>=6){ var a2=phAeAltAt(j); if(a2!=null) vs=(alt-a2)/d2*196.85; break; } } }
+    set("phAeVs", vs==null ? "—" : (Math.abs(vs)<30 ? "0" : (vs>0?"↑ ":"↓ ")+phAeNum(Math.abs(Math.round(vs/10)*10)))+U("ft/min"));
+    var kmh=+L.speed||0; set("phAeGs", Math.round(kmh/1.852)+U("kt"));
+    var hdg=null; if(kmh>15){ for(var k=n-2; k>=0 && k>=n-25; k--){ if(phHaversine(phPts[k],L)>=40){ hdg=phAeBrg(phPts[k],L); break; } } }
+    set("phAeHdg", hdg==null ? "—" : phAeDeg(hdg));
+    set("phAeNm", (phDistTotal()/1852).toFixed(1).replace(".",",")+U("NM"));
+    set("phAeFly", phFmtDur(phAe.fly));
+    var home=phHaversine(L,phPts[0]); set("phAeHome", home<150 ? "0"+U("NM") : phAeDeg(phAeBrg(L,phPts[0]))+" · "+(home/1852).toFixed(1).replace(".",",")+U("NM")); }
+  setInterval(function(){ try{ phAeroPaint(); }catch(e){} }, 1000);
   function phStart(){
     var nat = phNat();
     var bg = nat ? null : phBgPlugin();

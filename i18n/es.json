@@ -1855,5 +1855,13 @@
  "ULM / Avion": "ULM / Avión",
  "Espace ULM / Avion": "Zona ULM / Avión",
  "METAR, TAF, vent sur la piste, prévisions": "METAR, TAF, viento en pista, previsiones",
- "Connexion nécessaire pour ouvrir cet espace.": "Se necesita conexión para abrir esta zona."
+ "Connexion nécessaire pour ouvrir cet espace.": "Se necesita conexión para abrir esta zona.",
+ "Hauteur / départ": "Altura / salida",
+ "Vario": "Variómetro",
+ "Vitesse sol": "Velocidad suelo",
+ "Route": "Rumbo",
+ "Temps de vol": "Tiempo de vuelo",
+ "Retour départ": "Vuelta a salida",
+ "Altitude": "Altitud",
+ "Altitude et vario mesurés par le GPS du téléphone : valeurs indicatives, qui ne remplacent pas les instruments de bord.": "Altitud y variómetro medidos por el GPS del teléfono: valores orientativos que no sustituyen a los instrumentos de a bordo."
 }
