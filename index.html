@@ -4302,7 +4302,7 @@
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="market/market.js?v=1"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
+    var sc=document.createElement("script"); sc.src="market/market.js?v=2"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   // la carte d'accueil n'apparaît que lorsque la place de marché répond (règles de la base en service), ou en démonstration
   (function(){ var n=0; function probe(){ var el=document.getElementById("homeBr"); if(!el || !el.hidden) return; if(/[?&]demo=1/.test(location.search)){ el.hidden=false; return; }
