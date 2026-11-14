@@ -8970,7 +8970,7 @@
   (function(){
     var $h=function(id){ return document.getElementById(id); };
     function hello(){ var d=new Date(), ps=""; try{ ps=localStorage.getItem("lf.comm.pseudo")||""; }catch(e){}
-      var h=d.getHours(), lg=(document.documentElement.lang||"fr").slice(0,2), eve=(h<5||h>=18), w=lg==="en"?(eve?"Good evening":"Hello"):lg==="es"?(eve?"Buenas tardes":"Hola"):(eve?"Bonsoir":"Bonjour"), loc=lg==="en"?"en-GB":lg==="es"?"es-ES":"fr-FR";
+      var h=d.getHours(), lg=(function(){ try{ return localStorage.getItem("lf-lang")||""; }catch(e){ return ""; } })().slice(0,2)||(document.documentElement.lang||"fr").slice(0,2), eve=(h<5||h>=18), w=lg==="en"?(eve?"Good evening":"Hello"):lg==="es"?(eve?"Buenas tardes":"Hola"):(eve?"Bonsoir":"Bonjour"), loc=lg==="en"?"en-GB":lg==="es"?"es-ES":"fr-FR";
       if($h("homeDate")) $h("homeDate").textContent=d.toLocaleDateString(loc,{weekday:"long",day:"numeric",month:"long"});
       if($h("homeHello")) $h("homeHello").textContent=w+(ps?" "+ps:"")+" 👋"; }
     function stats(){ var n=0, km=0, sec=0;

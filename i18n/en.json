@@ -1712,5 +1712,13 @@
  "Partager la carte": "Share the card",
  "Préparation de l'image…": "Preparing the image…",
  "Impossible de préparer l'image.": "Couldn't prepare the image.",
- "Personne pour l'instant : la première sortie eFoil de la semaine prend la tête !": "Nobody yet: the week's first eFoil ride takes the lead!"
+ "Personne pour l'instant : la première sortie eFoil de la semaine prend la tête !": "Nobody yet: the week's first eFoil ride takes the lead!",
+ "Vent de N": "Wind from N",
+ "Vent de NE": "Wind from NE",
+ "Vent de E": "Wind from E",
+ "Vent de SE": "Wind from SE",
+ "Vent de S": "Wind from S",
+ "Vent de SO": "Wind from SW",
+ "Vent de O": "Wind from W",
+ "Vent de NO": "Wind from NW"
 }
