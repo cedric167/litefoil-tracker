@@ -49,6 +49,37 @@ function checkRoute(pts, altFt, elev){ var res={ hits:[], near:[], worst:0, ok:!
   Object.keys(seen).forEach(function(k2){ var s=seen[k2]; if(s.inside){ res.hits.push(s); res.worst=Math.max(res.worst,s.sev); } else if(s.sev>=2 && s.margin<1000) res.near.push(s); });
   res.hits.sort(function(x,y){ return y.sev-x.sev || x.d-y.d; }); res.near.sort(function(x,y){ return x.margin-y.margin; }); return res; }
 
+// ---------- contournement automatique des zones non autorisées ----------
+// niveau 1 : zones interdites (P) et classe A ; niveau 2 : + zones réglementées (R) ; niveau 3 : + zones dangereuses et espaces à clairance (classes B, C, D)
+function isObs(a, level){ return a.t==="P" || a.c==="A" || (level>=2 && a.t==="R") || (level>=3 && (a.t==="Q" || a.c==="B" || a.c==="C" || a.c==="D")); }
+function hull(p){ p=p.slice().sort(function(a,b){ return a[0]-b[0] || a[1]-b[1]; }); var cr=function(o,a,b){ return (a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); }, lo=[], up=[], i;
+  for(i=0;i<p.length;i++){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],p[i])<=0) lo.pop(); lo.push(p[i]); } for(i=p.length-1;i>=0;i--){ while(up.length>=2 && cr(up[up.length-2],up[up.length-1],p[i])<=0) up.pop(); up.push(p[i]); } lo.pop(); up.pop(); return lo.concat(up); }
+function grow(h, c, d){ return h.map(function(v){ var dx=v[0]-c[0], dy=v[1]-c[1], l=Math.hypot(dx,dy)||1; return [v[0]+dx/l*d, v[1]+dy/l*d]; }); }
+function inConvex(p, h){ var s=0; for(var i=0;i<h.length;i++){ var a=h[i], b=h[(i+1)%h.length], c=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]); if(c===0) continue; if(s===0) s=c>0?1:-1; else if((c>0?1:-1)!==s) return false; } return true; }
+function segCross(p,q,a,b){ var d1=(q[0]-p[0])*(a[1]-p[1])-(q[1]-p[1])*(a[0]-p[0]), d2=(q[0]-p[0])*(b[1]-p[1])-(q[1]-p[1])*(b[0]-p[0]), d3=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]), d4=(b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]); return ((d1>0)!==(d2>0)) && ((d3>0)!==(d4>0)); }
+function segHits(p,q,o){ if(Math.max(p[0],q[0])<o.bx[0] || Math.min(p[0],q[0])>o.bx[2] || Math.max(p[1],q[1])<o.bx[1] || Math.min(p[1],q[1])>o.bx[3]) return false; var h=o.test; if(inConvex(p,h) || inConvex(q,h)) return true; for(var i=0;i<h.length;i++) if(segCross(p,q,h[i],h[(i+1)%h.length])) return true; return false; }
+function avoidLeg(a, b, altFt, level, terFt){ var lat0=(a.lat+b.lat)/2, kx=60*Math.cos(rad(lat0)), X=function(p){ return [p.lon*kx, p.lat*60]; }, A2=X(a), B2=X(b), len=Math.hypot(B2[0]-A2[0],B2[1]-A2[1]), pad=Math.max(30, len*0.5)/60, out={ pts:[], zones:[], blocked:[] };
+  var a0=Math.min(a.lat,b.lat)-pad, c0=Math.max(a.lat,b.lat)+pad, b0=Math.min(a.lon,b.lon)-pad*1.5, d0=Math.max(a.lon,b.lon)+pad*1.5, O=[];
+  ASP.forEach(function(s){ if(!isObs(s,level)) return; var bb=s.bb; if(bb[2]<a0||bb[0]>c0||bb[3]<b0||bb[1]>d0) return; var lo=s.lo, up=s.ur===0?s.up+(terFt||0):s.up; if(altFt<=lo-300 || altFt>=up+300) return;
+    var xy=[]; for(var i=0;i<s.p.length;i+=2) xy.push([s.p[i+1]*kx, s.p[i]*60]); var h=hull(xy); if(h.length<3) return;
+    if(h.length>18){ var keep=[], seen={}; for(var k=0;k<18;k++){ var t=k*Math.PI/9, ux=Math.cos(t), uy=Math.sin(t), bi=0, bv=-1e18; for(var j=0;j<h.length;j++){ var v=h[j][0]*ux+h[j][1]*uy; if(v>bv){ bv=v; bi=j; } } if(!seen[bi]){ seen[bi]=1; keep.push(bi); } } keep.sort(function(x,y){ return x-y; }); h=keep.map(function(j2){ return h[j2]; }); }
+    var cx=0, cy=0; h.forEach(function(v){ cx+=v[0]; cy+=v[1]; }); var c=[cx/h.length, cy/h.length], test=grow(h,c,0.8), nodes=grow(h,c,2), bx=[1e9,1e9,-1e9,-1e9]; test.forEach(function(v){ bx[0]=Math.min(bx[0],v[0]); bx[1]=Math.min(bx[1],v[1]); bx[2]=Math.max(bx[2],v[0]); bx[3]=Math.max(bx[3],v[1]); });
+    var o={ a:s, test:test, nodes:nodes, bx:bx }; if(inConvex(A2,test) || inConvex(B2,test)){ out.blocked.push(s); return; } O.push(o); });
+  if(!O.length) return out; var S=[], inS={};
+  out.fail=true;
+  for(var it=0; it<20; it++){ var N=[{ p:A2, o:null },{ p:B2, o:null }]; S.forEach(function(o){ o.nodes.forEach(function(p){ for(var q=0;q<S.length;q++) if(S[q]!==o && inConvex(p,S[q].test)) return; N.push({ p:p, o:o }); }); });
+    var n=N.length, dist=new Array(n).fill(1e18), prev=new Array(n).fill(-1), done=new Array(n).fill(false); dist[0]=0;
+    for(;;){ var u=-1, bd=1e18; for(var i2=0;i2<n;i2++) if(!done[i2] && dist[i2]<bd){ bd=dist[i2]; u=i2; } if(u<0 || u===1) break; done[u]=true;
+      for(var w=0;w<n;w++){ if(done[w]) continue; var dd=Math.hypot(N[u].p[0]-N[w].p[0], N[u].p[1]-N[w].p[1]); if(dist[u]+dd>=dist[w]) continue; var hit=false; for(var q2=0;q2<S.length;q2++) if(segHits(N[u].p,N[w].p,S[q2])){ hit=true; break; } if(!hit){ dist[w]=dist[u]+dd; prev[w]=u; } } }
+    if(dist[1]>=1e17) return out; var path=[], x=1; while(x>=0){ path.unshift(N[x]); x=prev[x]; }
+    var added=false; for(var s2=0;s2<path.length-1;s2++) for(var q3=0;q3<O.length;q3++){ var ob=O[q3]; if(!inS[ob.a.i] && segHits(path[s2].p,path[s2+1].p,ob)){ inS[ob.a.i]=1; S.push(ob); added=true; } }
+    if(!added){ if(dist[1]>len*3+60) return out; out.fail=false; out.pts=path.slice(1,-1).map(function(nd){ return { name:T("Contournement")+" · "+String(nd.o.a.n).slice(0,26), code:"", lat:nd.p[1]/60, lon:nd.p[0]/kx, auto:true }; }); out.zones=S.map(function(o){ return o.a; }); out.extra=dist[1]-len; return out; } }
+  return out; }
+// route complète : insère des points de contournement (marqués auto) entre les points choisis par le pilote
+function avoid(pts, altFt, level, terFt){ var res={ pts:[], zones:[], blocked:[], extra:0, n:0 }; if(!ASP || pts.length<2 || !level){ res.pts=pts.slice(); return res; } var zs={}, bs={};
+  for(var i=0;i<pts.length-1;i++){ res.pts.push(pts[i]); var r=avoidLeg(pts[i], pts[i+1], altFt, level, terFt); if(r.fail && level>1){ var r1=avoidLeg(pts[i], pts[i+1], altFt, 1, terFt); r1.blocked=r.blocked; r=r1; res.partial=true; } r.pts.forEach(function(p){ res.pts.push(p); res.n++; }); r.zones.forEach(function(z){ zs[z.i]=z; }); r.blocked.forEach(function(z){ bs[z.i]=z; }); res.extra+=r.extra||0; }
+  res.pts.push(pts[pts.length-1]); res.zones=Object.keys(zs).map(function(k){ return zs[k]; }); res.blocked=Object.keys(bs).map(function(k){ return bs[k]; }); return res; }
+
 // ---------- météo le long de la route ----------
 function samplesOf(pts, legT, dep){ var S=[{ lat:pts[0].lat, lon:pts[0].lon, leg:0, t:+dep }], cum=0; for(var i=0;i<pts.length-1;i++){ var d=distM(pts[i],pts[i+1])/NM, k=Math.max(1,Math.round(d/14)); for(var q=1;q<=k;q++){ var p=mid(pts[i],pts[i+1],q/k); S.push({ lat:p.lat, lon:p.lon, leg:i, t:+dep+(cum+legT[i]*q/k)*60000 }); } cum+=legT[i]; }
   if(S.length>44){ var st=Math.ceil(S.length/44), o=[]; for(var j=0;j<S.length;j++) if(j%st===0 || j===S.length-1) o.push(S[j]); S=o; } return S; }
@@ -89,5 +120,5 @@ function metars(pts, api){ if(!api.metarBox) return Promise.resolve([]); var a=9
   return api.metarBox([a,b,c,d]).then(function(l){ var out=[]; (l||[]).forEach(function(s){ if(!s.raw || !isFinite(s.lat)) return; var best=1e9, along=0, acc=0; for(var i=0;i<pts.length-1;i++){ var L=distM(pts[i],pts[i+1]), d1=distM(pts[i],s), th=rad(brg(pts[i],s)-brg(pts[i],pts[i+1])), al=Math.max(0,Math.min(L,d1*Math.cos(th))), p=mid(pts[i],pts[i+1],L?al/L:0), dd=distM(p,s); if(dd<best){ best=dd; along=acc+al; } acc+=L; }
       if(best>22*NM) return; var o=api.parseMetar(s.raw), cat=api.fltCat(o); out.push({ id:s.id, name:String(s.name||"").split(",")[0], cat:cat, km:best/1000, along:along, o:o }); }); out.sort(function(x,y){ return x.along-y.along; }); return out; }).catch(function(){ return []; }); }
 
-window.LFSafe={ init:function(api){ A=api; }, loadAsp:loadAsp, checkRoute:checkRoute, at:at, limTxt:limTxt, routeWx:routeWx, suggest:suggest, metars:metars, ready:function(){ return !!ASP; } };
+window.LFSafe={ init:function(api){ A=api; }, loadAsp:loadAsp, avoid:avoid, checkRoute:checkRoute, at:at, limTxt:limTxt, routeWx:routeWx, suggest:suggest, metars:metars, ready:function(){ return !!ASP; } };
 })();

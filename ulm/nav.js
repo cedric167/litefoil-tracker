@@ -5,7 +5,7 @@
 // passage automatique au point suivant, annonces vocales, « terrain le plus proche » et Direct-to.
 (function(){
 "use strict";
-var asp=null, rwx=null, alt2, mets=null;
+var asp=null, rwx=null, alt2, mets=null, avd=null;
 var box=null, A=null, map=null, lay=null, P=null, R=null, addOnMap=false, aero=false, seq=0, FLY=null, elev=null, wxEnds={}, wTimer=null;
 var NM=1852, FT=3.28084;
 
@@ -24,6 +24,8 @@ var TR={
  "Tu es dans":["You are in","Estás en"],"Dans 2 minutes :":["In 2 minutes:","En 2 minutos:"],"Météo dégradée devant":["Weather deteriorating ahead","Meteo degradada delante"],"Toucher pour contourner par":["Tap to detour via","Toca para desviar por"],"Pose-toi ou fais demi-tour":["Land or turn back","Aterriza o da media vuelta"],
  "Urgence":["Emergency","Emergencia"],"Envoyer le SOS à mes proches":["Send SOS to my contacts","Enviar SOS a mis contactos"],"Tes gardiens reçoivent ta position":["Your guardians receive your position","Tus guardianes reciben tu posición"],"Ta position":["Your position","Tu posición"],"À la radio":["On the radio","Por radio"],
  "transpondeur":["transponder","transpondedor"],"urgence aéronautique":["aeronautical emergency","emergencia aeronáutica"],"Terrain le plus proche":["Nearest airfield","Campo más cercano"],"Terrain":["Field","Campo"],
+ "Contournement automatique":["Automatic avoidance","Desvío automático"],"Aucun":["None","Ninguno"],"Zones interdites":["Prohibited areas","Zonas prohibidas"],"+ Réglementées":["+ Restricted","+ Restringidas"],"+ Clairance":["+ Clearance","+ Autorización"],
+ "Route déviée automatiquement pour éviter":["Route automatically diverted to avoid","Ruta desviada automáticamente para evitar"],"Zone impossible à contourner (le départ, l'arrivée ou un point choisi est dedans)":["Area cannot be avoided (departure, arrival or a chosen point is inside)","Zona imposible de evitar (la salida, la llegada o un punto elegido está dentro)"],"Change d'altitude de croisière ou de point de passage.":["Change cruise altitude or waypoint.","Cambia la altitud de crucero o el punto de paso."],"Certaines zones réglementées n'ont pas pu être contournées : elles restent signalées ci-dessous.":["Some restricted areas could not be avoided: they remain listed below.","Algunas zonas restringidas no se pudieron evitar: siguen indicadas abajo."],"Point de contournement":["Avoidance point","Punto de desvío"],
  "au lieu de":["instead of","en lugar de"],
  "Mon appareil":["My aircraft","Mi aeronave"],"Vitesse de croisière":["Cruise speed","Velocidad de crucero"],"Consommation":["Fuel burn","Consumo"],"Carburant à bord":["Fuel on board","Combustible a bordo"],"Altitude de croisière":["Cruise altitude","Altitud de crucero"],
  "Ma route":["My route","Mi ruta"],"Départ":["Departure","Salida"],"Arrivée":["Arrival","Llegada"],"Ajouter un terrain (nom, ville ou code)":["Add an airfield (name, town or code)","Añadir un campo (nombre, ciudad o código)"],
@@ -82,7 +84,10 @@ function runWx(my){ if(!window.LFSafe || !R) return; var tas=(+P.ac.tas||150)/1.
   window.LFSafe.routeWx(P.pts, tas, dep, R.legs.map(function(l){ return l.t; })).then(function(r){ if(my!==seq) return; rwx=r; alt2=r.worst>=2?undefined:null; paintRw();
     if(r.worst>=2) window.LFSafe.suggest(P.pts, tas, dep, r, A).then(function(sg){ if(my!==seq) return; alt2=sg||null; paintRw(); }).catch(function(){ if(my===seq){ alt2=null; paintRw(); } }); }).catch(function(){});
   window.LFSafe.metars(P.pts, A).then(function(l){ if(my!==seq) return; mets=l; paintRw(); }); }
-function recalc(){ var my=++seq; R=null; elev=null; asp=null; rwx=null; alt2=undefined; mets=null; if(P.pts.length<2){ paint(); return; } R=compute(null); R.pending=true; paint(); runAsp(my);
+function recalc(){ var my=++seq; R=null; elev=null; asp=null; rwx=null; alt2=undefined; mets=null; avd=null; P.pts=P.pts.filter(function(p){ return !p.auto; }); if(P.avoid==null) P.avoid=2;
+  if(P.pts.length>=2 && P.avoid>0 && window.LFSafe){ paint(); window.LFSafe.loadAsp().then(function(){ if(my!==seq) return; try{ var r=window.LFSafe.avoid(P.pts, P.alt, P.avoid, 0); avd=r; if(r.n) P.pts=r.pts; }catch(e){} savePlan(); recalc2(my); }).catch(function(){ if(my===seq) recalc2(my); }); return; }
+  recalc2(my); }
+function recalc2(my){ if(P.pts.length<2){ paint(); return; } R=compute(null); R.pending=true; paint(); runAsp(my);
   fetchWinds(my).then(function(w){ if(my!==seq) return; R=compute(w); R.pending=false; R.nowind=!w; paintLog(); runWx(my); }).catch(function(){ if(my!==seq) return; R=compute(null); R.pending=false; R.nowind=true; paintLog(); runWx(my); });
   fetchElev(my).then(function(e){ if(my!==seq) return; elev=e; paintProfile(); runAsp(my); }).catch(function(){});
   [0,P.pts.length-1].forEach(function(i){ var p=P.pts[i], k=p.lat.toFixed(2)+","+p.lon.toFixed(2); if(wxEnds[k]!==undefined || !A.loadWx) return; wxEnds[k]=null; A.loadWx({ lat:p.lat, lon:p.lon, icao:/^[A-Z]{4}$/.test(p.code||"")?p.code:"" }).then(function(o){ wxEnds[k]=o||false; if(my===seq) paintWx(); }).catch(function(){ wxEnds[k]=false; }); }); }
@@ -133,7 +138,7 @@ var CSS=""
 
 // ---------- rendu de la préparation ----------
 function ptRow(p,i,n){ var cls=i===0?"d":i===n-1?"a":"", lb=i===0?"D":i===n-1?"A":String(i);
-  return '<div class="nv-pt"><i class="'+cls+'">'+lb+'</i><div><b>'+esc(p.name)+'</b><small>'+esc(p.code?p.code+" · ":"")+(i===0?esc(T("Départ")):i===n-1&&n>1?esc(T("Arrivée")):Math.abs(p.lat).toFixed(3)+"° "+(p.lat>=0?"N":"S")+" "+Math.abs(p.lon).toFixed(3)+"° "+(p.lon>=0?"E":"O"))+'</small></div>'
+  return '<div class="nv-pt"><i class="'+cls+'">'+lb+'</i><div><b>'+esc(p.name)+'</b><small>'+esc(p.code?p.code+" · ":"")+(p.auto?"🛡️ "+esc(T("Point de contournement")):i===0?esc(T("Départ")):i===n-1&&n>1?esc(T("Arrivée")):Math.abs(p.lat).toFixed(3)+"° "+(p.lat>=0?"N":"S")+" "+Math.abs(p.lon).toFixed(3)+"° "+(p.lon>=0?"E":"O"))+'</small></div>'
     +(i>0?'<button data-up="'+i+'" aria-label="↑">↑</button>':"")+'<button data-rm="'+i+'" aria-label="✕">✕</button></div>'; }
 function paint(){ if(!box) return; killMap(); var n=P.pts.length, sv=lget("lf.ulm.routes",[]);
   var h='<div class="nv-card"><div class="nv-h">'+esc(T("Mon appareil"))+'</div><div class="nv-ac">'
@@ -145,7 +150,8 @@ function paint(){ if(!box) return; killMap(); var n=P.pts.length, sv=lget("lf.ul
     +'<input class="nv-in" id="nvQ" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="＋ '+esc(T("Ajouter un terrain (nom, ville ou code)"))+'"><div id="nvRes"></div>'
     +'<div class="nv-row"><button class="nv-chip'+(addOnMap?" on":"")+'" data-act="pick">📍 '+esc(T(addOnMap?"Touche la carte pour poser le point":"Ajouter un point sur la carte"))+'</button>'
     +(n>=2?'<button class="nv-chip" data-act="rt">↩ '+esc(T("Aller-retour"))+'</button><button class="nv-chip" data-act="rev">⇅ '+esc(T("Inverser"))+'</button>':"")+(n?'<button class="nv-chip" data-act="clr">✕ '+esc(T("Effacer"))+'</button>':"")
-    +'<button class="nv-chip'+(aero?" on":"")+'" data-act="aero">🗺️ '+esc(T("Carte aéronautique"))+'</button></div><div class="nv-map'+(addOnMap?" pick":"")+'" id="nvMap"></div></div>';
+    +'<button class="nv-chip'+(aero?" on":"")+'" data-act="aero">🗺️ '+esc(T("Carte aéronautique"))+'</button></div>'
+    +'<div class="nv-h" style="margin:14px 0 6px">🛡️ '+esc(T("Contournement automatique"))+'</div><div class="nv-row" style="margin-top:0">'+[[0,"Aucun"],[1,"Zones interdites"],[2,"+ Réglementées"],[3,"+ Clairance"]].map(function(x){ return '<button class="nv-chip'+((P.avoid==null?2:P.avoid)===x[0]?" on":"")+'" data-avoid="'+x[0]+'">'+esc(T(x[1]))+'</button>'; }).join("")+'</div><div class="nv-map'+(addOnMap?" pick":"")+'" id="nvMap"></div></div>';
   if(n<2) h+='<div class="nv-card"><div class="nv-note" style="margin:0;font-size:13.5px;text-align:center">'+esc(T("Ajoute au moins un départ et une arrivée pour calculer ton vol."))+'</div></div>';
   else h+='<div id="nvLog"></div><div id="nvAsp"></div><div id="nvRw"></div><div id="nvProf"></div><div id="nvWx"></div><button class="nv-go" data-act="fly">▶ '+esc(T("Démarrer la navigation"))+'</button><div class="nv-row" style="justify-content:center"><button class="nv-chip" data-act="save">💾 '+esc(T("Enregistrer la route"))+'</button><button class="nv-chip" data-act="gpx">⬇ '+esc(T("Exporter en GPX"))+'</button></div>';
   if(sv.length) h+='<div class="nv-card"><div class="nv-h">'+esc(T("Mes routes"))+'</div>'+sv.map(function(r,i){ return '<div class="nv-sv"><button data-load="'+i+'">'+esc(r.name)+' <small>· '+r.pts.length+' pts</small></button><button class="nv-chip" data-del="'+i+'" style="padding:6px 10px">✕</button></div>'; }).join("")+'</div>';
@@ -156,11 +162,16 @@ function paintAsp(){ var el=box&&box.querySelector("#nvAsp"); if(!el) return; va
   if(!asp || !asp.ok) h+='<div class="nv-info">🛡️ '+esc(T("Contrôle des espaces aériens…"))+'</div>';
   else { var big=asp.hits.filter(function(x){ return x.sev>=1; });
     h+= asp.worst>=3 ? '<div class="nv-ko">⛔ '+esc(T("Ta route traverse une zone où tu n'as pas le droit de passer"))+'</div>' : asp.worst>=2 ? '<div class="nv-warn">⚠️ '+esc(T("Clairance ou conditions nécessaires sur la route"))+" ("+asp.hits.filter(function(x){ return x.sev>=2; }).length+')</div>' : !big.length ? '<div class="nv-ok">✅ '+esc(T("Aucun espace contrôlé ou réglementé à ton altitude"))+" ("+nf(P.alt)+' ft)</div>' : "";
+    if(avd && avd.n) h+='<div class="nv-ok">🛡️ '+esc(T("Route déviée automatiquement pour éviter"))+" : "+esc(avd.zones.map(function(z){ return z.n; }).slice(0,4).join(", "))+(avd.zones.length>4?"…":"")+" (+"+Math.round(avd.extra)+' NM)</div>';
+    var bl=avd?avd.blocked.filter(function(z){ return asp.hits.some(function(x){ return x.a.i===z.i; }); }):[];
+    if(bl.length) h+='<div class="nv-ko">⛔ '+esc(T("Zone impossible à contourner (le départ, l'arrivée ou un point choisi est dedans)"))+" : "+esc(bl.map(function(z){ return z.n; }).slice(0,3).join(", "))+". "+esc(T("Change d'altitude de croisière ou de point de passage."))+'</div>';
+    if(avd && avd.partial) h+='<div class="nv-warn">⚠️ '+esc(T("Certaines zones réglementées n'ont pas pu être contournées : elles restent signalées ci-dessous."))+'</div>';
     asp.hits.forEach(function(x){ var a=x.a; h+='<div class="nv-as"><i style="background:'+col[x.sev]+'"></i><div><b>'+esc(a.n)+'</b><small>'+esc(L.limTxt(a.lo,a.lr)+" → "+L.limTxt(a.up,a.ur))+" · "+esc(x.msg)+(a.f?' · <em>'+esc(a.f)+' MHz</em>':"")+(a.nt?" · "+esc(T("activable par NOTAM")):"")+'<br>'+esc(T("Branche"))+" "+legName(x.leg,n)+" · "+(x.d/NM).toFixed(0)+' NM</small></div></div>'; });
     asp.near.slice(0,4).forEach(function(x){ var a=x.a; h+='<div class="nv-as"><i style="background:#c9d2d9"></i><div><b>'+esc(a.n)+'</b><small>'+esc(T("Tu passes"))+" "+nf(x.margin)+" ft "+esc(T(x.side==="under"?"sous":"au-dessus de"))+" ("+esc(T(x.side==="under"?"plancher":"plafond"))+" "+esc(x.side==="under"?L.limTxt(a.lo,a.lr):L.limTxt(a.up,a.ur))+")"+(a.f?' · <em>'+esc(a.f)+' MHz</em>':"")+'</small></div></div>'; });
     if(P.pts.some(function(p){ return p.lat<41 || p.lat>51.6 || p.lon<-5.6 || p.lon>10; })) h+='<div class="nv-warn">🌍 '+esc(T("Une partie de la route est hors de France : espaces aériens non vérifiés."))+'</div>'; }
   el.innerHTML=h+'<div class="nv-note">'+esc(T("France uniquement. L'activation réelle des zones (RTBA, NOTAM, SUP AIP) n'est pas connue de l'appli : vérifie-la avant le vol. Seul le contrôle aérien donne une clairance. Source : FFVP, d'après l'AIP du SIA."))+'</div></div>'; }
 function drawAsp(){ if(!map || !asp || !window.L) return; if(lay){ try{ map.removeLayer(lay); }catch(e){} } lay=L.layerGroup().addTo(map); var col=["#1a9c55","#2f6fe0","#e07a1f","#d1343f"];
+  if(avd) avd.zones.forEach(function(z){ var p=z.p, ll=[]; for(var i=0;i<p.length;i+=2) ll.push([p[i],p[i+1]]); L.polygon(ll,{ color:"#d1343f", weight:2, dashArray:"5 5", fillColor:"#d1343f", fillOpacity:.14, interactive:false }).addTo(lay); });
   asp.hits.filter(function(x){ return x.sev>=1; }).forEach(function(x){ var p=x.a.p, ll=[]; for(var i=0;i<p.length;i+=2) ll.push([p[i],p[i+1]]); L.polygon(ll,{ color:col[x.sev], weight:2, fillColor:col[x.sev], fillOpacity:.22, interactive:false }).addTo(lay); }); }
 function paintRw(){ var el=box&&box.querySelector("#nvRw"); if(!el) return; var h='<div class="nv-card"><div class="nv-h">'+esc(T("Météo sur la route"))+'</div>', n=P.pts.length-1, col=["#1a9c55","#e07a1f","#d1343f"];
   if(!rwx) h+='<div class="nv-info">🌦️ '+esc(T("Analyse de la météo sur la route…"))+'</div>';
@@ -196,10 +207,10 @@ function paintWx(){ var el=box&&box.querySelector("#nvWx"); if(!el) return; var 
   el.innerHTML=rows?'<div class="nv-card"><div class="nv-h">'+esc(T("Météo départ et arrivée"))+'</div>'+rows+'</div>':""; }
 function killMap(){ if(map){ try{ map.remove(); }catch(e){} map=null; lay=null; } }
 function tiles(m, dark){ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{ maxZoom:18, attribution:"© OpenStreetMap" }).addTo(m); if(aero) L.tileLayer("https://nwy-tiles-api.prod.newaydata.com/tiles/{z}/{x}/{y}.png?path=latest/aero/latest",{ minZoom:7, maxZoom:12, maxNativeZoom:12, opacity:.9, attribution:"© open flightmaps" }).addTo(m); }
-function mkIcon(i,n){ return L.divIcon({ className:"", html:'<div class="nv-mk '+(i===0?"d":i===n-1?"a":"")+'">'+(i===0?"D":i===n-1?"A":i)+'</div>', iconSize:[26,26], iconAnchor:[13,13] }); }
+function mkIcon(i,n,auto){ if(auto) return L.divIcon({ className:"", html:'<div class="nv-mk" style="width:16px;height:16px;background:#fff;border-color:#c2379f"></div>', iconSize:[16,16], iconAnchor:[8,8] }); return L.divIcon({ className:"", html:'<div class="nv-mk '+(i===0?"d":i===n-1?"a":"")+'">'+(i===0?"D":i===n-1?"A":i)+'</div>', iconSize:[26,26], iconAnchor:[13,13] }); }
 function paintMap(){ var el=box&&box.querySelector("#nvMap"); if(!el || !window.L) return; killMap(); map=L.map(el,{ zoomControl:false }); tiles(map); var n=P.pts.length, ll=P.pts.map(function(p){ return [p.lat,p.lon]; });
   if(n>1){ L.polyline(ll,{ color:"#fff", weight:7, opacity:.9, interactive:false }).addTo(map); L.polyline(ll,{ color:"#c2379f", weight:4, interactive:false }).addTo(map); }
-  P.pts.forEach(function(p,i){ var m=L.marker([p.lat,p.lon],{ icon:mkIcon(i,n), draggable:!p.code }).addTo(map); m.on("dragend", function(){ var q=m.getLatLng(); p.lat=q.lat; p.lon=q.lng; savePlan(); recalc(); }); });
+  P.pts.forEach(function(p,i){ var m=L.marker([p.lat,p.lon],{ icon:mkIcon(i,n,p.auto), draggable:!p.code && !p.auto }).addTo(map); m.on("dragend", function(){ var q=m.getLatLng(); p.lat=q.lat; p.lon=q.lng; savePlan(); recalc(); }); });
   if(n>1) map.fitBounds(L.latLngBounds(ll),{ padding:[30,30], maxZoom:11 }); else if(n===1) map.setView(ll[0],9); else map.setView([46.6,2.4],5);
   drawAsp();
   map.on("click", function(e){ if(!addOnMap) return; var k=P.pts.filter(function(p){ return !p.code; }).length+1; addPt({ name:T("Point")+" "+k, code:"", lat:e.latlng.lat, lon:e.latlng.lng }); }); }
@@ -214,6 +225,7 @@ function gpx(){ var x='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1
 function routeName(){ var p=P.pts; return p.length ? (p[0].code||p[0].name)+" → "+(p[p.length-1].code||p[p.length-1].name) : "Route"; }
 function onClick(e){ var b=e.target.closest("button"); if(!b || !box.contains(b)) return; var d=b.dataset;
   if(d.add){ var f=A.byCode(d.add); if(f){ addPt(ptOf(f)); } return; }
+  if(d.avoid!=null){ P.avoid=+d.avoid; savePlan(); return recalc(); }
   if(d.rm!=null){ P.pts.splice(+d.rm,1); savePlan(); return recalc(); }
   if(d.up!=null){ var i=+d.up, x=P.pts[i]; P.pts[i]=P.pts[i-1]; P.pts[i-1]=x; savePlan(); return recalc(); }
   if(d.load!=null){ var r=lget("lf.ulm.routes",[])[+d.load]; if(r){ P.pts=JSON.parse(JSON.stringify(r.pts)); if(r.alt) P.alt=r.alt; savePlan(); recalc(); try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(x2){} } return; }
