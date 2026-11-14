@@ -845,6 +845,30 @@
   .fc-line{ left:18%; right:18%; top:67.5%; height:1.5px; background:var(--sub); opacity:.6; }
   .fc-stats{ left:10%; right:10%; top:70%; display:grid; grid-template-columns:repeat(3,1fr); gap:4px 6px; }
   .fc-stats div{ display:flex; align-items:baseline; justify-content:center; gap:4px; } .fc-stats b{ font-size:19px; font-weight:800; } .fc-stats span{ font-size:10.5px; font-weight:800; color:var(--sub); letter-spacing:.04em; white-space:nowrap; }
+  .fc-stats.fc-real{ gap:5px 4px; } .fc-stats.fc-real div{ flex-direction:column; align-items:center; gap:0; } .fc-stats.fc-real b{ font-size:16px; line-height:1.05; } .fc-stats.fc-real span{ font-size:8.5px; letter-spacing:.03em; }
+  .fc-stats.c4{ grid-template-columns:repeat(4,1fr); left:7%; right:7%; } .fc-stats.c4 b{ font-size:13.5px; } .fc-stats.c4 span{ font-size:7.5px; }
+  .fc-stats.c2{ grid-template-columns:repeat(2,1fr); }
+  /* cartes de la semaine : fond noir marbré, cadre métal (or, argent, bronze) */
+  .fcard.fc-medal{ --ink:#fff; --sub:rgba(255,255,255,.75); aspect-ratio:561/701; width:290px; max-width:82vw; clip-path:none; background:center/100% 100% no-repeat; filter:drop-shadow(0 16px 26px rgba(0,0,0,.4)); }
+  .fcard.fc-medal::before{ display:none; } .fcard.fc-medal .fc-shine{ display:none; }
+  .fcard.fc-medal.m1{ --mt:#f6cf63; background-image:url(img/cards/or.webp?v=2); } .fcard.fc-medal.m2{ --mt:#e8eef3; background-image:url(img/cards/argent.webp?v=2); } .fcard.fc-medal.m3{ --mt:#eba873; background-image:url(img/cards/bronze.webp?v=2); }
+  .fcard.fc-medal .fc-ovr, .fcard.fc-medal .fc-tier, .fcard.fc-medal .fc-stats b{ color:var(--mt); text-shadow:0 2px 8px rgba(0,0,0,.7); }
+  .fcard.fc-medal .fc-l{ left:15%; top:12%; } .fcard.fc-medal .fc-tier{ font-size:10px; top:9.5%; right:16%; left:auto; transform:none; letter-spacing:.08em; }
+  .fcard.fc-medal .fc-photo{ top:15%; right:13%; height:46%; } .fcard.fc-medal .fc-av, .fcard.fc-medal .fc-avl{ top:19%; right:17%; width:38%; border-color:var(--mt); }
+  .fcard.fc-medal .fc-name{ top:63.5%; left:12%; right:12%; font-size:20px; text-shadow:0 2px 8px rgba(0,0,0,.8); } .fcard.fc-medal .fc-line{ display:none; }
+  .fcard.fc-medal .fc-stats{ top:72%; left:16%; right:16%; } .fcard.fc-medal .fc-foot{ bottom:9%; }
+  .fc-th.md1{ background:#1a1a1c; border-color:#f3c64e; } .fc-th.md2{ background:#1a1a1c; border-color:#dfe6ec; } .fc-th.md3{ background:#1a1a1c; border-color:#d98a52; }
+  .fc-th.md1 span, .fc-th.md2 span, .fc-th.md3 span{ color:#fff; }
+  .defi-sps{ display:flex; gap:6px; overflow-x:auto; margin:12px -16px 0; padding:0 16px 2px; scrollbar-width:none; } .defi-sps::-webkit-scrollbar{ display:none; }
+  .defi-sps button, .lb-sps button{ flex:none; min-height:0; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); color:#fff; border-radius:100px; padding:6px 12px; font:inherit; font-size:12.5px; font-weight:700; box-shadow:none; cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .defi-sps button.on{ background:#fff; color:#0a3346; border-color:#fff; }
+  .defi-prz{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; } .defi-prz span{ font-size:12px; font-weight:800; padding:4px 10px; border-radius:100px; background:rgba(0,0,0,.35); border:1px solid currentColor; }
+  .defi-prz .g{ color:#f3c64e; } .defi-prz .s{ color:#dfe6ec; } .defi-prz .b{ color:#e39a63; }
+  .lb-sps{ display:flex; gap:6px; overflow-x:auto; margin:0 0 12px; padding-bottom:2px; scrollbar-width:none; } .lb-sps::-webkit-scrollbar{ display:none; }
+  .lb-sps button{ border-color:#d5dee3; background:#f1f5f7; color:#22313a; } .lb-sps button.on{ background:#0f7f86; color:#fff; border-color:#0f7f86; }
+  .lb-md{ flex:none; font-size:10.5px; font-weight:800; letter-spacing:.04em; padding:3px 7px; border-radius:6px; background:#141416; } .lb-md.m1{ color:#f3c64e; } .lb-md.m2{ color:#dfe6ec; } .lb-md.m3{ color:#e39a63; }
+  .lb-seg.s3 button{ font-size:12.5px; }
+  .md-win{ text-align:center; } .md-win h3{ margin:10px 0 4px; font-size:22px; } .md-win p{ margin:0 0 14px; color:var(--muted); font-size:14.5px; line-height:1.4; }
   .fc-main .fc-stats span{ font-size:9.5px; } .fc-stats .fc-empty{ grid-column:1/-1; font-size:13px; font-weight:700; color:var(--sub); }
   .fc-foot{ left:0; right:0; bottom:8.5%; text-align:center; font-size:10px; font-weight:700; color:var(--sub); letter-spacing:.06em; }
   .fc-ths{ flex:none; display:flex; gap:8px; overflow-x:auto; padding:2px 2px 10px; margin:0 -4px; scrollbar-width:none; } .fc-ths::-webkit-scrollbar{ display:none; }
@@ -3075,9 +3099,9 @@
   // 13/11 : icônes illustrées (img/sports/*.webp) ; les sports sans illustration gardent le pictogramme
   var SP_IMG = { efoil:"efoil", wingfoil:"wingfoil", windsurf:"windsurf", kitesurf:"kitesurf", pumpfoil:"pumpfoil", surffoil:"pumpfoil", surf:"surf", bodyboard:"bodyboard",
     sup:"sup", supdownwind:"sup", jetski:"jetski", running:"running", marche:"marche", rando:"rando", trail:"trail", velo:"velo", ski:"ski", snowboard:"snowboard",
-    skate:"skate", longboard:"skate", surfskate:"skate", roller:"roller", perche:"perche", parapente:"parapente" };
+    skate:"skate", longboard:"skate", surfskate:"skate", roller:"roller", perche:"perche", parapente:"parapente", parawing:"parawing", canoe:"canoe", deriveur:"deriveur" };
   function spIco(k, cls){ var s=spKey(k), g=SP_GLYPH[s], f=SP_FAMC[s]||(s==="trophy"?"gold":"other");
-    if(SP_IMG[s]) return '<span class="spi spi-img'+(cls?" "+cls:"")+'"><img src="img/sports/'+SP_IMG[s]+'.webp?v=1" alt="" decoding="async"></span>';
+    if(SP_IMG[s]) return '<span class="spi spi-img'+(cls?" "+cls:"")+'"><img src="img/sports/'+SP_IMG[s]+'.webp?v=2" alt="" decoding="async"></span>';
     return '<span class="spi spi-'+f+(cls?" "+cls:"")+'">'+spSvg(g[0])+(g[1]?'<i>'+spSvg(g[1])+'</i>':'')+'</span>'; }
   // pour les dessins sur canvas (carte partagée)
   function spDraw(x, k, cx, cy, size, color){ var g=SP_GLYPH[spKey(k)]; x.save(); x.translate(cx-size/2, cy-size/2); x.scale(size/960, size/960); x.translate(0,960); x.fillStyle=color||"#fff"; x.fill(new Path2D(SP_PATH[g[0]])); x.restore(); }
@@ -5163,7 +5187,7 @@
       // 12/11 : favoris du Swip sauvegardés sur le compte (/favorites/{uid}/{vid} = date d'ajout), visibles par moi seul
       watchFavs(cb){ return db.onValue(db.ref(d,"favorites/"+uid), function(sn){ cb(sn.val()||{}); }, function(){}); },
       setFav(vid,on){ if(!vid) return Promise.resolve(); var r=db.ref(d,"favorites/"+uid+"/"+String(vid).replace(/[.#$\[\]\/]/g,"_")); return (on ? db.set(r, Date.now()) : db.remove(r)).catch(function(){}); },
-      saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,month:o.month,eKm:o.eKm||0,week:o.week||"",wKm:o.wKm||0,eo:o.eo||0,ej:o.ej||0,sport:o.sport||"efoil",t:db.serverTimestamp()}).catch(function(){}); },
+      saveStats(o){ return db.set(db.ref(d,"stats/"+uid),{n:o.n,km:o.km,month:o.month,eKm:o.eKm||0,week:o.week||"",wKm:o.wKm||0,eo:o.eo||0,ej:o.ej||0,sport:o.sport||"efoil",wS:o.wS||null,pw:o.pw||null,pS:o.pS||null,md:o.md||null,t:db.serverTimestamp()}).catch(function(){}); },
       watchTyping(cb){ return db.onValue(db.ref(d,"typing"), function(snap){ var now=Date.now(),out={},v=snap.val()||{}; for(var k in v){ if(k===uid) continue; var r=v[k]; if(!r) continue; var t=typeof r.t==="number"?r.t:now; if(now-t>6000) continue; out[k]={ch:r.ch,pseudo:r.pseudo}; } cb(out); }); },
       sendReport(o){ return db.push(db.ref(d,"reports"),{by:uid,byPseudo:me.pseudo,type:o.type,targetUid:o.targetUid||null,targetPseudo:o.targetPseudo||null,text:o.text||null,t:db.serverTimestamp()}); },
       // ---------- groupes privés (facon WhatsApp) ----------
@@ -5309,7 +5333,7 @@
       watchOfficial(cb){ cb({}); return function(){}; },
       saveCard(){ return Promise.resolve(); },
       getCard(){ return Promise.resolve(null); },
-      watchStats(cb){ var mk=monthKey(); var o={"demo-aurel":{n:42,km:612.4,month:mk,week:weekKey(),wKm:18.4,eKm:48.6,eo:3,ej:5,sport:"efoil"},"demo-marine":{n:17,km:203.9,month:mk,week:weekKey(),wKm:9.7,eKm:21.2,eo:0,ej:4,sport:"wing"},"demo-leo":{n:6,km:38,month:mk,eKm:9.8,ej:1,sport:"efoil"}}; cb(o); return function(){}; },
+      watchStats(cb){ var mk=monthKey(); var o={"demo-aurel":{n:42,km:612.4,month:mk,week:weekKey(),wS:{efoil:18.4,velo:42.5,running:12.3},md:[{w:"2026-11-02",s:"efoil",r:1,km:31.2}],wKm:18.4,eKm:48.6,eo:3,ej:5,sport:"efoil"},"demo-marine":{n:17,km:203.9,month:mk,week:weekKey(),wS:{efoil:9.7,wingfoil:14.2,velo:30.5},wKm:9.7,eKm:21.2,eo:0,ej:4,sport:"wing"},"demo-leo":{n:6,km:38,month:mk,eKm:9.8,ej:1,sport:"efoil"}}; cb(o); return function(){}; },
       saveStats(){ return Promise.resolve(); },
       watchFavs(){ return function(){}; }, setFav(){ return Promise.resolve(); },
       watchTyping(){ return function(){}; },
@@ -7416,10 +7440,13 @@
       // sorties au téléphone enregistrées après le dernier calcul de la page Activités
       JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").forEach(function(a){ var st=new Date(a.startedAt||0).getTime(), d=+a.distanceM||0; if(st<=base.t || d<100) return;
         base.n++; base.km+=d/1000; if(isEfoil(a) && okEfoil(a) && monthKey(new Date(st))===mk) base.eKm+=d/1000; if(isEfoil(a) && okEfoil(a) && weekKey(new Date(st))===wk) base.wKm+=d/1000; });
-      return {n:base.n, km:Math.round(base.km*10)/10, month:mk, eKm:Math.round(base.eKm*10)/10, week:wk, wKm:Math.round(base.wKm*10)/10, eo:+c.eo||0, ej:+c.ej||0, sport:chatTopic};
+      var ws={}, ps={}, pw=""; try{ ws=weekSportKm(wk); pw=prevWeekKey(); ps=weekSportKm(pw); }catch(e2){}
+      if(base.wKm>(ws.efoil||0)) ws.efoil=Math.round(base.wKm*10)/10;
+      var nn=function(o){ return Object.keys(o).length?o:null; }, md=medals().slice(0,12).map(function(x){ return {w:x.w,s:x.s,r:x.r,km:+x.km||0}; });
+      return {n:base.n, km:Math.round(base.km*10)/10, month:mk, eKm:Math.round(base.eKm*10)/10, week:wk, wKm:Math.round(base.wKm*10)/10, eo:+c.eo||0, ej:+c.ej||0, sport:chatTopic, wS:nn(ws), pw:pw||null, pS:nn(ps), md:md.length?md:null};
     }catch(e){ return null; } }
   function publishMyStats(){ if(!backend||!backend.saveStats||!me.pseudo) return; var m=myStats(); if(!m || !m.n) return;
-    var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=[m.n,m.km,m.month,m.eKm,m.week,m.wKm,m.eo,m.ej,m.sport].join("|"); if(prev===cur) return;
+    var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=[m.n,m.km,m.month,m.eKm,m.week,m.wKm,m.eo,m.ej,m.sport,JSON.stringify([m.wS,m.pw,m.pS,m.md])].join("|"); if(prev===cur) return;
     backend.saveStats(m); try{ localStorage.setItem(k,cur); }catch(e){} }
   // 12/11 : une sortie vient d'être enregistrée au téléphone → classement mis à jour tout de suite
   document.addEventListener("lf-sess-saved", function(){ try{ localStorage.removeItem("lf.comm.statsSent"); }catch(e){} publishMyStats(); try{ renderDefi(); }catch(e){} });
@@ -7446,6 +7473,12 @@
   function riderRarity(note){ return note>=85?["r-legend","LÉGENDE"]:note>=70?["r-epic","ÉPIQUE"]:note>=55?["r-rare","RARE"]:["r-bronze","BRONZE"]; }
   function monthEfoilKm(v){ return (v && v.month===monthKey()) ? (+v.eKm||0) : 0; }
   function weekEfoilKm(v){ return (v && v.week===weekKey()) ? (+v.wKm||0) : 0; }
+  // 14/11 : km de la semaine par discipline (sorties suivies au téléphone ; garde-fou : vitesse moyenne plausible pour le sport)
+  function prevWeekKey(){ return weekKey(new Date(weekStart().getTime()-3*86400000)); }
+  function okSess(a,k){ var d=+a.distanceM||0, t=+a.durationSec||0, sp=LF_SP[k]; return d>=100 && d<=300000 && (!t || d/t*3.6<=(sp?sp.vref:60)); }
+  function weekSportKm(wk){ var o={}; localSess().forEach(function(a){ var k=sportOf(a), st=new Date(a.startedAt||0).getTime(); if(!k || !st || weekKey(new Date(st))!==wk || !okSess(a,k)) return; o[k]=(o[k]||0)+(+a.distanceM||0)/1000; });
+    Object.keys(o).forEach(function(k){ o[k]=Math.round(o[k]*10)/10; if(!(o[k]>0)) delete o[k]; }); return o; }
+  function medals(){ try{ var a=JSON.parse(localStorage.getItem("lf.medals")||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
   function riderCardHtml(uid){
     var mine=uid===me.uid, st=mine?(myStats()||{}):(commStats[uid]||{}), pr=profileMap[uid]||{};
     var ps=mine?me.pseudo:(pr.pseudo||"Rider"), av=mine?me.av:pr.av, xp=riderXP(st), lv=riderLevel(xp), note=riderNote(xp), rar=riderRarity(note);
@@ -7476,13 +7509,24 @@
     ["windsurf","Windsurf","vol","⛵","mer",70,50,15], ["pumpfoil","Pump foil","vol","🦵","mer",25,5,9], ["kitesurf","Kitesurf","vol","🪁","mer",70,60,15],
     ["surffoil","Surf foil","vol","🏄","mer",35,15,10], ["supdownwind","SUP Downwind","vol","🌬️","mer",30,25,10],
     ["surf","Surf","glisse","🏄","mer",35,8,4], ["bodyboard","Bodyboard","glisse","🌊","mer",30,6,4], ["sup","Stand up paddle","glisse","🛶","mer",14,20,3],
-    ["canoe","Canoë / Kayak","glisse","🚣","mer",16,25,3], ["deriveur","Dériveur","glisse","⛵","mer",30,40,4], ["jetski","Jetski","glisse","🚤","mer",110,80,8],
+    ["canoe","Canoë / Kayak","glisse","🚣","mer",16,25,3], ["deriveur","Dériveur","glisse","⛵","mer",30,40,4], ["jetski","Jetski","glisse","🚤","mer",110,80,8], ["swim","Nage","glisse","🏊","mer",7,3,1],
     ["running","Running","terre","🏃","terre",25,42,5], ["marche","Marche athlétique","terre","🚶","terre",15,30,4], ["rando","Randonnée","terre","🥾","terre",7,30,2],
     ["trail","Trail","terre","⛰️","terre",20,60,3], ["velo","Vélo","terre","🚴","terre",60,150,8], ["ski","Ski","terre","🎿","terre",100,60,6],
     ["snowboard","Snowboard","terre","🏂","terre",90,50,6], ["skate","Skateboard","terre","🛹","terre",35,20,5], ["longboard","Longboard","terre","🛹","terre",60,30,6],
     ["surfskate","Surfskate","terre","🛹","terre",30,15,4], ["roller","Roller","terre","🛼","terre",40,40,6],
     ["longueur","Saut en longueur","explo","🦘","terre",36,3,6], ["perche","Saut à la perche","explo","🤸","terre",34,3,6], ["parapente","Parapente","explo","🪂","terre",70,100,8] ];
   const LF_SP = {}; LF_SPORTS.forEach(function(x){ LF_SP[x[0]]={ k:x[0], name:x[1], fam:x[2], ic:spIco(x[0]), mil:x[4], vref:x[5], dref:x[6], thr:x[7] }; });
+  // 14/11 (demande de Cédric) : stats réelles de chaque carte, sport par sport. [libellé sur la carte, description, unité]
+  const LF_ST = { SMX:["SPD MAX","Vitesse maximum (meilleure activité)","km/h"], SGN:["SPD GEN","Vitesse moyenne de toutes les sessions","km/h"], DIS:["DIS","Distance la plus longue parcourue","km"],
+    DGN:["DIS GEN","Distance moyenne par activité","km"], ALT:["ALT","Dénivelé moyen","m"], STA:["STA","Durée moyenne d'une activité","min"], WAV:["WAV","Nombre de vagues surfées",""],
+    AMX:["ALT MAX","Altitude max de la meilleure activité","m"], AGN:["ALT GEN","Altitude moyenne en activité","m"], HMX:["HT MAX","Hauteur maximum sautée","m"], HGN:["HT GEN","Hauteur moyenne sautée","m"] };
+  const LF_ST_WAV = { efoil:1, wingfoil:1, windsurf:1, surffoil:1, surf:1, parawing:1, kitesurf:1, supdownwind:1, bodyboard:1, canoe:1 };
+  function spStats(k){ var sp=LF_SP[k]||{};
+    if(k==="parapente") return ["SMX","SGN","DIS","DGN","AMX","AGN","STA"];
+    if(k==="perche") return ["HMX","HGN","SMX","SGN","DIS","DGN","ALT","STA"];
+    if(sp.mil==="terre") return ["SMX","SGN","DIS","DGN","ALT","STA"];
+    return LF_ST_WAV[k] ? ["SMX","SGN","DIS","DGN","WAV","STA"] : ["SMX","SGN","DIS","DGN","STA"]; }
+  function stInfo(k, st){ var d=LF_ST[st]||[st,st,""]; if(k==="longueur" && st==="DIS") return ["DIS","Distance la plus longue sautée","m"]; if(k==="longueur" && st==="DGN") return ["DIS GEN","Distance moyenne sautée","m"]; return d; }
   // anciennes activités du tracking → sport de carte
   const LF_OLD = { wing:"wingfoil", kite:"kitesurf", kayak:"canoe", hiking:"rando", cycling:"velo", skiing:"ski", free_flight:"parapente", electric:"efoil", phone:"" };
   function sportOf(a){ var t=String((a&&a.activityType)||"").toLowerCase(); if(LF_SP[t]) return t; if(LF_OLD[t]!=null) return LF_OLD[t]||null;
@@ -7498,7 +7542,9 @@
     // capteurs : pas, cadence, sauts (et mesure officielle saisie par l'athlète)
     m.steps=+a.steps||0; m.cad = (m.steps && m.dur) ? m.steps/(m.dur/60) : 0;
     var J=(a.jumps||[]).filter(function(j){ return j && j.air>0; }); m.nJ=J.length; m.jH=J.reduce(function(x,j){ return Math.max(x,+j.h||0); },0); m.jD=J.reduce(function(x,j){ return Math.max(x,+j.d||0); },0);
-    if(+a.official>0) m.jD=Math.max(m.jD, +a.official); m.jDs=J.map(function(j){ return +j.d||0; }).filter(function(x){ return x>0; });
+    if(+a.official>0) m.jD=Math.max(m.jD, +a.official); m.jDs=J.map(function(j){ return +j.d||0; }).filter(function(x){ return x>0; }); if(+a.official>0) m.jDs.push(+a.official);
+    m.jHs=J.map(function(j){ return +j.h||0; }).filter(function(x){ return x>0; });
+    var AL=P.map(function(p){ return +p.alt; }).filter(function(x){ return isFinite(x) && x!==0; }); m.altMax=AL.length?Math.max.apply(null,AL):0; m.altAvg=AL.length?AL.reduce(function(x,y){ return x+y; },0)/AL.length:0;
     if(P.length<5) return m;
     var sp2=P.map(function(p){ return +p.speed||0; }).slice().sort(function(x,y){ return x-y; }); m.vmax=Math.min(m.vmax||1e9, sp2[Math.floor(sp2.length*0.98)]||m.vmax); // écarte les pics GPS
     var thr=sp.thr, tFly=0, tMove=0, last=null, alt0=P[0].alt||0, mv=[], hd=null, hdT=0, inWave=false, base=0, peaks=0, prevS=P[0].speed||0, rising=false;
@@ -7543,12 +7589,24 @@
     var JD=[]; M.forEach(function(m){ JD=JD.concat(m.jDs||[]); }); if(JD.length>2){ var ja=JD.reduce(function(x,y){return x+y;},0)/JD.length, js=Math.sqrt(JD.reduce(function(x,y){return x+(y-ja)*(y-ja);},0)/JD.length); raw.REG=1-cl01(js/ja)*2; }
     // course / marche : la régularité de la cadence compte aussi dans l'allure
     var cads=M.map(function(m){ return m.cad; }).filter(function(x){ return x>0; }); if(cads.length) raw.PAC = 0.7*raw.PAC + 0.3*cl01(Math.max.apply(null,cads)/180);
-    var keys=LF_FAM[sp.fam].stats, st=keys.map(function(k){ return rate(raw[k]); });
+    var mean=function(a){ return a.length ? a.reduce(function(x,y){ return x+y; },0)/a.length : 0; };
+    var SG=mean(M.filter(function(m){ return m.dur>0 && m.d>0; }).map(function(m){ return m.d/(m.dur/3600); })), Davg=Dtot/n;
+    var JH=[]; M.forEach(function(m){ JH=JH.concat(m.jHs||[]); });
+    var real={ SMX:V, SGN:SG, DIS:Dbest, DGN:Davg, ALT:avg(function(m){ return m.dplus; }), STA:avg(function(m){ return m.dur; })/60, WAV:sum(function(m){ return m.waves; }),
+      AMX:max(function(m){ return m.altMax||0; }), AGN:mean(M.map(function(m){ return m.altAvg||0; }).filter(function(x){ return x>0; })), HMX:max(function(m){ return m.jH; }), HGN:mean(JH) };
+    var nrm={ SMX:real.SMX/sp.vref, SGN:real.SGN/(sp.vref*0.55), DIS:real.DIS/sp.dref, DGN:real.DGN/(sp.dref*0.6), ALT:real.ALT/600, STA:real.STA/120, WAV:real.WAV/150, AMX:real.AMX/3000, AGN:real.AGN/1500, HMX:real.HMX/4, HGN:real.HGN/3 };
+    if(sp.k==="longueur"){ real.DIS=max(function(m){ return m.jD; }); real.DGN=mean(JD); nrm.DIS=real.DIS/8.5; nrm.DGN=real.DGN/6.5; }
+    var keys=spStats(sp.k), st=keys.map(function(k){ return rate(nrm[k]); });
     // 13/11 : valeurs réelles affichées sur la carte (vitesse max en km/h, plus longue sortie en km)
     var r1=function(x){ return isFinite(x)&&x>0 ? Math.round(x*10)/10 : 0; };
-    return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st, v:{ SPD:r1(V), DIS:r1(Dbest) } }; }
+    var vv={}; keys.forEach(function(k){ vv[k] = (k==="ALT"||k==="AMX"||k==="AGN"||k==="STA"||k==="WAV") ? Math.round(real[k]||0) : (k==="HMX"||k==="HGN"||sp.k==="longueur"&&(k==="DIS"||k==="DGN")) ? Math.round((real[k]||0)*100)/100 : r1(real[k]); });
+    return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st, v:vv }; }
+  // valeur affichée d'une stat : [texte, unité]. Toutes les stats sont des valeurs réelles (les cartes publiées par une ancienne version n'ont que la vitesse max et la distance).
+  function cardVal(c, st, i, k){ var inf=stInfo(k, st), v=c&&c.v||{}, x=+v[st]||0; if(!x && st==="SMX") x=+v.SPD||0; if(!x && st==="DIS" && !v.SMX) x=+v.DIS||0;
+    if(!(x>0)) return [ (st==="WAV" && c && c.n && v.SMX) ? "0" : "—", inf[2] ];
+    return [ (x>=100?Math.round(x):x).toLocaleString("fr-FR"), inf[2] ]; }
   // valeur affichée pour une stat : [texte, unité]. Vitesse et distance = valeur réelle, les autres = note 1 à 99.
-  function cardVal(c, s, i){ if(s==="SPD" || s==="DIS"){ var x=c.v ? +c.v[s] : 0;
+  function cardValOld(c, s, i){ if(s==="SPD" || s==="DIS"){ var x=c.v ? +c.v[s] : 0;
       if(x>0) return [ (x>=100?Math.round(x):x).toLocaleString("fr-FR"), s==="SPD"?"km/h":"km" ];
       if(!c.n || c.v) return ["—", s==="SPD"?"km/h":"km"]; }
     return [String(c.s[i]), ""]; }
@@ -7557,7 +7615,7 @@
   // mes cartes : une par sport choisi ou pratiqué + carte principale (moyenne pondérée par le nombre de sorties)
   function myCards(){ var by={}; localSess().forEach(function(a){ var k=sportOf(a); if(k){ (by[k]=by[k]||[]).push(a); } });
     var keys=mySports.slice(); Object.keys(by).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); });
-    var d={}; keys.forEach(function(k){ var c=sportStats(LF_SP[k], by[k]||[]); d[k]=c||{ k:k, n:0, r:rate(0), s:LF_FAM[LF_SP[k].fam].stats.map(function(){ return rate(0); }), v:{ SPD:0, DIS:0 } }; });
+    var d={}; keys.forEach(function(k){ var c=sportStats(LF_SP[k], by[k]||[]); d[k]=c||{ k:k, n:0, r:rate(0), s:spStats(k).map(function(){ return rate(0); }), v:{} }; });
     // la carte principale ne compte que les sports déjà pratiqués (sinon un sport juste coché ferait baisser la note)
     var w=0, t=0; keys.forEach(function(k){ var c=d[k]; if(!c.n) return; w+=c.n; t+=c.n*c.r; }); if(!w){ keys.forEach(function(k){ w+=1; t+=d[k].r; }); }
     return { g: keys.length? Math.round(t/w) : rate(0), d:d, order:keys.sort(function(x,y){ return d[y].r-d[x].r; }) }; }
@@ -7567,18 +7625,19 @@
   // publie mes notes (lues par mes amis et la communauté) quand elles changent
   let lastRatingsJson="";
   function publishRatings(){ if(!backend || !backend.saveRatings || !profileReady()) return; var c=myCards(), o={ g:c.g, d:{}, t:Date.now() };
-    c.order.forEach(function(k){ o.d[k]={ r:c.d[k].r, n:c.d[k].n, s:c.d[k].s, v:{ SPD:+(c.d[k].v&&c.d[k].v.SPD)||0, DIS:+(c.d[k].v&&c.d[k].v.DIS)||0 } }; }); var j=JSON.stringify([o.g,o.d]); if(j===lastRatingsJson) return; lastRatingsJson=j; backend.saveRatings(o).catch(function(){ lastRatingsJson=""; }); }
+    c.order.forEach(function(k){ o.d[k]={ r:c.d[k].r, n:c.d[k].n, s:c.d[k].s, v:(function(v){ var o={}; Object.keys(v||{}).forEach(function(q){ if(/^[A-Z]{3}$/.test(q) && isFinite(+v[q])) o[q]=+v[q]; }); return o; })(c.d[k].v) }; }); var j=JSON.stringify([o.g,o.d]); if(j===lastRatingsJson) return; lastRatingsJson=j; backend.saveRatings(o).catch(function(){ lastRatingsJson=""; }); }
   function fcardHtml(uid, k, c){ var main=!k, sp=main?null:LF_SP[k], n=main?c.g:c.d[k].r, tier=cardTier(n), mine=uid===me.uid, pr=profileMap[uid]||{};
     var ps=mine?me.pseudo:(pr.pseudo||pName(uid)), cimg=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
     var photo=cimg?'<img class="fc-photo" src="'+esc(cimg)+'" alt="">':(av?'<img class="fc-av" src="'+esc(av)+'" alt="">':'<div class="fc-avl">'+esc((ps||"R").charAt(0).toUpperCase())+'</div>');
     var cells;
     if(main){ var top=c.order.slice(0,6); cells=top.length? top.map(function(x){ return '<div><b>'+c.d[x].r+'</b><span>'+LF_SP[x].ic+' '+esc(LF_SP[x].name.split(" ")[0].slice(0,7).toUpperCase())+'</span></div>'; }).join("") : '<div class="fc-empty">Choisis tes sports</div>'; }
-    else cells=LF_FAM[sp.fam].stats.map(function(s,i){ var cv=cardVal(c.d[k],s,i); return '<div><b>'+esc(cv[0])+'</b><span>'+(cv[1]?esc(cv[1].toUpperCase()):s)+'</span></div>'; }).join("");
+    else cells=spStats(k).map(function(s,i){ var cv=cardVal(c.d[k],s,i,k); return '<div><b>'+esc(cv[0])+'</b><span>'+esc(stInfo(k,s)[0])+'</span></div>'; }).join("");
+    var nst=main?6:spStats(k).length;
     return '<div class="fcard '+tier[0]+(main?' fc-main':'')+'"><div class="fc-shine"></div>'
       +'<div class="fc-l"><div class="fc-ovr">'+n+'</div><div class="fc-pos">'+(main?"GLOBAL":esc(sp.name.toUpperCase().slice(0,10)))+'</div><div class="fc-ic">'+(main?spIco("trophy"):sp.ic)+'</div></div>'
       +'<div class="fc-tier">'+tier[1]+'</div>'+photo
       +'<div class="fc-name">'+esc(ps||"Rider")+'</div><div class="fc-line"></div>'
-      +'<div class="fc-stats">'+cells+'</div>'
+      +'<div class="fc-stats'+(main?'':' fc-real')+(nst>6?' c4':'')+'">'+cells+'</div>'
       +'<div class="fc-foot">'+(main?(c.order.length+" discipline"+(c.order.length>1?"s":"")):(c.d[k].n+" sortie"+(c.d[k].n>1?"s":"")))+' · Lite Foil</div></div>'; }
   // choix des sports (puces groupées par famille)
   function sportsPickerHtml(sel){ return Object.keys(LF_FAM).map(function(f){ return '<div class="sp-fam"><b>'+esc(LF_FAM[f].name)+'</b><div class="sp-chips">'
@@ -7919,16 +7978,18 @@
   function openRiderCard(uid, sel){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
     var C=cardsOf(uid);
     if(!C){ o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>Carte de rider</b><span></span></div><div class="gc-body"><div id="rcSlot">'+riderCardHtml(uid)+'</div><div class="gc-count">Ce rider n\'a pas encore de Carte Rider par sport.</div></div></div>'; $("rcClose").addEventListener("click", closeOverlay); return; }
+    var MD=medalsOf(uid), mdSel=null; if(/^md:/.test(sel||"")){ mdSel=MD[+sel.slice(3)]||null; sel=null; }
     if(sel && !C.d[sel]) sel=null;
     var cur=sel?C.d[sel]:null, sp=sel?LF_SP[sel]:null;
-    var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>'+spIco("trophy")+' Globale</span></button>'
-      +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("");
-    var legend = sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+LF_FAM[sp.fam].stats.map(function(s,i){ var cv=cardVal(cur,s,i); return '<div><span><b>'+s+'</b> · '+esc(LF_STAT_NAME[s])+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+'</b></div>'; }).join("")+'</div>'
+    var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel&&!mdSel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>'+spIco("trophy")+' Globale</span></button>'
+      +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("")
+      +MD.map(function(m,i){ return '<button type="button" class="fc-th md'+m.r+(mdSel===m?' on':'')+'" data-cs="md:'+i+'"><b>'+MD_ICO[m.r-1]+'</b><span>'+MD_NAME[m.r-1]+' · '+esc(LF_SP[m.s].name)+'</span></button>'; }).join("");
+    var legend = mdSel ? '<div class="gc-count">Carte '+MD_NAME[mdSel.r-1]+' de la semaine : '+mdSel.r+(mdSel.r===1?"er":"e")+' du défi '+esc(LF_SP[mdSel.s].name)+', semaine du '+esc(mdWeekLabel(mdSel.w))+'.</div>' : sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+spStats(sel).map(function(s,i){ var cv=cardVal(cur,s,i,sel), inf=stInfo(sel,s); return '<div><span><b>'+esc(inf[0])+'</b> · '+esc(inf[1])+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+'</b></div>'; }).join("")+'</div>'
         +(mine&&!cur.n?'<div class="gc-count">Enregistre une sortie de '+esc(sp.name)+' dans Tracking pour faire monter cette carte.</div>':'')
       : '<div class="gc-count">La carte principale fait la moyenne de tes sports, en comptant plus ceux que tu pratiques le plus.</div>';
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Mes Cartes Rider":"Cartes Rider")+'</b><span></span></div><div class="gc-body">'
       +'<div class="fc-ths">'+thumbs+(mine?'<button type="button" class="fc-th fc-add" id="rcSports"><b>+</b><span>Mes sports</span></button>':'')+'</div>'
-      +'<div id="rcSlot">'+fcardHtml(uid, sel, C)+'</div>'
+      +'<div id="rcSlot">'+(mdSel?medalCardHtml(uid, mdSel):fcardHtml(uid, sel, C))+'</div>'
       +'<button class="rc-share-btn" id="rcShare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Partager '+(mine?"ma":"cette")+' carte</button>'
       +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de toi en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
       +legend
@@ -8022,8 +8083,9 @@
       spDraw(x, main?"trophy":sp.k, cx0+CW*.2, cy0+CH*.34-22, 66, "#fff");
       x.font='800 64px "Instrument Sans", sans-serif'; x.fillText(ps.toUpperCase().slice(0,16), cx0+CW/2, cy0+CH*.63);
       x.globalAlpha=.6; x.fillRect(cx0+CW*.18, cy0+CH*.665, CW*.64, 4); x.globalAlpha=1;
-      var cells = main ? C.order.slice(0,6).map(function(q){ return [C.d[q].r, LF_SP[q].name.split(" ")[0].slice(0,7).toUpperCase()]; }) : LF_FAM[sp.fam].stats.map(function(st,i){ var cv=cardVal(C.d[k],st,i); return [cv[0], cv[1]?cv[1].toUpperCase():st]; });
-      cells.forEach(function(c,i){ var cx=cx0+CW*(0.24+0.26*(i%3)), cy=cy0+CH*(0.735+0.075*Math.floor(i/3)); x.textAlign="right"; x.font='800 58px "Instrument Sans", sans-serif'; x.fillText(String(c[0]), cx+8, cy); x.textAlign="left"; x.globalAlpha=.72; x.font='800 26px "Instrument Sans", sans-serif'; x.fillText(c[1], cx+16, cy); x.globalAlpha=1; });
+      var cells = main ? C.order.slice(0,6).map(function(q){ return [C.d[q].r, LF_SP[q].name.split(" ")[0].slice(0,7).toUpperCase()]; }) : spStats(k).map(function(st,i){ var cv=cardVal(C.d[k],st,i,k); return [cv[0], stInfo(k,st)[0]]; });
+      if(main) cells.forEach(function(c,i){ var cx=cx0+CW*(0.24+0.26*(i%3)), cy=cy0+CH*(0.735+0.075*Math.floor(i/3)); x.textAlign="right"; x.font='800 58px "Instrument Sans", sans-serif'; x.fillText(String(c[0]), cx+8, cy); x.textAlign="left"; x.globalAlpha=.72; x.font='800 26px "Instrument Sans", sans-serif'; x.fillText(c[1], cx+16, cy); x.globalAlpha=1; });
+      else { var nc=cells.length>6?4:3; cells.forEach(function(c,i){ var cx=cx0+CW*(0.5+((i%nc)-(nc-1)/2)*(0.78/nc)), cy=cy0+CH*(0.722+0.082*Math.floor(i/nc)); x.textAlign="center"; x.font='800 '+(nc===4?40:48)+'px "Instrument Sans", sans-serif'; x.fillText(String(c[0]), cx, cy); x.globalAlpha=.72; x.font='800 '+(nc===4?19:22)+'px "Instrument Sans", sans-serif'; x.fillText(c[1], cx, cy+28); x.globalAlpha=1; }); }
       x.textAlign="center"; x.globalAlpha=.7; x.font='700 26px "Instrument Sans", sans-serif'; x.fillText((main?(C.order.length+" discipline"+(C.order.length>1?"s":"")):(C.d[k].n+" sortie"+(C.d[k].n>1?"s":"")))+" · LITE FOIL", cx0+CW/2, cy0+CH*.9); x.globalAlpha=1;
       x.fillStyle="#fff"; x.font='400 76px "Instrument Serif", Georgia, serif'; x.fillText("Rejoins-moi sur l'eau.", W/2, cy0+CH+150);
       x.font='600 34px "Instrument Sans", sans-serif'; x.fillStyle="rgba(255,255,255,.75)"; x.fillText("Appli Lite Foil · cartes, sorties, communauté", W/2, cy0+CH+205);
@@ -8108,29 +8170,74 @@
       return {img:exportCard(c), cut:false};
     }); }); }
   // ---------- défi eFoil de la semaine (km d'eFoil enregistrés du lundi au dimanche) ----------
-  function defiBoard(){ var out=[];
-    for(var u in commStats){ if(u===TEAM_UID || blocked.has(u)) continue; var km=weekEfoilKm(commStats[u]); if(u===me.uid) continue; if(km>0) out.push({uid:u, km:km}); }
-    var mk=weekEfoilKm(myStats()); if(mk>0 && me.pseudo) out.push({uid:me.uid, km:mk});
+  // 14/11 : un classement par discipline. prev = semaine dernière (sert à remettre les cartes Or, Argent, Bronze)
+  let defiSp="efoil"; try{ var _dsp=localStorage.getItem("lf.defi.sp"); if(_dsp && LF_SP[_dsp]) defiSp=_dsp; }catch(e){}
+  function defiKm(v, sp, prev){ if(!v) return 0; var wk=prev?prevWeekKey():weekKey();
+    if(v.week===wk) return +((v.wS||{})[sp]) || (sp==="efoil" ? (+v.wKm||0) : 0);
+    if(prev && v.pw===wk) return +((v.pS||{})[sp])||0; return 0; }
+  function defiBoard(sp, prev){ sp=sp||"efoil"; var out=[];
+    for(var u in commStats){ if(u===TEAM_UID || blocked.has(u) || u===me.uid) continue; var km=defiKm(commStats[u],sp,prev); if(km>0) out.push({uid:u, km:km}); }
+    var mk=defiKm(myStats(),sp,prev); if(mk>0 && me.pseudo) out.push({uid:me.uid, km:mk});
     out.sort(function(a,b){ return b.km-a.km; }); return out; }
-  function defiRank(uid){ var b=defiBoard(); for(var i=0;i<b.length;i++){ if(b[i].uid===uid) return i+1; } return 0; }
+  function defiRank(uid, sp, prev){ var b=defiBoard(sp,prev); for(var i=0;i<b.length;i++){ if(b[i].uid===uid) return i+1; } return 0; }
+  function defiSports(prev){ var ks=["efoil"], add=function(k){ if(LF_SP[k] && ks.indexOf(k)<0) ks.push(k); }; if(LF_SP[defiSp]) add(defiSp); mySports.forEach(add);
+    var cnt={}; for(var u in commStats){ var v=commStats[u]||{}, o=(v.week===(prev?prevWeekKey():weekKey()))?v.wS:(prev?v.pS:null); Object.keys(o||{}).forEach(function(k){ cnt[k]=(cnt[k]||0)+1; }); }
+    Object.keys(((myStats()||{})[prev?"pS":"wS"])||{}).forEach(function(k){ cnt[k]=(cnt[k]||0)+1; });
+    Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; }).forEach(add); return ks; }
+  function defiChips(prev){ return defiSports(prev).map(function(k){ return '<button type="button" data-dsp="'+k+'" class="'+(k===defiSp?"on":"")+'">'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</button>'; }).join(""); }
+  function setDefiSp(k){ if(!LF_SP[k]) return; defiSp=k; try{ localStorage.setItem("lf.defi.sp",k); }catch(e){} }
+  function goTrackSp(k){ if(k==="efoil") return goTrackEfoil(); try{ closeOverlay(); }catch(e){} var t=document.querySelector('.tab[data-tab="tracking"]'); if(t) t.click();
+    setTimeout(function(){ try{ if(LF_SP[k] && typeof phSetMilieu==="function") phSetMilieu(LF_SP[k].mil); }catch(e){} var sel=$("phAct"); if(sel && sel.querySelector('option[value="'+k+'"]') && sel.value!==k){ sel.value=k; sel.dispatchEvent(new Event("change")); }
+      var b=$("phStart"); if(b && !b.hidden) b.scrollIntoView({block:"center", behavior:"smooth"}); },250); }
+  const MD_NAME=["Or","Argent","Bronze"], MD_ICO=["🥇","🥈","🥉"];
+  function mdWeekLabel(w){ try{ return new Date(w+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }catch(e){ return w; } }
+  function medalsOf(uid){ var a = uid===me.uid ? medals() : ((commStats[uid]||{}).md||[]); return (Array.isArray(a)?a:[]).filter(function(x){ return x && LF_SP[x.s] && x.r>=1 && x.r<=3; }).slice(0,12); }
+  function medalCardHtml(uid, m){ var mine=uid===me.uid, pr=profileMap[uid]||{}, sp=LF_SP[m.s], ps=mine?me.pseudo:(pr.pseudo||pName(uid)), cimg=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
+    var photo=cimg?'<img class="fc-photo" src="'+esc(cimg)+'" alt="">':(av?'<img class="fc-av" src="'+esc(av)+'" alt="">':'<div class="fc-avl">'+esc((ps||"R").charAt(0).toUpperCase())+'</div>');
+    return '<div class="fcard fc-medal m'+m.r+'"><div class="fc-shine"></div>'
+      +'<div class="fc-l"><div class="fc-ovr">'+m.r+'</div><div class="fc-pos">'+esc(sp.name.toUpperCase().slice(0,10))+'</div><div class="fc-ic">'+sp.ic+'</div></div>'
+      +'<div class="fc-tier">'+MD_NAME[m.r-1].toUpperCase()+' DE LA SEMAINE</div>'+photo
+      +'<div class="fc-name">'+esc(ps||"Rider")+'</div><div class="fc-line"></div>'
+      +'<div class="fc-stats fc-real c2"><div><b>'+(Math.round((+m.km||0)*10)/10).toLocaleString("fr-FR")+'</b><span>KM</span></div><div><b>'+esc(mdWeekLabel(m.w))+'</b><span>SEMAINE DU</span></div></div>'
+      +'<div class="fc-foot">Défi de la semaine · Lite Foil</div></div>'; }
+  // remise des cartes : au premier chargement du classement, on regarde le podium de la semaine dernière dans chaque discipline
+  let medalsChecked=false;
+  function checkMedals(){ if(medalsChecked || !me.pseudo || !Object.keys(commStats).length) return; medalsChecked=true;
+    setTimeout(function(){ try{ var pw=prevWeekKey(), M=medals(), had={}, neu=[], ps=((myStats()||{}).pS)||{}; M.forEach(function(x){ had[x.w+"|"+x.s]=x; });
+      Object.keys(ps).forEach(function(sp){ if(!LF_SP[sp]) return; var r=defiRank(me.uid,sp,true), key=pw+"|"+sp; if(r<1 || r>3) return;
+        if(had[key]){ had[key].r=r; had[key].km=ps[sp]; } else { var m={w:pw,s:sp,r:r,km:ps[sp]}; M.unshift(m); neu.push(m); } });
+      localStorage.setItem("lf.medals", JSON.stringify(M.slice(0,40))); if(!neu.length) return;
+      try{ localStorage.removeItem("lf.comm.statsSent"); }catch(e){} publishMyStats();
+      if(/[?&]demo=1/.test(location.search)) return; neu.sort(function(a,b){ return a.r-b.r; }); showMedalWin(neu[0], neu.length);
+    }catch(e){} }, 6000); }
+  function showMedalWin(m, n){ var g=$("gOverlay"); if(g && !g.hidden) return; var o=gOverlay(); o.hidden=false;
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="mwClose">✕</button><b>Défi de la semaine</b><span></span></div><div class="gc-body md-win">'+medalCardHtml(me.uid,m)
+      +'<h3>'+MD_ICO[m.r-1]+' Bravo !</h3><p>Tu termines '+m.r+(m.r===1?"er":"e")+' du défi '+esc(LF_SP[m.s].name)+' de la semaine dernière : tu gagnes la carte '+MD_NAME[m.r-1]+' de la semaine.'+(n>1?' Tu as aussi gagné '+(n-1)+' autre'+(n>2?"s":"")+' carte'+(n>2?"s":"")+'.':'')+'</p>'
+      +'<button class="primary" id="mwGo">Voir mes cartes</button></div></div>';
+    $("mwClose").addEventListener("click", closeOverlay); $("mwGo").addEventListener("click", function(){ openRiderCard(me.uid, "md:0"); }); }
   function defiName(uid){ return uid===me.uid ? (me.pseudo||"Moi") : ((profileMap[uid]||{}).pseudo||"Rider"); }
   function spSvgBolt(){ return '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>'; }
   function renderDefi(){ var el=$("defiBox"); if(!el) return;
     var d=new Date(), mois=d.toLocaleDateString("fr-FR",{month:"long"}), end=new Date(weekStart(d).getTime()+7*86400000), left=Math.ceil((end-d)/86400000);
-    var b=defiBoard(), r=defiRank(me.uid), mk=weekEfoilKm(myStats());
+    if(!LF_SP[defiSp]) defiSp="efoil"; var spn=LF_SP[defiSp].name;
+    var b=defiBoard(defiSp), r=defiRank(me.uid,defiSp), mk=defiKm(myStats(),defiSp);
     var hl=Math.max(0,Math.floor((end-d)/3600000)), tl=left<=1?(hl+" h restantes"):("Fin dans "+Math.floor(hl/24)+" j "+(hl%24)+" h");
     var fk=function(km){ return (Math.round(km*10)/10).toLocaleString("fr-FR")+" km"; };
     var pod=[1,0,2].map(function(i){ var x=b[i]; return '<div class="dp dp-'+(i+1)+(x?" on":"")+'"><div class="dp-av">'+(x?avHtml(x.uid):"?")+'</div><div class="dp-n">'+(x?esc(defiName(x.uid)):"Place libre")+'</div><div class="dp-k">'+(x?fk(x.km):"à prendre")+'</div><div class="dp-b">'+(i+1)+'</div></div>'; }).join("");
     var meHtml;
     if(r){ var nxt=r>1?b[r-2]:null, pct=nxt?Math.max(6,Math.min(100,Math.round(mk/nxt.km*100))):100;
       meHtml='<div class="dm-r">'+r+(r===1?"er":"e")+'</div><div class="dm-t">Tu as '+fk(mk)+'<small>'+(nxt?("Encore "+fk(Math.max(0.1,nxt.km-mk))+" pour passer "+(r-1)+(r-1===1?"er":"e")):"Tu mènes le classement 🔥")+'</small><div class="dm-bar"><i style="width:'+pct+'%"></i></div></div><div class="dm-go">›</div>'; }
-    else meHtml='<div class="dm-r">'+spSvgBolt()+'</div><div class="dm-t">Entre dans la course<small>Enregistre une sortie eFoil pour être classé</small></div><div class="dm-go">›</div>';
+    else meHtml='<div class="dm-r">'+spSvgBolt()+'</div><div class="dm-t">Entre dans la course<small>Enregistre une sortie '+esc(spn)+' pour être classé</small></div><div class="dm-go">›</div>';
     el.innerHTML='<div class="defi" id="defiOpen"><div class="defi-top"><span class="defi-tag"><i><svg viewBox="0 -960 960 960"><path d="'+SP_PATH.trophy+'"/></svg></i>Défi de la semaine</span>'
       +'<span class="defi-time'+(left<=1?" last":"")+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+tl+'</span></div>'
-      +'<h3>Le plus de km en <em>eFoil</em></h3><div class="defi-sub">Du lundi au dimanche · classement en direct</div>'
+      +'<div class="defi-sps">'+defiChips()+'</div>'
+      +'<h3>Le plus de km en <em>'+esc(spn)+'</em></h3><div class="defi-sub">Du lundi au dimanche · classement en direct</div>'
+      +'<div class="defi-prz"><span class="g">🥇 Carte Or</span><span class="s">🥈 Carte Argent</span><span class="b">🥉 Carte Bronze</span></div>'
       +(DEFI_LOT?'<div class="defi-lot">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
       +'<div class="defi-pod">'+pod+'</div><div class="defi-me">'+meHtml+'</div></div>';
-    $("defiOpen").addEventListener("click", function(e){ if(!defiRank(me.uid) && e.target.closest(".defi-me")) goTrackEfoil(); else openDefiBoard(); });
+    $("defiOpen").addEventListener("click", function(e){ var c=e.target.closest("[data-dsp]"); if(c){ setDefiSp(c.dataset.dsp); renderDefi(); return; }
+      if(!defiRank(me.uid,defiSp) && e.target.closest(".defi-me")) goTrackSp(defiSp); else openDefiBoard(); });
+    checkMedals();
     var n=$("myCardNote"); if(n) n.textContent=riderNote(riderXP(myStats()||{}));
     var mxp=riderXP(myStats()||{}), mlv=riderLevel(mxp), nm=$("cmhName"), gr=$("cmhGrade");
     if(nm) nm.textContent = me.pseudo || "Créer mon profil";
@@ -8138,19 +8245,21 @@
     try{ window.LF_RIDER={note:riderNote(riderXP(myStats()||{})), rank:r, km:mk, mois:mois}; document.dispatchEvent(new Event("lf-rider")); }catch(e){} }
   function worldBoard(){ var out=[]; for(var u in commStats){ if(u===TEAM_UID || u===me.uid || blocked.has(u)) continue; var k=+(commStats[u]||{}).km||0; if(k>0) out.push({ uid:u, km:k }); }
     var mine=+((myStats()||{}).km)||0; if(mine>0 && me.pseudo) out.push({ uid:me.uid, km:mine }); out.sort(function(a,b){ return b.km-a.km; }); return out; }
-  function openDefiBoard(mode){ var o=gOverlay(); o.hidden=false; var world=mode==="world", b=world?worldBoard():defiBoard();
+  function openDefiBoard(mode){ var o=gOverlay(); o.hidden=false; var world=mode==="world", last=mode==="last", spn=LF_SP[defiSp].name, b=world?worldBoard():defiBoard(defiSp,last);
     var rows=b.slice(0,50).map(function(x,i){ var pr=profileMap[x.uid]||{}, av=(x.uid===me.uid?me.av:pr.av);
       var avh=av?'<span class="cav"><img src="'+av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(x.uid)+'">'+esc((defiName(x.uid).trim()[0]||"R").toUpperCase())+'</span>';
       var st=x.uid===me.uid?(myStats()||{}):(commStats[x.uid]||{});
-      return '<div class="lb-row'+(x.uid===me.uid?" me":"")+'" data-uid="'+esc(x.uid)+'"><span class="lb-pos p'+(i+1)+'">'+(i+1)+'</span>'+avh+'<span class="pick-ps">'+esc(defiName(x.uid))+(x.uid===me.uid?" (toi)":"")+'</span><span class="lb-note">'+riderNote(riderXP(st))+'</span><span class="lb-km">'+(Math.round(x.km*10)/10).toLocaleString("fr-FR")+' km</span></div>'; }).join("");
-    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>'+(world?"🌍 Classement mondial":"🏆 Défi eFoil de la semaine")+'</b><span></span></div><div class="gc-body">'
-      +'<div class="lb-seg"><button type="button" data-m="week" class="'+(world?"":"on")+'">Cette semaine</button><button type="button" data-m="world" class="'+(world?"on":"")+'">Mondial · tous les temps</button></div>'
+      return '<div class="lb-row'+(x.uid===me.uid?" me":"")+'" data-uid="'+esc(x.uid)+'"><span class="lb-pos p'+(i+1)+'">'+(i+1)+'</span>'+avh+'<span class="pick-ps">'+esc(defiName(x.uid))+(x.uid===me.uid?" (toi)":"")+'</span>'+(!world&&i<3?'<span class="lb-md m'+(i+1)+'">'+MD_NAME[i].toUpperCase()+'</span>':'')+'<span class="lb-note">'+riderNote(riderXP(st))+'</span><span class="lb-km">'+(Math.round(x.km*10)/10).toLocaleString("fr-FR")+' km</span></div>'; }).join("");
+    o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="dfClose">✕</button><b>'+(world?"🌍 Classement mondial":"🏆 Défi "+esc(spn)+" de la semaine")+'</b><span></span></div><div class="gc-body">'
+      +'<div class="lb-seg s3"><button type="button" data-m="week" class="'+(world||last?"":"on")+'">Cette semaine</button><button type="button" data-m="last" class="'+(last?"on":"")+'">Semaine dernière</button><button type="button" data-m="world" class="'+(world?"on":"")+'">Mondial</button></div>'
+      +(world?'':'<div class="lb-sps">'+defiChips(last)+'</div>')
       +(DEFI_LOT?'<div class="defi-lot" style="background:#fff1d6;color:#8a5a00">🎁 À gagner : '+esc(DEFI_LOT)+'</div>':'')
-      +'<div class="gc-count">'+(world?'Tous les riders, tous les sports : total des kilomètres enregistrés avec l\'appli depuis leur inscription.':'Classement des km parcourus en eFoil cette semaine (du lundi au dimanche), enregistrés avec l\'appli (suivi GPS ou tracker). Les traces des premiers sont vérifiées par l\'équipe Lite Foil avant la remise du lot.')+'</div>'
-      +(rows||'<div class="comm-empty">Personne pour l\'instant : la première sortie eFoil de la semaine prend la tête !</div>')
-      +'<button class="primary df-go" id="dfGo">▶ Enregistrer une sortie eFoil</button><div class="df-help">Lance le suivi dans l\'onglet Tracking avant d\'aller sur l\'eau, puis appuie sur Terminer en sortant : tes km comptent tout de suite pour le classement.</div>'
+      +'<div class="gc-count">'+(world?'Tous les riders, tous les sports : total des kilomètres enregistrés avec l\'appli depuis leur inscription.':(last?'Podium de la semaine dernière en '+esc(spn)+'. Le 1er gagne la carte Or de la semaine, le 2e la carte Argent, le 3e la carte Bronze : elles s\'ajoutent à leurs Cartes Rider.':'Classement des km parcourus en '+esc(spn)+' cette semaine (du lundi au dimanche), enregistrés avec le suivi GPS de l\'appli. Dimanche soir, le 1er gagne la carte Or de la semaine, le 2e la carte Argent, le 3e la carte Bronze.'))+'</div>'
+      +(rows||'<div class="comm-empty">'+(world||!last?'Personne pour l\'instant : la première sortie '+esc(spn)+' de la semaine prend la tête !':'Personne n\'a été classé dans cette discipline la semaine dernière.')+'</div>')
+      +'<button class="primary df-go" id="dfGo">▶ Enregistrer une sortie '+esc(spn)+'</button><div class="df-help">Lance le suivi dans l\'onglet Tracking avant d\'aller sur l\'eau, puis appuie sur Terminer en sortant : tes km comptent tout de suite pour le classement.</div>'
       +'</div></div>';
-    $("dfClose").addEventListener("click", closeOverlay); $("dfGo").addEventListener("click", goTrackEfoil);
+    $("dfClose").addEventListener("click", closeOverlay); $("dfGo").addEventListener("click", function(){ goTrackSp(defiSp); });
+    o.querySelectorAll("[data-dsp]").forEach(function(c){ c.addEventListener("click", function(){ setDefiSp(c.dataset.dsp); try{ renderDefi(); }catch(e){} openDefiBoard(mode); }); });
     o.querySelectorAll(".lb-seg button").forEach(function(sb){ sb.addEventListener("click", function(){ openDefiBoard(sb.dataset.m); }); });
     o.querySelectorAll(".lb-row[data-uid]").forEach(function(rw){ rw.addEventListener("click", function(){ openRiderCard(rw.dataset.uid); }); }); }
   function renderCommStats(){ var el=$("commStats"); if(!el) return; var n=0, km=0;
