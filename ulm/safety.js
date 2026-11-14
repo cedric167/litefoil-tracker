@@ -85,9 +85,13 @@ function avoid(pts, altFt, level, terFt){ var res={ pts:[], zones:[], blocked:[]
 // ---------- météo le long de la route ----------
 function samplesOf(pts, legT, dep){ var S=[{ lat:pts[0].lat, lon:pts[0].lon, leg:0, t:+dep }], cum=0; for(var i=0;i<pts.length-1;i++){ var d=distM(pts[i],pts[i+1])/NM, k=Math.max(1,Math.round(d/28)); for(var q=1;q<=k;q++){ var p=mid(pts[i],pts[i+1],q/k); S.push({ lat:p.lat, lon:p.lon, leg:i, t:+dep+(cum+legT[i]*q/k)*60000 }); } cum+=legT[i]; }
   if(S.length>14){ var st=Math.ceil(S.length/14), o=[]; for(var j=0;j<S.length;j++) if(j%st===0 || j===S.length-1) o.push(S[j]); S=o; } return S; }
-function fetchRaw(S){ return fetch("https://api.open-meteo.com/v1/forecast?latitude="+S.map(function(s){ return s.lat.toFixed(3); }).join(",")+"&longitude="+S.map(function(s){ return s.lon.toFixed(3); }).join(",")+"&hourly=visibility,cloud_cover_low,temperature_2m,dew_point_2m,precipitation,weather_code,wind_gusts_10m&wind_speed_unit=kn&timeformat=unixtime&forecast_days=2")
+function fdaysOf(S){ var mx=0; S.forEach(function(s){ if(s.t>mx) mx=s.t; }); return Math.min(16, Math.max(8, Math.ceil((mx-Date.now())/864e5)+2)); }
+// la même route, jour après jour à la même heure : sert à choisir le meilleur jour (une seule demande de prévisions pour les 7 jours)
+function outlook(r, nLegs, times){ return times.map(function(t){ var e=evalRoute(r.S.map(function(s){ return { lat:s.lat, lon:s.lon, leg:s.leg, t:s.t }; }), r.raw, t-r.dep, nLegs), why=[]; e.legs.forEach(function(l){ if(l.lvl===e.worst && l.lvl>0) l.why.forEach(function(w){ if(why.indexOf(w)<0) why.push(w); }); }); return { t:t, worst:e.worst, why:why.slice(0,2), na:e.na }; }); }
+function fetchRaw(S){ return fetch("https://api.open-meteo.com/v1/forecast?latitude="+S.map(function(s){ return s.lat.toFixed(3); }).join(",")+"&longitude="+S.map(function(s){ return s.lon.toFixed(3); }).join(",")+"&hourly=visibility,cloud_cover_low,temperature_2m,dew_point_2m,precipitation,weather_code,wind_gusts_10m&wind_speed_unit=kn&timeformat=unixtime&forecast_days="+fdaysOf(S))
   .then(function(r){ return r.json(); }).then(function(j){ var arr=Array.isArray(j)?j:[j]; if(!arr.length || !arr[0].hourly) throw new Error("meteo"); return arr.map(function(x){ return x.hourly; }); }); }
 function judge(H, tMs){ var t=tMs/1000, bi=0, bd=1e12; for(var k=0;k<H.time.length;k++){ var dd=Math.abs(H.time[k]-t); if(dd<bd){ bd=dd; bi=k; } }
+  if(bd>3*3600) return { lvl:0, why:[], na:true };
   var vis=H.visibility[bi], low=H.cloud_cover_low[bi]||0, T2=H.temperature_2m[bi], Td=H.dew_point_2m[bi], pr=H.precipitation[bi]||0, code=H.weather_code[bi]||0, gust=H.wind_gusts_10m[bi]||0, base=(T2!=null&&Td!=null)?Math.max(0,(T2-Td)*400):null, lvl=0, why=[];
   function add(l,w){ if(l>lvl) lvl=l; why.push([l,w]); }
   if(code>=95) add(2,T("orage")); if(code===45||code===48) add(2,T("brouillard")); if(code===66||code===67||code===56||code===57) add(2,T("pluie verglaçante"));
@@ -97,11 +101,11 @@ function judge(H, tMs){ var t=tMs/1000, bi=0, bd=1e12; for(var k=0;k<H.time.leng
   if(pr>=4) add(2,T("pluie forte")); else if(pr>=1 || (code>=61&&code<=65)) add(1,T("pluie")); else if(code>=80&&code<=82) add(1,T("averses")); if(code>=71&&code<=77) add(code>=75?2:1,T("neige"));
   why.sort(function(a,b){ return b[0]-a[0]; }); return { lvl:lvl, why:why.map(function(w){ return w[1]; }), vis:vis, base:base, gust:gust }; }
 function evalRoute(S, raw, shiftMs, nLegs){ var legs=[], worst=0; for(var i=0;i<nLegs;i++) legs.push({ lvl:0, why:[] });
-  S.forEach(function(s,i){ var j=judge(raw[i], s.t+(shiftMs||0)); s.lvl=j.lvl; s.why=j.why; var l=legs[s.leg]; if(j.lvl>l.lvl){ l.lvl=j.lvl; l.why=j.why.slice(0,2); } else if(j.lvl===l.lvl && j.lvl>0 && !l.why.length) l.why=j.why.slice(0,2); if(j.lvl>worst) worst=j.lvl; }); return { legs:legs, worst:worst, S:S }; }
+  var na=0; S.forEach(function(s,i){ var j=judge(raw[i], s.t+(shiftMs||0)); if(j.na) na++; s.lvl=j.lvl; s.why=j.why; var l=legs[s.leg]; if(j.lvl>l.lvl){ l.lvl=j.lvl; l.why=j.why.slice(0,2); } else if(j.lvl===l.lvl && j.lvl>0 && !l.why.length) l.why=j.why.slice(0,2); if(j.lvl>worst) worst=j.lvl; }); return { legs:legs, worst:worst, S:S, na:na>S.length/2 }; }
 function legTimes(pts, tasKt, legT){ if(legT && legT.length===pts.length-1) return legT; var o=[]; for(var i=0;i<pts.length-1;i++) o.push(distM(pts[i],pts[i+1])/NM/Math.max(20,tasKt)*60); return o; }
 // météo d'une route : { legs:[{lvl,why}], worst, S, raw }
 var wxMem={};
-function routeWx(pts, tasKt, dep, legT){ var lt=legTimes(pts,tasKt,legT), S=samplesOf(pts, lt, dep), key=S.map(function(s){ return s.lat.toFixed(2)+","+s.lon.toFixed(2); }).join(";"), m=wxMem[key];
+function routeWx(pts, tasKt, dep, legT){ var lt=legTimes(pts,tasKt,legT), S=samplesOf(pts, lt, dep), key=fdaysOf(S)+"|"+S.map(function(s){ return s.lat.toFixed(2)+","+s.lon.toFixed(2); }).join(";"), m=wxMem[key];
   var done=function(raw){ var r=evalRoute(S, raw, 0, pts.length-1); r.raw=raw; r.dep=+dep; return r; }; if(m && Date.now()-m.t<15*60000) return Promise.resolve(done(m.raw));
   return fetchRaw(S).then(function(raw){ wxMem[key]={ t:Date.now(), raw:raw }; var ks=Object.keys(wxMem); if(ks.length>30) delete wxMem[ks[0]]; return done(raw); }); }
 function totalNM(pts){ var d=0; for(var i=0;i<pts.length-1;i++) d+=distM(pts[i],pts[i+1]); return d/NM; }
@@ -127,5 +131,5 @@ function metars(pts, api){ if(!api.metarBox) return Promise.resolve([]); var a=9
   return api.metarBox([a,b,c,d]).then(function(l){ var out=[]; (l||[]).forEach(function(s){ if(!s.raw || !isFinite(s.lat)) return; var best=1e9, along=0, acc=0; for(var i=0;i<pts.length-1;i++){ var L=distM(pts[i],pts[i+1]), d1=distM(pts[i],s), th=rad(brg(pts[i],s)-brg(pts[i],pts[i+1])), al=Math.max(0,Math.min(L,d1*Math.cos(th))), p=mid(pts[i],pts[i+1],L?al/L:0), dd=distM(p,s); if(dd<best){ best=dd; along=acc+al; } acc+=L; }
       if(best>22*NM) return; var o=api.parseMetar(s.raw), cat=api.fltCat(o); out.push({ id:s.id, name:String(s.name||"").split(",")[0], cat:cat, km:best/1000, along:along, o:o }); }); out.sort(function(x,y){ return x.along-y.along; }); return out; }).catch(function(){ return []; }); }
 
-window.LFSafe={ init:function(api){ A=api; }, loadAsp:loadAsp, avoid:avoid, checkRoute:checkRoute, at:at, limTxt:limTxt, routeWx:routeWx, suggest:suggest, metars:metars, ready:function(){ return !!ASP; } };
+window.LFSafe={ init:function(api){ A=api; }, loadAsp:loadAsp, avoid:avoid, checkRoute:checkRoute, at:at, limTxt:limTxt, routeWx:routeWx, outlook:outlook, suggest:suggest, metars:metars, ready:function(){ return !!ASP; } };
 })();
