@@ -4439,10 +4439,17 @@
     function ver(){ return fetch("sw.js?v="+Date.now(), { cache:"no-store" }).then(function(r){ return r.ok ? r.text() : ""; }).then(function(t){ var m=/lf-tracker-v(\d+)/.exec(t||""); return m ? m[1] : null; }).catch(function(){ return null; }); }
     function busy(){ try{ if(document.getElementById("lfCall") || document.getElementById("stv") || document.getElementById("lfSetup")) return true; if(localStorage.getItem("lf.ph.cur")) return true;
         var a=document.activeElement; if(a && /^(INPUT|TEXTAREA)$/.test(a.tagName) && a.value) return true; }catch(e){} return false; }
-    function check(){ if(Date.now()-last<60000) return; last=Date.now(); ver().then(function(v){ if(!v) return; if(cur===null){ cur=v; return; } if(v!==cur && !busy()){ try{ sessionStorage.setItem("lf.upd", v); }catch(e){} location.reload(); } }); }
+    function go(v){ try{ sessionStorage.setItem("lf.upd", v); }catch(e){} location.reload(); }
+    function banner(v){ if(document.getElementById("lfUpd")) return; var el=document.createElement("button"); el.id="lfUpd"; el.type="button";
+      el.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 10px);z-index:13000;min-height:0;border:0;border-radius:999px;padding:11px 18px;background:#0e1417;color:#fff;font:inherit;font-size:14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap";
+      el.textContent="Mise à jour disponible · Recharger"; el.addEventListener("click", function(){ go(v); }); document.body.appendChild(el); }
+    // auto = moment où l'on peut recharger sans gêner (retour dans l'appli, changement d'onglet) ; sinon on propose le bandeau
+    function check(auto, gap){ if(Date.now()-last<(gap||30000)) return; last=Date.now(); ver().then(function(v){ if(!v) return; if(cur===null){ cur=v; return; } if(v===cur) return; if(auto && !busy()) go(v); else banner(v); }); }
     window.addEventListener("load", function(){ ver().then(function(v){ cur=v; }); });
-    document.addEventListener("visibilitychange", function(){ if(!document.hidden) check(); });
-    window.addEventListener("focus", check); setInterval(function(){ if(!document.hidden) check(); }, 15*60000);
+    document.addEventListener("visibilitychange", function(){ if(!document.hidden) check(true, 5000); });
+    window.addEventListener("focus", function(){ check(true, 5000); });
+    document.addEventListener("click", function(e){ if(e.target && e.target.closest && e.target.closest("#bnav [data-nav]")) check(true, 30000); }, true);
+    setInterval(function(){ if(!document.hidden) check(false, 60000); }, 120000);
   })();
 
   $("btnUnbind").addEventListener("click", async () => {
