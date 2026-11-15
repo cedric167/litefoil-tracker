@@ -2193,7 +2193,7 @@
     </button>
     <div class="home-wind" id="homeWind" hidden></div>
     <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Le Bon Ride</b><small>Matériel neuf, occasion et location entre riders</small></span><span class="hb-go">›</span></button>
-    <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm" hidden><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
+    <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm"><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
 
     <div class="home-card">
       <div class="hcard-head"><span class="m-label">Mes sorties</span><a class="hcard-link" href="activites/index.html">Tout voir <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></div>
@@ -4342,7 +4342,8 @@
     new MutationObserver(sync).observe(src, { attributes: true, childList: true, characterData: true, subtree: true }); sync(); })();
   // 14/11 : espace ULM / Avion (chargé à la demande), proposé à ceux qui ont coché « ULM / Avion » dans leurs sports
   window.ulmSync = function(){ var on=false; try{ on=(localStorage.getItem("lf.comm.sports")||"").split(",").indexOf("ulm")>=0; }catch(e){}
-    ["homeUlm","mtoUlm"].forEach(function(id){ var el=document.getElementById(id); if(el) el.hidden=!on; }); };
+    var h=document.getElementById("homeUlm"); if(h) h.hidden=false; /* 15/11 : sur l'accueil pour tout le monde */
+    var el=document.getElementById("mtoUlm"); if(el) el.hidden=!on; };
   window.ulmOnShow = function(){ var p=document.getElementById("tab-ulm"); if(!p) return; if(window.LFUlm){ window.LFUlm.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
     var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=10"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
