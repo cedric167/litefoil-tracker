@@ -953,7 +953,8 @@
   .st-bar{ display:flex; gap:12px; overflow-x:auto; margin:2px -16px 10px; padding:4px 16px 6px; scrollbar-width:none; -webkit-overflow-scrolling:touch; } .st-bar::-webkit-scrollbar{ display:none; } .st-bar:empty{ display:none; }
   .st-it{ flex:none; width:72px; border:0; background:none; box-shadow:none; padding:0; min-height:0; display:flex; flex-direction:column; align-items:center; gap:5px; font:inherit; color:var(--text); cursor:pointer; }
   .st-ring{ position:relative; width:66px; height:66px; border-radius:50%; padding:3px; background:#d5dde1; display:block; }
-  .st-it.new .st-ring{ background:conic-gradient(from 200deg,#2bd4c4,#19e3ff,#0b6d72,#5ff0c8,#2bd4c4); }
+  .st-it.new .st-ring{ background:linear-gradient(45deg,#fdc830 0%,#f9a03f 22%,#f56040 45%,#e1306c 68%,#c13584 85%,#a034c8 100%); }   /* 16/11 : story pas encore vue = anneau dégradé jaune → rose → violet */
+  .st-it.new b{ font-weight:800; }
   .st-it.add .st-ring{ background:none; border:2px dashed #b9c4ca; padding:1px; }
   .st-av{ display:flex; width:100%; height:100%; border-radius:50%; overflow:hidden; border:2.5px solid #fff; background:#0b3a55; }
   .st-av img, .st-av span{ width:100%; height:100%; object-fit:cover; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:23px; }
