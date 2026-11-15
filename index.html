@@ -2346,23 +2346,23 @@
     </div>
 
     <div class="chat-modes" id="chatSeg">
-      <button data-ch="salon" class="on" aria-label="Salon public">
+      <button data-ch="salon" aria-label="Salon public" hidden style="display:none">
         <span class="cm-ic cm-salon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><i class="cm-badge" id="salonChipBadge" hidden></i></span>
         <span class="cm-lbl">Salon</span>
       </button>
-      <button data-ch="near" aria-label="Riders près de moi">
+      <button data-ch="near" aria-label="Riders près de moi" style="order:3">
         <span class="cm-ic cm-near"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
         <span class="cm-lbl">Près de moi</span>
       </button>
-      <button data-ch="dms" aria-label="Messages privés">
+      <button data-ch="dms" class="on" aria-label="Messages privés" style="order:1">
         <span class="cm-ic cm-dms"><svg viewBox="0 0 24 24"><path d="M8 10h8M8 14h5"/><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><i class="cm-badge" id="dmChipBadge" hidden></i></span>
         <span class="cm-lbl">Messages</span>
       </button>
-      <button data-ch="groups" aria-label="Groupes privés">
+      <button data-ch="groups" aria-label="Groupes privés" style="order:2">
         <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i><i class="cm-badge" id="grpChipBadge" hidden></i></span>
         <span class="cm-lbl">Groupes</span>
       </button>
-      <button data-ch="events" aria-label="Événements" hidden>
+      <button data-ch="events" aria-label="Événements" hidden style="order:4">
         <span class="cm-ic cm-events"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9.5 15l1.8 1.8 3.5-3.6"/></svg><i class="cm-badge" id="evChipBadge" hidden></i></span>
         <span class="cm-lbl">Événements</span>
       </button>
@@ -5082,8 +5082,8 @@
   // marque d'eFoil et photo de carte (gardées sur le téléphone)
   try{ me.brand=localStorage.getItem("lf.comm.brand")||""; me.cardImg=localStorage.getItem("lf.comm.cardimg")||""; }catch(e){ me.brand=""; me.cardImg=""; }
   let riders = {}, curMsgs = [];
-  let chatMode = "salon", dmPeer = null;
-  let curGroup = null, myGroups = [], groupsUnsub = null, prevChatMode = "salon";
+  let chatMode = "dms", dmPeer = null;   /* 16/11 : on arrive sur ses messages, il n'y a plus de salon public */
+  let curGroup = null, myGroups = [], groupsUnsub = null, prevChatMode = "dms";
   let gnotif = {}, groupsNotifInit = false;
   let dmNotif = {}, dmNotifInit = false, dmUnsub = null, myDMs = {};
   // événements : ceux commencés depuis moins de EV_KEEP restent affichés ; evSeen = dernière ouverture de l'agenda
@@ -5760,7 +5760,7 @@
       if(tp===active){ const mx=latestTs(tp); if(mx>(seen[tp]||0)){ seen[tp]=mx; saveSeen(); } }
       else { const s=seen[tp]||0;
         for(const m of salonMsgs){ if((m.topic||"general")===tp && m.uid!==me.uid && !blocked.has(m.uid) && (+m.t||0)>s) n++; } }
-      total += n; salonN += n;
+      salonN += n;   /* 16/11 : le salon public ne compte plus dans la pastille Communauté */
       // 12/11 : liste des salons → « eFoil · 3 nouveaux »
       const op=document.querySelector('#chatChannel option[value="'+tp+'"]'); if(op){ const lbl=CHANS[tp]+(n>0?("  🔴 "+(n>9?"9+":n)+(n>1?" nouveaux":" nouveau")):""); if(op.textContent!==lbl) op.textContent=lbl; }
       const btn=document.querySelector('#chatChannels button[data-tp="'+tp+'"]'); if(!btn) continue;
@@ -6022,8 +6022,8 @@
       // "non lu" = plus récent que le dernier message vu dans ce salon : une fois lu, on ne (re)notifie plus.
       const unread = t > (seen[m.topic||"general"]||0);
       if(t>notifMaxT && unread && m.uid!==me.uid && !blocked.has(m.uid)){
-        if(alertNow) notify(m);
-        if(commHidden) showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:m.av, sub:(CHANS[m.topic||"general"]||"Salon"), text:m.text||(m.img?"📷 Photo":""), onTap:(function(tp){ return function(){ openSalonFromToast(tp); }; })(m.topic) });
+        if(false && alertNow) notify(m);   /* 16/11 : plus d'alerte pour le salon public */
+        if(false && commHidden) showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:m.av, sub:(CHANS[m.topic||"general"]||"Salon"), text:m.text||(m.img?"📷 Photo":""), onTap:(function(tp){ return function(){ openSalonFromToast(tp); }; })(m.topic) });
       }
       if(t>mx) mx=t;
     }
@@ -6314,12 +6314,7 @@
     updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
     try{ $("chatBox").scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){}
   }
-  function closeDM(){ dmPeer=null; chatMode="salon";
-    $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
-    $("chatCard").classList.remove("wchat","dm","group");
-    $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="salon"));
-    updateChatFilterVis(); updateChanUI(); subscribeChat(); renderChat(); recomputeBadges(); updateChatGate();
-  }
+  function closeDM(){ showDMList(); }
 
   /* ================= GROUPES PRIVÉS (façon WhatsApp) ================= */
   let groupInfoOpen=false, pendingJoin=null, newGroupPhoto=null;
@@ -9199,6 +9194,7 @@
       var prm = (!askedN && charterOk && !!me.pseudo); if(prm){ try{ localStorage.setItem("lf.comm.natask","1"); }catch(e){} }
       registerNativePush(prm).then(function(ok){ notifOn=ok; saveNotif(); updateNotifBtn(true, ok); }); }
     setTimeout(function(){ lfSetupCheck(false); }, 3500);
+    try{ if(chatMode==="dms") showDMList(); }catch(e){}
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
     // Retour de l'appli au 1er plan alors qu'on est sur Communauté : on est en train de lire → on efface les notifs système.
     document.addEventListener("visibilitychange", function(){ if(!document.hidden && $("tab-communaute") && !$("tab-communaute").hidden){ clearDeliveredNotifs(); markOpenConvoRead(); recomputeBadges(); } });
