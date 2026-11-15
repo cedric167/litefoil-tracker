@@ -3759,7 +3759,15 @@
   }
   function phFmtDur(s){ s = Math.max(0, Math.round(s)); var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60; return (h ? h+":"+String(m).padStart(2,"0") : m)+":"+String(ss).padStart(2,"0"); }
   function phHaversine(a,b){ var R=6371000, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lon-a.lon)*Math.PI/180, la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180; var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
-  function phDistTotal(){ var d=0; for(var i=1;i<phPts.length;i++) d+=phHaversine(phPts[i-1],phPts[i]); return d; }
+  // 15/11 : distance sans le tremblement du GPS. On avance un repère seulement quand on s'en est vraiment éloigné (4 à 12 m selon la précision) : les zigzags sur place ne comptent plus.
+  function phDistAnc(pts){ var out=new Array(pts.length), d=0, a=pts[0]; for(var i=0;i<pts.length;i++){ var p=pts[i], g=phHaversine(a,p), thr=(p.acc!=null&&isFinite(p.acc))?Math.max(4,Math.min(12,p.acc*0.6)):5; if(g>=thr){ d+=g; a=p; } out[i]=d; }
+    if(pts.length){ var r=phHaversine(a,pts[pts.length-1]); if(r>1.5) out[pts.length-1]=d+r; } return out; }
+  // « same » repère les tracés dont la vitesse a été déduite des positions (pas de vraie vitesse GPS) : pour ceux-là, repère glissant
+  function phDistCum(pts){ var n=pts.length, dop=new Array(n), c=0, same=0, k=0; dop[0]=0;
+    for(var i=1;i<n;i++){ var h=phHaversine(pts[i-1],pts[i]), dt=pts[i].t-pts[i-1].t, v1=(+pts[i].speed||0)/3.6, v=(v1+(+pts[i-1].speed||0)/3.6)/2;
+      if(dt>0.2){ k++; if(Math.abs(h/dt-v1)<0.06) same++; } c+=(dt>0&&dt<=20)?(v<0.3?0:Math.min(v*dt, h+15)):(dt<=0?Math.min(h, v*0.5):h); dop[i]=c; }
+    return (n>=2 && k>0 && same/k<0.6)?dop:phDistAnc(pts); }
+  function phDistTotal(){ if(phPts.length<2) return 0; var c=phDistCum(phPts); return c[c.length-1]; }
   function phNum(x){ return x.toFixed(1).replace(".",","); }
   // 13/11 : diagnostic du GPS affiché pendant l'enregistrement : rythme réel des points, source, version de la page
   function phDiag(){ var n=phPts.length, k=Math.min(10, n-1), tx="";
@@ -3959,8 +3967,8 @@
     var o={}; if(phPow.n>=5){ o.wh=Math.round(phPow.wh); o.avgW=Math.round(phPow.sum/phPow.n); o.maxW=Math.round(phPow.max); if(distanceM>200) o.whKm=Math.round(phPow.wh/(distanceM/1000)); }
     if(phPow.soc0!=null){ o.soc0=Math.round(phPow.soc0); o.soc1=Math.round(phPow.soc1); } return o; }
   function phBuildSession(){
-    var src = phPts.slice(), t0 = src[0].t, cum = 0, out = [];
-    for(var i=0;i<src.length;i++){ if(i>0) cum += phHaversine(src[i-1],src[i]); out.push({ lat:src[i].lat, lon:src[i].lon, speed:+(src[i].speed||0).toFixed(1), bearing:Math.round(src[i].bearing||0), dist:Math.round(cum), alt:Math.round(src[i].alt||0), t:Math.round(src[i].t-t0) }); }
+    var src = phPts.slice(), t0 = src[0].t, cum = 0, out = [], cumA = phDistCum(src);
+    for(var i=0;i<src.length;i++){ cum = cumA[i]; out.push({ lat:src[i].lat, lon:src[i].lon, speed:+(src[i].speed||0).toFixed(1), bearing:Math.round(src[i].bearing||0), dist:Math.round(cum), alt:Math.round(src[i].alt||0), t:Math.round(src[i].t-t0) }); }
     var durationSec = out[out.length-1].t, distanceM = Math.round(cum);
     var maxAltM = Math.round(Math.max.apply(null, out.map(function(p){return p.alt;})));
     var milieu = phMilieu, cat = phCat || (milieu==="mer"?"Sortie eau":milieu==="air"?"Vol":"Sortie terre"); // choisi par l'utilisateur
@@ -3980,6 +3988,10 @@
     arr.forEach(function(x){ if(!x) return; var k=x.id!=null?String(x.id):(x.startedAt+"|"+x.distanceM+"|"+x.durationSec); var k2=x.startedAt+"|"+x.distanceM+"|"+x.durationSec; if(seen[k]||seen[k2]) return; seen[k]=seen[k2]=1;
       if(x.source==="phone" && x.points && x.points.length>10){ var m=phMaxOf(x.points); if(m>0 && m<(+x.maxSpeedKmh||0)) x.maxSpeedKmh=+m.toFixed(1); } out.push(x); });
     localStorage.setItem("lf_phone_sessions", JSON.stringify(out)); localStorage.setItem("lf.ph.fix1","1"); } catch(e){} })();
+  (function(){ try { if(localStorage.getItem("lf.ph.fix2")==="1") return; var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[], ch=false;
+    arr.forEach(function(x){ if(!x || x.source!=="phone" || !x.points || x.points.length<10) return; var c=phDistCum(x.points), d=Math.round(c[c.length-1]), old=+x.distanceM||0; if(!(d>0) || d>=old || d<old*0.7) return;
+      for(var i=0;i<x.points.length;i++) x.points[i].dist=Math.round(c[i]); x.distanceM=d; if(x.durationSec>0) x.avgSpeedKmh=+(d/x.durationSec*3.6).toFixed(1); ch=true; });
+    if(ch){ localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent"); } localStorage.setItem("lf.ph.fix2","1"); } catch(e){} })();
   function phSaveLocal(sess){
     try { var arr = JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr = arr.filter(function(x){ return x && x.id!==sess.id; }); arr.unshift(sess); if(arr.length>100) arr = arr.slice(0,100); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); } catch(e){}
     try { document.dispatchEvent(new Event("lf-sess-saved")); } catch(e){}
