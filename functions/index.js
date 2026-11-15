@@ -13,7 +13,7 @@
  * Le chiffre = somme de /unread/{uid}/{conversation} (+1 à chaque message, remis à zéro
  * par l'appli quand on lit). Les jetons périmés sont supprimés automatiquement.
  */
-const { onValueCreated, onValueDeleted } = require("firebase-functions/v2/database");
+const { onValueCreated, onValueDeleted, onValueWritten } = require("firebase-functions/v2/database");
 const { getStorage } = require("firebase-admin/storage");
 const { onRequest } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
@@ -103,8 +103,14 @@ async function sendToUids(uids, data, opts) {
       const native = plat === "ios" || plat === "android";
       if (native && opts.webOnly) continue;
       const badge = opts.badges && opts.badges[uid] != null ? opts.badges[uid] : undefined;
+      // 15/11 : applis Android avec écran d'appel natif (1.6.0+, jeton marqué cs) → message « données » seul,
+      // c'est l'appli qui affiche l'écran d'appel plein écran et fait sonner en boucle
+      const callScreen = plat === "android" && !!(v[key] && v[key].cs);
+      if (opts.callEnd && !callScreen) continue;
       let msg;
-      if (native) {
+      if (callScreen && (opts.ring === "call" || opts.callEnd)) {
+        msg = { token: tok, data: Object.assign({}, data, { native: "1", t: String(Date.now()) }), android: { priority: "high", ttl: 60000 } };
+      } else if (native) {
         msg = {
           token: tok,
           notification: { title: data.title, body: data.body },
@@ -197,6 +203,7 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
   if (m.call) {
     await sendToUids(uids, {
       type: "call", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
+      mid: String(event.params.id), k: m.call.k === "v" ? "v" : "a",
       title: (m.call.k === "v" ? "📹 " : "📞 ") + (m.pseudo || "Rider") + " t'appelle",
       body: (m.call.k === "v" ? "Appel vidéo" : "Appel audio") + " Lite Foil · appuie pour répondre"
     }, { badges, ring: "call" });
@@ -219,6 +226,18 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
     title: (m.pseudo || "Rider") + " · Message privé",
     body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
   }, { badges });
+});
+
+// 15/11 : fin de sonnerie. Dès que l'appel est décroché, refusé, annulé ou manqué, on prévient les téléphones
+// Android de la personne appelée pour que l'écran d'appel natif arrête de sonner.
+exports.callEndPush = onValueWritten({ ref: "/dm/{pair}/{id}/rtc/st", instance: DB_INSTANCE }, async (event) => {
+  const st = event.data.after.val();
+  if (!st || st === "ring") return;
+  const by = (await getDatabase().ref("dm/" + event.params.pair + "/" + event.params.id + "/rtc/by").get()).val();
+  if (!by) return;
+  const uids = String(event.params.pair).split("__").filter((u) => u && u !== by && u !== TEAM_UID);
+  if (!uids.length) return;
+  await sendToUids(uids, { type: "call_end", mid: String(event.params.id), st: String(st) }, { callEnd: true });
 });
 
 exports.groupPush = onValueCreated({ ref: "/groupMessages/{gid}/{id}", instance: DB_INSTANCE }, async (event) => {

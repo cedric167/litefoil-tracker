@@ -5171,7 +5171,7 @@
       uid, app,
       saveWindSpots(o){ return o ? db.set(db.ref(d,"pushTokens/"+uid+"/_wind"), o) : db.remove(db.ref(d,"pushTokens/"+uid+"/_wind")); },
       savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_");
-        return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",t:db.serverTimestamp()}); },
+        return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
       // compteurs de non-lus tenus par le serveur (chiffre sur l'icône) : on remet à zéro en lisant
       clearUnread(key){ if(!key) return Promise.resolve(); return db.remove(db.ref(d,"unread/"+uid+"/"+key)).catch(function(){}); },
       watchEventMsgs(eid,cb){ const q=db.query(db.ref(d,"eventMessages/"+eid), db.limitToLast(50));
@@ -6160,7 +6160,11 @@
       if(v.st!=="ring" || !v.offer){ rt.remove(rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); return; }   // appel déjà terminé
       if(lfCall){ return; }                                                                                               // déjà en ligne
       var c=lfCall={ kind:(v.k==="v"?"v":"a"), peer:peer, name:name, incoming:true, accepted:false, state:"ring", facing:"user", path:path, mid:k.mid, offer:v.offer };
-      lfCallUI(c); c.tone=lfCallTone("in"); lfCallWatch(c); c.to=setTimeout(function(){ if(lfCall===c && !c.accepted) lfCallEnd("miss", true); }, 50000); }); }
+      lfCallUI(c); c.tone=lfCallTone("in"); lfCallWatch(c); c.to=setTimeout(function(){ if(lfCall===c && !c.accepted) lfCallEnd("miss", true); }, 50000); lfCallNative(); }); }
+  // 15/11 : écran d'appel natif (Android 1.6.0+). Si on a déjà décroché ou refusé sur cet écran, la page applique le choix sans redemander.
+  function lfCallNative(){ var c=lfCall, P=nativePlug("LfCall"); if(!c || !c.incoming || c.accepted || !P || !P.pending) return;
+    P.pending().then(function(p){ if(lfCall!==c || c.accepted || !p || p.mid!==c.mid || Date.now()-(+p.t||0)>90000) return; if(p.act==="answer") lfCallAccept(); else if(p.act==="decline") lfCallEnd("no"); }).catch(function(){}); }
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) lfCallNative(); });
   function lfCallAccept(){ var c=lfCall; if(!c || !c.incoming || c.accepted) return; c.accepted=true; c.state="conn"; if(c.tone){ c.tone(); c.tone=null; } clearTimeout(c.to); lfCallDraw(); var rt=backend.rt;
     lfCallMedia(c).then(function(){ if(lfCall!==c) return; var pc=lfCallPeer(c);
       return pc.setRemoteDescription(new RTCSessionDescription(c.offer)).then(function(){ lfCallFlush(c); return pc.createAnswer(); }).then(function(a){ return pc.setLocalDescription(a); })
@@ -6171,7 +6175,7 @@
       var snd=c.pc.getSenders().filter(function(x){ return x.track && x.track.kind==="video"; })[0]; c.stream.getVideoTracks().forEach(function(t){ t.stop(); c.stream.removeTrack(t); }); c.stream.addTrack(nt); nt.enabled=!c.camOff;
       if(snd) snd.replaceTrack(nt); var v=c.el.querySelector(".lfc-loc"); if(v) v.srcObject=c.stream; lfCallDraw(); }).catch(function(){ c.facing = c.facing==="user" ? "environment" : "user"; }); }
   // fin d'appel : why = end (raccroché), no (refusé), miss (sans réponse), fail (connexion), local (jamais parti) ; remote = l'autre a déjà écrit l'état
-  function lfCallEnd(why, remote){ var c=lfCall; if(!c) return; lfCall=null; var rt=backend&&backend.rt; clearTimeout(c.to); clearInterval(c.tick); if(c.tone) c.tone();
+  function lfCallEnd(why, remote){ var c=lfCall; if(!c) return; lfCall=null; try{ var PN=nativePlug("LfCall"); if(PN && PN.done) PN.done().catch(function(){}); }catch(e){} var rt=backend&&backend.rt; clearTimeout(c.to); clearInterval(c.tick); if(c.tone) c.tone();
     [c.unIc,c.unSt,c.unAns].forEach(function(u){ try{ u&&u(); }catch(e){} });
     try{ if(c.pc){ c.pc.onicecandidate=c.pc.ontrack=c.pc.onconnectionstatechange=null; c.pc.close(); } }catch(e){}
     try{ if(c.stream) c.stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}

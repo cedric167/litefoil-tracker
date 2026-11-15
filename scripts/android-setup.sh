@@ -16,13 +16,15 @@ mkdir -p "$PKG_DIR"
 # 1) Code Java : stockage, service, module Capacitor, et MainActivity qui enregistre le module
 cp "$ROOT/native/android/LfTrackStore.java" "$ROOT/native/android/LfTrackService.java" \
    "$ROOT/native/android/LfTrackPlugin.java" "$ROOT/native/android/MainActivity.java" "$PKG_DIR/"
+# 1 ter) Écran d'appel entrant façon téléphone (15/11) : plein écran, sonnerie en boucle, Décrocher / Refuser
+cp "$ROOT/native/android/LfCall.java" "$ROOT/native/android/LfCallActivity.java" "$ROOT/native/android/LfCallReceiver.java"    "$ROOT/native/android/LfCallMessagingService.java" "$ROOT/native/android/LfCallPlugin.java" "$PKG_DIR/"
 
 # 1 bis) Sonneries (appel, SOS) jouées par les notifications, même appli fermée
 mkdir -p "$MAIN/res/raw"
 cp "$ROOT/native/sounds/lf_ring.ogg" "$ROOT/native/sounds/lf_sos.ogg" "$MAIN/res/raw/"
 
 # 2) Permissions : localisation, service de premier plan (Android 14+), notification (Android 13+)
-for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION WAKE_LOCK POST_NOTIFICATIONS RECORD_AUDIO MODIFY_AUDIO_SETTINGS CAMERA; do
+for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION WAKE_LOCK POST_NOTIFICATIONS RECORD_AUDIO MODIFY_AUDIO_SETTINGS CAMERA USE_FULL_SCREEN_INTENT VIBRATE; do
   grep -q "android.permission.$P\"" "$MANIFEST" || \
     perl -0pi -e "s#(<uses-permission android:name=\"android.permission.INTERNET\" />)#\$1\n    <uses-permission android:name=\"android.permission.$P\" />#" "$MANIFEST"
 done
@@ -40,6 +42,27 @@ if ! grep -q 'LfTrackService' "$MANIFEST"; then
   perl -0pi -e 's#(\s*</application>)#\n        <!-- Lite Foil : enregistrement GPS des sorties, continue appli fermée -->\n        <service android:name=".LfTrackService" android:exported="false" android:foregroundServiceType="location" android:stopWithTask="false" />$1#' "$MANIFEST"
 fi
 grep -q 'LfTrackService' "$MANIFEST" || { echo "Service LfTrack non déclaré dans le manifeste" >&2; exit 1; }
+
+# 3 bis) Écran d'appel : activité plein écran (par-dessus l'écran verrouillé), bouton Refuser, et réception des messages
+#        du serveur par LfCallMessagingService (qui remplace le service du module de notifications et lui passe le reste)
+if ! grep -q 'LfCallActivity' "$MANIFEST"; then
+  grep -q 'xmlns:tools' "$MANIFEST" || sed -i '0,/<manifest /s|<manifest |<manifest xmlns:tools="http://schemas.android.com/tools" |' "$MANIFEST"
+  perl -0pi -e 's#(\s*</application>)#
+        <!-- Lite Foil : appel entrant façon téléphone -->
+        <activity android:name=".LfCallActivity" android:exported="false" android:showWhenLocked="true" android:turnScreenOn="true" android:excludeFromRecents="true" android:taskAffinity="fr.litefoil.tracker.call" android:launchMode="singleInstance" android:screenOrientation="portrait" android:theme="\@android:style/Theme.DeviceDefault.NoActionBar" />
+        <receiver android:name=".LfCallReceiver" android:exported="false" />
+        <service android:name=".LfCallMessagingService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="io.capawesome.capacitorjs.plugins.firebase.messaging.MessagingService" tools:node="remove" />$1#' "$MANIFEST"
+fi
+# LfCallMessagingService utilise la bibliothèque de messagerie Firebase (même version que le module de notifications)
+APPGRADLE="$ROOT/android/app/build.gradle"
+grep -q 'firebase-messaging' "$APPGRADLE" || \
+  sed -i "s|    implementation project(':capacitor-android')|    implementation project(':capacitor-android')\n    implementation \"com.google.firebase:firebase-messaging:23.4.1\"|" "$APPGRADLE"
+grep -q 'LfCallMessagingService' "$MANIFEST" || { echo "Écran d'appel non déclaré dans le manifeste" >&2; exit 1; }
 
 # 4) Connexion Google (module @capacitor-firebase/authentication, s'il est installé) : bibliothèque Google incluse
 VARS="$ROOT/android/variables.gradle"
