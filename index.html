@@ -450,6 +450,7 @@
   .ms-cam img{ width:100%; height:100%; object-fit:cover; display:block; } .ms-cam i{ position:absolute; left:5px; top:5px; width:7px; height:7px; border-radius:50%; background:#ff2d55; box-shadow:0 0 0 2px rgba(255,255,255,.85); animation:wcPulse 1.4s ease-in-out infinite; }
   .ms-cam em{ position:absolute; right:4px; bottom:3px; font-style:normal; font-size:8.5px; font-weight:800; letter-spacing:.05em; color:#fff; text-shadow:0 1px 3px #000; }
   .ms #mtoResults .r-h{ padding:8px 13px 4px; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#e11d48; cursor:default; border-top:1px solid #e8eef0; } .ms #mtoResults .r-h:first-child{ border-top:0; }
+  @media (min-width:900px){ body.br-wide .wrap{ max-width:1120px; } body.br-wide #tab-bonride .br-grid{ grid-template-columns:repeat(4,1fr); gap:14px; } body.br-wide #tab-bonride > *{ max-width:720px; margin-left:auto; margin-right:auto; } body.br-wide #tab-bonride > *:has(.br-grid), body.br-wide #tab-bonride > .br-grid{ max-width:none; } }
   .ms-favs{ margin-top:12px; } .ms-favs[hidden]{ display:none; } .ms-favs-row{ display:flex; align-items:center; gap:7px; overflow-x:auto; scrollbar-width:none; } .ms-favs-row::-webkit-scrollbar{ display:none; }
   .ms-alert{ display:flex; align-items:center; gap:9px; margin-top:10px; padding:9px 12px; border-radius:12px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10); font-size:12.5px; font-weight:600; line-height:1.3; color:rgba(255,255,255,.86); cursor:pointer; } .ms-alert input{ width:18px; height:18px; flex:none; margin:0; accent-color:#2fc4c0; } .ms-alert span{ flex:1; min-width:0; }
   .ms-favs-h{ flex:none; font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#7fe6dc; margin-right:2px; }
@@ -4293,6 +4294,7 @@
   function syncBottomNav(name){ var key = (name==="dash"||name==="meteo"||name==="communaute"||name==="videos"||name==="tracking"||name==="profil") ? name : "";
     document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.toggle("on", b.dataset.nav===key); }); }
   function showTab(name) {
+    try{ document.body.classList.toggle("br-wide", name==="bonride"); }catch(e){} // 15/11 : Le Bon Ride en pleine largeur sur ordinateur
     // Un onglet dédié dans la barre (ex. Tracking) est prioritaire sur le sous-écran Lite Foil Ultra.
     const hasOwnTab = !!document.querySelector(".tab[data-tab=\"" + name + "\"]");
     const isSub = !hasOwnTab && ULTRA_SUB.indexOf(name) >= 0;
