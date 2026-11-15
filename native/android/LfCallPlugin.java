@@ -27,6 +27,46 @@ public class LfCallPlugin extends Plugin {
         call.resolve(o);
     }
 
+    /** État du téléphone pour l'écran « Prépare ton téléphone » : notifications, écran d'appel plein écran, sonnerie. */
+    @PluginMethod
+    public void status(PluginCall call) {
+        JSObject o = new JSObject();
+        android.content.Context c = getContext();
+        try { o.put("notif", androidx.core.app.NotificationManagerCompat.from(c).areNotificationsEnabled()); } catch (Exception e) { /* inconnu */ }
+        boolean full = true;
+        try {
+            android.app.NotificationManager nm = (android.app.NotificationManager) c.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= 34 && nm != null) full = nm.canUseFullScreenIntent();
+        } catch (Exception e) { /* inconnu */ }
+        o.put("fullScreen", full);
+        try {
+            android.media.AudioManager am = (android.media.AudioManager) c.getSystemService(android.content.Context.AUDIO_SERVICE);
+            int m = am == null ? android.media.AudioManager.RINGER_MODE_NORMAL : am.getRingerMode();
+            o.put("ringer", m == android.media.AudioManager.RINGER_MODE_SILENT ? "silent" : m == android.media.AudioManager.RINGER_MODE_VIBRATE ? "vibrate" : "normal");
+        } catch (Exception e) { /* inconnu */ }
+        call.resolve(o);
+    }
+
+    /** Ouvre le bon écran des réglages du téléphone : kind = "notif" ou "fullscreen". */
+    @PluginMethod
+    public void openSettings(PluginCall call) {
+        String kind = call.getString("kind", "notif");
+        String pkg = getContext().getPackageName();
+        android.content.Intent i;
+        if ("fullscreen".equals(kind) && Build.VERSION.SDK_INT >= 34) {
+            i = new android.content.Intent(android.provider.Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, android.net.Uri.parse("package:" + pkg));
+        } else if (Build.VERSION.SDK_INT >= 26) {
+            i = new android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, pkg);
+        } else {
+            i = new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:" + pkg));
+        }
+        try { getActivity().startActivity(i); }
+        catch (Exception e) {
+            try { getActivity().startActivity(new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:" + pkg))); } catch (Exception x) { /* rien à ouvrir */ }
+        }
+        call.resolve();
+    }
+
     @PluginMethod
     public void done(PluginCall call) {
         LfCall.prefs(getContext()).edit().putString("act", "done").apply();

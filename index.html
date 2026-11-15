@@ -5856,6 +5856,54 @@
       +'<button type="button" data-a="x" aria-label="Plus tard" style="flex:none;min-height:0;width:30px;height:30px;border:0;border-radius:50%;background:rgba(0,0,0,.07);color:#3a2a05;font:inherit;font-size:14px;box-shadow:none;padding:0">✕</button>';
     host.parentNode.insertBefore(el, host);
     el.addEventListener("click", function(e){ var b=e.target.closest("[data-a]"); if(!b) return; if(b.dataset.a==="x"){ try{ localStorage.setItem("lf.notif.nudge", String(Date.now())); }catch(x){} el.remove(); return; } toggleNotif(); }); }
+  // 16/11 : « Prépare ton téléphone ». À l'entrée dans l'appli, tant qu'un réglage manque (notifications, micro et caméra pour les appels,
+  // écran d'appel plein écran, sonnerie coupée), on le montre avec un bouton pour l'activer. « Plus tard » le masque 24 h.
+  async function lfSetupState(){ var FM=nativePlug("FirebaseMessaging"), LC=nativePlug("LfCall"), nat=!!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()), st={ nat:nat, items:[] };
+    var ns=null; if(LC && LC.status){ try{ ns=await LC.status(); }catch(e){} }
+    var nOk=null, nDenied=false;
+    if(FM){ try{ var p=await FM.checkPermissions(); nOk=p.receive==="granted"; nDenied=p.receive==="denied"; }catch(e){} }
+    else if(!nat && ("Notification" in window)){ nOk=Notification.permission==="granted" && notifOn; nDenied=Notification.permission==="denied"; }
+    if(ns && ns.notif===false) nOk=false;
+    if(nOk!==null) st.items.push({ k:"notif", ic:"🔔", t:"Notifications", d:"Messages, appels et SOS de tes amis, même appli fermée.", ok:nOk, denied:nDenied });
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.RTCPeerConnection && (!nat || /LiteFoilCall\//.test(navigator.userAgent))){
+      var mOk=false; try{ mOk=localStorage.getItem("lf.setup.media")==="1"; }catch(e){}
+      try{ if(navigator.permissions && navigator.permissions.query){ var a=await navigator.permissions.query({ name:"microphone" }), c=await navigator.permissions.query({ name:"camera" }); if(a.state==="granted" && c.state==="granted") mOk=true; else if(a.state==="denied" || c.state==="denied") mOk=false; } }catch(e){}
+      st.items.push({ k:"media", ic:"🎙️", t:"Micro et caméra", d:"Pour passer et recevoir les appels audio et vidéo.", ok:mOk }); }
+    if(ns && ns.fullScreen!=null) st.items.push({ k:"full", ic:"📞", t:"Écran d'appel", d:"L'appel s'affiche en grand, même téléphone verrouillé.", ok:!!ns.fullScreen });
+    if(ns && ns.ringer) st.items.push({ k:"son", ic:"🔊", t:"Sonnerie", d: ns.ringer==="normal" ? "Le son du téléphone est activé." : "Ton téléphone est en "+(ns.ringer==="silent"?"silencieux":"vibreur")+" : les appels ne sonneront pas.", ok:ns.ringer==="normal", info:true });
+    return st; }
+  async function lfSetupCheck(force){ try{
+      if(!force){ if(!me.pseudo || !charterOk || /[?&]demo=1/.test(location.search) || document.getElementById("lfSetup")) return; var o=document.getElementById("lfOnb"); if(o && !o.hidden) return;
+        var sn=0; try{ sn=+localStorage.getItem("lf.setup.later")||0; }catch(e){} if(Date.now()-sn<86400000) return; }
+      var st=await lfSetupState(); if(!st.items.length) return; if(!force && !st.items.some(function(x){ return !x.ok && !x.info; })) return;
+      lfSetupDraw(st); }catch(e){} }
+  function lfSetupDraw(st){ var el=document.getElementById("lfSetup"); if(!el){ el=document.createElement("div"); el.id="lfSetup"; document.body.appendChild(el);
+      el.style.cssText="position:fixed;inset:0;z-index:12500;background:rgba(6,24,29,.72);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center";
+      el.addEventListener("click", function(e){ var b=e.target.closest("[data-k]"); if(!b) return; lfSetupDo(b.dataset.k); }); }
+    var todo=st.items.filter(function(x){ return !x.ok && !x.info; }).length;
+    el.innerHTML='<div style="width:100%;max-width:480px;background:#fff;color:#0e1417;border-radius:26px 26px 0 0;padding:22px 18px calc(env(safe-area-inset-bottom,0px) + 18px);box-shadow:0 -12px 40px rgba(0,0,0,.35)">'
+      +'<b style="display:block;font-size:21px;line-height:1.2">'+(todo?'Prépare ton téléphone':'Ton téléphone est prêt ✅')+'</b>'
+      +'<small style="display:block;margin:5px 0 14px;font-size:13.5px;color:#5c6b70;line-height:1.4">'+(todo?'Active ces réglages pour ne manquer aucun appel ni message.':'Tu recevras les appels et les messages de tes amis.')+'</small>'
+      +st.items.map(function(x){ return '<div style="display:flex;align-items:center;gap:12px;padding:12px;margin-top:8px;border-radius:16px;background:'+(x.ok?'#eefaf5':'#fff7e6')+';border:1px solid '+(x.ok?'#cfeedd':'#f3d9a4')+'">'
+        +'<span style="font-size:24px;flex:none">'+x.ic+'</span><span style="flex:1;min-width:0;line-height:1.3"><b style="display:block;font-size:15px">'+x.t+'</b><small style="font-size:12.5px;color:#5c6b70">'+x.d+'</small></span>'
+        +(x.ok?'<span style="flex:none;font-size:20px;color:#12a05c;font-weight:800">✓</span>'
+          :(x.info?'':'<button type="button" data-k="'+x.k+'" style="flex:none;min-height:0;border:0;border-radius:100px;padding:10px 15px;font:inherit;font-size:13.5px;font-weight:800;background:#0f7f86;color:#fff;box-shadow:none">'+(x.denied?'Réglages':'Activer')+'</button>'))+'</div>'; }).join("")
+      +'<button type="button" data-k="'+(todo?'later':'close')+'" style="display:block;width:100%;margin-top:14px;min-height:0;border:0;border-radius:100px;padding:13px;font:inherit;font-size:15px;font-weight:800;box-shadow:none;'+(todo?'background:#eef3f4;color:#0e1417':'background:#0e1417;color:#fff')+'">'+(todo?'Plus tard':'C\'est parti')+'</button></div>'; }
+  async function lfSetupDo(k){ var el=document.getElementById("lfSetup"), LC=nativePlug("LfCall");
+    if(k==="later"||k==="close"){ if(k==="later"){ try{ localStorage.setItem("lf.setup.later", String(Date.now())); }catch(e){} } if(el) el.remove(); return; }
+    try{
+      if(k==="notif"){ var FM=nativePlug("FirebaseMessaging");
+        if(FM){ var ok=await registerNativePush(true); notifOn=!!ok; saveNotif(); updateNotifBtn(true, ok);
+          if(!ok){ if(LC && LC.openSettings) await LC.openSettings({ kind:"notif" }); else alert("Pour les activer : Réglages du téléphone → Applications → Lite Foil → Notifications."); } }
+        else await toggleNotif(); }
+      else if(k==="media"){ try{ var ms=await navigator.mediaDevices.getUserMedia({ audio:true, video:true }); ms.getTracks().forEach(function(t){ t.stop(); }); try{ localStorage.setItem("lf.setup.media","1"); }catch(e){} }
+        catch(e){ alert("Micro ou caméra refusés. Pour les autoriser : Réglages du téléphone → Applications → Lite Foil → Autorisations."); } }
+      else if(k==="full"){ if(LC && LC.openSettings) await LC.openSettings({ kind:"fullscreen" }); }
+    }catch(e){}
+    if(document.getElementById("lfSetup")) lfSetupDraw(await lfSetupState()); }
+  window.lfSetup=function(){ lfSetupCheck(true); };
+  // au retour des réglages du téléphone, on rafraîchit les coches
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden && document.getElementById("lfSetup")) lfSetupState().then(lfSetupDraw).catch(function(){}); });
   async function toggleNotif(){
     if(nativePlug("FirebaseMessaging") || nativePlug("Badge")){ var ok=await registerNativePush(true); notifOn=ok; saveNotif(); updateNotifBtn(true, ok);
       if(!ok) alert("Notifications désactivées. Pour les activer : Réglages du téléphone → Lite Foil → Notifications."); return; }
@@ -9150,6 +9198,7 @@
     if(nativePlug("FirebaseMessaging") || nativePlug("Badge")){ var askedN=false; try{ askedN=localStorage.getItem("lf.comm.natask")==="1"; }catch(e){}
       var prm = (!askedN && charterOk && !!me.pseudo); if(prm){ try{ localStorage.setItem("lf.comm.natask","1"); }catch(e){} }
       registerNativePush(prm).then(function(ok){ notifOn=ok; saveNotif(); updateNotifBtn(true, ok); }); }
+    setTimeout(function(){ lfSetupCheck(false); }, 3500);
     if($("tab-communaute") && !$("tab-communaute").hidden) window.commOnShow();
     // Retour de l'appli au 1er plan alors qu'on est sur Communauté : on est en train de lire → on efface les notifs système.
     document.addEventListener("visibilitychange", function(){ if(!document.hidden && $("tab-communaute") && !$("tab-communaute").hidden){ clearDeliveredNotifs(); markOpenConvoRead(); recomputeBadges(); } });
