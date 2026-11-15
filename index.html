@@ -659,6 +659,13 @@
   .dl-fab-m{ display:none; flex-direction:column; align-items:flex-end; gap:8px; } .dl-fab.open .dl-fab-m{ display:flex; }
   .dl-fab-m button{ min-height:0; border:0; border-radius:999px; padding:11px 16px; background:#0e1417; color:#fff; font:inherit; font-size:14px; font-weight:800; box-shadow:0 6px 18px rgba(0,0,0,.28); cursor:pointer; animation:nmPop .18s ease-out both; }
   .ts-msg{ flex:none; width:40px; height:40px; min-height:0; padding:0; margin-left:6px; border:0; border-radius:50%; background:#e9f6f5; color:#0b6b78; box-shadow:none; display:flex; align-items:center; justify-content:center; cursor:pointer; } .ts-msg svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  /* 16/11 : haut de la Communauté allégé */
+  #tab-communaute .cmh-eb, #tab-communaute .cmh-title, #tab-communaute #memBtn, #tab-communaute #commStats, #tab-communaute #cmEvents{ display:none !important; }
+  #tab-communaute .cm-hero{ padding:10px 12px; border-radius:22px; margin:4px 0 12px; display:flex; align-items:center; gap:10px; box-shadow:0 6px 18px rgba(11,58,85,.2); }
+  #tab-communaute .cmh-me{ flex:1; min-width:0; background:none; padding:0; gap:10px; }
+  #tab-communaute .cmh-row{ margin:0; flex:none; }
+  #tab-communaute .cm-hero .cmh-av{ transform:scale(.82); transform-origin:left center; margin-right:-8px; }
+  #tab-communaute .chat-modes .cm-lbl{ font-size:10.5px; letter-spacing:-.2px; }
   .chat-box.lst{ height:auto !important; min-height:320px; max-height:none !important; overflow:visible !important; padding:4px 2px 8px; }
   .dl-chips{ flex:none; } .dl-new{ flex:none; }
   .cl-row{ display:flex; align-items:center; gap:12px; width:100%; padding:10px 4px; border:0; border-bottom:1px solid var(--line-soft); background:none; box-shadow:none; min-height:0; font:inherit; color:var(--text); text-align:left; cursor:pointer; }
@@ -2404,7 +2411,7 @@
         <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i><i class="cm-badge" id="grpChipBadge" hidden></i></span>
         <span class="cm-lbl">Groupes</span>
       </button>
-      <button data-ch="events" aria-label="Événements" hidden style="order:4">
+      <button data-ch="events" aria-label="Événements" style="order:4">
         <span class="cm-ic cm-events"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9.5 15l1.8 1.8 3.5-3.6"/></svg><i class="cm-badge" id="evChipBadge" hidden></i></span>
         <span class="cm-lbl">Événements</span>
       </button>
