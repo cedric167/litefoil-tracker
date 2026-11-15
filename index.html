@@ -4409,6 +4409,15 @@
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
   }
+  (function(){ var cur=null, last=0;
+    function ver(){ return fetch("sw.js?v="+Date.now(), { cache:"no-store" }).then(function(r){ return r.ok ? r.text() : ""; }).then(function(t){ var m=/lf-tracker-v(\d+)/.exec(t||""); return m ? m[1] : null; }).catch(function(){ return null; }); }
+    function busy(){ try{ if(document.getElementById("lfCall") || document.getElementById("stv") || document.getElementById("lfSetup")) return true; if(localStorage.getItem("lf.ph.cur")) return true;
+        var a=document.activeElement; if(a && /^(INPUT|TEXTAREA)$/.test(a.tagName) && a.value) return true; }catch(e){} return false; }
+    function check(){ if(Date.now()-last<60000) return; last=Date.now(); ver().then(function(v){ if(!v) return; if(cur===null){ cur=v; return; } if(v!==cur && !busy()){ try{ sessionStorage.setItem("lf.upd", v); }catch(e){} location.reload(); } }); }
+    window.addEventListener("load", function(){ ver().then(function(v){ cur=v; }); });
+    document.addEventListener("visibilitychange", function(){ if(!document.hidden) check(); });
+    window.addEventListener("focus", check); setInterval(function(){ if(!document.hidden) check(); }, 15*60000);
+  })();
 
   $("btnUnbind").addEventListener("click", async () => {
     const note = $("loginNote");
