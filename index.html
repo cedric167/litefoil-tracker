@@ -638,6 +638,27 @@
   .dl-new .gnew{ flex:1 1 0; min-width:0; margin:0; gap:9px; padding:7px 12px 7px 7px; border:1.5px solid var(--line); border-radius:999px; background:var(--card); font-size:14px; white-space:nowrap; box-shadow:none; min-height:0; }
   .dl-new .gnew span:last-child{ overflow:hidden; text-overflow:ellipsis; }
   .dl-new .gnew-ic{ width:34px; height:34px; font-size:20px; box-shadow:none; } .dl-new .gnew-ic svg{ width:17px; height:17px; }
+  .dl-search{ display:flex; align-items:center; gap:9px; height:46px; padding:0 14px; margin:2px 0 12px; border-radius:999px; background:#eef3f4; flex:none; }
+  .dl-search svg{ width:19px; height:19px; flex:none; fill:none; stroke:#6b7c80; stroke-width:2.2; stroke-linecap:round; }
+  .dl-search input{ flex:1; min-width:0; height:100%; border:0; background:none; box-shadow:none; outline:none; padding:0; font:inherit; font-size:15.5px; color:var(--text); }
+  .dl-search button{ flex:none; width:26px; height:26px; min-height:0; padding:0; border:0; border-radius:50%; background:#d5dfe2; color:#44555a; font-size:12px; box-shadow:none; }
+  .chat-box.lst .st-bar{ margin:0 -2px 8px; padding:4px 2px 6px; flex:none; }
+  .dl-av{ position:relative; flex:none; display:inline-flex; } .dl-av i{ position:absolute; right:1px; bottom:1px; width:14px; height:14px; border-radius:50%; background:#22c55e; border:2.5px solid var(--card); }
+  .chat-box.lst .grow{ padding:10px 4px; gap:14px; border-radius:16px; transition:background .12s; } .chat-box.lst .grow:active{ background:#eef5f6; }
+  .chat-box.lst .grow-main{ border-bottom:0; } .chat-box.lst .grow-top b{ font-size:16.5px; }
+  .chat-box.lst .grow-sub{ font-size:14px; margin-top:2px; } .chat-box.lst .gbadge{ background:#14b8ab; min-width:22px; height:22px; } .chat-box.lst .grow.unread .grow-tm{ color:#0f9c91; }
+  .dl-sec{ margin:14px 4px 4px; font-size:12px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); flex:none; }
+  .dl-rid{ display:flex; align-items:center; gap:13px; width:100%; padding:9px 4px; border:0; background:none; box-shadow:none; min-height:0; font:inherit; color:var(--text); text-align:left; cursor:pointer; border-radius:16px; }
+  .dl-rid .cl-main small em{ font-style:normal; color:#1a9c55; font-weight:800; }
+  .dl-pill{ flex:none; min-height:0; border:0; border-radius:999px; padding:9px 15px; background:#0f7f86; color:#fff; font:inherit; font-size:13.5px; font-weight:800; box-shadow:none; cursor:pointer; }
+  .dl-more{ display:block; width:100%; margin-top:10px; min-height:0; border:1.5px solid var(--line); border-radius:999px; padding:11px; background:var(--card); color:#0b6b78; font:inherit; font-size:14px; font-weight:800; box-shadow:none; cursor:pointer; flex:none; }
+  .dl-fab{ position:fixed; right:16px; bottom:calc(env(safe-area-inset-bottom,0px) + 104px); z-index:80; display:flex; flex-direction:column; align-items:flex-end; gap:10px; pointer-events:none; }
+  .dl-fab[hidden]{ display:none; } .dl-fab > *{ pointer-events:auto; }
+  .dl-fab-b{ width:60px; height:60px; min-height:0; padding:0; border:0; border-radius:20px; background:linear-gradient(135deg,#19c3b6,#0b7f86); color:#fff; box-shadow:0 10px 24px rgba(11,127,134,.42); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .15s; }
+  .dl-fab-b svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; stroke-linejoin:round; } .dl-fab.open .dl-fab-b{ transform:rotate(45deg); }
+  .dl-fab-m{ display:none; flex-direction:column; align-items:flex-end; gap:8px; } .dl-fab.open .dl-fab-m{ display:flex; }
+  .dl-fab-m button{ min-height:0; border:0; border-radius:999px; padding:11px 16px; background:#0e1417; color:#fff; font:inherit; font-size:14px; font-weight:800; box-shadow:0 6px 18px rgba(0,0,0,.28); cursor:pointer; animation:nmPop .18s ease-out both; }
+  .ts-msg{ flex:none; width:40px; height:40px; min-height:0; padding:0; margin-left:6px; border:0; border-radius:50%; background:#e9f6f5; color:#0b6b78; box-shadow:none; display:flex; align-items:center; justify-content:center; cursor:pointer; } .ts-msg svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .chat-box.lst{ height:auto !important; min-height:320px; max-height:none !important; overflow:visible !important; padding:4px 2px 8px; }
   .dl-chips{ flex:none; } .dl-new{ flex:none; }
   .cl-row{ display:flex; align-items:center; gap:12px; width:100%; padding:10px 4px; border:0; border-bottom:1px solid var(--line-soft); background:none; box-shadow:none; min-height:0; font:inherit; color:var(--text); text-align:left; cursor:pointer; }
@@ -2388,7 +2409,7 @@
         <span class="cm-lbl">Événements</span>
       </button>
     </div>
-    <div class="m-label" style="margin:18px 6px 8px">Discussion</div>
+    <div class="m-label" id="chatLbl" style="margin:18px 6px 8px">Discussion</div>
     <div class="card" id="chatCard">
       <div class="chan-sel-wrap" id="chatChannels">
         <span class="chan-ic">💬</span>
@@ -5235,6 +5256,7 @@
           db.update(db.ref(d,"userDM/"+uid+"/"+peer),{text:prev,by:uid,t:db.serverTimestamp(),unread:0}).catch(function(){}); } }
         return p; },
       markDMRead(peer){ if(!peer) return Promise.resolve(); return db.update(db.ref(d,"userDM/"+uid+"/"+peer),{unread:0}).catch(function(){}); },
+      removeDM(peer){ if(!peer) return Promise.resolve(); return db.remove(db.ref(d,"userDM/"+uid+"/"+peer)); },
       rt:{ ref:function(p){ return db.ref(d,p); }, set:db.set, update:db.update, remove:db.remove, push:db.push, onValue:db.onValue, onChildAdded:db.onChildAdded, ts:db.serverTimestamp, get:db.get, query:db.query, limitToLast:db.limitToLast },
       since(){ var u=auth.currentUser; try{ return (u && u.metadata && u.metadata.creationTime) ? Date.parse(u.metadata.creationTime) : 0; }catch(e){ return 0; } },
       markGroupRead(gid){ if(!gid) return Promise.resolve(); return db.set(db.ref(d,"groups/"+gid+"/unread/"+uid),0).catch(function(){}); },
@@ -5550,6 +5572,7 @@
       joinGroup(gid){ if(demoGroups[gid]){ demoGroups[gid].members[uid]={pseudo:me.pseudo}; fireGroups(); } return Promise.resolve(); },
       watchMyDMs(cb){ demoDMcb=cb; cb(Object.assign({},demoDM)); return function(){demoDMcb=null;}; },
       markDMRead(peer){ if(peer&&demoDM[peer]){ demoDM[peer].unread=0; fireDM(); } return Promise.resolve(); },
+      removeDM(peer){ if(peer&&demoDM[peer]){ delete demoDM[peer]; fireDM(); } return Promise.resolve(); },
       markGroupRead(gid){ if(demoGroups[gid]&&demoGroups[gid].unread){ demoGroups[gid].unread[uid]=0; fireGroups(); } return Promise.resolve(); },
       // ---------- événements (démo, en mémoire) ----------
       createEvent(o){ const eid="e"+Math.random().toString(36).slice(2,8); const att={}; att[uid]={pseudo:me.pseudo||"Rider",t:Date.now()};
@@ -5843,6 +5866,7 @@
   function updateChanUI(){ try{ lfCallBtns(); }catch(e){}
     const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat"), isList=(chatMode==="groups"||chatMode==="dms"||chatMode==="events"||chatMode==="calls");
     const row=$("chatChannels"); if(row) row.hidden = (isConvo||isList);
+    try{ dlFab(); var _cl=$("chatLbl"); if(_cl) _cl.hidden=isList; }catch(e){}
     const sel=$("chatChannel"); if(sel && sel.value!==chatTopic) sel.value=chatTopic;
     const inp=$("chatInput"); if(inp) inp.placeholder = isConvo ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
     // composer et traduction masqués dans la LISTE des groupes
@@ -6154,6 +6178,7 @@
     if(chatMode==="events"){ renderEventsList(); return; }
     const box=$("chatBox"); box.classList.remove("lst"); const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat");
     let arr=(isConvo?curMsgs:salonMsgs).filter(m=> !blocked.has(m.uid));
+    if(chatMode==="dm" && dmPeer){ const _c=dlCleared()[dmPeer.uid]; if(_c) arr=arr.filter(m=> (+m.t||Date.now())>_c); }
     if(!isConvo) arr = arr.filter(m=> (m.topic||"general")===chatTopic);
     if(chatMode==="near" && chatRadius<1000) arr = arr.filter(m=> m.lat!=null && me.pos && hdist(me.pos,m)<=chatRadius);
     if(!arr.length){
@@ -6395,32 +6420,78 @@
     if(chatUnsub){ chatUnsub(); chatUnsub=null; }
     updateChatFilterVis(); updateChanUI(); renderDMList(); updateChatGate(); recomputeBadges();
   }
-  var dlFilter="all";
-  function renderDMList(){
-    var box=$("chatBox"); if(!box) return;
-    var rows=[];
+  var dlFilter="all", dlQ="";
+  function dlOnline(u){ try{ return onlineIds.indexOf(u)>=0; }catch(e){ return false; } }
+  function dlAv(u, name, av, size){ var z=size||54; return '<span class="dl-av">'+(av ? '<span class="gav" style="width:'+z+'px;height:'+z+'px"><img src="'+av+'" alt=""></span>' : '<span class="gav" style="width:'+z+'px;height:'+z+'px;background:'+avatarColor(u)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>')+(dlOnline(u)?'<i></i>':'')+'</span>'; }
+  function dlRows(){ var rows=[];
     Object.keys(myDMs).filter(function(p){ return myDMs[p] && !blocked.has(p); }).forEach(function(p){ var e=myDMs[p], prof=profileMap[p]||{}, name=e.pseudo||prof.pseudo||"Rider", mine=(e.by===me.uid), cnt=+(e.unread||0);
       var unread=!mine && (cnt>0 || (+e.t||0)>(dmSeen[p]||0));
-      var av = prof.av ? '<span class="gav" style="width:54px;height:54px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:54px;height:54px;background:'+avatarColor(p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
-      rows.push({ t:+e.t||0, grp:false, unread:unread, html:'<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b>'+offBadge(p)+'</span><span class="grow-sub">'+(mine?'<span class="gtick">✓✓</span>':'')+esc((e.text||(e.img?"📷 Photo":"")).slice(0,90))+'</span></span><span class="grow-right"><span class="grow-tm">'+(e.t?timeLabel(e.t):"")+'</span>'+(cnt>0?'<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>':(unread?'<span class="gunread"></span>':''))+'</span></button>' }); });
+      rows.push({ t:+e.t||0, grp:false, unread:unread, uid:p, name:name, html:'<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+dlAv(p, name, prof.av||(p===TEAM_UID?TEAM_AV:""))+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b>'+offBadge(p)+'</span><span class="grow-sub">'+(mine?'<span class="gtick">✓✓</span>':'')+esc((e.text||(e.img?"📷 Photo":"")).slice(0,90))+'</span></span><span class="grow-right"><span class="grow-tm">'+(e.t?timeLabel(e.t):"")+'</span>'+(cnt>0?'<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>':(unread?'<span class="gunread"></span>':''))+'</span></button>' }); });
     (myGroups||[]).forEach(function(g){ if(!g) return; var n=memberCount(g), last=g.last, cnt=(g.unread&&+g.unread[me.uid])||0;
       var unread=(cnt>0)||(last&&((+last.t||0)>(gseen[g.id]||0))&&last.by!==me.uid), mine=last&&last.by===me.uid;
       var prev = last ? ((mine?'<span class="gtick">✓✓</span>':'')+esc(((!mine&&last.pseudo?last.pseudo+": ":"")+(last.text||(last.img?"📷 Photo":""))).slice(0,90))) : (n+" membre"+(n>1?"s":""));
-      rows.push({ t:(last&&+last.t)||+g.t||0, grp:true, unread:!!unread, html:'<button class="grow'+(unread?' unread':'')+'" data-gid="'+g.id+'">'+groupAvatarHtml(g,54)+'<span class="grow-main"><span class="grow-top"><b>'+esc(g.name||"Groupe")+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+((last&&last.t)?timeLabel(last.t):"")+'</span>'+(cnt>0?'<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>':(unread?'<span class="gunread"></span>':''))+'</span></button>' }); });
-    rows.sort(function(x,y){ return y.t-x.t; });
-    var nUn=rows.filter(function(r){ return r.unread; }).length;
-    var list=rows.filter(function(r){ return dlFilter==="unread" ? r.unread : (dlFilter==="groups" ? r.grp : true); });
-    var chip=function(k,l,n){ return '<button type="button" data-f="'+k+'" class="'+(dlFilter===k?"on":"")+'">'+l+(n?'<i>'+(n>99?"99+":n)+'</i>':'')+'</button>'; };
-    var html='<div class="dl-chips">'+chip("all","Toutes")+chip("unread","Non lues",nUn)+chip("groups","Groupes")+'</div>'
-      +'<div class="dl-new"><button class="gnew" id="dmNewBtn"><span class="gnew-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Message</span></button>'
-      +'<button class="gnew" id="gNewBtn"><span class="gnew-ic">＋</span><span>Groupe</span></button></div>';
-    if(!list.length) html+='<div class="comm-empty" style="margin-top:8px">'+(dlFilter==="unread"?'Tout est lu 👌':(dlFilter==="groups"?'Aucun groupe pour l\'instant.<br>Crée un groupe pour discuter à plusieurs, ou rejoins-en un via un lien d\'invitation.':'Aucune discussion pour l\'instant.<br>Écris à un rider avec « Nouveau message ».'))+'</div>';
-    else html+='<div class="glist">'+list.map(function(r){ return r.html; }).join("")+'</div>';
-    box.classList.add("lst"); box.innerHTML=html;
-    box.querySelectorAll(".dl-chips button").forEach(function(c){ c.addEventListener("click", function(){ dlFilter=c.dataset.f; renderDMList(); }); });
-    var nb=$("dmNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker); var gb=$("gNewBtn"); if(gb) gb.addEventListener("click", openNewGroupModal);
-    box.querySelectorAll(".grow").forEach(function(r){ r.addEventListener("click", function(){ if(r.dataset.gid){ var g=myGroups.filter(function(x){ return x.id===r.dataset.gid; })[0]; if(g) openGroup(g); } else openDM(r.dataset.uid, r.dataset.ps); }); });
+      rows.push({ t:(last&&+last.t)||+g.t||0, grp:true, unread:!!unread, name:g.name||"Groupe", html:'<button class="grow'+(unread?' unread':'')+'" data-gid="'+g.id+'">'+groupAvatarHtml(g,54)+'<span class="grow-main"><span class="grow-top"><b>'+esc(g.name||"Groupe")+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+((last&&last.t)?timeLabel(last.t):"")+'</span>'+(cnt>0?'<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>':(unread?'<span class="gunread"></span>':''))+'</span></button>' }); });
+    rows.sort(function(x,y){ return y.t-x.t; }); return rows; }
+  function dlCleared(){ try{ return JSON.parse(localStorage.getItem("lf.dm.clr")||"{}")||{}; }catch(e){ return {}; } }
+  function dlDelete(r){ if(r.dataset.gid){ var g=myGroups.filter(function(x){ return x.id===r.dataset.gid; })[0]; if(!g || !backend || !backend.leaveGroup) return;
+      if(confirm("Quitter le groupe « "+(g.name||"Groupe")+" » ? Il disparaîtra de tes discussions.")) backend.leaveGroup(g.id).then(function(){ renderDMList(); }).catch(function(){ alert("Impossible de quitter le groupe pour l'instant."); }); return; }
+    var u=r.dataset.uid, nm=r.dataset.ps||"ce rider"; if(!u || !backend || !backend.removeDM) return;
+    if(!confirm("Effacer la discussion avec "+nm+" ? Elle disparaît de ta liste ; "+nm+" garde la sienne.")) return;
+    try{ var c=dlCleared(); c[u]=Date.now(); localStorage.setItem("lf.dm.clr", JSON.stringify(c)); }catch(e){}
+    backend.removeDM(u).then(function(){ try{ delete myDMs[u]; }catch(e){} renderDMList(); recomputeBadges(); }).catch(function(){ alert("Impossible d'effacer la discussion pour l'instant."); }); }
+  // appui long (ou clic droit) sur une ligne : effacer / quitter
+  function dlHold(r){ var tm=null, fired=false, sx=0, sy=0, stop=function(){ clearTimeout(tm); tm=null; };
+    r.addEventListener("touchstart", function(e){ fired=false; var t=e.touches[0]; sx=t.clientX; sy=t.clientY; stop(); tm=setTimeout(function(){ fired=true; try{ if(navigator.vibrate) navigator.vibrate(12); }catch(x){} dlDelete(r); }, 550); }, { passive:true });
+    r.addEventListener("touchmove", function(e){ var t=e.touches[0]; if(Math.abs(t.clientX-sx)>10 || Math.abs(t.clientY-sy)>10) stop(); }, { passive:true });
+    r.addEventListener("touchend", stop); r.addEventListener("touchcancel", stop);
+    r.addEventListener("contextmenu", function(e){ e.preventDefault(); if(!fired){ fired=true; dlDelete(r); } });
+    r.addEventListener("click", function(e){ if(fired){ e.stopImmediatePropagation(); e.preventDefault(); fired=false; } }, true); }
+  function dlNorm(v){ return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+  // la liste seule (redessinée à chaque lettre tapée, sans toucher au champ de recherche)
+  function dlDrawList(){ var host=$("dlList"); if(!host) return; var rows=dlRows(), q=dlNorm(dlQ.trim());
+    var list=rows.filter(function(r){ return (dlFilter==="unread" ? r.unread : (dlFilter==="groups" ? r.grp : true)) && (!q || dlNorm(r.name).indexOf(q)>=0); });
+    var html="";
+    if(list.length) html+=(q?'<div class="dl-sec">Discussions</div>':'')+'<div class="glist">'+list.map(function(r){ return r.html; }).join("")+'</div>';
+    if(q){ var have={}; rows.forEach(function(r){ if(r.uid) have[r.uid]=1; });
+      var ids=Object.keys(profileMap).filter(function(u){ if(u===me.uid || blocked.has(u) || have[u]) return false; var p=profileMap[u]||{}; if(!p.pseudo && !p.nk) return false; return dlNorm(p.pseudo).indexOf(q)>=0 || dlNorm(p.nk).indexOf(q)>=0; });
+      ids.sort(function(x,y){ return (dlOnline(y)?1:0)-(dlOnline(x)?1:0) || (dlNorm((profileMap[x]||{}).pseudo).indexOf(q)===0?0:1)-(dlNorm((profileMap[y]||{}).pseudo).indexOf(q)===0?0:1); });
+      if(ids.length) html+='<div class="dl-sec">Riders</div>'+ids.slice(0,8).map(function(u){ var p=profileMap[u]||{}, nm=p.pseudo||"Rider", sp="";
+          try{ sp=String(p.sports||"").split(",").filter(function(k){ return LF_SP[k]; }).slice(0,4).map(function(k){ return LF_SP[k].ic; }).join(" "); }catch(e){}
+          return '<div class="dl-rid" data-ru="'+esc(u)+'">'+dlAv(u, nm, p.av, 50)+'<span class="cl-main"><b>'+esc(nm)+'</b><small>'+(dlOnline(u)?'<em>● En ligne</em>':'')+(sp?(dlOnline(u)?' · ':'')+sp:(dlOnline(u)?'':'Rider Lite Foil'))+'</small></span><button type="button" class="dl-pill" data-rm="'+esc(u)+'">Message</button></div>'; }).join("");
+      html+='<button type="button" class="dl-more" id="dlMore">Chercher « '+esc(dlQ.trim())+' » parmi tous les riders ›</button>';
+      if(!list.length && !ids.length) html='<div class="comm-empty" style="margin-top:8px">Aucun résultat pour « '+esc(dlQ.trim())+' ».</div>'+html; }
+    else if(!list.length) html+='<div class="comm-empty" style="margin-top:14px">'+(dlFilter==="unread"?'Tout est lu 👌':(dlFilter==="groups"?'Aucun groupe pour l\'instant.<br>Crée un groupe avec le bouton en bas à droite, ou rejoins-en un via un lien d\'invitation.':'Aucune discussion pour l\'instant.<br>Touche le bouton en bas à droite pour écrire à un rider.'))+'</div>';
+    if(list.length && !q) html+='<div style="margin:12px 4px 2px;text-align:center;font-size:12px;color:var(--muted)">Appui long sur une discussion pour l\'effacer.</div>';
+    host.innerHTML=html;
+    host.querySelectorAll(".grow").forEach(function(r){ dlHold(r); r.addEventListener("click", function(){ if(r.dataset.gid){ var g=myGroups.filter(function(x){ return x.id===r.dataset.gid; })[0]; if(g) openGroup(g); } else openDM(r.dataset.uid, r.dataset.ps); }); });
+    host.querySelectorAll(".dl-rid").forEach(function(r){ r.addEventListener("click", function(e){ var u=r.dataset.ru, nm=(profileMap[u]||{}).pseudo||"Rider"; if(e.target.closest("[data-rm]")){ dlQ=""; openDM(u, nm); } else openUserProfile(u); }); });
+    var mo=$("dlMore"); if(mo) mo.addEventListener("click", function(){ var v=dlQ.trim(); openFriendSearch(); setTimeout(function(){ try{ var i=document.querySelector(".ts-ov input"); if(i){ i.value=v; i.dispatchEvent(new Event("input")); } }catch(e){} }, 60); });
   }
+  function renderDMList(){
+    var box=$("chatBox"); if(!box) return; dlFab();
+    // en pleine saisie dans la recherche : on ne redessine que la liste (sinon le clavier se referme)
+    if(box.classList.contains("lst") && $("dlList") && document.activeElement===$("dlQ")){ dlDrawList(); return; }
+    var nUn=dlRows().filter(function(r){ return r.unread; }).length;
+    var chip=function(k,l,n){ return '<button type="button" data-f="'+k+'" class="'+(dlFilter===k?"on":"")+'">'+l+(n?'<i>'+(n>99?"99+":n)+'</i>':'')+'</button>'; };
+    box.classList.add("lst");
+    box.innerHTML='<div class="st-bar" aria-label="Stories"></div>'
+      +'<label class="dl-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="dlQ" type="search" placeholder="Rechercher un rider ou une discussion" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><button type="button" id="dlQx" aria-label="Effacer"'+(dlQ?'':' hidden')+'>✕</button></label>'
+      +'<div class="dl-chips">'+chip("all","Toutes")+chip("unread","Non lues",nUn)+chip("groups","Groupes")+'</div><div id="dlList"></div>';
+    var inp=$("dlQ"), qx=$("dlQx"); inp.value=dlQ;
+    inp.addEventListener("input", function(){ dlQ=inp.value; qx.hidden=!dlQ; dlDrawList(); });
+    qx.addEventListener("click", function(){ dlQ=""; inp.value=""; qx.hidden=true; dlDrawList(); inp.focus(); });
+    box.querySelectorAll(".dl-chips button").forEach(function(c){ c.addEventListener("click", function(){ dlFilter=c.dataset.f; renderDMList(); }); });
+    dlDrawList(); try{ renderStories(); }catch(e){}
+  }
+  // bouton flottant : nouveau message, nouveau groupe, nouvel appel
+  function dlFab(){ var fab=$("dlFab"), host=$("tab-communaute"); if(!host) return;
+    if(!fab){ fab=document.createElement("div"); fab.id="dlFab"; fab.className="dl-fab"; host.appendChild(fab);
+      fab.innerHTML='<div class="dl-fab-m"><button type="button" data-a="grp">👥  Nouveau groupe</button><button type="button" data-a="msg">✏️  Nouveau message</button></div>'
+        +'<button type="button" class="dl-fab-b" aria-label="Nouveau"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>';
+      fab.addEventListener("click", function(e){ var m=e.target.closest("[data-a]"); if(m){ fab.classList.remove("open"); if(m.dataset.a==="grp") openNewGroupModal(); else openMemberPicker(); return; }
+        if(!e.target.closest(".dl-fab-b")) return; if(chatMode==="calls"){ openMemberPicker(); return; } fab.classList.toggle("open"); });
+      document.addEventListener("click", function(e){ if(!e.target.closest("#dlFab")) fab.classList.remove("open"); }, true); }
+    fab.hidden=!(chatMode==="dms"||chatMode==="calls"); if(fab.hidden) fab.classList.remove("open"); }
   // ---------- journal d'appels (gardé sur le téléphone) ----------
   function callLog(){ try{ return JSON.parse(localStorage.getItem("lf.calls")||"[]")||[]; }catch(e){ return []; } }
   function callLogAdd(o){ try{ var l=callLog(); if(o.m && l.some(function(x){ return x.m===o.m; })) return; l.unshift(o); localStorage.setItem("lf.calls", JSON.stringify(l.slice(0,80))); }catch(e){} try{ recomputeBadges(); if(chatMode==="calls") renderCallList(); }catch(e){} }
@@ -6429,10 +6500,10 @@
     return k<=0 ? hm : (k===1 ? "Hier, "+hm : d.getDate()+" "+["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."][d.getMonth()]+", "+hm); }
   function renderCallList(){ var box=$("chatBox"); if(!box) return; try{ localStorage.setItem("lf.calls.seen", String(Date.now())); }catch(e){}
     var l=callLog().filter(function(x){ return x && x.p && !blocked.has(x.p); });
-    var html='<div class="dl-new"><button class="gnew" id="clNewBtn"><span class="gnew-ic">'+LFC_SVG.ok.replace('<svg ','<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ')+'</span><span>Nouvel appel</span></button></div>';
-    if(!l.length) html+='<div class="comm-empty" style="margin-top:8px">Aucun appel pour l\'instant.<br>Ouvre une discussion et touche le téléphone ou la caméra pour appeler.</div>';
+    var html=""; dlFab();
+    if(!l.length) html+='<div class="comm-empty" style="margin-top:14px">Aucun appel pour l\'instant.<br>Touche le bouton en bas à droite pour choisir un rider, puis le téléphone ou la caméra.</div>';
     else html+='<div class="section-kicker" style="margin:10px 2px 4px;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Récents</div>'+l.map(function(x,i){ var prof=profileMap[x.p]||{}, name=prof.pseudo||x.n||"Rider", miss=x.i && x.w==="miss";
-      var av = prof.av ? '<span class="gav" style="width:48px;height:48px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:48px;height:48px;background:'+avatarColor(x.p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
+      var av = dlAv(x.p, name, prof.av, 50);
       var d=x.d?(" · "+Math.floor(x.d/60)+":"+("0"+(x.d%60)).slice(-2)):(x.w==="no"?" · refusé":(!x.i&&x.w!=="on"?" · sans réponse":""));
       return '<div class="cl-row'+(miss?' miss':'')+'" data-i="'+i+'">'+av+'<span class="cl-main" data-a="open"><b>'+esc(name)+'</b><small><i>'+(x.i?"↙":"↗")+'</i>'+(x.k==="v"?"Vidéo":"Audio")+" · "+clWhen(x.t)+d+'</small></span>'
         +'<button type="button" class="cl-act" data-a="a" aria-label="Appel audio">'+LFC_SVG.ok+'</button><button type="button" class="cl-act" data-a="v" aria-label="Appel vidéo">'+LFC_SVG.cam+'</button></div>'; }).join("");
@@ -8208,7 +8279,7 @@
       var sp=String(p.sports||"").split(",").filter(function(k){ return LF_SP[k]; }).slice(0,4).map(function(k){ return LF_SP[k].ic; }).join(" ");
       if(sp) bits.push(sp); return bits.join(" · "); };
     var rowHtml=function(u){ var p=profileMap[u]||{}, ring=(onlineIds.indexOf(u)>=0||videos.some(function(v){ return v && v.uid===u; }));
-      return '<div class="ts-row" data-tsu="'+esc(u)+'"><span class="ts-av'+(ring?" ring":"")+'"><span>'+avHtml(u)+'</span></span><span class="ts-txt"><b>'+esc(pseudoKey(pName(u))||"rider")+(isOfficial(u)?' <i class="ts-off">✓</i>':'')+'</b><span>'+esc(pName(u))+'</span><small>'+sub(u)+'</small></span>'+followBtnHtml(u)+'</div>'; };
+      return '<div class="ts-row" data-tsu="'+esc(u)+'"><span class="ts-av'+(ring?" ring":"")+'"><span>'+avHtml(u)+'</span></span><span class="ts-txt"><b>'+esc(pseudoKey(pName(u))||"rider")+(isOfficial(u)?' <i class="ts-off">✓</i>':'')+'</b><span>'+esc(pName(u))+'</span><small>'+sub(u)+'</small></span>'+followBtnHtml(u)+'<button type="button" class="ts-msg" data-tsm="'+esc(u)+'" aria-label="Message"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></button></div>'; };
     var vidsFor=function(q){ var vis=vidVisible(); if(!q) return vis.slice(0,12);
       return vis.filter(function(v){ var t=pseudoKey(v.pseudo||"")+" "+String(v.caption||"").toLowerCase(); return t.indexOf(q)>=0 || lastIds.indexOf(v.uid)>=0; }); };
     var vidHtml=function(list){ var vis=vidVisible(); return '<div class="ts-grid">'+list.map(function(v){ return '<button type="button" class="ts-vid" data-gi="'+vis.indexOf(v)+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="ts-vc">'+esc(v.caption||"")+'</span><span class="ts-vu">'+esc(v.pseudo||"Rider")+' · ♥ '+fmtCount(vidLikes(v))+'</span></button>'; }).join("")+'</div>'; };
@@ -8221,6 +8292,7 @@
       body.innerHTML=h;
       var all=body.querySelector(".ts-all"); if(all) all.addEventListener("click", function(){ ov.querySelector('[data-tt="riders"]').click(); });
       body.querySelectorAll("[data-tsu]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.tsu); }); });
+      body.querySelectorAll("[data-tsm]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); var u=b.dataset.tsm; close(); goToCommunaute(); openDM(u, pName(u)); }); });
       body.querySelectorAll("[data-tsf]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); var u=b.dataset.tsf;
         toggleFollow(u, draw); }); });
       body.querySelectorAll(".ts-vid").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.gi; if(i<0) return; close(); openFeed(i); }); }); };
