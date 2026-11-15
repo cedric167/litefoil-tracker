@@ -823,7 +823,7 @@ function drawDetailMap(a){
 }
 document.getElementById("closeSheet").onclick=()=>document.getElementById("sheet").classList.remove("open");
 document.getElementById("btnDel").onclick=()=>{ const a=current; if(!a) return;
-  const phone=a.source==="phone" || String(a.id).indexOf("phone-")===0;
+  const phone=a.source==="phone" || a.source==="gpx" || String(a.id).indexOf("phone-")===0;
   if(!confirm(phone ? "Supprimer définitivement cette sortie de ton téléphone ?" : "Masquer cette sortie dans l'appli ? (elle reste sur ton compte SportsTrackLive)")) return;
   try{
     if(phone){ const arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(x=>String(x.id)!==String(a.id)); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); }
@@ -1036,9 +1036,16 @@ document.getElementById("fileInput").onchange=async(e)=>{
   if(!pts.length){ alert("Fichier GPX illisible ou sans points."); return; }
   const s=trackStats(pts);
   const a={id:"gpx"+Date.now(),name:f.name.replace(/\.gpx$/i,""),categoryName:"Import GPX",activityType:"other",
-    milieu: guessMilieuFromAlt(pts), startedAt:new Date(), ...s, firstLat:pts[0].lat, firstLon:pts[0].lon, points:pts};
-  ALL.unshift(a); filter="tout"; render(); openDetail(a);
+    milieu: guessMilieuFromAlt(pts), startedAt:gpxStart(txt), ...s, firstLat:pts[0].lat, firstLon:pts[0].lon, points:pts, source:"gpx"};
+  // 15/11 : le fichier importé est gardé sur le téléphone (tracé allégé à 1500 points pour tenir en mémoire)
+  try{ const step=Math.ceil(pts.length/1500), lite=step>1?pts.filter((p,i)=>i%step===0||i===pts.length-1):pts;
+    const arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; arr.unshift({...a, points:lite, startedAt:a.startedAt.toISOString()});
+    localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent");
+  }catch(err){ alert("Sortie affichée, mais la mémoire du téléphone est pleine : elle n'a pas pu être enregistrée."); }
+  e.target.value="";
+  ALL.unshift(a); ALL.sort((x,y)=>(y.startedAt?y.startedAt.getTime():0)-(x.startedAt?x.startedAt.getTime():0)); filter="tout"; render(); openDetail(a);
 };
+function gpxStart(xml){ const m=/<time>([^<]+)<\/time>/.exec(xml.slice(xml.search(/<trkpt|<rtept/)>=0?xml.search(/<trkpt|<rtept/):0)); const d=m?new Date(m[1]):null; return d&&!isNaN(d)?d:new Date(); }
 function guessMilieuFromAlt(pts){ const maxA=Math.max(...pts.map(p=>p.alt)); return maxA<5 ? "mer":"terre"; }
 function parseGPX(xml){
   try{
