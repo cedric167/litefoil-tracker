@@ -628,6 +628,17 @@
   .cm-near{ background:linear-gradient(135deg,#f9b65a,#ef7d2e); }
   .cm-groups{ background:linear-gradient(135deg,#43d66a,#1a9c55); }
   .cm-dms{ background:linear-gradient(135deg,#6ea8ff,#3f6fe0); }
+  .cm-calls{ background:linear-gradient(135deg,#43d66a,#1a9c55); } .chat-modes button.on[data-ch="calls"]{ background:#e6f8ec; }
+  /* 16/11 : filtres de la liste des discussions et journal d'appels */
+  .dl-chips{ display:flex; gap:8px; overflow-x:auto; padding:2px 0 12px; scrollbar-width:none; } .dl-chips::-webkit-scrollbar{ display:none; }
+  .dl-chips button{ flex:none; min-height:0; border:1.5px solid var(--line); background:var(--card); color:var(--muted); border-radius:999px; padding:8px 15px; font:inherit; font-size:13.5px; font-weight:700; box-shadow:none; cursor:pointer; }
+  .dl-chips button.on{ background:#e3f7f5; border-color:#8fd9d2; color:#0b5f66; }
+  .dl-chips button i{ font-style:normal; margin-left:6px; background:#e11d48; color:#fff; border-radius:999px; padding:1px 7px; font-size:11.5px; }
+  .dl-new{ display:flex; gap:8px; margin-bottom:6px; } .dl-new .gnew{ flex:1; margin:0; }
+  .cl-row{ display:flex; align-items:center; gap:12px; width:100%; padding:10px 4px; border:0; border-bottom:1px solid var(--line-soft); background:none; box-shadow:none; min-height:0; font:inherit; color:var(--text); text-align:left; cursor:pointer; }
+  .cl-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; } .cl-main b{ font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .cl-row.miss .cl-main b{ color:#e11d48; }
+  .cl-main small{ font-size:12.5px; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:5px; } .cl-main small i{ font-style:normal; font-weight:800; color:#12a05c; } .cl-row.miss .cl-main small i{ color:#e11d48; }
+  .cl-act{ flex:none; width:42px; height:42px; min-height:0; padding:0; border:0; border-radius:50%; background:#e9f6f5; color:#0b6b78; box-shadow:none; display:flex; align-items:center; justify-content:center; cursor:pointer; } .cl-act svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .cm-badge[hidden]{ display:none !important; } .chat-modes .cm-badge:not([hidden]) ~ .cm-plus, .cm-plus:has(+ .cm-badge:not([hidden])){ display:none; }
   .cm-badge{ position:absolute; right:-5px; top:-5px; min-width:19px; height:19px; padding:0 5px; border-radius:100px; background:#e8384f; color:#fff; border:2.5px solid var(--card); font-size:11px; font-weight:800; line-height:15px; font-style:normal; display:flex; align-items:center; justify-content:center; }
   .chat-modes button.on[data-ch="dms"]{ background:#e9f0ff; }
@@ -2357,9 +2368,13 @@
       </button>
       <button data-ch="dms" class="on" aria-label="Messages privés" style="order:1">
         <span class="cm-ic cm-dms"><svg viewBox="0 0 24 24"><path d="M8 10h8M8 14h5"/><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg><i class="cm-badge" id="dmChipBadge" hidden></i></span>
-        <span class="cm-lbl">Messages</span>
+        <span class="cm-lbl">Discussions</span>
       </button>
-      <button data-ch="groups" aria-label="Groupes privés" style="order:2">
+      <button data-ch="calls" aria-label="Appels" style="order:2">
+        <span class="cm-ic cm-calls"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><i class="cm-badge" id="callChipBadge" hidden></i></span>
+        <span class="cm-lbl">Appels</span>
+      </button>
+      <button data-ch="groups" aria-label="Groupes privés" hidden style="display:none">
         <span class="cm-ic cm-groups"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg><i class="cm-plus">+</i><i class="cm-badge" id="grpChipBadge" hidden></i></span>
         <span class="cm-lbl">Groupes</span>
       </button>
@@ -5779,7 +5794,8 @@
     setB("salonChipBadge", salonN); setB("grpChipBadge", gtotal);
     // non-lus des messages privés
     var dmn=dmUnreadCount(); total += dmn;
-    var dcb=$("dmChipBadge"); if(dcb){ if(dmn>0){ dcb.textContent = dmn>9?"9+":String(dmn); dcb.hidden=false; } else dcb.hidden=true; }
+    var dcb=$("dmChipBadge"), dgn=dmn+gtotal; if(dcb){ if(dgn>0){ dcb.textContent = dgn>9?"9+":String(dgn); dcb.hidden=false; } else dcb.hidden=true; }
+    var cmn=0; try{ cmn=(chatMode==="calls"&&commVisible)?0:callMissedNew(); }catch(e){} total += cmn; setB("callChipBadge", cmn);
     // nouveaux événements créés par les autres depuis la dernière ouverture de l'agenda
     var evn=(chatMode==="events"&&commVisible)?0:evNewCount(); total += evn;
     var ecb=$("evChipBadge"); if(ecb){ if(evn>0){ ecb.textContent = evn>9?"9+":String(evn); ecb.hidden=false; } else ecb.hidden=true; }
@@ -5811,7 +5827,7 @@
   }
   function updateChatFilterVis(){ const f=$("chatFilter"); if(f) f.hidden = (chatMode!=="near"); }
   function updateChanUI(){ try{ lfCallBtns(); }catch(e){}
-    const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat"), isList=(chatMode==="groups"||chatMode==="dms"||chatMode==="events");
+    const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat"), isList=(chatMode==="groups"||chatMode==="dms"||chatMode==="events"||chatMode==="calls");
     const row=$("chatChannels"); if(row) row.hidden = (isConvo||isList);
     const sel=$("chatChannel"); if(sel && sel.value!==chatTopic) sel.value=chatTopic;
     const inp=$("chatInput"); if(inp) inp.placeholder = isConvo ? "Écrire un message…" : ("Écrire dans "+CHANS[chatTopic]+"…");
@@ -6120,6 +6136,7 @@
   function renderChat(){
     if(chatMode==="groups"){ renderGroupsList(); return; }
     if(chatMode==="dms"){ renderDMList(); return; }
+    if(chatMode==="calls"){ renderCallList(); return; }
     if(chatMode==="events"){ renderEventsList(); return; }
     const box=$("chatBox"); const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat");
     let arr=(isConvo?curMsgs:salonMsgs).filter(m=> !blocked.has(m.uid));
@@ -6263,7 +6280,7 @@
         c.to=setTimeout(function(){ if(lfCall===c && c.state==="ring") lfCallEnd("miss"); }, 60000); }); }); }
   // appelé : la sonnerie arrive par userDM/<moi>/<appelant>/call
   function lfCallRing(map){ if(!backend || !backend.rt) return; for(var peer in map){ var e=map[peer], k=e&&e.call; if(!k || !k.mid || lfCallSeen[k.mid]) continue; lfCallSeen[k.mid]=1;
-      if(blocked.has(peer) || !window.RTCPeerConnection) continue; var C2=window.Capacitor; if(C2 && C2.isNativePlatform && C2.isNativePlatform() && !/LiteFoilCall\//.test(navigator.userAgent)) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; } lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
+      if(blocked.has(peer) || !window.RTCPeerConnection) continue; var C2=window.Capacitor; if(C2 && C2.isNativePlatform && C2.isNativePlatform() && !/LiteFoilCall\//.test(navigator.userAgent)) continue; if(typeof k.t==="number" && Math.abs(Date.now()-k.t)>90000){ try{ callLogAdd({ p:peer, n:e.pseudo||"", k:(k.k==="v"?"v":"a"), i:1, t:k.t, m:k.mid, d:0, w:"miss" }); }catch(x){} backend.rt.remove(backend.rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); continue; } lfCallIncoming(peer, e.pseudo||((profileMap[peer]||{}).pseudo)||"Rider", k); } }
   function lfCallIncoming(peer, name, k){ var rt=backend.rt, path="dm/"+pairKey(me.uid,peer)+"/"+k.mid, un=null, done=false;
     un=rt.onValue(rt.ref(path+"/rtc"), function(sn){ var v=sn.val(); if(done) return; if(!v) return; done=true; setTimeout(function(){ try{ un&&un(); }catch(e){} },0);
       if(v.st!=="ring" || !v.offer){ rt.remove(rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); return; }   // appel déjà terminé
@@ -6284,7 +6301,7 @@
       var snd=c.pc.getSenders().filter(function(x){ return x.track && x.track.kind==="video"; })[0]; c.stream.getVideoTracks().forEach(function(t){ t.stop(); c.stream.removeTrack(t); }); c.stream.addTrack(nt); nt.enabled=!c.camOff;
       if(snd) snd.replaceTrack(nt); var v=c.el.querySelector(".lfc-loc"); if(v) v.srcObject=c.stream; lfCallDraw(); }).catch(function(){ c.facing = c.facing==="user" ? "environment" : "user"; }); }
   // fin d'appel : why = end (raccroché), no (refusé), miss (sans réponse), fail (connexion), local (jamais parti) ; remote = l'autre a déjà écrit l'état
-  function lfCallEnd(why, remote){ var c=lfCall; if(!c) return; lfCall=null; try{ var PN=nativePlug("LfCall"); if(PN && PN.done) PN.done().catch(function(){}); }catch(e){} var rt=backend&&backend.rt; clearTimeout(c.to); clearInterval(c.tick); if(c.tone) c.tone();
+  function lfCallEnd(why, remote){ var c=lfCall; if(!c) return; lfCall=null; try{ if(why!=="local" && c.peer) callLogAdd({ p:c.peer, n:c.name||"", k:c.kind, i:c.incoming?1:0, t:Date.now(), m:c.mid||"", d:c.t0?Math.round((Date.now()-c.t0)/1000):0, w:c.t0?"on":((c.incoming && !c.accepted && why!=="no")?"miss":why) }); }catch(e){} try{ var PN=nativePlug("LfCall"); if(PN && PN.done) PN.done().catch(function(){}); }catch(e){} var rt=backend&&backend.rt; clearTimeout(c.to); clearInterval(c.tick); if(c.tone) c.tone();
     [c.unIc,c.unSt,c.unAns].forEach(function(u){ try{ u&&u(); }catch(e){} });
     try{ if(c.pc){ c.pc.onicecandidate=c.pc.ontrack=c.pc.onconnectionstatechange=null; c.pc.close(); } }catch(e){}
     try{ if(c.stream) c.stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
@@ -6338,7 +6355,7 @@
       }
       if(lt>(gnotif[gg.id]||0)) gnotif[gg.id]=lt;
     } }
-    if(chatMode==="groups") renderGroupsList();
+    if(chatMode==="groups") renderGroupsList(); else if(chatMode==="dms") renderDMList();
     recomputeBadges();
   }
   function onMyDMs(map){ myDMs=map||{}; try{ if(window.__secOnDMs) window.__secOnDMs(myDMs); }catch(e){} try{ lfCallRing(myDMs); }catch(e){}
@@ -6364,34 +6381,54 @@
     if(chatUnsub){ chatUnsub(); chatUnsub=null; }
     updateChatFilterVis(); updateChanUI(); renderDMList(); updateChatGate(); recomputeBadges();
   }
+  var dlFilter="all";
   function renderDMList(){
     var box=$("chatBox"); if(!box) return;
-    var peers=Object.keys(myDMs).filter(function(p){ return myDMs[p] && !blocked.has(p); });
-    peers.sort(function(a,b){ return (+myDMs[b].t||0)-(+myDMs[a].t||0); });
-    var newBtn='<button class="gnew" id="dmNewBtn"><span class="gnew-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Nouveau message</span></button>';
-    var bindNew=function(){ var nb=$("dmNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker); };
-    if(!peers.length){ box.innerHTML=newBtn+'<div class="comm-empty" style="margin-top:8px">Aucun message privé pour l\'instant.<br>Écris à un rider avec « Nouveau message ».</div>'; bindNew(); return; }
-    box.innerHTML=newBtn+'<div class="glist">'+peers.map(function(p){ var e=myDMs[p]; var prof=profileMap[p]||{}; var name=e.pseudo||prof.pseudo||"Rider";
-      var mine=(e.by===me.uid);
-      var cnt=+(e.unread||0);
+    var rows=[];
+    Object.keys(myDMs).filter(function(p){ return myDMs[p] && !blocked.has(p); }).forEach(function(p){ var e=myDMs[p], prof=profileMap[p]||{}, name=e.pseudo||prof.pseudo||"Rider", mine=(e.by===me.uid), cnt=+(e.unread||0);
       var unread=!mine && (cnt>0 || (+e.t||0)>(dmSeen[p]||0));
-      var badge = cnt>0 ? '<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>' : (unread?'<span class="gunread"></span>':'');
-      var tick=mine?'<span class="gtick">✓✓</span>':'';
-      var prev=tick+esc((e.text||(e.img?"📷 Photo":"")).slice(0,90));
-      var tm=e.t?timeLabel(e.t):"";
       var av = prof.av ? '<span class="gav" style="width:54px;height:54px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:54px;height:54px;background:'+avatarColor(p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
-      return '<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b>'+offBadge(p)+'</span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+tm+'</span>'+badge+'</span></button>';
-    }).join("")+'</div>';
-    box.querySelectorAll(".grow").forEach(function(b){ b.addEventListener("click", function(){ openDM(b.dataset.uid, b.dataset.ps); }); }); bindNew();
+      rows.push({ t:+e.t||0, grp:false, unread:unread, html:'<button class="grow'+(unread?' unread':'')+'" data-uid="'+esc(p)+'" data-ps="'+esc(name)+'">'+av+'<span class="grow-main"><span class="grow-top"><b>'+esc(name)+'</b>'+offBadge(p)+'</span><span class="grow-sub">'+(mine?'<span class="gtick">✓✓</span>':'')+esc((e.text||(e.img?"📷 Photo":"")).slice(0,90))+'</span></span><span class="grow-right"><span class="grow-tm">'+(e.t?timeLabel(e.t):"")+'</span>'+(cnt>0?'<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>':(unread?'<span class="gunread"></span>':''))+'</span></button>' }); });
+    (myGroups||[]).forEach(function(g){ if(!g) return; var n=memberCount(g), last=g.last, cnt=(g.unread&&+g.unread[me.uid])||0;
+      var unread=(cnt>0)||(last&&((+last.t||0)>(gseen[g.id]||0))&&last.by!==me.uid), mine=last&&last.by===me.uid;
+      var prev = last ? ((mine?'<span class="gtick">✓✓</span>':'')+esc(((!mine&&last.pseudo?last.pseudo+": ":"")+(last.text||(last.img?"📷 Photo":""))).slice(0,90))) : (n+" membre"+(n>1?"s":""));
+      rows.push({ t:(last&&+last.t)||+g.t||0, grp:true, unread:!!unread, html:'<button class="grow'+(unread?' unread':'')+'" data-gid="'+g.id+'">'+groupAvatarHtml(g,54)+'<span class="grow-main"><span class="grow-top"><b>'+esc(g.name||"Groupe")+'</b></span><span class="grow-sub">'+prev+'</span></span><span class="grow-right"><span class="grow-tm">'+((last&&last.t)?timeLabel(last.t):"")+'</span>'+(cnt>0?'<span class="gbadge">'+(cnt>99?"99+":cnt)+'</span>':(unread?'<span class="gunread"></span>':''))+'</span></button>' }); });
+    rows.sort(function(x,y){ return y.t-x.t; });
+    var nUn=rows.filter(function(r){ return r.unread; }).length;
+    var list=rows.filter(function(r){ return dlFilter==="unread" ? r.unread : (dlFilter==="groups" ? r.grp : true); });
+    var chip=function(k,l,n){ return '<button type="button" data-f="'+k+'" class="'+(dlFilter===k?"on":"")+'">'+l+(n?'<i>'+(n>99?"99+":n)+'</i>':'')+'</button>'; };
+    var html='<div class="dl-chips">'+chip("all","Toutes")+chip("unread","Non lues",nUn)+chip("groups","Groupes")+'</div>'
+      +'<div class="dl-new"><button class="gnew" id="dmNewBtn"><span class="gnew-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Nouveau message</span></button>'
+      +'<button class="gnew" id="gNewBtn"><span class="gnew-ic">＋</span><span>Nouveau groupe</span></button></div>';
+    if(!list.length) html+='<div class="comm-empty" style="margin-top:8px">'+(dlFilter==="unread"?'Tout est lu 👌':(dlFilter==="groups"?'Aucun groupe pour l\'instant.<br>Crée un groupe pour discuter à plusieurs, ou rejoins-en un via un lien d\'invitation.':'Aucune discussion pour l\'instant.<br>Écris à un rider avec « Nouveau message ».'))+'</div>';
+    else html+='<div class="glist">'+list.map(function(r){ return r.html; }).join("")+'</div>';
+    box.innerHTML=html;
+    box.querySelectorAll(".dl-chips button").forEach(function(c){ c.addEventListener("click", function(){ dlFilter=c.dataset.f; renderDMList(); }); });
+    var nb=$("dmNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker); var gb=$("gNewBtn"); if(gb) gb.addEventListener("click", openNewGroupModal);
+    box.querySelectorAll(".grow").forEach(function(r){ r.addEventListener("click", function(){ if(r.dataset.gid){ var g=myGroups.filter(function(x){ return x.id===r.dataset.gid; })[0]; if(g) openGroup(g); } else openDM(r.dataset.uid, r.dataset.ps); }); });
+  }
+  // ---------- journal d'appels (gardé sur le téléphone) ----------
+  function callLog(){ try{ return JSON.parse(localStorage.getItem("lf.calls")||"[]")||[]; }catch(e){ return []; } }
+  function callLogAdd(o){ try{ var l=callLog(); if(o.m && l.some(function(x){ return x.m===o.m; })) return; l.unshift(o); localStorage.setItem("lf.calls", JSON.stringify(l.slice(0,80))); }catch(e){} try{ recomputeBadges(); if(chatMode==="calls") renderCallList(); }catch(e){} }
+  function callMissedNew(){ var sn=0; try{ sn=+localStorage.getItem("lf.calls.seen")||0; }catch(e){} return callLog().filter(function(x){ return x.i && x.w==="miss" && x.t>sn; }).length; }
+  function clWhen(t){ var d=new Date(+t||Date.now()), n=new Date(), hm=("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2), day=function(x){ return new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime(); }, k=Math.round((day(n)-day(d))/86400000);
+    return k<=0 ? hm : (k===1 ? "Hier, "+hm : d.getDate()+" "+["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."][d.getMonth()]+", "+hm); }
+  function renderCallList(){ var box=$("chatBox"); if(!box) return; try{ localStorage.setItem("lf.calls.seen", String(Date.now())); }catch(e){}
+    var l=callLog().filter(function(x){ return x && x.p && !blocked.has(x.p); });
+    var html='<div class="dl-new"><button class="gnew" id="clNewBtn"><span class="gnew-ic">'+LFC_SVG.ok.replace('<svg ','<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ')+'</span><span>Nouvel appel</span></button></div>';
+    if(!l.length) html+='<div class="comm-empty" style="margin-top:8px">Aucun appel pour l\'instant.<br>Ouvre une discussion et touche le téléphone ou la caméra pour appeler.</div>';
+    else html+='<div class="section-kicker" style="margin:10px 2px 4px;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Récents</div>'+l.map(function(x,i){ var prof=profileMap[x.p]||{}, name=prof.pseudo||x.n||"Rider", miss=x.i && x.w==="miss";
+      var av = prof.av ? '<span class="gav" style="width:48px;height:48px"><img src="'+prof.av+'" alt=""></span>' : '<span class="gav" style="width:48px;height:48px;background:'+avatarColor(x.p)+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
+      var d=x.d?(" · "+Math.floor(x.d/60)+":"+("0"+(x.d%60)).slice(-2)):(x.w==="no"?" · refusé":(!x.i&&x.w!=="on"?" · sans réponse":""));
+      return '<div class="cl-row'+(miss?' miss':'')+'" data-i="'+i+'">'+av+'<span class="cl-main" data-a="open"><b>'+esc(name)+'</b><small><i>'+(x.i?"↙":"↗")+'</i>'+(x.k==="v"?"Vidéo":"Audio")+" · "+clWhen(x.t)+d+'</small></span>'
+        +'<button type="button" class="cl-act" data-a="a" aria-label="Appel audio">'+LFC_SVG.ok+'</button><button type="button" class="cl-act" data-a="v" aria-label="Appel vidéo">'+LFC_SVG.cam+'</button></div>'; }).join("");
+    box.innerHTML=html; recomputeBadges();
+    var nb=$("clNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker);
+    box.querySelectorAll(".cl-row").forEach(function(r){ r.addEventListener("click", function(e){ var x=l[+r.dataset.i]; if(!x) return; var b=e.target.closest("[data-a]"), act=b?b.dataset.a:"open", nm=(profileMap[x.p]||{}).pseudo||x.n||"Rider";
+      openDM(x.p, nm); if(act==="a"||act==="v") setTimeout(function(){ try{ lfCallStart(act); }catch(err){} }, 300); }); });
   }
 
-  function showGroupsList(){ chatMode="groups"; curGroup=null; dmPeer=null;
-    $("chatSeg").hidden=false; $("chatBack").hidden=true; $("chatTitle").hidden=true; $("chatTitle").classList.remove("tap");
-    $("chatCard").classList.remove("wchat","dm","group");
-    $("chatSeg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.ch==="groups"));
-    if(chatUnsub){ chatUnsub(); chatUnsub=null; }
-    updateChatFilterVis(); updateChanUI(); renderGroupsList(); updateChatGate(); recomputeBadges();
-  }
+  function showGroupsList(){ showDMList(); }   /* 16/11 : les groupes sont dans Discussions */
   function renderGroupsList(){
     var box=$("chatBox"); if(!box) return;
     var html='<div class="glist">';
