@@ -634,7 +634,12 @@
   .dl-chips button{ flex:none; min-height:0; border:1.5px solid var(--line); background:var(--card); color:var(--muted); border-radius:999px; padding:8px 15px; font:inherit; font-size:13.5px; font-weight:700; box-shadow:none; cursor:pointer; }
   .dl-chips button.on{ background:#e3f7f5; border-color:#8fd9d2; color:#0b5f66; }
   .dl-chips button i{ font-style:normal; margin-left:6px; background:#e11d48; color:#fff; border-radius:999px; padding:1px 7px; font-size:11.5px; }
-  .dl-new{ display:flex; gap:8px; margin-bottom:6px; } .dl-new .gnew{ flex:1; margin:0; }
+  .dl-new{ display:flex; gap:10px; margin-bottom:10px; }
+  .dl-new .gnew{ flex:1 1 0; min-width:0; margin:0; gap:9px; padding:7px 12px 7px 7px; border:1.5px solid var(--line); border-radius:999px; background:var(--card); font-size:14px; white-space:nowrap; box-shadow:none; min-height:0; }
+  .dl-new .gnew span:last-child{ overflow:hidden; text-overflow:ellipsis; }
+  .dl-new .gnew-ic{ width:34px; height:34px; font-size:20px; box-shadow:none; } .dl-new .gnew-ic svg{ width:17px; height:17px; }
+  .chat-box.lst{ height:auto !important; min-height:320px; max-height:none !important; overflow:visible !important; padding:4px 2px 8px; }
+  .dl-chips{ flex:none; } .dl-new{ flex:none; }
   .cl-row{ display:flex; align-items:center; gap:12px; width:100%; padding:10px 4px; border:0; border-bottom:1px solid var(--line-soft); background:none; box-shadow:none; min-height:0; font:inherit; color:var(--text); text-align:left; cursor:pointer; }
   .cl-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; } .cl-main b{ font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .cl-row.miss .cl-main b{ color:#e11d48; }
   .cl-main small{ font-size:12.5px; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:5px; } .cl-main small i{ font-style:normal; font-weight:800; color:#12a05c; } .cl-row.miss .cl-main small i{ color:#e11d48; }
@@ -6147,7 +6152,7 @@
     if(chatMode==="dms"){ renderDMList(); return; }
     if(chatMode==="calls"){ renderCallList(); return; }
     if(chatMode==="events"){ renderEventsList(); return; }
-    const box=$("chatBox"); const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat");
+    const box=$("chatBox"); box.classList.remove("lst"); const isConvo=(chatMode==="dm"||chatMode==="group"||chatMode==="evchat");
     let arr=(isConvo?curMsgs:salonMsgs).filter(m=> !blocked.has(m.uid));
     if(!isConvo) arr = arr.filter(m=> (m.topic||"general")===chatTopic);
     if(chatMode==="near" && chatRadius<1000) arr = arr.filter(m=> m.lat!=null && me.pos && hdist(me.pos,m)<=chatRadius);
@@ -6407,11 +6412,11 @@
     var list=rows.filter(function(r){ return dlFilter==="unread" ? r.unread : (dlFilter==="groups" ? r.grp : true); });
     var chip=function(k,l,n){ return '<button type="button" data-f="'+k+'" class="'+(dlFilter===k?"on":"")+'">'+l+(n?'<i>'+(n>99?"99+":n)+'</i>':'')+'</button>'; };
     var html='<div class="dl-chips">'+chip("all","Toutes")+chip("unread","Non lues",nUn)+chip("groups","Groupes")+'</div>'
-      +'<div class="dl-new"><button class="gnew" id="dmNewBtn"><span class="gnew-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Nouveau message</span></button>'
-      +'<button class="gnew" id="gNewBtn"><span class="gnew-ic">＋</span><span>Nouveau groupe</span></button></div>';
+      +'<div class="dl-new"><button class="gnew" id="dmNewBtn"><span class="gnew-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Message</span></button>'
+      +'<button class="gnew" id="gNewBtn"><span class="gnew-ic">＋</span><span>Groupe</span></button></div>';
     if(!list.length) html+='<div class="comm-empty" style="margin-top:8px">'+(dlFilter==="unread"?'Tout est lu 👌':(dlFilter==="groups"?'Aucun groupe pour l\'instant.<br>Crée un groupe pour discuter à plusieurs, ou rejoins-en un via un lien d\'invitation.':'Aucune discussion pour l\'instant.<br>Écris à un rider avec « Nouveau message ».'))+'</div>';
     else html+='<div class="glist">'+list.map(function(r){ return r.html; }).join("")+'</div>';
-    box.innerHTML=html;
+    box.classList.add("lst"); box.innerHTML=html;
     box.querySelectorAll(".dl-chips button").forEach(function(c){ c.addEventListener("click", function(){ dlFilter=c.dataset.f; renderDMList(); }); });
     var nb=$("dmNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker); var gb=$("gNewBtn"); if(gb) gb.addEventListener("click", openNewGroupModal);
     box.querySelectorAll(".grow").forEach(function(r){ r.addEventListener("click", function(){ if(r.dataset.gid){ var g=myGroups.filter(function(x){ return x.id===r.dataset.gid; })[0]; if(g) openGroup(g); } else openDM(r.dataset.uid, r.dataset.ps); }); });
@@ -6431,7 +6436,7 @@
       var d=x.d?(" · "+Math.floor(x.d/60)+":"+("0"+(x.d%60)).slice(-2)):(x.w==="no"?" · refusé":(!x.i&&x.w!=="on"?" · sans réponse":""));
       return '<div class="cl-row'+(miss?' miss':'')+'" data-i="'+i+'">'+av+'<span class="cl-main" data-a="open"><b>'+esc(name)+'</b><small><i>'+(x.i?"↙":"↗")+'</i>'+(x.k==="v"?"Vidéo":"Audio")+" · "+clWhen(x.t)+d+'</small></span>'
         +'<button type="button" class="cl-act" data-a="a" aria-label="Appel audio">'+LFC_SVG.ok+'</button><button type="button" class="cl-act" data-a="v" aria-label="Appel vidéo">'+LFC_SVG.cam+'</button></div>'; }).join("");
-    box.innerHTML=html; recomputeBadges();
+    box.classList.add("lst"); box.innerHTML=html; recomputeBadges();
     var nb=$("clNewBtn"); if(nb) nb.addEventListener("click", openMemberPicker);
     box.querySelectorAll(".cl-row").forEach(function(r){ r.addEventListener("click", function(e){ var x=l[+r.dataset.i]; if(!x) return; var b=e.target.closest("[data-a]"), act=b?b.dataset.a:"open", nm=(profileMap[x.p]||{}).pseudo||x.n||"Rider";
       openDM(x.p, nm); if(act==="a"||act==="v") setTimeout(function(){ try{ lfCallStart(act); }catch(err){} }, 300); }); });
