@@ -637,15 +637,10 @@ async function load(){
     catch(e){ if(String(e.message)==="401"){ STL.logout(); updateConn(); } console.warn("live KO",e); }
   }
   updateConn();
-  // 2) snapshot réel (fallback)
-  try{
-    const r=await fetch("data.json?v="+Date.now(),{cache:"no-store"});
-    if(r.ok){ const j=await r.json(); ALL=withLocal(hydrate(j.activities||[])); setBadge("RÉEL","#d8f5e3","#0a7a43"); render(); return; }
-  }catch(e){}
-  // 3) démo (+ éventuelles sorties téléphone)
-  const loc=localSessions();
-  if(loc.length){ ALL=withLocal(buildDemo()); setBadge("MES SORTIES","#d8f5e3","#0a7a43"); render(); return; }
-  ALL=buildDemo(); setBadge("DÉMO","#fff3d6","#b26a00"); render();
+  // 16/11 : sans compte montre connecté, on ne montre QUE les sorties de ce téléphone (enregistrées ou importées).
+  // Avant, un fichier d'exemple avec de vraies sorties s'affichait chez tout le monde.
+  if(/[?&]demo=1/.test(location.search)){ ALL=buildDemo(); setBadge("DÉMO","#fff3d6","#b26a00"); render(); return; }
+  ALL=withLocal([]); setBadge("MES SORTIES","#d8f5e3","#0a7a43"); render();
 }
 
 /* ---- Connexion / déconnexion ---- */
