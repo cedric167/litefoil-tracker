@@ -9710,11 +9710,18 @@
   cLive.checked = ls("lf.sec.live")==="1"; cIdle.value = ls("lf.sec.idle")||"0";
   cLive.addEventListener("change", function(){ ls("lf.sec.live", cLive.checked?"1":"0"); if(cLive.checked && !(api()&&api().me().ready)){ cLive.checked=false; alert("Crée ton profil (onglet Profil) pour partager ta sortie en direct."); ls("lf.sec.live","0"); } });
   cIdle.addEventListener("change", function(){ ls("lf.sec.idle", cIdle.value); });
-  function contacts(){ try{ return JSON.parse(ls("lf.sec.contacts")||"[]")||[]; }catch(e){ return []; } }
-  function paintContacts(){ var n=contacts().length, t=$("secContactsTxt"); if(t) t.textContent = n ? (n+" gardien"+(n>1?"s":"")+" : prévenu"+(n>1?"s":"")+" de tes départs en direct, alertes et SOS") : "Riders Lite Foil prévenus en cas d'alerte ou de SOS."; }
+  // 16/11 : une liste de gardiens par milieu. Milieu utilisé = celui de la sortie en cours, sinon celui choisi dans l'onglet Tracking.
+  // Tant qu'un milieu n'a pas sa propre liste, il reprend l'ancienne liste commune.
+  var MILS=[["mer","🌊","Sur l'eau"],["terre","🥾","À terre"],["air","🪂","Dans les airs"]];
+  function curMil(){ try{ if(S.running && S.milieu) return S.milieu; var b=document.querySelector('#phSeg [aria-selected="true"]'); if(b && b.dataset.m) return b.dataset.m; }catch(e){} return "mer"; }
+  function contacts(m){ m=m||curMil(); try{ var v=ls("lf.sec.contacts."+m); if(v==null) v=ls("lf.sec.contacts"); return JSON.parse(v||"[]")||[]; }catch(e){ return []; } }
+  function paintContacts(){ var t=$("secContactsTxt"); if(!t) return; var ns=MILS.map(function(x){ return contacts(x[0]).length; });
+    t.textContent = (ns[0]||ns[1]||ns[2]) ? MILS.map(function(x,i){ return x[1]+" "+(ns[i]||"tous"); }).join("  ·  ")+" : prévenus de tes départs en direct, alertes et SOS" : "Riders Lite Foil prévenus en cas d'alerte ou de SOS."; }
   paintContacts();
-  $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), sel=contacts();
+  $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), mil=curMil(), sets={}; MILS.forEach(function(x){ sets[x[0]]=contacts(x[0]); }); var sel=sets[mil];
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12600"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Mes gardiens</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi tes amis et les riders que tu suis. Sans choix, tous tes amis sont prévenus.</p>'
+      +'<div class="sec-mil" style="display:flex;gap:6px;margin:4px 0 10px;padding:4px;border-radius:999px;background:#eef3f4">'+MILS.map(function(x){ return '<button type="button" data-mil="'+x[0]+'" style="flex:1;min-height:0;border:0;border-radius:999px;padding:9px 4px;font:inherit;font-size:13px;font-weight:800;box-shadow:none;cursor:pointer;white-space:nowrap">'+x[1]+" "+x[2]+'</button>'; }).join("")+'</div>'
+      +'<p class="sec-p" id="secMilTxt" style="margin-top:-2px"></p>'
       +(list.length? '<div class="sec-list">'+list.map(function(c){ return '<label class="sec-li"><span class="sec-av" style="background:'+c.col+'">'+(c.av?'<img src="'+c.av+'" alt="">':(c.ps.trim()[0]||"R").toUpperCase())+'</span><b>'+c.ps.replace(/[<>&]/g,"")+'</b><input type="checkbox" class="lfo-tog" value="'+c.uid+'"'+(sel.indexOf(c.uid)>=0?" checked":"")+'></label>'; }).join("")+'</div>'
         : '<p class="sec-p"><b>Tu ne suis encore personne.</b> Suis tes proches riders (bouton Suivre sur leur profil) pour pouvoir les choisir ici. Pour quelqu\'un qui n\'a pas l\'appli, utilise « Partager ma sortie en direct ».</p>')
       +'<div class="sec-wa"><b>Proches sur WhatsApp</b><p class="sec-p">Pour ceux qui n\'ont pas l\'appli. Au départ, à l\'arrivée et en cas de SOS, un bouton ouvre WhatsApp avec le message prêt à envoyer. Les numéros restent sur ton téléphone.</p><div id="secWaList"></div>'
@@ -9726,7 +9733,13 @@
     ov.querySelector("#secWaAdd").addEventListener("click", function(){ var n=ov.querySelector("#secWaN").value.trim(), p=ov.querySelector("#secWaP").value.trim(); if(waNum(p).length<9){ alert("Numéro incomplet. Exemple : 06 12 34 56 78 ou +34 600 000 000."); return; }
       var l=waList(); if(l.length>=10){ alert("10 proches au maximum."); return; } l.push({ n:n||"Proche", p:p }); ls("lf.sec.wa", JSON.stringify(l)); ov.querySelector("#secWaN").value=""; ov.querySelector("#secWaP").value=""; waDraw(); });
     ov.querySelector("#secWaList").addEventListener("click", function(e){ var b=e.target.closest("button[data-i]"); if(!b) return; var l=waList(); l.splice(+b.dataset.i,1); ls("lf.sec.wa", JSON.stringify(l)); waDraw(); });
-    var done=function(){ var v=[].slice.call(ov.querySelectorAll("input:checked")).map(function(i){ return i.value; }); ls("lf.sec.contacts", JSON.stringify(v)); paintContacts(); ov.remove(); if(S.running && S.live) alert("C'est noté : tes contacts seront pris en compte à ta prochaine sortie."); };
+    var readSel=function(){ return [].slice.call(ov.querySelectorAll(".sec-list input:checked")).map(function(i){ return i.value; }); };
+    var milPaint=function(){ ov.querySelectorAll("[data-mil]").forEach(function(b){ var on=b.dataset.mil===mil; b.style.background=on?"#0f7f86":"transparent"; b.style.color=on?"#fff":"#44555a"; });
+      [].slice.call(ov.querySelectorAll(".sec-list input")).forEach(function(i){ i.checked=sets[mil].indexOf(i.value)>=0; });
+      var lab=MILS.filter(function(x){ return x[0]===mil; })[0]; ov.querySelector("#secMilTxt").textContent="Gardiens pour tes sorties "+lab[2].toLowerCase()+". Chaque milieu a sa propre liste."; };
+    ov.querySelectorAll("[data-mil]").forEach(function(b){ b.addEventListener("click", function(){ sets[mil]=readSel(); mil=b.dataset.mil; milPaint(); }); });
+    milPaint();
+    var done=function(){ sets[mil]=readSel(); MILS.forEach(function(x){ ls("lf.sec.contacts."+x[0], JSON.stringify(sets[x[0]])); }); paintContacts(); ov.remove(); if(S.running && S.live) alert("C'est noté : tes contacts seront pris en compte à ta prochaine sortie."); };
     ov.querySelector(".sec-ok2").addEventListener("click", done); ov.addEventListener("click", function(e){ if(e.target===ov) done(); }); });
   // ---------- partage en direct ----------
   function shareLive(){ var A=api(); if(!A||!S.live) return; A.share(S.live.url, "Suis ma sortie Lite Foil", "Je pars en sortie"+(S.cat?" ("+S.cat+")":"")+" 🏄 Suis-moi en direct (position, vitesse, alerte sécurité) :"); }
