@@ -3766,6 +3766,9 @@
     if(k>=2){ var dt=(phPts[n-1].t-phPts[n-1-k].t)/k; if(dt>0) tx="1 point toutes les "+phNum(dt)+" s"; }
     return " ["+(tx?tx+" · ":"")+"GPS "+(phNatOn?"natif":(phBgId!=null?"module":"web"))+" · v164]"; }
   function phTick(){ if(phT0) $("phDur").textContent = phFmtDur((Date.now()-phT0)/1000); tkPaint(); }
+  // 15/11 : vitesse retenue pour le « max » = vitesse du point, plafonnée par la vitesse réelle du tracé sur les 5 dernières secondes (un pic GPS isolé ne compte plus)
+  function phMaxOk(pts, p, spd){ if(p.acc!=null && p.acc>35) return 0; var d=0, prev=p, i=pts.length-1, dt=0; for(; i>=0 && pts.length-i<=40; i--){ d+=phHaversine(pts[i],prev); prev=pts[i]; dt=p.t-pts[i].t; if(dt>=5) break; } if(dt<4 || dt>20) return 0; return Math.min(spd, d/dt*3.6*1.1+1); }
+  function phMaxOf(pts){ var m=0, a=[]; for(var i=0;i<pts.length;i++){ var p=pts[i], v=phMaxOk(a,p,+p.speed||0); if(v>m) m=v; a.push(p); } return m; }
   // Traite une position normalisée (native OU web) : {lat, lon, acc, alt, speedMs, heading, tMs}
   function phOnPos(o, bulk){
     if(o.lat==null || o.lon==null || !isFinite(o.lat) || !isFinite(o.lon)) return;
@@ -3777,7 +3780,7 @@
     var p = { lat:o.lat, lon:o.lon, speed:(spd!=null?spd:0), bearing:(o.heading!=null&&isFinite(o.heading))?o.heading:0, alt:(o.alt!=null&&isFinite(o.alt))?o.alt:0, t:t, acc:acc };
     // si le GPS ne donne pas la vitesse, l'estimer sur la distance entre deux points
     if(spd==null && phLast){ var dt=p.t-phLast.t; if(dt>0.2) spd = phHaversine(phLast,p)/dt*3.6; }
-    if(spd!=null){ p.speed=spd; if(spd>phMax) phMax=spd; }
+    if(spd!=null){ p.speed=spd; var vm=phMaxOk(phPts, p, spd); if(vm>phMax) phMax=vm; }
     phPts.push(p); phLast = p;
     try { phStlPush(p); } catch(e){}
     try { document.dispatchEvent(new CustomEvent("lf-trk-pos", { detail:{ lat:p.lat, lon:p.lon, speed:p.speed, t:phT0+p.t*1000, i:phPts.length, first:phPts[0], dist:0, milieu:phMilieu, cat:phCat } })); } catch(e){}
@@ -3920,7 +3923,9 @@
     phMotionStop();
     try { if(phWake){ phWake.release(); phWake = null; } } catch(e){}
   }
+  var phStopping = 0;
   function phStop(){
+    if(Date.now()-phStopping<8000) return; phStopping = Date.now();
     if(phNatOn){
       // natif : arrêter l'enregistreur, relire les derniers points, puis enregistrer la sortie
       var n = phNat(); phNatDetach();
@@ -3971,8 +3976,12 @@
       power: phPowerOf(distanceM)
     };
   }
+  (function(){ try { if(localStorage.getItem("lf.ph.fix1")==="1") return; var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[], seen={}, out=[];
+    arr.forEach(function(x){ if(!x) return; var k=x.id!=null?String(x.id):(x.startedAt+"|"+x.distanceM+"|"+x.durationSec); var k2=x.startedAt+"|"+x.distanceM+"|"+x.durationSec; if(seen[k]||seen[k2]) return; seen[k]=seen[k2]=1;
+      if(x.source==="phone" && x.points && x.points.length>10){ var m=phMaxOf(x.points); if(m>0 && m<(+x.maxSpeedKmh||0)) x.maxSpeedKmh=+m.toFixed(1); } out.push(x); });
+    localStorage.setItem("lf_phone_sessions", JSON.stringify(out)); localStorage.setItem("lf.ph.fix1","1"); } catch(e){} })();
   function phSaveLocal(sess){
-    try { var arr = JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr.unshift(sess); if(arr.length>100) arr = arr.slice(0,100); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); } catch(e){}
+    try { var arr = JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]"); arr = arr.filter(function(x){ return x && x.id!==sess.id; }); arr.unshift(sess); if(arr.length>100) arr = arr.slice(0,100); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); } catch(e){}
     try { document.dispatchEvent(new Event("lf-sess-saved")); } catch(e){}
   }
   // ---------------- Publication en direct sur SportsTrackLive depuis le téléphone ----------------
