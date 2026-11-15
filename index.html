@@ -9091,7 +9091,7 @@
 <script>
   // ---------------- Météo & vagues (Lite Foil météo, gratuit sans clé + carte Windy) ----------------
   (function(){
-    const DEFAULT={lat:43.014,lng:3.055,name:"Méditerranée"};
+    const DEFAULT={lat:43.014,lng:3.055,name:"Port-la-Nouvelle"};
     let pos=null; try{ pos=JSON.parse(localStorage.getItem("lf.meteo.pos")||"null"); }catch(e){}
     let loaded=false;
     const $m=id=>document.getElementById(id);
@@ -9215,7 +9215,7 @@
         nowRetry=setTimeout(function(){ nowRetry=null; if(pos && (+pos.lat).toFixed(2)+","+(+pos.lng).toFixed(2)===key) loadNow(pos); }, 65000);
       }
     }
-    function apply(p,label){ pos=p; try{ if(window.lfWc && window.lfWc.spot) window.lfWc.spot(p.lat, p.lng, label||p.name||""); }catch(e){} try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
+    function apply(p,label){ if(label && p && !p.name) p.name=label; pos=p; try{ if(window.lfWc && window.lfWc.spot) window.lfWc.spot(p.lat, p.lng, label||p.name||""); }catch(e){} try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
     async function reverseName(lat,lon){
       try{
         var r=await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+lat+"&longitude="+lon+"&localityLanguage=fr");
@@ -9390,8 +9390,9 @@
       if($h("hsKm")) $h("hsKm").textContent=(km>=100?Math.round(km):Math.round(km*10)/10).toLocaleString("fr-FR");
       if($h("hsH")) $h("hsH").textContent=sec>=3600 ? Math.round(sec/3600)+" h" : Math.round(sec/60)+" min"; }
     var DIRS=["N","NE","E","SE","S","SO","O","NO"];
-    function cond(){ var pos={lat:43.014,lng:3.055,name:"Méditerranée"}; // même spot par défaut que l'onglet Météo try{ var p=JSON.parse(localStorage.getItem("lf.meteo.pos")||"null"); if(p&&p.lat!=null) pos=p; }catch(e){}
-      var lng=pos.lng!=null?pos.lng:pos.lon; if($h("hcSpot")) $h("hcSpot").textContent="📍 "+(pos.name||"Mon spot");
+    function cond(){ var pos={lat:43.014,lng:3.055,name:"Port-la-Nouvelle"}; /* même spot par défaut que l'onglet Météo */
+      try{ var p=JSON.parse(localStorage.getItem("lf.meteo.pos")||"null"); if(p&&p.lat!=null) pos=p; else { var fv=(JSON.parse(localStorage.getItem("lf.meteo.favs")||"[]")||[])[0]; if(fv&&fv.lat!=null) pos={lat:fv.lat,lng:fv.lon,name:fv.name}; } }catch(e){}
+      var lng=pos.lng!=null?pos.lng:pos.lon; if($h("hcSpot")) $h("hcSpot").textContent="📍 "+(pos.name||"Ma position");
       fetch("https://api.open-meteo.com/v1/forecast?latitude="+pos.lat+"&longitude="+lng+"&current=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m&wind_speed_unit=kn&timezone=auto")
         .then(function(r){ return r.json(); }).then(function(j){ var c=j.current||{};
           $h("hcWind").textContent=Math.round(c.wind_speed_10m||0);
@@ -9406,6 +9407,7 @@
       $h("hdSub").textContent = r.rank ? ("Tu es "+r.rank+(r.rank===1?"er":"e")+" avec "+(Math.round(r.km*10)/10).toLocaleString("fr-FR")+" km · voir le classement") : "Fais une sortie eFoil pour entrer au classement"; }
     document.addEventListener("lf-rider", defi);
     hello(); stats(); cond(); defi();
+    document.querySelectorAll('.tab[data-tab="dash"], #bnav [data-nav="dash"]').forEach(function(t){ t.addEventListener("click", function(){ try{ cond(); }catch(e){} }); });
     // rafraîchit quand on revient sur l'appli (pseudo changé, nouvelle sortie, vent qui tourne)
     var last=Date.now();
     document.addEventListener("visibilitychange", function(){ if(document.hidden) return; hello(); stats(); if(Date.now()-last>10*60000){ last=Date.now(); cond(); } });
