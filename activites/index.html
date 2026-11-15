@@ -345,6 +345,20 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
 </div>
 
 <!-- ============ Fiche détail ============ -->
+<!-- 16/11 : choix de l'activité d'une sortie enregistrée sur le téléphone ou importée -->
+<div class="modal" id="actModal" hidden style="z-index:90">
+  <div class="modal-card" style="max-height:82vh;overflow-y:auto">
+    <button class="modal-x" id="actX" aria-label="Fermer">✕</button>
+    <h3 class="serif" style="font-size:22px">Quelle activité ?</h3>
+    <div id="actList"></div>
+  </div>
+</div>
+<style>
+#actList h4{margin:16px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6b7c80}
+#actList .ac-row{display:flex;flex-wrap:wrap;gap:8px}
+#actList button{border:1.5px solid #dbe5e7;background:#fff;color:#0b3d47;border-radius:999px;padding:9px 14px;font-size:14px;font-weight:600}
+#actList button.on{background:#0b6b78;border-color:#0b6b78;color:#fff}
+</style>
 <section class="sheet" id="sheet">
   <div class="hero">
     <button class="closex" id="closeSheet" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -360,7 +374,8 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
       <button class="sharep" id="btnShareProf"></button>
       <div class="sharep-note">Seuls tes amis voient tes sorties partagées. La position exacte n'est jamais partagée, seulement la forme du parcours.</div>
     </div>
-    <button class="del" id="btnDel"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7M10 11v5M14 11v5"/></svg>Supprimer cette sortie</button>
+    <button class="del" id="btnAct" style="color:#0b6b78" hidden>Changer l'activité</button>
+    <button class="del" id="btnDel" style="margin-top:2px"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7M10 11v5M14 11v5"/></svg>Supprimer cette sortie</button>
   </div>
 </section>
 
@@ -683,8 +698,10 @@ function mapThumb(pts){
 }
 // sorties supprimées : celles du téléphone sont effacées, les autres (boîtier, montre) sont masquées dans l'appli
 function hiddenIds(){ try{ return new Set(JSON.parse(localStorage.getItem("lf_hidden_sessions")||"[]")); }catch(e){ return new Set(); } }
+function actOver(){ try{ return JSON.parse(localStorage.getItem("lf_sess_act")||"{}")||{}; }catch(e){ return {}; } }
 function render(){
   { const H=hiddenIds(); if(H.size) ALL=ALL.filter(a=>!H.has(String(a.id))); }
+  { const O=actOver(); ALL.forEach(a=>{ const o=O[String(a.id)]; if(o && !a.actSet){ a.milieu=o.m; a.activityType=o.k; a.categoryName=o.c; a.actSet=1; } }); }
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-selected", b.dataset.k===filter));
   const isAir = a => a.milieu==="air" || /^(ulm|parapente|free_flight)$/i.test(a.activityType||"") || /parapente|ulm|avion/i.test(a.categoryName||"");
   const items = ALL.filter(a=> filter==="tout" ? true : filter==="air" ? isAir(a) : filter==="terre" ? (a.milieu==="terre" && !isAir(a)) : a.milieu===filter)
@@ -790,7 +807,7 @@ function lfToast(tx){ const t=document.createElement("div"); t.className="lf-toa
   lfToast(r==="1" ? "Sortie visible sur ton profil ✔" : r==="0" ? "Sortie retirée de ton profil" : r==="profil" ? "Crée d'abord ton profil pour partager une sortie." : "Partage impossible pour le moment, réessaie.");
   history.replaceState(null,"",location.pathname); }catch(e){} })();
 async function openDetail(a){
-  current=a; await ensurePoints(a); try{ paintShare(a); }catch(e){}
+  current=a; { const ba=document.getElementById("btnAct"); if(ba) ba.hidden=false; } await ensurePoints(a); try{ paintShare(a); }catch(e){}
   { const pp=String(a.name||"").split(" · "); document.getElementById("detName").textContent=pp.length>1?pp.slice(1).join(" · "):a.name; }
   document.getElementById("detIc").outerHTML=sportBadge(a,"det-ic").replace('<span class="','<span id="detIc" class="');
   document.getElementById("detMeta").innerHTML=`<em class="${a.milieu==="mer"?"badge-mer":"badge-terre"}">${a.categoryName||(a.milieu==="mer"?"Mer":"Terre")}</em>${fmtDate(a.startedAt)}`;
@@ -1048,7 +1065,36 @@ document.getElementById("fileInput").onchange=async(e)=>{
   }catch(err){ alert("Sortie affichée, mais la mémoire du téléphone est pleine : elle n'a pas pu être enregistrée."); }
   e.target.value="";
   ALL.unshift(a); ALL.sort((x,y)=>(y.startedAt?y.startedAt.getTime():0)-(x.startedAt?x.startedAt.getTime():0)); filter="tout"; render(); openDetail(a);
+  // 16/11 : sur l'eau ou à terre ? L'altitude du terrain sous le tracé le dit (0 m = mer), puis on demande l'activité
+  seaCheck(pts).then(sea=>{ if(sea===null || a.actSet) return; const m=sea?"mer":"terre"; if(m!==a.milieu){ a.milieu=m; saveLocalSess(a); render(); if(current===a) paintActHead(a); } }).catch(()=>{});
+  openActPicker(a);
 };
+/* ====================== ACTIVITÉ D'UNE SORTIE (téléphone ou import) ====================== */
+const ACTS={ mer:[["efoil","E-foil"],["wingfoil","Wing foil"],["parawing","Para wing"],["windsurf","Windsurf"],["pumpfoil","Pump foil"],["kitesurf","Kitesurf"],["surffoil","Surf foil"],["supdownwind","SUP Downwind"],["surf","Surf"],["bodyboard","Bodyboard"],["sup","Stand up paddle"],["canoe","Canoë / Kayak"],["deriveur","Dériveur"],["jetski","Jetski"],["swim","Nage"],["other","Autre (eau)"]],
+  terre:[["running","Running"],["marche","Marche athlétique"],["rando","Randonnée"],["trail","Trail"],["velo","Vélo"],["ski","Ski"],["snowboard","Snowboard"],["skate","Skateboard"],["longboard","Longboard"],["surfskate","Surfskate"],["roller","Roller"],["voiture","Voiture"],["moto","Moto"],["other","Autre (terre)"]],
+  air:[["ulm","ULM / Avion"],["parapente","Parapente"],["other","Autre (air)"]] };
+function isLocalSess(a){ return !!a && (a.source==="phone" || a.source==="gpx" || String(a.id).indexOf("phone-")===0); }
+function saveLocalSess(a){ try{ const arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; let ok=false;
+    arr.forEach(x=>{ if(x && String(x.id)===String(a.id)){ x.milieu=a.milieu; x.activityType=a.activityType; x.categoryName=a.categoryName; if(a.actSet) x.actSet=1; ok=true; } });
+    if(ok){ localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent"); } }catch(e){} }
+function paintActHead(a){ try{ document.getElementById("detIc").outerHTML=sportBadge(a,"det-ic").replace('<span class="','<span id="detIc" class="'); }catch(e){}
+  document.getElementById("detMeta").innerHTML=`<em class="${a.milieu==="mer"?"badge-mer":"badge-terre"}">${a.categoryName||(a.milieu==="mer"?"Mer":"Terre")}</em>${fmtDate(a.startedAt)}`; }
+function openActPicker(a){ if(!a) return; const box=document.getElementById("actList"), T={mer:"Sur l'eau",terre:"À terre",air:"Dans les airs"};
+  box.innerHTML=["mer","terre","air"].map(m=>`<h4>${T[m]}</h4><div class="ac-row">`+ACTS[m].map(x=>`<button type="button" data-m="${m}" data-k="${x[0]}" class="${a.milieu===m && a.activityType===x[0]?"on":""}">${x[1]}</button>`).join("")+`</div>`).join("");
+  box.onclick=(e)=>{ const b=e.target.closest("button[data-k]"); if(!b) return; a.milieu=b.dataset.m; a.activityType=b.dataset.k; a.categoryName=b.textContent; a.actSet=1;
+    if(isLocalSess(a)) saveLocalSess(a); else { try{ const O=actOver(); O[String(a.id)]={m:a.milieu,k:a.activityType,c:a.categoryName}; localStorage.setItem("lf_sess_act", JSON.stringify(O)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){} } document.getElementById("actModal").hidden=true; render(); if(current===a) openDetail(a); };
+  document.getElementById("actModal").hidden=false; }
+document.getElementById("actX").onclick=()=>{ document.getElementById("actModal").hidden=true; };
+document.getElementById("actModal").onclick=(e)=>{ if(e.target.id==="actModal") document.getElementById("actModal").hidden=true; };
+document.getElementById("btnAct").onclick=()=>{ if(current) openActPicker(current); };
+// vrai = sur l'eau, faux = à terre, null = inconnu (pas de réseau). Mer : terrain à 0 m. Lac : terrain parfaitement plat sous tout le tracé.
+async function seaCheck(pts){ try{ const n=Math.min(12,pts.length), s=[]; for(let i=0;i<n;i++) s.push(pts[Math.floor(i*(pts.length-1)/Math.max(1,n-1))]);
+    const r=await fetch("https://api.open-meteo.com/v1/elevation?latitude="+s.map(p=>p.lat.toFixed(4)).join(",")+"&longitude="+s.map(p=>p.lon.toFixed(4)).join(","));
+    const e=(await r.json()).elevation; if(!e || !e.length) return null;
+    const zero=e.filter(v=>v<=0.5).length; if(zero>=e.length*0.6) return true;
+    const far=haversine(s[0].lat,s[0].lon,s[s.length-1].lat,s[s.length-1].lon)>150 || pts[pts.length-1].dist>800;
+    return far && Math.max(...e)-Math.min(...e)<0.5 && e.length>=6;
+  }catch(e){ return null; } }
 function gpxStart(xml){ const m=/<time>([^<]+)<\/time>/.exec(xml.slice(xml.search(/<trkpt|<rtept/)>=0?xml.search(/<trkpt|<rtept/):0)); const d=m?new Date(m[1]):null; return d&&!isNaN(d)?d:new Date(); }
 // Lecture d'un fichier FIT : on ne garde que les points GPS (message « record », n° 20)
 function parseFIT(buf){
