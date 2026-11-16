@@ -4532,22 +4532,6 @@
   },
   {
    "sea": "man",
-   "place": "Saint-Aubin (commune à confirmer)",
-   "view": "Plage",
-   "id": "nr0jFa7mKQE",
-   "embed": true,
-   "by": "Vision-Environnement (agrégateur)",
-   "match": [
-    "aubin",
-    "commune",
-    "confirmer"
-   ],
-   "ch": "https://www.youtube.com/@Vision-environnement",
-   "lat": 49.33,
-   "lon": -0.392
-  },
-  {
-   "sea": "man",
    "place": "Jullouville",
    "view": "Plage",
    "id": "M0ZsxlSyBVE",
