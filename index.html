@@ -3532,7 +3532,7 @@
     const net = s.net === "1";
     $("tNet").textContent = net ? "connecté" : "hors ligne";
     $("tNet").className = "v " + (net ? "good" : "bad");
-    const sats = num(s.sats) ?? 0;
+    const sats = (num(s.sats)!=null ? num(s.sats) : 0);
     $("tSats").textContent = s.fix === "1" ? sats : "pas de fix";
     $("tSats").className = "v " + (s.fix !== "1" ? "bad" : sats >= 6 ? "good" : "warn");
     const spd = num(s.spd);
@@ -3542,13 +3542,13 @@
     const lat = num(s.lat), lon = num(s.lon);
     $("tLat").textContent = lat === null ? "—" : lat.toFixed(5);
     $("tLon").textContent = lon === null ? "—" : lon.toFixed(5);
-    $("tSyncs").textContent = s.syncs ?? "—";
-    $("tAcked").textContent = s.acked ?? "—";
-    $("tPend").textContent = s.pend ?? "—";
+    $("tSyncs").textContent = (s.syncs!=null ? s.syncs : "—");
+    $("tAcked").textContent = (s.acked!=null ? s.acked : "—");
+    $("tPend").textContent = (s.pend!=null ? s.pend : "—");
     const batt = num(s.batt);
     $("tBatt").textContent = batt ? batt + " %" : "—";
     $("tBatt").className = "v " + (batt === null || batt === 0 ? "" : batt < 20 ? "bad" : batt < 40 ? "warn" : "good");
-    $("statusNote").textContent = "Mis à jour par le tracker toutes les 2 s · démarrage n° " + (s.boot ?? "?") +
+    $("statusNote").textContent = "Mis à jour par le tracker toutes les 2 s · démarrage n° " + ((s.boot!=null ? s.boot : "?")) +
       (s.prov === "1" ? "" : " · NON ENRÔLÉ sur le serveur") +
       (s.acct ? " · compte : " + s.acct : " · aucun compte saisi");
     DASH.spd = spd; DASH.spdmax = spdMax; DASH.sats = (s.fix === "1") ? sats : null;
@@ -3593,9 +3593,9 @@
   function paintLive(s) {
     const el = $("tLive");
     if (s.live === "1") {
-      el.textContent = "n° " + (s.lid ?? "?") + " · " + (s.lsent ?? "0") + " pts";
+      el.textContent = "n° " + ((s.lid!=null ? s.lid : "?")) + " · " + ((s.lsent!=null ? s.lsent : "0")) + " pts";
       el.className = "v good";
-      stlBanner("ok", "Connexion SportsTrackLive OK · session en direct n° " + (s.lid ?? "?"));
+      stlBanner("ok", "Connexion SportsTrackLive OK · session en direct n° " + ((s.lid!=null ? s.lid : "?")));
     } else if (s.lhttp === "401" || s.lhttp === "403") {
       el.textContent = "identifiants refusés";
       el.className = "v bad";
@@ -3610,11 +3610,11 @@
   }
 
   function paintSettings(s) {
-    paintAccount((s.account ?? "").trim(), s.pw === "1");
-    $("inApn").value = s.apn ?? "";
-    $("inHost").value = s.host ?? "";
-    $("inPeriod").value = s.period ?? "";
-    $("inInterval").value = s.interval ?? "";
+    paintAccount(((s.account!=null ? s.account : "")).trim(), s.pw === "1");
+    $("inApn").value = (s.apn!=null ? s.apn : "");
+    $("inHost").value = (s.host!=null ? s.host : "");
+    $("inPeriod").value = (s.period!=null ? s.period : "");
+    $("inInterval").value = (s.interval!=null ? s.interval : "");
   }
 
   // ---------------- carte live (Leaflet + OpenStreetMap, chargé en différé) ----------------
@@ -4399,7 +4399,7 @@
     var el=document.getElementById("mtoUlm"); if(el) el.hidden=!on; };
   window.ulmOnShow = function(){ var p=document.getElementById("tab-ulm"); if(!p) return; if(window.LFUlm){ window.LFUlm.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=18"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
+    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=19"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
