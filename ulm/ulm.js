@@ -54,7 +54,7 @@ var TR = {
  "Pistes":["Runways","Pistas"], "Fréquences":["Frequencies","Frecuencias"], "Altitude du terrain":["Field elevation","Elevación del campo"], "Coordonnées":["Coordinates","Coordenadas"],
  "Altitude-pression":["Pressure altitude","Altitud de presión"], "Altitude-densité":["Density altitude","Altitud de densidad"], "Performances":["Performance","Rendimiento"],
  "Herbe":["Grass","Hierba"], "Revêtue":["Paved","Asfaltada"], "Béton":["Concrete","Hormigón"], "Gravier":["Gravel","Grava"], "Terre":["Dirt","Tierra"], "Sable":["Sand","Arena"], "Eau":["Water","Agua"],
- "Voir sur la carte":["Open in maps","Ver en el mapa"], "Cartes et infos officielles (SIA)":["Official charts and info (SIA)","Cartas e info oficiales (SIA)"], "Fiche BASULM":["BASULM sheet","Ficha BASULM"],
+ "Voir sur la carte":["Open in maps","Ver en el mapa"], "Carte et infos du terrain (SkyVector)":["Airfield chart and info (SkyVector)","Carta e info del aeródromo (SkyVector)"], "Cartes et infos officielles (SIA)":["Official charts and info (SIA)","Cartas e info oficiales (SIA)"], "Fiche BASULM":["BASULM sheet","Ficha BASULM"],
  "Météo officielle (Aeroweb)":["Official weather (Aeroweb)","Meteo oficial (Aeroweb)"],
  "Aucune piste renseignée.":["No runway on record.","Ninguna pista registrada."], "Aucune fréquence renseignée.":["No frequency on record.","Ninguna frecuencia registrada."],
  "Vent (kt)":["Wind (kt)","Viento (kt)"], "Pression (hPa)":["Pressure (hPa)","Presión (hPa)"], "Température et point de rosée (°C)":["Temperature and dew point (°C)","Temperatura y punto de rocío (°C)"],
@@ -94,18 +94,38 @@ function cleanName(n){ return String(n||"").replace(/\s+(Airfield|Airport|Aerodr
 function typeName(f){ return T(f.type===2?"Aéroport":f.type===1?"Aérodrome":"Base ULM / aérodrome"); }
 
 // ---------- base des terrains ----------
-function loadDB(){ if(dbP) return dbP;
-  dbP=jget("data/aero.json?v=1", 25000).then(function(l){ DB=l.map(function(a){ return { code:a[0], name:cleanName(a[1]), city:a[2], lat:a[3], lon:a[4], elev:a[5], type:a[6], cc:a[7], icao:a[8], rw:a[9]||[], fq:a[10]||[], k:norm(a[0]+" "+a[1]+" "+a[2]) }; }); return DB; });
-  dbP.catch(function(){ dbP=null; }); return dbP; }
+// 16/11 : base mondiale découpée en cases de 30° × 30° (data/aero/<i>_<j>.json). On charge d'abord les cases autour du pilote
+// (dernier terrain ouvert, position, favoris), puis toutes les autres en arrière-plan : la recherche couvre alors le monde entier.
+var CELLS=null, cellSt={}, DBfull=false;
+function mkA(a){ return { code:a[0], name:cleanName(a[1]), city:a[2], lat:a[3], lon:a[4], elev:a[5], type:a[6], cc:a[7], icao:a[8], rw:a[9]||[], fq:a[10]||[], k:norm(a[0]+" "+a[1]+" "+a[2]) }; }
+function cellOf(lat,lon){ return Math.min(5,Math.max(0,Math.floor((lat+90)/30)))+"_"+(((Math.floor((lon+180)/30)%12)+12)%12); }
+function refPos(){ try{ var r=JSON.parse(lget("lf.ulm.ref","null")); if(r && isFinite(r.lat) && isFinite(r.lon)) return r; }catch(e){} return { lat:46.5, lon:2.5 }; }
+function refSet(lat,lon){ if(!isFinite(lat)||!isFinite(lon)) return; lset("lf.ulm.ref", JSON.stringify({ lat:+(+lat).toFixed(3), lon:+(+lon).toFixed(3) })); cellKeep(lat,lon); }
+function cellKeep(lat,lon){ try{ var c=cellOf(lat,lon), l=(JSON.parse(lget("lf.ulm.cells","[]"))||[]).filter(function(x){ return x!==c; }); l.unshift(c); lset("lf.ulm.cells", JSON.stringify(l.slice(0,10))); }catch(e){} }
+function cellsNear(lat,lon){ var ci=Math.min(5,Math.max(0,Math.floor((lat+90)/30))), cj=Math.floor((lon+180)/30), out=[];
+  for(var di=-1;di<=1;di++) for(var dj=-1;dj<=1;dj++){ var i=ci+di, j=(((cj+dj)%12)+12)%12; if(i<0||i>5) continue; var c=i+"_"+j; if(CELLS && CELLS.indexOf(c)>=0 && out.indexOf(c)<0) out.push(c); } return out; }
+function cellGet(c){ if(cellSt[c]) return cellSt[c];
+  cellSt[c]=jget("data/aero/"+c+".json?v=2", 30000).then(function(l){ if(!DB) DB=[]; for(var i=0;i<l.length;i++) DB.push(mkA(l[i])); }, function(){ delete cellSt[c]; });
+  return cellSt[c]; }
+// loadDB() : terrains autour du pilote ; loadDB(lat, lon) : garantit en plus les terrains autour de ce point
+function loadDB(lat,lon){
+  if(!dbP){ dbP=jget("data/aero/cells.json?v=2", 20000).then(function(cl){ CELLS=cl||[]; if(!DB) DB=[];
+      var r=refPos(), want=cellsNear(r.lat,r.lon); try{ (JSON.parse(lget("lf.ulm.cells","[]"))||[]).forEach(function(c){ if(CELLS.indexOf(c)>=0 && want.indexOf(c)<0) want.push(c); }); }catch(e){}
+      return Promise.all(want.map(cellGet)).then(function(){
+        var rest=CELLS.filter(function(c){ return !cellSt[c]; }); (function next(){ var c=rest.shift(); if(!c){ DBfull=true; try{ document.dispatchEvent(new Event("lf-ulm-db")); }catch(e){} return; } cellGet(c).then(next, next); })();
+        return DB; }); });
+    dbP.catch(function(){ dbP=null; }); }
+  if(lat==null || !isFinite(lat) || !isFinite(lon)) return dbP;
+  return dbP.then(function(){ return Promise.all(cellsNear(lat,lon).map(cellGet)).then(function(){ return DB; }); }); }
 function byCode(c){ if(!DB) return null; for(var i=0;i<DB.length;i++) if(DB[i].code===c) return DB[i]; return null; }
-function search(q){ q=norm(q).trim(); if(q.length<2 || !DB) return []; var w=q.split(/\s+/), out=[];
+function search(q){ q=norm(q).trim(); if(q.length<2 || !DB) return []; var w=q.split(/\s+/), out=[], rp=refPos();
   for(var i=0;i<DB.length;i++){ var a=DB[i], ok=true; for(var j=0;j<w.length;j++) if(a.k.indexOf(w[j])<0){ ok=false; break; } if(!ok) continue;
-    var c=a.code.toLowerCase(), s=(c===q?0:c.indexOf(q)===0?1:norm(a.name).indexOf(q)===0?2:norm(a.city).indexOf(q)===0?3:4)*10-(a.cc==="FR"?1:0)-a.type; out.push([s,a]); }
+    var c=a.code.toLowerCase(), s=(c===q?0:c.indexOf(q)===0?1:norm(a.name).indexOf(q)===0?2:norm(a.city).indexOf(q)===0?3:4)*10-((Math.abs(a.lat-rp.lat)<4 && Math.abs(a.lon-rp.lon)<6)?1:0)-a.type; out.push([s,a]); }
   out.sort(function(x,y){ return x[0]-y[0]; }); return out.slice(0,14).map(function(x){ return x[1]; }); }
 function nearest(lat,lon,n,filter){ var l=[]; for(var i=0;i<DB.length;i++){ var a=DB[i]; if(filter && !filter(a)) continue; if(Math.abs(a.lat-lat)>3) continue; l.push([distKm(lat,lon,a.lat,a.lon),a]); }
   l.sort(function(x,y){ return x[0]-y[0]; }); return l.slice(0,n); }
 function favs(){ try{ return (JSON.parse(lget("lf.ulm.favs","[]"))||[]).filter(function(x){ return typeof x==="string"; }); }catch(e){ return []; } }
-function favToggle(c){ var l=favs(), i=l.indexOf(c); if(i>=0) l.splice(i,1); else l.unshift(c); lset("lf.ulm.favs", JSON.stringify(l.slice(0,12))); }
+function favToggle(c){ var l=favs(), i=l.indexOf(c); if(i>=0) l.splice(i,1); else { l.unshift(c); var ff=byCode(c); if(ff) cellKeep(ff.lat,ff.lon); } lset("lf.ulm.favs", JSON.stringify(l.slice(0,12))); }
 
 // ---------- décodage METAR / TAF ----------
 var WXD={MI:1,PR:1,BC:1,DR:1,BL:1,SH:1,TS:1,FZ:1}, WXP={DZ:"bruine",RA:"pluie",SN:"neige",SG:"neige en grains",IC:"cristaux de glace",PL:"granules de glace",GR:"grêle",GS:"grésil",UP:"précipitation",
@@ -370,6 +390,7 @@ function terrainView(){ var f=F, o=WX, h='<div class="ul-card">'+h1("Pistes");
   h+='<div class="ul-card"><div class="ul-links"><a href="https://www.google.com/maps/search/?api=1&query='+f.lat+"%2C"+f.lon+'" target="_blank" rel="noopener">'+esc(T("Voir sur la carte"))+'<span>›</span></a>';
   if(f.cc==="FR"){ h+='<a href="https://www.sia.aviation-civile.gouv.fr/" target="_blank" rel="noopener">'+esc(T("Cartes et infos officielles (SIA)"))+'<span>›</span></a><a href="https://aviation.meteo.fr/" target="_blank" rel="noopener">'+esc(T("Météo officielle (Aeroweb)"))+'<span>›</span></a>';
     if(/^LF\d{4}$/.test(f.code)) h+='<a href="https://basulm.ffplum.fr/" target="_blank" rel="noopener">'+esc(T("Fiche BASULM"))+'<span>›</span></a>'; }
+  else if(f.icao) h+='<a href="https://skyvector.com/airport/'+encodeURIComponent(f.icao)+'" target="_blank" rel="noopener">'+esc(T("Carte et infos du terrain (SkyVector)"))+'<span>›</span></a>';
   return h+'</div></div>'; }
 function tendView(){ if(hist==="err") return '<div class="ul-card"><div class="ul-msg">'+esc(T("L'historique sur 24 h sera disponible ici très bientôt."))+'</div></div>';
   if(!hist) return '<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>';
@@ -381,11 +402,11 @@ function tendView(){ if(hist==="err") return '<div class="ul-card"><div class="u
   if(C.some(function(p){ return p[1]!=null; })) h+='<div class="ul-ch"><b>'+esc(T("Plafond (ft)"))+'</b>'+lineChart([C],["#66727d"],{min:0,span:2000})+'</div>';
   return h+'</div>'; }
 function modeBar(){ return '<div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div>'; }
-function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, parseMetar:parseMetar, field:F,
+function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, refPos:refPos, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, parseMetar:parseMetar, field:F,
     metarBox:function(b){ return jget(API+"?bbox="+b.map(function(x){ return x.toFixed(2); }).join(","), 9000); } };
   if(window.LFNav){ window.LFNav.show(el, api); return; } el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>'; if(showNav.ld) return; showNav.ld=true;
-  var s0=document.createElement("script"); s0.src="ulm/safety.js?v=6"; document.head.appendChild(s0);
-  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=9"; sc.onload=function(){ var go=function(k){ var e2=root.querySelector("#ulNav"); if(!e2 || !window.LFNav) return; if(!window.LFSafe && k<20) return setTimeout(function(){ go(k+1); }, 150); window.LFNav.show(e2, api); }; go(0); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
+  var s0=document.createElement("script"); s0.src="ulm/safety.js?v=7"; document.head.appendChild(s0);
+  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=10"; sc.onload=function(){ var go=function(k){ var e2=root.querySelector("#ulNav"); if(!e2 || !window.LFNav) return; if(!window.LFSafe && k<20) return setTimeout(function(){ go(k+1); }, 150); window.LFNav.show(e2, api); }; go(0); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
 function render(state){ if(!root) return; var h="";
   if(mode==="nav"){ if(root.querySelector("#ulNav")) return; root.innerHTML=modeBar()+'<div id="ulNav"></div>'; showNav(); return; }
   h=modeBar();
@@ -402,14 +423,14 @@ function bindSearch(q){ var res=root.querySelector("#ulRes"), t=null;
 function nearMe(){ var res=root.querySelector("#ulRes"); if(!res) return; res.innerHTML='<div class="ul-note">'+esc(T("Chargement…"))+'</div>';
   function fail(){ var r=root.querySelector("#ulRes"); if(r) r.innerHTML='<div class="ul-note">'+esc(T("Position indisponible. Autorise la localisation ou cherche un terrain par son nom."))+'</div>'; }
   if(!navigator.geolocation) return fail();
-  navigator.geolocation.getCurrentPosition(function(p){ loadDB().then(function(){ var r=root.querySelector("#ulRes"); if(r) r.innerHTML=resHtml(nearest(p.coords.latitude,p.coords.longitude,12),true); }).catch(fail); }, fail, { enableHighAccuracy:false, timeout:12000, maximumAge:600000 }); }
+  navigator.geolocation.getCurrentPosition(function(p){ refSet(p.coords.latitude,p.coords.longitude); loadDB(p.coords.latitude,p.coords.longitude).then(function(){ var r=root.querySelector("#ulRes"); if(r) r.innerHTML=resHtml(nearest(p.coords.latitude,p.coords.longitude,12),true); }).catch(fail); }, fail, { enableHighAccuracy:false, timeout:12000, maximumAge:600000 }); }
 function loadHist(){ if(!WX) return; if(WX.st.limited){ hist="err"; render(); return; } var id=WX.st.id, my=seq; hist=null;
   jget(API+"?ids="+id+"&hours=24", 10000).then(function(l){ if(my!==seq) return; var a=(l||[]).filter(function(x){ return x.raw && x.id===id; }).map(function(x){ var o=parseMetar(x.raw); if(x.t) o.time=new Date(x.t*1000); return o; }).filter(function(o){ return o.time; });
     a.sort(function(x,y){ return x.time-y.time; }); hist=a.length>1?a:"err"; if(view==="tend") render(); }).catch(function(){ if(my!==seq) return; hist="err"; if(view==="tend") render(); }); }
 function loadFc(){ if(!F) return; var my=seq; fc=null;
   jget("https://api.open-meteo.com/v1/forecast?latitude="+F.lat+"&longitude="+F.lon+"&hourly=temperature_2m,dew_point_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,cloud_cover_low,visibility,precipitation,freezing_level_height,wind_speed_925hPa,wind_direction_925hPa,wind_speed_850hPa,wind_direction_850hPa,wind_speed_700hPa,wind_direction_700hPa&wind_speed_unit=kn&timezone=auto&forecast_days=3", 12000)
     .then(function(j){ if(my!==seq) return; fc=(j&&j.hourly&&j.hourly.time)?j:"err"; if(view==="prev") render(); }).catch(function(){ if(my!==seq) return; fc="err"; if(view==="prev") render(); }); }
-function select(f){ F=f; WX=null; hist=null; fc=null; rwSel=""; view="metar"; lset("lf.ulm.last", f.code); reload(); try{ window.scrollTo({top:0}); }catch(e){} }
+function select(f){ F=f; WX=null; hist=null; fc=null; rwSel=""; view="metar"; lset("lf.ulm.last", f.code); refSet(f.lat,f.lon); reload(); try{ window.scrollTo({top:0}); }catch(e){} }
 function reload(){ if(!F) return; var my=++seq; hist=null; render("load");
   loadWx(F).then(function(o){ if(my!==seq) return; WX=o; lastLoad=Date.now(); render(); if(view==="tend") loadHist(); if(view==="prev" && !fc) loadFc(); }).catch(function(){ if(my!==seq) return; render("err"); }); }
 function onClick(e){ var b=e.target.closest("button"); if(!b || !root.contains(b)) return;

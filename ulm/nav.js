@@ -246,7 +246,7 @@ function mkIcon(i,n,auto){ if(auto) return L.divIcon({ className:"", html:'<div 
 function paintMap(){ var el=box&&box.querySelector("#nvMap"); if(!el || !window.L) return; killMap(); map=L.map(el,{ zoomControl:false }); tiles(map); var n=P.pts.length, ll=P.pts.map(function(p){ return [p.lat,p.lon]; });
   if(n>1){ L.polyline(ll,{ color:"#fff", weight:7, opacity:.9, interactive:false }).addTo(map); L.polyline(ll,{ color:"#c2379f", weight:4, interactive:false }).addTo(map); }
   P.pts.forEach(function(p,i){ var m=L.marker([p.lat,p.lon],{ icon:mkIcon(i,n,p.auto), draggable:!p.code && !p.auto }).addTo(map); m.on("dragend", function(){ var q=m.getLatLng(); p.lat=q.lat; p.lon=q.lng; savePlan(); recalc(); }); });
-  if(n>1) map.fitBounds(L.latLngBounds(ll),{ padding:[30,30], maxZoom:11 }); else if(n===1) map.setView(ll[0],9); else map.setView([46.6,2.4],5);
+  if(n>1) map.fitBounds(L.latLngBounds(ll),{ padding:[30,30], maxZoom:11 }); else if(n===1) map.setView(ll[0],9); else { var rp0=(A && A.refPos) ? A.refPos() : { lat:46.6, lon:2.4 }; map.setView([rp0.lat,rp0.lon],5); }
   drawAsp();
   map.on("click", function(e){ if(!addOnMap) return; var k=P.pts.filter(function(p){ return !p.code; }).length+1; addPt({ name:T("Point")+" "+k, code:"", lat:e.latlng.lat, lon:e.latlng.lng }); }); }
 function addPt(p){ var n=P.pts.length; if(n>=2 && addOnMap===false && false){} P.pts.push(p); if(P.pts.length>20) P.pts=P.pts.slice(0,20); addOnMap=false; savePlan(); recalc(); }
@@ -354,7 +354,7 @@ function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY
   if(d.f==="center"){ F.follow=true; b.classList.add("on"); if(F.pos) F.map.setView([F.pos.lat,F.pos.lon], Math.max(F.map.getZoom(),11)); return; }
   if(d.f==="voice"){ F.voice=!F.voice; b.classList.toggle("on", F.voice); if(!F.voice){ try{ speechSynthesis.cancel(); }catch(x){} } return; }
   if(d.f==="next"){ if(F.i<F.pts.length-1){ F.i++; F.direct=F.pos?{ lat:F.pos.lat, lon:F.pos.lon }:null; if(F.pos) onPos({ lat:F.pos.lat, lon:F.pos.lon, spd:F.gs, t:Date.now() }); } return; }
-  if(d.f==="near"){ var ref=F.pos||F.pts[0]; A.loadDB().then(function(){ if(!FLY) return; var l=A.nearest(ref.lat,ref.lon,8), h='<div class="nv-near" id="nvNear"><h3>🛬 '+esc(T("Terrains les plus proches"))+'<button class="nv-x" data-f="nclose">✕</button></h3>'
+  if(d.f==="near"){ var ref=F.pos||F.pts[0]; A.loadDB(ref.lat,ref.lon).then(function(){ if(!FLY) return; var l=A.nearest(ref.lat,ref.lon,8), h='<div class="nv-near" id="nvNear"><h3>🛬 '+esc(T("Terrains les plus proches"))+'<button class="nv-x" data-f="nclose">✕</button></h3>'
       +l.map(function(x){ var a=x[1], rw=(a.rw||[]).slice().sort(function(u,v){ return (v[2]||0)-(u[2]||0); })[0]; return '<button class="f" data-direct="'+esc(a.code)+'"><div><b>'+esc(a.name)+'</b><small>'+esc(a.code)+(rw?" · "+esc(T("piste"))+" "+esc(rw[0]+"/"+rw[1])+" · "+(rw[2]||"?")+" m":"")+(a.fq&&a.fq[0]?" · "+a.fq[0][1].toFixed(3):"")+'</small></div><em>'+d3(brg(ref,a))+" · "+(x[0]/1.852).toFixed(1)+' NM</em></button>'; }).join("")+'</div>';
       var o=F.el.querySelector("#nvNear"); if(o) o.remove(); F.el.querySelector("#nvFMap").insertAdjacentHTML("beforeend", h); }); return; }
   if(d.f==="nclose"){ var o2=F.el.querySelector("#nvNear"); if(o2) o2.remove(); return; }
