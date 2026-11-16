@@ -1662,6 +1662,152 @@
   },
   {
    "sea": "atl",
+   "place": "Île d'Oléron",
+   "view": "Phare de Chassiron (pointe nord)",
+   "id": "kpzKmQUMh4E",
+   "embed": true,
+   "by": "Vision-Environnement pour l'OT Île d'Oléron-Marennes",
+   "match": [
+    "oleron"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 46.047,
+   "lon": -1.41
+  },
+  {
+   "sea": "atl",
+   "place": "Île d'Oléron",
+   "view": "Plage de surf Les Huttes",
+   "id": "XH8vaFef3Sc",
+   "embed": true,
+   "by": "Vision-Environnement / Diabolo Fun (OT Oléron)",
+   "match": [
+    "oleron"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 46.011,
+   "lon": -1.397
+  },
+  {
+   "sea": "atl",
+   "place": "Noirmoutier-en-l'Île",
+   "view": "La Chaloupe (centre-ville / port)",
+   "id": "Pj84-0bRazs",
+   "embed": true,
+   "by": "Vision-Environnement pour la ville / OT de Noirmoutier",
+   "match": [
+    "noirmoutier"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 47,
+   "lon": -2.245
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Hilaire-de-Riez",
+   "view": "Baie de Sion",
+   "id": "ATHpeRj8DnQ",
+   "embed": true,
+   "by": "Trinum/SnapMyRide pour la mairie de Saint-Hilaire-de-Riez",
+   "match": [
+    "hilaire",
+    "riez"
+   ],
+   "ch": "https://www.youtube.com/@snapmyridetrinum",
+   "lat": 46.713,
+   "lon": -1.972
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Hilaire-de-Riez",
+   "view": "Base nautique des Demoiselles (plage)",
+   "id": "8fEcg-jg25w",
+   "embed": true,
+   "by": "Trinum/SnapMyRide pour la mairie de Saint-Hilaire-de-Riez",
+   "match": [
+    "hilaire",
+    "riez"
+   ],
+   "ch": "https://www.youtube.com/@SnapMyRide",
+   "lat": 46.745,
+   "lon": -2.008
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Hilaire-de-Riez",
+   "view": "Feu de Grosse Terre (corniche, entrée du port de Saint-Gilles)",
+   "id": "1C2A7fY-Bxs",
+   "embed": true,
+   "by": "Trinum/SnapMyRide pour la mairie de Saint-Hilaire-de-Riez",
+   "match": [
+    "hilaire",
+    "riez"
+   ],
+   "ch": "https://www.youtube.com/@SnapMyRide",
+   "lat": 46.703,
+   "lon": -1.958
+  },
+  {
+   "sea": "atl",
+   "place": "La Tremblade",
+   "view": "Port de la Grève, estuaire de la Seudre",
+   "id": "tYGBKZsADdk",
+   "embed": true,
+   "by": "Chaîne agrégatrice Webcams Ports France",
+   "match": [
+    "tremblade"
+   ],
+   "ch": "https://www.youtube.com/@Webcam-Ports-france",
+   "lat": 45.777,
+   "lon": -1.143
+  },
+  {
+   "sea": "atl",
+   "place": "Mornac-sur-Seudre",
+   "view": "Port et chenal de la Seudre",
+   "id": "CeWhfDliulQ",
+   "embed": true,
+   "by": "Vision-Environnement",
+   "match": [
+    "mornac",
+    "seudre"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 45.709,
+   "lon": -1.028
+  },
+  {
+   "sea": "atl",
+   "place": "Mesquer-Quimiac",
+   "view": "Mouillage de Lanséria",
+   "id": "vutDlUQc3QE",
+   "embed": true,
+   "by": "Chaîne agrégatrice Webcams Touristiques",
+   "match": [
+    "mesquer",
+    "quimiac"
+   ],
+   "ch": "https://www.youtube.com/@webcamstouristiques1701",
+   "lat": 47.412,
+   "lon": -2.472
+  },
+  {
+   "sea": "atl",
+   "place": "Treffiagat-Léchiagat",
+   "view": "Port de Léchiagat / Le Guilvinec",
+   "id": "6YfK0iFFjcw",
+   "embed": true,
+   "by": "Chaîne agrégatrice Webcams Ports France",
+   "match": [
+    "treffiagat",
+    "lechiagat"
+   ],
+   "ch": "https://www.youtube.com/@Webcam-Ports-france",
+   "lat": 47.796,
+   "lon": -4.283
+  },
+  {
+   "sea": "atl",
    "place": "Gâvres",
    "view": "Port et rade de Lorient",
    "id": "B4kOzuzFu1g",
@@ -1673,6 +1819,2074 @@
    "ch": "https://www.youtube.com/@Webcam-Ports-france",
    "lat": 47.696,
    "lon": -3.353
+  },
+  {
+   "sea": "atl",
+   "place": "Île d'Oléron",
+   "view": "Port du Douhet",
+   "id": "XP6KvfE9nPo",
+   "embed": false,
+   "by": "Chaîne agrégatrice Webcams Pays de Loire (réseau Vision-Environnement)",
+   "match": [
+    "oleron"
+   ],
+   "ch": "https://www.youtube.com/@Webcams-pays-de-loire",
+   "lat": 45.998,
+   "lon": -1.32
+  },
+  {
+   "sea": "atl",
+   "place": "Noirmoutier-en-l'Île",
+   "view": "Port de L'Herbaudière",
+   "id": "YaY_6xciXFM",
+   "embed": false,
+   "by": "Chaîne agrégatrice Webcams Pays de Loire (réseau Vision-Environnement)",
+   "match": [
+    "noirmoutier"
+   ],
+   "ch": "https://www.youtube.com/@Webcams-pays-de-loire",
+   "lat": 47.023,
+   "lon": -2.3
+  },
+  {
+   "sea": "atl",
+   "place": "Hendaye",
+   "view": "Plage et Deux Jumeaux",
+   "page": true,
+   "url": "https://www.hendaye-tourisme.fr/webcams/",
+   "by": "Office de tourisme d'Hendaye",
+   "src": "Viewsurf",
+   "match": [
+    "hendaye"
+   ],
+   "lat": 43.373,
+   "lon": -1.774
+  },
+  {
+   "sea": "atl",
+   "place": "Hendaye",
+   "view": "Domaine d'Abbadia, corniche et baie",
+   "page": true,
+   "url": "https://www.hendaye-tourisme.fr/webcams/",
+   "by": "Office de tourisme d'Hendaye",
+   "src": "Skaping",
+   "match": [
+    "hendaye"
+   ],
+   "lat": 43.377,
+   "lon": -1.752
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Jean-de-Luz",
+   "view": "Baie, Sainte-Barbe, spots de surf (plusieurs vues)",
+   "page": true,
+   "url": "https://www.saint-jean-de-luz.com/webcams/",
+   "by": "Office de tourisme de Saint-Jean-de-Luz",
+   "src": "Viewsurf",
+   "match": [
+    "jean"
+   ],
+   "lat": 43.39,
+   "lon": -1.663
+  },
+  {
+   "sea": "atl",
+   "place": "Biarritz",
+   "view": "Grande Plage (vue 1)",
+   "page": true,
+   "url": "https://www.biarritz.fr/les-webcams/grande-plage-1",
+   "by": "Mairie de Biarritz",
+   "src": "Viewsurf",
+   "match": [
+    "biarritz"
+   ],
+   "lat": 43.484,
+   "lon": -1.558
+  },
+  {
+   "sea": "atl",
+   "place": "Biarritz",
+   "view": "Grande Plage (vue 2)",
+   "page": true,
+   "url": "https://www.biarritz.fr/les-webcams/grande-plage-2",
+   "by": "Mairie de Biarritz",
+   "src": "Viewsurf",
+   "match": [
+    "biarritz"
+   ],
+   "lat": 43.485,
+   "lon": -1.557
+  },
+  {
+   "sea": "atl",
+   "place": "Biarritz",
+   "view": "Rocher de la Vierge",
+   "page": true,
+   "url": "https://www.biarritz.fr/les-webcams/rocher-de-la-la-vierge",
+   "by": "Mairie de Biarritz",
+   "src": "Viewsurf",
+   "match": [
+    "biarritz"
+   ],
+   "lat": 43.484,
+   "lon": -1.569
+  },
+  {
+   "sea": "atl",
+   "place": "Biarritz",
+   "view": "Côte des Basques (spot de surf)",
+   "page": true,
+   "url": "https://www.biarritz.fr/les-webcams/cote-des-basques-panoramique",
+   "by": "Mairie de Biarritz",
+   "src": "Viewsurf",
+   "match": [
+    "biarritz"
+   ],
+   "lat": 43.478,
+   "lon": -1.567
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Petite Chambre d'Amour",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Viewsurf",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.496,
+   "lon": -1.547
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Plage du Club",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Viewsurf",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.499,
+   "lon": -1.541
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Plage des Sables d'Or",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Viewsurf",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.502,
+   "lon": -1.538
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Plage de l'Océan",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Viewsurf",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.513,
+   "lon": -1.533
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Plage des Cavaliers (spot de surf)",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Viewsurf",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.522,
+   "lon": -1.527
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Plage de La Barre et embouchure de l'Adour",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Viewsurf",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.527,
+   "lon": -1.522
+  },
+  {
+   "sea": "atl",
+   "place": "Anglet",
+   "view": "Chambre d'Amour (panoramique)",
+   "page": true,
+   "url": "https://www.anglet-tourisme.com/webcams/",
+   "by": "Office de tourisme d'Anglet",
+   "src": "Skaping",
+   "match": [
+    "anglet"
+   ],
+   "lat": 43.495,
+   "lon": -1.548
+  },
+  {
+   "sea": "atl",
+   "place": "Ondres",
+   "view": "Plage d'Ondres",
+   "page": true,
+   "url": "https://www.ondres.fr/la-plage/webcam/",
+   "by": "Mairie d'Ondres",
+   "src": "Viewsurf",
+   "match": [
+    "ondres"
+   ],
+   "lat": 43.577,
+   "lon": -1.488
+  },
+  {
+   "sea": "atl",
+   "place": "Capbreton",
+   "view": "Plage de la Santocha (spot de surf)",
+   "page": true,
+   "url": "https://www.landesatlantiquesud.com/webcams/capbreton/",
+   "by": "Office de tourisme Landes Atlantique Sud",
+   "src": "Viewsurf",
+   "match": [
+    "capbreton"
+   ],
+   "lat": 43.642,
+   "lon": -1.447
+  },
+  {
+   "sea": "atl",
+   "place": "Capbreton",
+   "view": "Plage du Prévent",
+   "page": true,
+   "url": "https://www.landesatlantiquesud.com/webcams/capbreton/",
+   "by": "Office de tourisme Landes Atlantique Sud",
+   "src": "Viewsurf",
+   "match": [
+    "capbreton"
+   ],
+   "lat": 43.647,
+   "lon": -1.447
+  },
+  {
+   "sea": "atl",
+   "place": "Capbreton",
+   "view": "Port : le chenal / passe du Boucarot",
+   "page": true,
+   "url": "https://www.landesatlantiquesud.com/webcams/capbreton/",
+   "by": "Office de tourisme Landes Atlantique Sud",
+   "src": "Viewsurf",
+   "match": [
+    "capbreton"
+   ],
+   "lat": 43.655,
+   "lon": -1.446
+  },
+  {
+   "sea": "atl",
+   "place": "Capbreton",
+   "view": "Port de plaisance : quai",
+   "page": true,
+   "url": "https://www.landesatlantiquesud.com/webcams/capbreton/",
+   "by": "Office de tourisme Landes Atlantique Sud",
+   "src": "Viewsurf",
+   "match": [
+    "capbreton"
+   ],
+   "lat": 43.654,
+   "lon": -1.436
+  },
+  {
+   "sea": "atl",
+   "place": "Capbreton",
+   "view": "Port (2 vues) et plage",
+   "page": true,
+   "url": "https://www.capbreton.fr/webcam-plage-capbreton.html",
+   "by": "Mairie de Capbreton",
+   "src": "webcam-hd.fr",
+   "match": [
+    "capbreton"
+   ],
+   "lat": 43.654,
+   "lon": -1.44
+  },
+  {
+   "sea": "atl",
+   "place": "Soorts-Hossegor",
+   "view": "Plage Centrale (spot de surf)",
+   "page": true,
+   "url": "https://www.hossegor.fr/infos-pratiques/webcam-et-meteo-en-direct/",
+   "by": "Mairie de Soorts-Hossegor",
+   "src": "GoSurf",
+   "match": [
+    "soorts",
+    "hossegor"
+   ],
+   "lat": 43.665,
+   "lon": -1.444
+  },
+  {
+   "sea": "atl",
+   "place": "Seignosse",
+   "view": "Plage des Bourdaines (spot de surf)",
+   "page": true,
+   "url": "https://www.seignosse-tourisme.com/decouvrir-seignosse/les-plages-de-seignosse/webcams/",
+   "by": "Office de tourisme de Seignosse",
+   "src": "Viewsurf",
+   "match": [
+    "seignosse"
+   ],
+   "lat": 43.69,
+   "lon": -1.441
+  },
+  {
+   "sea": "atl",
+   "place": "Seignosse",
+   "view": "Plage des Estagnots (spot de surf)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/14374-france-aquitaine-seignosse-les-estagnots",
+   "by": "Département des Landes / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "seignosse"
+   ],
+   "lat": 43.683,
+   "lon": -1.443
+  },
+  {
+   "sea": "atl",
+   "place": "Seignosse",
+   "view": "Le Penon (plage)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/ville/vue/19430-france-aquitaine-seignosse-le-penon",
+   "by": "Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "seignosse"
+   ],
+   "lat": 43.708,
+   "lon": -1.436
+  },
+  {
+   "sea": "atl",
+   "place": "Moliets-et-Maâ",
+   "view": "Plage (vue est)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/14304-france-aquitaine-moliets-et-maa-est",
+   "by": "Département des Landes / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "moliets"
+   ],
+   "lat": 43.852,
+   "lon": -1.39
+  },
+  {
+   "sea": "atl",
+   "place": "Contis (Saint-Julien-en-Born)",
+   "view": "Plage de Contis, vue ouest",
+   "page": true,
+   "url": "https://viewsurf.com/univers/surf/vue/17572-france-aquitaine-contis-plage-de-contis-vue-ouest",
+   "by": "Département des Landes / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "contis",
+    "julien",
+    "born"
+   ],
+   "lat": 44.092,
+   "lon": -1.322
+  },
+  {
+   "sea": "atl",
+   "place": "Mimizan",
+   "view": "Mimizan-Plage (4 vues : plages, courant)",
+   "page": true,
+   "url": "https://www.mimizan-tourisme.com/webcams/",
+   "by": "Office de tourisme de Mimizan",
+   "src": "Viewsurf",
+   "match": [
+    "mimizan"
+   ],
+   "lat": 44.213,
+   "lon": -1.297
+  },
+  {
+   "sea": "atl",
+   "place": "Biscarrosse",
+   "view": "Biscarrosse-Plage, live panoramique",
+   "page": true,
+   "url": "https://www.biscagrandslacs.com/decouvrir/webcams-biscarrosse-sanguinet/webcam-biscarrosse-live-panoramique",
+   "by": "Office de tourisme Bisca Grands Lacs",
+   "src": "Viewsurf",
+   "match": [
+    "biscarrosse"
+   ],
+   "lat": 44.446,
+   "lon": -1.254
+  },
+  {
+   "sea": "atl",
+   "place": "Biscarrosse",
+   "view": "Plage Centrale",
+   "page": true,
+   "url": "https://www.biscagrandslacs.com/decouvrir/webcams-biscarrosse-sanguinet/webcam-biscarrosse-plage-centrale",
+   "by": "Office de tourisme Bisca Grands Lacs",
+   "src": "Viewsurf",
+   "match": [
+    "biscarrosse"
+   ],
+   "lat": 44.445,
+   "lon": -1.256
+  },
+  {
+   "sea": "atl",
+   "place": "Biscarrosse",
+   "view": "Plage Nord (rond-point de la Nord)",
+   "page": true,
+   "url": "https://www.biscagrandslacs.com/decouvrir/webcams-biscarrosse-sanguinet/webcam-biscarrosse-plage-nord",
+   "by": "Office de tourisme Bisca Grands Lacs",
+   "src": "Viewsurf",
+   "match": [
+    "biscarrosse"
+   ],
+   "lat": 44.452,
+   "lon": -1.255
+  },
+  {
+   "sea": "atl",
+   "place": "Biscarrosse",
+   "view": "Plage Sud",
+   "page": true,
+   "url": "https://www.biscagrandslacs.com/decouvrir/webcams-biscarrosse-sanguinet/webcam-biscarrosse-plage-sud",
+   "by": "Office de tourisme Bisca Grands Lacs",
+   "src": "Viewsurf",
+   "match": [
+    "biscarrosse"
+   ],
+   "lat": 44.438,
+   "lon": -1.256
+  },
+  {
+   "sea": "atl",
+   "place": "Biscarrosse",
+   "view": "Plage du Vivier",
+   "page": true,
+   "url": "https://www.biscagrandslacs.com/decouvrir/webcams-biscarrosse-sanguinet/webcam-biscarrosse-plage-du-vivier",
+   "by": "Office de tourisme Bisca Grands Lacs",
+   "src": "Viewsurf",
+   "match": [
+    "biscarrosse"
+   ],
+   "lat": 44.465,
+   "lon": -1.253
+  },
+  {
+   "sea": "atl",
+   "place": "Arcachon",
+   "view": "Jetée Thiers et Bassin (live + panoramique)",
+   "page": true,
+   "url": "https://www.arcachon.com/tourisme/pratique/la-webcam/",
+   "by": "Office de tourisme d'Arcachon",
+   "src": "Viewsurf",
+   "match": [
+    "arcachon"
+   ],
+   "lat": 44.664,
+   "lon": -1.168
+  },
+  {
+   "sea": "atl",
+   "place": "Andernos-les-Bains",
+   "view": "Jetée et Bassin d'Arcachon",
+   "page": true,
+   "url": "https://bassin-arcachon.com/les-webcams/",
+   "by": "Office de tourisme Bassin d'Arcachon (SIBA)",
+   "src": "Viewsurf",
+   "match": [
+    "andernos",
+    "bains"
+   ],
+   "lat": 44.741,
+   "lon": -1.106
+  },
+  {
+   "sea": "atl",
+   "place": "Le Porge",
+   "view": "Le Porge-Océan, plage du Gressier",
+   "page": true,
+   "url": "https://www.skaping.com/medoc-plein-sud/le-porge-ocean",
+   "by": "Office de tourisme Médoc Plein Sud",
+   "src": "Skaping",
+   "match": [
+    "porge"
+   ],
+   "lat": 44.893,
+   "lon": -1.215
+  },
+  {
+   "sea": "atl",
+   "place": "Lacanau",
+   "view": "Lacanau-Océan, plage nord / surf club",
+   "page": true,
+   "url": "https://www.medoc-atlantique.com/lacanau/webcam-et-meteo-de-lacanau/",
+   "by": "Office de tourisme Médoc Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "lacanau"
+   ],
+   "lat": 45.002,
+   "lon": -1.204
+  },
+  {
+   "sea": "atl",
+   "place": "Carcans",
+   "view": "Carcans-Plage (océan)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/1255-france-aquitaine-carcans-la-plage",
+   "by": "Médoc Atlantique / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "carcans"
+   ],
+   "lat": 45.082,
+   "lon": -1.193
+  },
+  {
+   "sea": "atl",
+   "place": "Vendays-Montalivet",
+   "view": "Montalivet, plage nord",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/13900-france-aquitaine-vendays-montalivet-plage-nord",
+   "by": "OT Vendays-Montalivet / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "vendays",
+    "montalivet"
+   ],
+   "lat": 45.378,
+   "lon": -1.158
+  },
+  {
+   "sea": "atl",
+   "place": "Soulac-sur-Mer",
+   "view": "Plage centrale (panoramique)",
+   "page": true,
+   "url": "https://www.medoc-atlantique.com/soulac-sur-mer/webcam-et-meteo-a-soulac-sur-mer/",
+   "by": "Office de tourisme Médoc Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "soulac"
+   ],
+   "lat": 45.514,
+   "lon": -1.127
+  },
+  {
+   "sea": "atl",
+   "place": "Meschers-sur-Gironde",
+   "view": "Plage des Nonnes",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/meschers-sur-gironde-plage-des-nonnes/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "meschers",
+    "gironde"
+   ],
+   "lat": 45.556,
+   "lon": -0.953
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Georges-de-Didonne",
+   "view": "Grande plage",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/saint-georges-de-didonne-grande-plage/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "georges",
+    "didonne"
+   ],
+   "lat": 45.603,
+   "lon": -1.004
+  },
+  {
+   "sea": "atl",
+   "place": "Royan",
+   "view": "Plage de la Grande Conche",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/royan-plage-de-la-grande-conche/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "royan"
+   ],
+   "lat": 45.62,
+   "lon": -1.022
+  },
+  {
+   "sea": "atl",
+   "place": "Royan",
+   "view": "Plage de Pontaillac (spot de surf)",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/royan-plage-de-pontaillac/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "royan"
+   ],
+   "lat": 45.627,
+   "lon": -1.049
+  },
+  {
+   "sea": "atl",
+   "place": "Vaux-sur-Mer",
+   "view": "Plage de Nauzan",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/vaux-sur-mer-plage-de-nauzan/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "vaux"
+   ],
+   "lat": 45.636,
+   "lon": -1.066
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Palais-sur-Mer",
+   "view": "La Grande Côte",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/saint-palais-sur-mer-grande-cote/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "palais"
+   ],
+   "lat": 45.66,
+   "lon": -1.118
+  },
+  {
+   "sea": "atl",
+   "place": "Les Mathes - La Palmyre",
+   "view": "Baie de Bonne Anse",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/les-mathes-la-palmyre-bonne-anse/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "mathes",
+    "palmyre"
+   ],
+   "lat": 45.688,
+   "lon": -1.184
+  },
+  {
+   "sea": "atl",
+   "place": "La Tremblade",
+   "view": "Phare de la Coubre, Côte Sauvage (spot de surf)",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/la-tremblade-phare-de-la-coubre/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "tremblade"
+   ],
+   "lat": 45.696,
+   "lon": -1.233
+  },
+  {
+   "sea": "atl",
+   "place": "La Tremblade",
+   "view": "Ronce-les-Bains, plage de la Cèpe",
+   "page": true,
+   "url": "https://www.royanatlantique.fr/webcam/ronce-les-bains-plage-de-la-cepe/",
+   "by": "Office de tourisme Royan Atlantique",
+   "src": "Viewsurf",
+   "match": [
+    "tremblade"
+   ],
+   "lat": 45.797,
+   "lon": -1.168
+  },
+  {
+   "sea": "atl",
+   "place": "Île d'Oléron",
+   "view": "Port de plaisance de Saint-Denis-d'Oléron",
+   "page": true,
+   "url": "https://www.ile-oleron-marennes.com/webcams/le-port-de-saint-denis-d-oleron-en-direct",
+   "by": "Office de tourisme Île d'Oléron - Marennes",
+   "src": "Vision-Environnement",
+   "match": [
+    "oleron"
+   ],
+   "lat": 46.036,
+   "lon": -1.369
+  },
+  {
+   "sea": "atl",
+   "place": "Fouras-les-Bains",
+   "view": "Plage / fort (vue mairie)",
+   "page": true,
+   "url": "https://www.fouras-les-bains.fr/webcam/",
+   "by": "Mairie de Fouras-les-Bains",
+   "src": "Viewsurf",
+   "match": [
+    "fouras",
+    "bains"
+   ],
+   "lat": 45.988,
+   "lon": -1.098
+  },
+  {
+   "sea": "atl",
+   "place": "Châtelaillon-Plage",
+   "view": "Grande plage",
+   "page": true,
+   "url": "https://www.chatelaillon-plage-tourisme.com/chatelaillon-plage-en-live/webcam/",
+   "by": "Office de tourisme de Châtelaillon-Plage",
+   "src": "Viewsurf",
+   "match": [
+    "chatelaillon"
+   ],
+   "lat": 46.072,
+   "lon": -1.092
+  },
+  {
+   "sea": "atl",
+   "place": "Châtelaillon-Plage",
+   "view": "Port de plaisance",
+   "page": true,
+   "url": "https://www.chatelaillon-plage-tourisme.com/chatelaillon-plage-en-live/webcam/",
+   "by": "Office de tourisme de Châtelaillon-Plage",
+   "src": "Viewsurf",
+   "match": [
+    "chatelaillon"
+   ],
+   "lat": 46.057,
+   "lon": -1.087
+  },
+  {
+   "sea": "atl",
+   "place": "La Rochelle",
+   "view": "Port de plaisance des Minimes",
+   "page": true,
+   "url": "https://www.portlarochelle.com/webcam/",
+   "by": "Port de plaisance de La Rochelle (régie)",
+   "src": "Skaping",
+   "match": [
+    "rochelle"
+   ],
+   "lat": 46.146,
+   "lon": -1.167
+  },
+  {
+   "sea": "atl",
+   "place": "La Rochelle",
+   "view": "Vieux-Port / panoramique ville",
+   "page": true,
+   "url": "https://www.skaping.com/larochelle-tourisme",
+   "by": "La Rochelle Tourisme (office de tourisme)",
+   "src": "Skaping",
+   "match": [
+    "rochelle"
+   ],
+   "lat": 46.157,
+   "lon": -1.153
+  },
+  {
+   "sea": "atl",
+   "place": "Rivedoux-Plage (Île de Ré)",
+   "view": "Plage nord, pont de l'île de Ré",
+   "page": true,
+   "url": "https://www.rivedoux-plage.fr/toutes-nos-webcams",
+   "by": "Mairie de Rivedoux-Plage",
+   "src": "Skaping",
+   "match": [
+    "rivedoux"
+   ],
+   "lat": 46.161,
+   "lon": -1.273
+  },
+  {
+   "sea": "atl",
+   "place": "Rivedoux-Plage (Île de Ré)",
+   "view": "Plage sud",
+   "page": true,
+   "url": "https://www.rivedoux-plage.fr/toutes-nos-webcams",
+   "by": "Mairie de Rivedoux-Plage",
+   "src": "Skaping",
+   "match": [
+    "rivedoux"
+   ],
+   "lat": 46.156,
+   "lon": -1.27
+  },
+  {
+   "sea": "atl",
+   "place": "La Faute-sur-Mer",
+   "view": "Plage des Bélugas",
+   "page": true,
+   "url": "https://www.vendeedusud.com/webcams/webcam-de-la-plage-des-belugas-la-faute-sur-mer/",
+   "by": "Office de tourisme Vendée du Sud",
+   "src": "Viewsurf",
+   "match": [
+    "faute"
+   ],
+   "lat": 46.318,
+   "lon": -1.317
+  },
+  {
+   "sea": "atl",
+   "place": "La Tranche-sur-Mer",
+   "view": "Plage de la Terrière (spot de surf)",
+   "page": true,
+   "url": "https://www.latranchesurmer.fr/webcams/",
+   "by": "Mairie de La Tranche-sur-Mer",
+   "src": "Viewsurf",
+   "match": [
+    "tranche"
+   ],
+   "lat": 46.356,
+   "lon": -1.403
+  },
+  {
+   "sea": "atl",
+   "place": "La Tranche-sur-Mer",
+   "view": "Embarcadère (spot windsurf/kite)",
+   "page": true,
+   "url": "https://www.latranchesurmer.fr/webcams/",
+   "by": "Mairie de La Tranche-sur-Mer",
+   "src": "Viewsurf",
+   "match": [
+    "tranche"
+   ],
+   "lat": 46.343,
+   "lon": -1.432
+  },
+  {
+   "sea": "atl",
+   "place": "Longeville-sur-Mer",
+   "view": "Plage des Conches (Bud Bud, spot de surf)",
+   "page": true,
+   "url": "https://www.mairie-longevillesurmer.fr/webcams/",
+   "by": "Mairie de Longeville-sur-Mer",
+   "src": "Viewsurf",
+   "match": [
+    "longeville"
+   ],
+   "lat": 46.385,
+   "lon": -1.488
+  },
+  {
+   "sea": "atl",
+   "place": "Longeville-sur-Mer",
+   "view": "Plage du Rocher",
+   "page": true,
+   "url": "https://www.mairie-longevillesurmer.fr/webcams/",
+   "by": "Mairie de Longeville-sur-Mer",
+   "src": "Viewsurf",
+   "match": [
+    "longeville"
+   ],
+   "lat": 46.398,
+   "lon": -1.506
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Vincent-sur-Jard",
+   "view": "Plage Clemenceau",
+   "page": true,
+   "url": "https://www.skaping.com/saint-vincent-sur-jard/plage-clemenceau",
+   "by": "Mairie de Saint-Vincent-sur-Jard",
+   "src": "Skaping",
+   "match": [
+    "vincent",
+    "jard"
+   ],
+   "lat": 46.412,
+   "lon": -1.548
+  },
+  {
+   "sea": "atl",
+   "place": "Talmont-Saint-Hilaire",
+   "view": "Port Bourgenay",
+   "page": true,
+   "url": "https://www.skaping.com/port-bourgenay/panoramique",
+   "by": "Port Bourgenay (port de plaisance)",
+   "src": "Skaping",
+   "match": [
+    "talmont",
+    "hilaire"
+   ],
+   "lat": 46.44,
+   "lon": -1.678
+  },
+  {
+   "sea": "atl",
+   "place": "Les Sables-d'Olonne",
+   "view": "Plage de Tanchet (spot de surf)",
+   "page": true,
+   "url": "https://www.vendee.fr/les-webcams-du-conseil-departemental/plage-de-tanchet-les-sables-dolonne",
+   "by": "Conseil départemental de la Vendée",
+   "src": "Viewsurf",
+   "match": [
+    "sables",
+    "olonne"
+   ],
+   "lat": 46.485,
+   "lon": -1.765
+  },
+  {
+   "sea": "atl",
+   "place": "Les Sables-d'Olonne",
+   "view": "Port Olona, ponton Vendée Globe",
+   "page": true,
+   "url": "https://www.vendee.fr/les-webcams-du-conseil-departemental/port-olona-les-sables-dolonne",
+   "by": "Conseil départemental de la Vendée",
+   "src": "Skaping",
+   "match": [
+    "sables",
+    "olonne"
+   ],
+   "lat": 46.503,
+   "lon": -1.794
+  },
+  {
+   "sea": "atl",
+   "place": "Bretignolles-sur-Mer",
+   "view": "La Sauzaie (spot de surf)",
+   "page": true,
+   "url": "https://www.bretignolles-sur-mer.fr/webcams/",
+   "by": "Mairie de Bretignolles-sur-Mer",
+   "src": "Viewsurf",
+   "match": [
+    "bretignolles"
+   ],
+   "lat": 46.64,
+   "lon": -1.878
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Gilles-Croix-de-Vie",
+   "view": "Grande plage",
+   "page": true,
+   "url": "https://www.saintgillescroixdevie.fr/webcam/",
+   "by": "Mairie de Saint-Gilles-Croix-de-Vie",
+   "src": "Viewsurf",
+   "match": [
+    "gilles",
+    "croix"
+   ],
+   "lat": 46.693,
+   "lon": -1.944
+  },
+  {
+   "sea": "atl",
+   "place": "L'Île-d'Yeu",
+   "view": "Port-Joinville, entrée du port",
+   "page": true,
+   "url": "https://www.vendee.fr/les-webcams-du-conseil-departemental/port-de-lile-dyeu",
+   "by": "Conseil départemental de la Vendée (lien depuis ile-yeu.fr)",
+   "src": "Viewsurf",
+   "match": [],
+   "lat": 46.728,
+   "lon": -2.348
+  },
+  {
+   "sea": "atl",
+   "place": "La Barre-de-Monts",
+   "view": "Fromentine, centre nautique (360°)",
+   "page": true,
+   "url": "https://www.skaping.com/la-barre-de-monts/centre-nautique-360",
+   "by": "Office de tourisme Pays de Saint-Jean-de-Monts",
+   "src": "Skaping",
+   "match": [
+    "barre",
+    "monts"
+   ],
+   "lat": 46.893,
+   "lon": -2.14
+  },
+  {
+   "sea": "atl",
+   "place": "Île de Noirmoutier",
+   "view": "Passage du Gois",
+   "page": true,
+   "url": "https://www.ile-noirmoutier.com/fr/webcams",
+   "by": "Office de tourisme de l'Île de Noirmoutier",
+   "src": "Skaping",
+   "match": [
+    "noirmoutier"
+   ],
+   "lat": 46.932,
+   "lon": -2.125
+  },
+  {
+   "sea": "atl",
+   "place": "Île de Noirmoutier",
+   "view": "Plage de Barbâtre",
+   "page": true,
+   "url": "https://www.ile-noirmoutier.com/fr/webcams",
+   "by": "Office de tourisme de l'Île de Noirmoutier",
+   "src": "Skaping",
+   "match": [
+    "noirmoutier"
+   ],
+   "lat": 46.943,
+   "lon": -2.185
+  },
+  {
+   "sea": "atl",
+   "place": "Île de Noirmoutier",
+   "view": "Port du Morin (L'Épine)",
+   "page": true,
+   "url": "https://www.ile-noirmoutier.com/fr/webcams",
+   "by": "Office de tourisme de l'Île de Noirmoutier",
+   "src": "Skaping",
+   "match": [
+    "noirmoutier"
+   ],
+   "lat": 46.985,
+   "lon": -2.29
+  },
+  {
+   "sea": "atl",
+   "place": "Île de Noirmoutier",
+   "view": "Port de L'Herbaudière",
+   "page": true,
+   "url": "https://www.ile-noirmoutier.com/fr/webcams",
+   "by": "Office de tourisme de l'Île de Noirmoutier",
+   "src": "Skaping",
+   "match": [
+    "noirmoutier"
+   ],
+   "lat": 47.023,
+   "lon": -2.3
+  },
+  {
+   "sea": "atl",
+   "place": "Noirmoutier-en-l'Île",
+   "view": "Plage (vue mairie) + centre-ville",
+   "page": true,
+   "url": "https://www.ville-noirmoutier.fr/webcam/",
+   "by": "Mairie de Noirmoutier-en-l'Île",
+   "src": "Viewsurf",
+   "match": [
+    "noirmoutier"
+   ],
+   "lat": 47.007,
+   "lon": -2.222
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Brevin-les-Pins",
+   "view": "Serpent d'Océan, plage du Nez de Chien, estuaire",
+   "page": true,
+   "url": "https://www.skaping.com/saint-brevin-les-pins/serpent-d-ocean",
+   "by": "Mairie de Saint-Brevin-les-Pins",
+   "src": "Skaping",
+   "match": [
+    "brevin",
+    "pins"
+   ],
+   "lat": 47.266,
+   "lon": -2.17
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Brevin-les-Pins",
+   "view": "Plage de l'Océan (live)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/13176-france-pays-de-la-loire-saint-brevin-les-pins-live",
+   "by": "Mairie de Saint-Brevin-les-Pins / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "brevin",
+    "pins"
+   ],
+   "lat": 47.235,
+   "lon": -2.17
+  },
+  {
+   "sea": "atl",
+   "place": "Pornic",
+   "view": "Port de plaisance de la Noëveillard",
+   "page": true,
+   "url": "https://www.pornic.fr/pornic-ma-ville/en-direct/webcams/",
+   "by": "Mairie de Pornic",
+   "src": "Skaping",
+   "match": [
+    "pornic"
+   ],
+   "lat": 47.108,
+   "lon": -2.113
+  },
+  {
+   "sea": "atl",
+   "place": "Pornic",
+   "view": "Vieux port (port de pêche) et château",
+   "page": true,
+   "url": "https://www.pornic.fr/pornic-ma-ville/en-direct/webcams/",
+   "by": "Mairie de Pornic",
+   "src": "Skaping",
+   "match": [
+    "pornic"
+   ],
+   "lat": 47.114,
+   "lon": -2.103
+  },
+  {
+   "sea": "atl",
+   "place": "Pornichet",
+   "view": "Plage / baie + vue surf",
+   "page": true,
+   "url": "https://ville-pornichet.fr/webcam-en-direct/",
+   "by": "Mairie de Pornichet",
+   "src": "Skaping",
+   "match": [
+    "pornichet"
+   ],
+   "lat": 47.262,
+   "lon": -2.34
+  },
+  {
+   "sea": "atl",
+   "place": "La Baule-Escoublac",
+   "view": "Plage et baie de La Baule",
+   "page": true,
+   "url": "https://www.labaule.fr/decouvrir-et-sortir/webcam/",
+   "by": "Mairie de La Baule-Escoublac",
+   "src": "Skaping",
+   "match": [
+    "baule",
+    "escoublac"
+   ],
+   "lat": 47.28,
+   "lon": -2.393
+  },
+  {
+   "sea": "atl",
+   "place": "Le Pouliguen",
+   "view": "Port, jetée et baie",
+   "page": true,
+   "url": "https://www.labaule-guerande.com/les-webcams/webcam-du-pouliguen/",
+   "by": "Office de tourisme La Baule - Presqu'île de Guérande",
+   "src": "Viewsurf",
+   "match": [
+    "pouliguen"
+   ],
+   "lat": 47.272,
+   "lon": -2.43
+  },
+  {
+   "sea": "atl",
+   "place": "Batz-sur-Mer",
+   "view": "Plage de la Govelle (spot de surf)",
+   "page": true,
+   "url": "https://www.labaule-guerande.com/les-webcams/webcam-de-batz-sur-mer/",
+   "by": "Office de tourisme La Baule - Presqu'île de Guérande",
+   "src": "Skaping",
+   "match": [
+    "batz"
+   ],
+   "lat": 47.268,
+   "lon": -2.462
+  },
+  {
+   "sea": "atl",
+   "place": "Batz-sur-Mer",
+   "view": "Plage Valentin",
+   "page": true,
+   "url": "https://www.labaule-guerande.com/les-webcams/webcam-de-batz-sur-mer/",
+   "by": "Office de tourisme La Baule - Presqu'île de Guérande",
+   "src": "Skaping",
+   "match": [
+    "batz"
+   ],
+   "lat": 47.272,
+   "lon": -2.492
+  },
+  {
+   "sea": "atl",
+   "place": "Le Croisic",
+   "view": "Port et traict (panoramique + live)",
+   "page": true,
+   "url": "https://www.lecroisic.fr/fr/rb/381175/webcam-panoramique",
+   "by": "Mairie du Croisic",
+   "src": "Viewsurf",
+   "match": [
+    "croisic"
+   ],
+   "lat": 47.293,
+   "lon": -2.512
+  },
+  {
+   "sea": "atl",
+   "place": "La Turballe",
+   "view": "Port de plaisance et de pêche",
+   "page": true,
+   "url": "https://www.labaule-guerande.com/les-webcams/webcams-de-la-turballe/",
+   "by": "Office de tourisme La Baule - Presqu'île de Guérande / port de La Turballe",
+   "src": "Skaping",
+   "match": [
+    "turballe"
+   ],
+   "lat": 47.346,
+   "lon": -2.515
+  },
+  {
+   "sea": "atl",
+   "place": "La Turballe",
+   "view": "École de voile, plage",
+   "page": true,
+   "url": "https://www.labaule-guerande.com/les-webcams/webcams-de-la-turballe/",
+   "by": "Office de tourisme La Baule - Presqu'île de Guérande",
+   "src": "Viewsurf",
+   "match": [
+    "turballe"
+   ],
+   "lat": 47.34,
+   "lon": -2.508
+  },
+  {
+   "sea": "atl",
+   "place": "Assérac",
+   "view": "Baie de Pont-Mahé / Pen-Bé",
+   "page": true,
+   "url": "https://www.labaule-guerande.com/les-webcams/webcam-d-asserac/",
+   "by": "Office de tourisme La Baule - Presqu'île de Guérande",
+   "src": "Vision-Environnement",
+   "match": [
+    "asserac"
+   ],
+   "lat": 47.445,
+   "lon": -2.455
+  },
+  {
+   "sea": "atl",
+   "place": "Mesquer",
+   "view": "Kercabellec - Merquel (port, traict)",
+   "page": true,
+   "url": "https://www.vision-environnement.com/livecams/webcam.php?webcam=kercabellec",
+   "by": "Vision-Environnement (page fournisseur)",
+   "src": "Vision-Environnement",
+   "match": [
+    "mesquer"
+   ],
+   "lat": 47.418,
+   "lon": -2.458
+  },
+  {
+   "sea": "atl",
+   "place": "Pénestin",
+   "view": "Plage de la Mine d'Or / spot nautique",
+   "page": true,
+   "url": "https://www.penestin.fr/decouvrir/sports-et-loisirs/webcams-de-penestin",
+   "by": "Mairie de Pénestin",
+   "src": "Vision-Environnement",
+   "match": [
+    "penestin"
+   ],
+   "lat": 47.482,
+   "lon": -2.49
+  },
+  {
+   "sea": "atl",
+   "place": "Sarzeau",
+   "view": "Port Saint-Jacques",
+   "page": true,
+   "url": "https://www.golfedumorbihan.bzh/explorer-vannes/decouvrir-vannes/webcams/sarzeau/",
+   "by": "Office de tourisme Golfe du Morbihan Vannes Tourisme",
+   "src": "Skaping",
+   "match": [
+    "sarzeau"
+   ],
+   "lat": 47.488,
+   "lon": -2.793
+  },
+  {
+   "sea": "atl",
+   "place": "Arzon",
+   "view": "Port du Crouesty",
+   "page": true,
+   "url": "https://www.golfedumorbihan.bzh/explorer-vannes/decouvrir-vannes/webcams/arzon-port-crouesty/",
+   "by": "Office de tourisme Golfe du Morbihan Vannes Tourisme / Compagnie des Ports du Morbihan",
+   "src": "Skaping",
+   "match": [
+    "arzon"
+   ],
+   "lat": 47.543,
+   "lon": -2.895
+  },
+  {
+   "sea": "atl",
+   "place": "Arzon",
+   "view": "Port-Navalo, entrée du Golfe",
+   "page": true,
+   "url": "https://www.golfedumorbihan.bzh/explorer-vannes/decouvrir-vannes/webcams/arzon-port-navalo/",
+   "by": "Office de tourisme Golfe du Morbihan Vannes Tourisme",
+   "src": "Skaping",
+   "match": [
+    "arzon"
+   ],
+   "lat": 47.548,
+   "lon": -2.918
+  },
+  {
+   "sea": "atl",
+   "place": "Île-aux-Moines",
+   "view": "Port-Blanc / port de l'Île-aux-Moines",
+   "page": true,
+   "url": "https://www.golfedumorbihan.bzh/explorer-vannes/decouvrir-vannes/webcams/ile-aux-moines/",
+   "by": "Office de tourisme Golfe du Morbihan Vannes Tourisme",
+   "src": "Skaping",
+   "match": [
+    "moines"
+   ],
+   "lat": 47.602,
+   "lon": -2.853
+  },
+  {
+   "sea": "atl",
+   "place": "Arradon",
+   "view": "Port d'Arradon",
+   "page": true,
+   "url": "https://www.golfedumorbihan.bzh/explorer-vannes/decouvrir-vannes/webcams/arradon/",
+   "by": "Office de tourisme Golfe du Morbihan Vannes Tourisme",
+   "src": "Skaping",
+   "match": [
+    "arradon"
+   ],
+   "lat": 47.616,
+   "lon": -2.823
+  },
+  {
+   "sea": "atl",
+   "place": "Le Bono",
+   "view": "Port du Bono, rivière d'Auray",
+   "page": true,
+   "url": "https://www.golfedumorbihan.bzh/explorer-vannes/decouvrir-vannes/webcams/le-bono/",
+   "by": "Office de tourisme Golfe du Morbihan Vannes Tourisme",
+   "src": "Vision-Environnement",
+   "match": [
+    "bono"
+   ],
+   "lat": 47.64,
+   "lon": -2.948
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Gildas-de-Rhuys",
+   "view": "Port aux Moines",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/10998-france-bretagne-saint-gildas-de-rhuys-port-aux-moines",
+   "by": "Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "gildas",
+    "rhuys"
+   ],
+   "lat": 47.497,
+   "lon": -2.842
+  },
+  {
+   "sea": "atl",
+   "place": "Saint-Philibert",
+   "view": "Base nautique, rivière de Crac'h",
+   "page": true,
+   "url": "https://www.saintphilibert.fr/st-philibert/webcam-saint-philibert-la-trinite-sur-mer/",
+   "by": "Mairie de Saint-Philibert",
+   "src": "Viewsurf",
+   "match": [
+    "philibert"
+   ],
+   "lat": 47.577,
+   "lon": -2.998
+  },
+  {
+   "sea": "atl",
+   "place": "La Trinité-sur-Mer",
+   "view": "Port de plaisance",
+   "page": true,
+   "url": "https://www.latrinitesurmer.fr/port/port-webcam/",
+   "by": "Mairie de La Trinité-sur-Mer / Compagnie des Ports du Morbihan",
+   "src": "Skaping",
+   "match": [
+    "trinite"
+   ],
+   "lat": 47.586,
+   "lon": -3.026
+  },
+  {
+   "sea": "atl",
+   "place": "Carnac",
+   "view": "Base nautique de Port-en-Dro",
+   "page": true,
+   "url": "https://www.ot-carnac.fr/infos-pratiques/en-direct/webcam/base-nautique-webcam/",
+   "by": "Office de tourisme de Carnac",
+   "src": "Viewsurf",
+   "match": [
+    "carnac"
+   ],
+   "lat": 47.571,
+   "lon": -3.063
+  },
+  {
+   "sea": "atl",
+   "place": "Carnac",
+   "view": "Grande Plage",
+   "page": true,
+   "url": "https://www.ot-carnac.fr/infos-pratiques/en-direct/webcam/grande-plage-de-carnac-webcam/",
+   "by": "Office de tourisme de Carnac",
+   "src": "Viewsurf",
+   "match": [
+    "carnac"
+   ],
+   "lat": 47.57,
+   "lon": -3.07
+  },
+  {
+   "sea": "atl",
+   "place": "Carnac",
+   "view": "Plage de Légenèse",
+   "page": true,
+   "url": "https://www.ot-carnac.fr/infos-pratiques/en-direct/webcam/plage-de-legenese-webcam/",
+   "by": "Office de tourisme de Carnac",
+   "src": "Viewsurf",
+   "match": [
+    "carnac"
+   ],
+   "lat": 47.566,
+   "lon": -3.086
+  },
+  {
+   "sea": "atl",
+   "place": "Carnac",
+   "view": "Plage de Saint-Colomban (spot windsurf/kite)",
+   "page": true,
+   "url": "https://www.ot-carnac.fr/infos-pratiques/en-direct/webcam/plage-de-saint-colomban-webcam/",
+   "by": "Office de tourisme de Carnac",
+   "src": "Viewsurf",
+   "match": [
+    "carnac"
+   ],
+   "lat": 47.565,
+   "lon": -3.098
+  },
+  {
+   "sea": "atl",
+   "place": "Quiberon",
+   "view": "Grande Plage (panoramique + vidéo)",
+   "page": true,
+   "url": "https://www.ville-quiberon.fr/webcam/",
+   "by": "Mairie de Quiberon",
+   "src": "Skaping",
+   "match": [
+    "quiberon"
+   ],
+   "lat": 47.478,
+   "lon": -3.12
+  },
+  {
+   "sea": "atl",
+   "place": "Étel",
+   "view": "Barre d'Étel (live)",
+   "page": true,
+   "url": "https://www.mairie-etel.fr/webcam-la-barre-detel-live",
+   "by": "Mairie d'Étel",
+   "src": "Viewsurf",
+   "match": [
+    "etel"
+   ],
+   "lat": 47.645,
+   "lon": -3.212
+  },
+  {
+   "sea": "atl",
+   "place": "Plouhinec (Morbihan)",
+   "view": "Ria d'Étel",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/16122-france-bretagne-plouhinec-vue-sur-la-ria",
+   "by": "Mairie de Plouhinec / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "plouhinec",
+    "morbihan"
+   ],
+   "lat": 47.693,
+   "lon": -3.24
+  },
+  {
+   "sea": "atl",
+   "place": "Belle-Île-en-Mer",
+   "view": "Port de Le Palais",
+   "page": true,
+   "url": "https://www.belle-ile.com/webcam/",
+   "by": "Office de tourisme de Belle-Île-en-Mer",
+   "src": "Skaping",
+   "match": [
+    "belle"
+   ],
+   "lat": 47.347,
+   "lon": -3.153
+  },
+  {
+   "sea": "atl",
+   "place": "Belle-Île-en-Mer",
+   "view": "Pointe des Poulains",
+   "page": true,
+   "url": "https://www.belle-ile.com/webcam/",
+   "by": "Office de tourisme de Belle-Île-en-Mer",
+   "src": "Skaping",
+   "match": [
+    "belle"
+   ],
+   "lat": 47.388,
+   "lon": -3.25
+  },
+  {
+   "sea": "atl",
+   "place": "Lorient",
+   "view": "Rade de Lorient, La Base (K3) : panoramique + vidéo",
+   "page": true,
+   "url": "https://www.lorient-agglo.bzh/actus/webcams/",
+   "by": "Lorient Agglomération",
+   "src": "Skaping",
+   "match": [
+    "lorient"
+   ],
+   "lat": 47.729,
+   "lon": -3.371
+  },
+  {
+   "sea": "atl",
+   "place": "Lorient",
+   "view": "Port de pêche de Keroman",
+   "page": true,
+   "url": "https://www.lorient-agglo.bzh/actus/webcams/",
+   "by": "Lorient Agglomération",
+   "src": "Skaping",
+   "match": [
+    "lorient"
+   ],
+   "lat": 47.727,
+   "lon": -3.367
+  },
+  {
+   "sea": "atl",
+   "place": "Larmor-Plage",
+   "view": "Port de Kernével",
+   "page": true,
+   "url": "https://www.lorient-agglo.bzh/actus/webcams/",
+   "by": "Lorient Agglomération",
+   "src": "Skaping",
+   "match": [
+    "larmor"
+   ],
+   "lat": 47.72,
+   "lon": -3.368
+  },
+  {
+   "sea": "atl",
+   "place": "Île de Groix",
+   "view": "Port-Tudy",
+   "page": true,
+   "url": "https://www.lorient-agglo.bzh/actus/webcams/",
+   "by": "Lorient Agglomération",
+   "src": "Skaping",
+   "match": [
+    "groix"
+   ],
+   "lat": 47.644,
+   "lon": -3.447
+  },
+  {
+   "sea": "atl",
+   "place": "Guidel",
+   "view": "Fort du Loch, Guidel-Plages (spot de surf)",
+   "page": true,
+   "url": "https://www.lorient-agglo.bzh/actus/webcams/",
+   "by": "Lorient Agglomération",
+   "src": "Skaping",
+   "match": [
+    "guidel"
+   ],
+   "lat": 47.757,
+   "lon": -3.513
+  },
+  {
+   "sea": "atl",
+   "place": "Guidel",
+   "view": "Port de plaisance, embouchure de la Laïta",
+   "page": true,
+   "url": "https://www.skaping.com/guidel/port-de-plaisance",
+   "by": "Compagnie des Ports du Morbihan",
+   "src": "Skaping",
+   "match": [
+    "guidel"
+   ],
+   "lat": 47.768,
+   "lon": -3.527
+  },
+  {
+   "sea": "atl",
+   "place": "Moëlan-sur-Mer",
+   "view": "Port du Bélon",
+   "page": true,
+   "url": "https://www.skaping.com/moelan-sur-mer/port-de-belon",
+   "by": "Mairie de Moëlan-sur-Mer",
+   "src": "Skaping",
+   "match": [
+    "moelan"
+   ],
+   "lat": 47.812,
+   "lon": -3.705
+  },
+  {
+   "sea": "atl",
+   "place": "Névez",
+   "view": "Port Manec'h, embouchure de l'Aven",
+   "page": true,
+   "url": "https://www.skaping.com/snsm/port-manech",
+   "by": "SNSM (station de Port-Manec'h)",
+   "src": "Skaping",
+   "match": [
+    "nevez"
+   ],
+   "lat": 47.801,
+   "lon": -3.74
+  },
+  {
+   "sea": "atl",
+   "place": "Trégunc",
+   "view": "Pointe de Trévignon",
+   "page": true,
+   "url": "https://www.tregunc.fr/decouvrir-2/cote-mer/nos-webcams/",
+   "by": "Mairie de Trégunc",
+   "src": "Skaping",
+   "match": [
+    "tregunc"
+   ],
+   "lat": 47.793,
+   "lon": -3.853
+  },
+  {
+   "sea": "atl",
+   "place": "Trégunc",
+   "view": "Pors Breign",
+   "page": true,
+   "url": "https://www.tregunc.fr/decouvrir-2/cote-mer/nos-webcams/",
+   "by": "Mairie de Trégunc",
+   "src": "Skaping",
+   "match": [
+    "tregunc"
+   ],
+   "lat": 47.829,
+   "lon": -3.878
+  },
+  {
+   "sea": "atl",
+   "place": "Concarneau",
+   "view": "Port, Ville Close et baie",
+   "page": true,
+   "url": "https://www.concarneau.fr/webcam/",
+   "by": "Mairie de Concarneau",
+   "src": "Skaping",
+   "match": [
+    "concarneau"
+   ],
+   "lat": 47.872,
+   "lon": -3.917
+  },
+  {
+   "sea": "atl",
+   "place": "La Forêt-Fouesnant",
+   "view": "Port-la-Forêt",
+   "page": true,
+   "url": "https://www.skaping.com/port-la-foret",
+   "by": "Port-la-Forêt (port de plaisance)",
+   "src": "Skaping",
+   "match": [
+    "foret",
+    "fouesnant"
+   ],
+   "lat": 47.898,
+   "lon": -3.975
+  },
+  {
+   "sea": "atl",
+   "place": "Fouesnant",
+   "view": "Cap Coz (plage, centre nautique)",
+   "page": true,
+   "url": "https://ville-fouesnant.fr/vivre-fouesnant/en-ce-moment/les-webcams/",
+   "by": "Mairie de Fouesnant-les Glénan",
+   "src": "Viewsurf",
+   "match": [
+    "fouesnant"
+   ],
+   "lat": 47.89,
+   "lon": -3.99
+  },
+  {
+   "sea": "atl",
+   "place": "Fouesnant",
+   "view": "Beg Meil",
+   "page": true,
+   "url": "https://ville-fouesnant.fr/vivre-fouesnant/en-ce-moment/les-webcams/",
+   "by": "Mairie de Fouesnant-les Glénan",
+   "src": "Viewsurf",
+   "match": [
+    "fouesnant"
+   ],
+   "lat": 47.862,
+   "lon": -3.983
+  },
+  {
+   "sea": "atl",
+   "place": "Fouesnant",
+   "view": "Pointe de Mousterlin",
+   "page": true,
+   "url": "https://ville-fouesnant.fr/vivre-fouesnant/en-ce-moment/les-webcams/",
+   "by": "Mairie de Fouesnant-les Glénan",
+   "src": "Viewsurf",
+   "match": [
+    "fouesnant"
+   ],
+   "lat": 47.848,
+   "lon": -4.04
+  },
+  {
+   "sea": "atl",
+   "place": "Archipel des Glénan",
+   "view": "Île Saint-Nicolas",
+   "page": true,
+   "url": "https://ville-fouesnant.fr/vivre-fouesnant/en-ce-moment/les-webcams/",
+   "by": "Mairie de Fouesnant-les Glénan",
+   "src": "Viewsurf",
+   "match": [
+    "archipel",
+    "glenan"
+   ],
+   "lat": 47.722,
+   "lon": -4
+  },
+  {
+   "sea": "atl",
+   "place": "Bénodet",
+   "view": "Port de plaisance et Odet",
+   "page": true,
+   "url": "https://www.benodet.fr/informations-pratiques/webcams/",
+   "by": "Mairie / office de tourisme de Bénodet",
+   "src": "Viewsurf",
+   "match": [
+    "benodet"
+   ],
+   "lat": 47.873,
+   "lon": -4.113
+  },
+  {
+   "sea": "atl",
+   "place": "Bénodet",
+   "view": "Plage du Trez",
+   "page": true,
+   "url": "https://www.benodet.fr/informations-pratiques/webcams/",
+   "by": "Mairie / office de tourisme de Bénodet",
+   "src": "Viewsurf",
+   "match": [
+    "benodet"
+   ],
+   "lat": 47.868,
+   "lon": -4.108
+  },
+  {
+   "sea": "atl",
+   "place": "Combrit Sainte-Marine",
+   "view": "Port de Sainte-Marine, estuaire de l'Odet",
+   "page": true,
+   "url": "https://port.combrit-saintemarine.bzh/webcam-port-combrit-sainte-marine/",
+   "by": "Port de Combrit Sainte-Marine (mairie)",
+   "src": "Viewsurf",
+   "match": [
+    "combrit",
+    "marine"
+   ],
+   "lat": 47.874,
+   "lon": -4.122
+  },
+  {
+   "sea": "atl",
+   "place": "Île-Tudy",
+   "view": "Plage / pointe (vidéo)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/18340-france-bretagne-ile-tudy-video",
+   "by": "Mairie de l'Île-Tudy / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "tudy"
+   ],
+   "lat": 47.842,
+   "lon": -4.167
+  },
+  {
+   "sea": "atl",
+   "place": "Loctudy",
+   "view": "Les Perdrix, entrée du port",
+   "page": true,
+   "url": "https://www.loctudy.fr/webcams/",
+   "by": "Mairie de Loctudy",
+   "src": "Skaping",
+   "match": [
+    "loctudy"
+   ],
+   "lat": 47.836,
+   "lon": -4.168
+  },
+  {
+   "sea": "atl",
+   "place": "Loctudy",
+   "view": "Plage de Langoz",
+   "page": true,
+   "url": "https://www.loctudy.fr/webcams/",
+   "by": "Mairie de Loctudy",
+   "src": "Skaping",
+   "match": [
+    "loctudy"
+   ],
+   "lat": 47.831,
+   "lon": -4.16
+  },
+  {
+   "sea": "atl",
+   "place": "Loctudy",
+   "view": "Port de plaisance et de pêche",
+   "page": true,
+   "url": "https://www.loctudy.fr/webcams/",
+   "by": "Mairie de Loctudy",
+   "src": "Skaping",
+   "match": [
+    "loctudy"
+   ],
+   "lat": 47.838,
+   "lon": -4.172
+  },
+  {
+   "sea": "atl",
+   "place": "Plobannalec-Lesconil",
+   "view": "Port de Lesconil (live)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/18418-france-bretagne-plobannalec-lesconil-live",
+   "by": "Mairie de Plobannalec-Lesconil / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "plobannalec",
+    "lesconil"
+   ],
+   "lat": 47.797,
+   "lon": -4.213
+  },
+  {
+   "sea": "atl",
+   "place": "Le Guilvinec",
+   "view": "Port de pêche (panoramique)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/16060-france-bretagne-guilvinec-panoramique-hd",
+   "by": "Mairie du Guilvinec / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "guilvinec"
+   ],
+   "lat": 47.796,
+   "lon": -4.285
+  },
+  {
+   "sea": "atl",
+   "place": "Penmarc'h",
+   "view": "Port de Saint-Pierre, phare d'Eckmühl",
+   "page": true,
+   "url": "https://www.penmarch.bzh/webcams/",
+   "by": "Mairie de Penmarc'h",
+   "src": "Viewsurf",
+   "match": [
+    "penmarc"
+   ],
+   "lat": 47.798,
+   "lon": -4.372
+  },
+  {
+   "sea": "atl",
+   "place": "Penmarc'h",
+   "view": "Saint-Guénolé, maison du douanier",
+   "page": true,
+   "url": "https://www.penmarch.bzh/webcams/",
+   "by": "Mairie de Penmarc'h",
+   "src": "Viewsurf",
+   "match": [
+    "penmarc"
+   ],
+   "lat": 47.817,
+   "lon": -4.38
+  },
+  {
+   "sea": "atl",
+   "place": "Penmarc'h",
+   "view": "Le Port (Kérity)",
+   "page": true,
+   "url": "https://www.penmarch.bzh/webcams/",
+   "by": "Mairie de Penmarc'h",
+   "src": "Viewsurf",
+   "match": [
+    "penmarc"
+   ],
+   "lat": 47.797,
+   "lon": -4.35
+  },
+  {
+   "sea": "atl",
+   "place": "Penmarc'h",
+   "view": "Pors Carn / La Torche (spot de surf)",
+   "page": true,
+   "url": "https://www.penmarch.bzh/webcams/",
+   "by": "Mairie de Penmarc'h",
+   "src": "Viewsurf",
+   "match": [
+    "penmarc"
+   ],
+   "lat": 47.826,
+   "lon": -4.36
+  },
+  {
+   "sea": "atl",
+   "place": "Pouldreuzic",
+   "view": "Plage de Penhors (spot de surf)",
+   "page": true,
+   "url": "https://viewsurf.com/univers/plage/vue/7084-france-bretagne-pouldreuzic-panoramique-plage",
+   "by": "OT Haut Pays Bigouden / Viewsurf (page fournisseur)",
+   "src": "Viewsurf",
+   "match": [
+    "pouldreuzic"
+   ],
+   "lat": 47.94,
+   "lon": -4.403
+  },
+  {
+   "sea": "atl",
+   "place": "Plouhinec (Finistère)",
+   "view": "Pors Poulhan (port, spot de surf)",
+   "page": true,
+   "url": "https://audierne.info/webcamsgaleries/webcams/pors-poulhan/",
+   "by": "Audierne Info (site local) avec Vision-Environnement",
+   "src": "Vision-Environnement",
+   "match": [
+    "plouhinec",
+    "finistere"
+   ],
+   "lat": 47.985,
+   "lon": -4.463
+  },
+  {
+   "sea": "atl",
+   "place": "Audierne",
+   "view": "Port d'Audierne",
+   "page": true,
+   "url": "https://audierne.info/webcamsgaleries/webcams/port-daudierne/",
+   "by": "Audierne Info (site local) avec Vision-Environnement",
+   "src": "Vision-Environnement",
+   "match": [
+    "audierne"
+   ],
+   "lat": 48.017,
+   "lon": -4.538
+  },
+  {
+   "sea": "atl",
+   "place": "Audierne",
+   "view": "Passerelle des Capucins, estuaire du Goyen",
+   "page": true,
+   "url": "https://audierne.info/webcamsgaleries/webcams/passerelle-des-capucins/",
+   "by": "Audierne Info (site local) avec Vision-Environnement",
+   "src": "Vision-Environnement",
+   "match": [
+    "audierne"
+   ],
+   "lat": 48.025,
+   "lon": -4.537
+  },
+  {
+   "sea": "atl",
+   "place": "Audierne",
+   "view": "Plage de Trescadec",
+   "page": true,
+   "url": "https://audierne.info/webcamsgaleries/webcams/grande-plage/",
+   "by": "Audierne Info (site local) avec Vision-Environnement",
+   "src": "Vision-Environnement",
+   "match": [
+    "audierne"
+   ],
+   "lat": 48.008,
+   "lon": -4.548
+  },
+  {
+   "sea": "atl",
+   "place": "Audierne",
+   "view": "Sainte-Evette, embarcadère de l'île de Sein",
+   "page": true,
+   "url": "https://audierne.info/webcamsgaleries/webcams/ste-evette/",
+   "by": "Audierne Info (site local) avec Vision-Environnement",
+   "src": "Vision-Environnement",
+   "match": [
+    "audierne"
+   ],
+   "lat": 48.005,
+   "lon": -4.553
+  },
+  {
+   "sea": "atl",
+   "place": "Cléden-Cap-Sizun",
+   "view": "Baie des Trépassés (spot de surf)",
+   "page": true,
+   "url": "https://audierne.info/webcamsgaleries/webcams/baie-des-trepasses/",
+   "by": "Audierne Info (site local) avec Vision-Environnement",
+   "src": "Vision-Environnement",
+   "match": [
+    "cleden",
+    "sizun"
+   ],
+   "lat": 48.047,
+   "lon": -4.708
+  },
+  {
+   "sea": "atl",
+   "place": "Douarnenez",
+   "view": "Tréboul, Port-Rhu, Rosmeur (3 caméras)",
+   "page": true,
+   "url": "https://www.douarnenez.bzh/webcam/",
+   "by": "Mairie de Douarnenez",
+   "src": "Vision-Environnement",
+   "match": [
+    "douarnenez"
+   ],
+   "lat": 48.097,
+   "lon": -4.33
   },
   {
    "sea": "man",
@@ -2315,6 +4529,22 @@
    "ch": "https://www.youtube.com/@tymorglaz",
    "lat": 48.632,
    "lon": -4.455
+  },
+  {
+   "sea": "man",
+   "place": "Saint-Aubin (commune à confirmer)",
+   "view": "Plage",
+   "id": "nr0jFa7mKQE",
+   "embed": true,
+   "by": "Vision-Environnement (agrégateur)",
+   "match": [
+    "aubin",
+    "commune",
+    "confirmer"
+   ],
+   "ch": "https://www.youtube.com/@Vision-environnement",
+   "lat": 49.33,
+   "lon": -0.392
   },
   {
    "sea": "man",
@@ -6567,23 +8797,6 @@
   },
   {
    "sea": "car",
-   "place": "Cancun",
-   "view": "Cancún, Quintana Roo - V",
-   "country": "Mexique",
-   "area": "Riviera Maya",
-   "id": "hAGNCcPGae8",
-   "embed": true,
-   "by": "Webcams de México TV / Canal 6",
-   "match": [
-    "cancun"
-   ],
-   "ch": "https://www.youtube.com/@WebcamsMXCanal6",
-   "lat": 21.16,
-   "lon": -86.85,
-   "approx": true
-  },
-  {
-   "sea": "car",
    "place": "Costa Rica",
    "view": "Tamarindo Diria Beach, - 2",
    "country": "Costa Rica",
@@ -6793,23 +9006,6 @@
    "country": "Brésil",
    "area": "Nordeste",
    "id": "jhIKYFLSJmY",
-   "embed": true,
-   "by": "Live Cam Natal",
-   "match": [
-    "natal"
-   ],
-   "ch": "https://www.youtube.com/@LiveCamNatal",
-   "lat": -2.8,
-   "lon": -40.51,
-   "approx": true
-  },
-  {
-   "sea": "car",
-   "place": "Natal",
-   "view": "PRAIA DE PONTA NEGRA - N",
-   "country": "Brésil",
-   "area": "Nordeste",
-   "id": "S4TO6ayde9g",
    "embed": true,
    "by": "Live Cam Natal",
    "match": [
