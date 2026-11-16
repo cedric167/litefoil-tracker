@@ -9,7 +9,7 @@ var TR={
  "Zone interdite":["Prohibited area","Zona prohibida"],"Classe A : vol à vue interdit":["Class A: VFR not allowed","Clase A: VFR prohibido"],
  "Zone réglementée : entrée soumise à conditions (activité, contact radio). Vérifie l'AIP et les NOTAM":["Restricted area: entry subject to conditions (activity, radio contact). Check AIP and NOTAM","Zona restringida: entrada sujeta a condiciones (actividad, contacto radio). Comprueba AIP y NOTAM"],
  "Zone dangereuse : vérifie l'activité avant de traverser":["Danger area: check activity before crossing","Zona peligrosa: comprueba la actividad antes de cruzar"],
- "clairance radio obligatoire avant d'entrer":["radio clearance required before entering","autorización por radio obligatoria antes de entrar"],"Classe":["Class","Clase"],
+ "clairance radio obligatoire avant d'entrer":["radio clearance required before entering","autorización por radio obligatoria antes de entrar"], "contact radio obligatoire avant d'entrer":["two-way radio contact required before entering","contacto por radio obligatorio antes de entrar"],"Classe":["Class","Clase"],
  "Radio obligatoire (RMZ)":["Radio mandatory (RMZ)","Radio obligatoria (RMZ)"],"Transpondeur obligatoire (TMZ)":["Transponder mandatory (TMZ)","Transpondedor obligatorio (TMZ)"],
  "Classe E : vol à vue sans clairance":["Class E: VFR without clearance","Clase E: VFR sin autorización"],"Secteur planeurs":["Glider sector","Sector de planeadores"],"Activité aérienne sportive ou de loisir":["Aerial sporting or recreational activity","Actividad aérea deportiva o recreativa"],"Pour information":["For information","Para información"],
  "visibilité":["visibility","visibilidad"],"brouillard":["fog","niebla"],"orage":["thunderstorm","tormenta"],"plafond bas estimé à":["low ceiling estimated at","techo bajo estimado a"],"rafales":["gusts","rachas"],"pluie forte":["heavy rain","lluvia fuerte"],"pluie":["rain","lluvia"],"neige":["snow","nieve"],"pluie verglaçante":["freezing rain","lluvia engelante"],"averses":["showers","chubascos"],
@@ -23,10 +23,22 @@ function dest(a,b,dm){ var d=dm/6371000, la=rad(a.lat), lo=rad(a.lon), t=rad(b),
 function mid(a,b,f){ return { lat:a.lat+(b.lat-a.lat)*f, lon:a.lon+(b.lon-a.lon)*f }; }
 
 // ---------- espaces aériens ----------
-function loadAsp(){ if(aspP) return aspP; aspP=fetch("data/asp-fr.json?v=1").then(function(r){ return r.json(); }).then(function(l){ ASP=l.map(function(a,i){ return { i:i, n:a[0], c:a[1], t:a[2], lo:a[3], lr:a[4], up:a[5], ur:a[6], f:a[7], nt:a[8], bb:a[9], p:a[10] }; }); return ASP; }); aspP.catch(function(){ aspP=null; }); return aspP; }
+// 16/11 : un fichier par pays couvert, chargé seulement si un point de la route (ou le pilote) est dans son emprise
+var REG=[ { k:"fr", f:"data/asp-fr.json?v=1", bb:[[41,-5.6,51.6,10]] },
+          { k:"us", f:"data/asp-us.json?v=1", bb:[[24,-125.5,49.6,-66],[51,-180,72,-129],[18,-161,23,-154],[17,-68,19,-64],[13,144,21,146.5]] } ], regP={};
+function regOf(lat,lon){ for(var i=0;i<REG.length;i++){ var B=REG[i].bb; for(var j=0;j<B.length;j++){ var b=B[j]; if(lat>=b[0] && lat<=b[2] && lon>=b[1] && lon<=b[3]) return REG[i]; } } return null; }
+function covered(lat,lon){ return !!regOf(lat,lon); }
+function regLoad(r){ if(regP[r.k]) return regP[r.k];
+  regP[r.k]=fetch(r.f).then(function(x){ return x.json(); }).then(function(l){ if(!ASP) ASP=[]; var n0=ASP.length; for(var i=0;i<l.length;i++){ var a=l[i]; ASP.push({ i:n0+i, n:a[0], c:a[1], t:a[2], lo:a[3], lr:a[4], up:a[5], ur:a[6], f:a[7], nt:a[8], bb:a[9], p:a[10], cc:a[11]||"FR" }); } });
+  regP[r.k].catch(function(){ delete regP[r.k]; }); return regP[r.k]; }
+// loadAsp(points) : charge les pays touchés par ces points ; sans point, celui où se trouve le pilote (France par défaut)
+function loadAsp(pts){ var want={}, list=[]; (pts||[]).forEach(function(p){ var r=p && regOf(p.lat,p.lon); if(r && !want[r.k]){ want[r.k]=1; list.push(r); } });
+  if(!list.length){ var rp=(A && A.refPos) ? A.refPos() : null, r0=rp ? regOf(rp.lat,rp.lon) : null; list.push(r0||REG[0]); }
+  return Promise.all(list.map(regLoad)).then(function(){ if(!ASP) ASP=[]; return ASP; }); }
 function inPoly(lat,lon,p){ var c=false; for(var i=0,j=p.length-2;i<p.length;j=i,i+=2){ var yi=p[i], xi=p[i+1], yj=p[j], xj=p[j+1]; if(((yi>lat)!==(yj>lat)) && (lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)) c=!c; } return c; }
 function rule(a){ if(a.t==="P") return [3,T("Zone interdite")]; if(a.c==="A") return [3,T("Classe A : vol à vue interdit")];
   if(a.t==="R") return [2,T("Zone réglementée : entrée soumise à conditions (activité, contact radio). Vérifie l'AIP et les NOTAM")]; if(a.t==="Q") return [2,T("Zone dangereuse : vérifie l'activité avant de traverser")];
+  if(a.cc==="US" && (a.c==="C"||a.c==="D")) return [2,T("Classe")+" "+a.c+" : "+T("contact radio obligatoire avant d'entrer")];
   if(a.c==="B"||a.c==="C"||a.c==="D") return [2,T("Classe")+" "+a.c+" : "+T("clairance radio obligatoire avant d'entrer")];
   if(a.t==="RMZ") return [1,T("Radio obligatoire (RMZ)")]; if(a.t==="TMZ") return [1,T("Transpondeur obligatoire (TMZ)")];
   if(a.c==="E") return [0,T("Classe E : vol à vue sans clairance")]; if(a.t==="GSEC") return [0,T("Secteur planeurs")]; if(a.t==="ASRA") return [0,T("Activité aérienne sportive ou de loisir")]; return [0,T("Pour information")]; }
@@ -131,5 +143,5 @@ function metars(pts, api){ if(!api.metarBox) return Promise.resolve([]); var a=9
   return api.metarBox([a,b,c,d]).then(function(l){ var out=[]; (l||[]).forEach(function(s){ if(!s.raw || !isFinite(s.lat)) return; var best=1e9, along=0, acc=0; for(var i=0;i<pts.length-1;i++){ var L=distM(pts[i],pts[i+1]), d1=distM(pts[i],s), th=rad(brg(pts[i],s)-brg(pts[i],pts[i+1])), al=Math.max(0,Math.min(L,d1*Math.cos(th))), p=mid(pts[i],pts[i+1],L?al/L:0), dd=distM(p,s); if(dd<best){ best=dd; along=acc+al; } acc+=L; }
       if(best>22*NM) return; var o=api.parseMetar(s.raw), cat=api.fltCat(o); out.push({ id:s.id, name:String(s.name||"").split(",")[0], cat:cat, km:best/1000, along:along, o:o }); }); out.sort(function(x,y){ return x.along-y.along; }); return out; }).catch(function(){ return []; }); }
 
-window.LFSafe={ init:function(api){ A=api; }, loadAsp:loadAsp, avoid:avoid, checkRoute:checkRoute, at:at, limTxt:limTxt, routeWx:routeWx, outlook:outlook, suggest:suggest, metars:metars, ready:function(){ return !!ASP; } };
+window.LFSafe={ init:function(api){ A=api; }, loadAsp:loadAsp, covered:covered, avoid:avoid, checkRoute:checkRoute, at:at, limTxt:limTxt, routeWx:routeWx, outlook:outlook, suggest:suggest, metars:metars, ready:function(){ return !!ASP; } };
 })();
