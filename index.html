@@ -5388,6 +5388,7 @@
         .then(function(url){ const v={uid:uid,pseudo:me.pseudo||"Rider",url:url,path:path,thumb:meta.thumb||"",caption:(meta.caption||"").slice(0,150),topic:meta.topic||"efoil",dur:meta.dur||0,t:db.serverTimestamp()};
           if(me.av) v.av=me.av; return db.set(vref,v).then(function(){ return vref.key; }); }); },
       likeVideo(vid,on){ return db.set(db.ref(d,"videos/"+vid+"/likes/"+uid), on?true:null); },
+      viewVideo(vid){ if(!inc) return Promise.reject(new Error("compteur indisponible")); return db.set(db.ref(d,"videos/"+vid+"/vn"), inc(1)); },
       // ---------- 13/11 : stories (photo ou vidéo courte, visibles 24 h) ----------
       //   /stories/{id}      : { uid, pseudo, av, type:"img"|"vid", thumb, cap, dur, url, path, t }
       //   /storyMedia/{id}   : { uid, img } (la photo en grand, lue seulement quand on ouvre la story)
@@ -5552,6 +5553,7 @@
         var v={id:"v"+Date.now(),uid:uid,pseudo:me.pseudo||"Rider",av:me.av||"",url:url,thumb:meta.thumb||"",caption:meta.caption||"",topic:meta.topic||"efoil",t:Date.now(),likes:{}};
         demoVideos.unshift(v); if(demoVidCb) demoVidCb(demoVideos.slice()); res(v.id); } },150); }); },
       likeVideo(vid,on){ demoVideos.forEach(function(v){ if(v.id===vid){ v.likes=v.likes||{}; if(on) v.likes[uid]=true; else delete v.likes[uid]; } }); if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
+      viewVideo(vid){ demoVideos.forEach(function(v){ if(v.id===vid) v.vn=(+v.vn||0)+1; }); if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
       deleteVideo(v){ for(var i=0;i<demoVideos.length;i++){ if(demoVideos[i].id===v.id){ demoVideos.splice(i,1); break; } } if(demoVidCb) demoVidCb(demoVideos.slice()); return Promise.resolve(); },
       watchStories(cb){ demoStCb=cb; cb(demoStories.slice()); return function(){ demoStCb=null; }; },
       publishStory(o, onProgress){ var id="s"+Date.now(), st={id:id,uid:uid,pseudo:me.pseudo||"Rider",av:me.av||"",type:o.type,thumb:o.thumb||"",cap:o.cap||"",dur:o.dur||0,t:Date.now()};
@@ -6567,6 +6569,12 @@
   let videos = [], vidUnsub = null, vfMuted = false, vfComUnsub = null;
   function canModerate(uid){ return uid===me.uid || isOfficial(me.uid); }
   function vidLikes(v){ return v && v.likes ? Object.keys(v.likes).length : 0; }
+  function vidViews(v){ return v ? (+v.vn||0) : 0; }
+  var VF_EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  function vidViewAdd(id){ try{ if(!id || !backend || !backend.viewVideo) return; var v=videos.filter(function(x){ return x.id===id; })[0]; if(!v || v.seed || v.uid===me.uid) return;
+      var m={}; try{ m=JSON.parse(localStorage.getItem("lf.vf.viewed")||"{}")||{}; }catch(e){} if(m[id]) return; m[id]=1; var ks=Object.keys(m); if(ks.length>1500) ks.slice(0,ks.length-1500).forEach(function(k){ delete m[k]; });
+      try{ localStorage.setItem("lf.vf.viewed", JSON.stringify(m)); }catch(e){}
+      backend.viewVideo(id).catch(function(){ try{ var m2=JSON.parse(localStorage.getItem("lf.vf.viewed")||"{}")||{}; delete m2[id]; localStorage.setItem("lf.vf.viewed", JSON.stringify(m2)); }catch(e){} }); }catch(e){} }
   function vidLiked(v){ return !!(v && v.likes && v.likes[me.uid]); }
   // vidéos officielles hébergées avec l'appli (dossier videos/) : visibles même sans stockage Firebase
   const SEED_VIDEOS = [
@@ -6590,7 +6598,7 @@
   function renderVideoGrid(){ var g=$("vidGrid"); if(!g) return; var vs=vidVisible();
     $("vidCount").textContent = vs.length ? (vs.length+" vidéo"+(vs.length>1?"s":"")) : "";
     if(!vs.length){ g.innerHTML='<div class="comm-empty" style="grid-column:1/-1">Pas encore de vidéo.<br>Publiez la première session de la communauté 🎬</div>'; return; }
-    g.innerHTML=vs.map(function(v,i){ return '<button class="vg-it" data-i="'+i+'" style="background-image:url('+(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span>'+(isOfficial(v.uid)?'<span class="vg-off">✓</span>':'')+'</button>'; }).join("");
+    g.innerHTML=vs.map(function(v,i){ return '<button class="vg-it" data-i="'+i+'" style="background-image:url('+(v.thumb||"")+')"><span class="vg-like">▶ '+fmtCount(vidViews(v))+'  ·  ♥ '+fmtCount(vidLikes(v))+'</span>'+(isOfficial(v.uid)?'<span class="vg-off">✓</span>':'')+'</button>'; }).join("");
     g.querySelectorAll(".vg-it").forEach(function(b){ b.addEventListener("click", function(){ openFeed(+b.dataset.i); }); }); }
   window.videosOnShow = function(){ renderVideoGrid(); var vf=$("vf"); if(!vf || vf.hidden || vfMode!=="tab") openFeed(undefined,"tab"); };
   window.vfLeaveTab = function(){ var vf=$("vf"); if(vf && !vf.hidden && vfMode==="tab") closeFeed(); };
@@ -6626,6 +6634,7 @@
         +'<div class="vf-av"><button data-a="profile" aria-label="Profil de '+esc(name)+'">'+avh+'</button>'+(canF?'<em data-a="follow" class="'+(fs==="friend"||fs==="sent"?"done":"")+'" role="button" aria-label="Suivre">'+(fs==="friend"||fs==="sent"?"✓":"+")+'</em>':'')+'</div>'
         +'<button data-a="like" class="'+(vidLiked(v)?"on":"")+'" aria-label="J\'aime"><i>'+VF_IC.like+'</i><b>'+fmtCount(vidLikes(v))+'</b></button>'
         +'<button data-a="com" aria-label="Commentaires"><i>'+VF_IC.com+'</i><b class="vf-nc">0</b></button>'
+        +'<span class="vf-vw" aria-label="Vues" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff;min-width:52px"><i class="sm">'+VF_EYE+'</i><b>'+fmtCount(vidViews(v))+'</b></span>'
         +'<button data-a="fav" class="fav'+(vfIsFav(v.id)?" on":"")+'" aria-label="Favoris"><i>'+VF_IC.fav+'</i><b>'+(vfIsFav(v.id)?"Enregistré":"Favoris")+'</b></button>'
         +'<button data-a="share" aria-label="Partager"><i>'+VF_IC.share+'</i><b>Partager</b></button>'
         +'<button data-a="profile" class="vf-disc" aria-label="Son original"><span>'+avh+'</span></button>'
@@ -6717,7 +6726,7 @@
   function feedActivate(force){ var list=$("vfList"); if(!list) return; if($("vu")) return; /* écran d'ajout ouvert : le fil reste en pause */ var its=list.querySelectorAll(".vf-item"); if(!its.length) return;
     var k=Math.max(0, Math.min(its.length-1, typeof force==="number" ? force : Math.round(list.scrollTop/(list.clientHeight||1)))); if(k===vfActive) return; vfActive=k;
     its.forEach(function(it,i){ var vd=it.querySelector("video"), d=i-k;
-      if(d===0){ vfPlay(it); watchCount(it); vfSeenAdd(it.dataset.vid); }
+      if(d===0){ vfPlay(it); watchCount(it); vfSeenAdd(it.dataset.vid); vidViewAdd(it.dataset.vid); }
       else { if(vd && !vd.paused) vd.pause(); if(d===1) vfLoad(it,"auto"); else if(d===-1) vfLoad(it,"metadata"); else if(Math.abs(d)>2) vfUnload(it); } }); }
   function closeFeed(){ var vf=$("vf"); if(!vf) return; document.body.classList.remove("vf-tab"); if(vfRaf){ cancelAnimationFrame(vfRaf); vfRaf=0; } vf.querySelectorAll(".vf-item").forEach(vfUnload); if(vfIO){ vfIO.disconnect(); vfIO=null; } vfActive=-1; if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(vfComUnsub){ vfComUnsub(); vfComUnsub=null; } vf.hidden=true; document.body.style.overflow=""; }
   // compteur de commentaires de la vidéo à l'écran
@@ -6725,7 +6734,7 @@
   function watchCount(it){ if(vfCountUnsub){ vfCountUnsub(); vfCountUnsub=null; } if(!backend||!backend.watchVideoComments) return;
     vfCountUnsub=backend.watchVideoComments(it.dataset.vid, function(cs){ var b=it.querySelector(".vf-nc"); if(b) b.textContent=fmtCount(cs.filter(function(c){ return !blocked.has(c.uid); }).length); }); }
   function refreshFeedCounts(){ var vf=$("vf"); if(!vf) return; vf.querySelectorAll(".vf-item").forEach(function(it){ var v=videos.filter(function(x){ return x.id===it.dataset.vid; })[0];
-    if(!v){ if(!SEED_VIDEOS.some(function(x){ return x.id===it.dataset.vid; })) it.remove(); return; } var lb=it.querySelector('[data-a="like"]'); lb.classList.toggle("on", vidLiked(v)); lb.querySelector("b").textContent=fmtCount(vidLikes(v)); }); }
+    if(!v){ if(!SEED_VIDEOS.some(function(x){ return x.id===it.dataset.vid; })) it.remove(); return; } var lb=it.querySelector('[data-a="like"]'); lb.classList.toggle("on", vidLiked(v)); lb.querySelector("b").textContent=fmtCount(vidLikes(v)); var vw=it.querySelector(".vf-vw b"); if(vw) vw.textContent=fmtCount(vidViews(v)); }); }
   function toggleLike(v, force){ if(!backend||!backend.likeVideo) return; if(!charterOk){ closeFeed(); showCharter(); return; } if(!profileReady()){ closeFeed(); askProfile(); return; }
     var on = force===true ? true : !vidLiked(v); if(force===true && vidLiked(v)) return;
     v.likes=v.likes||{}; if(on) v.likes[me.uid]=true; else delete v.likes[me.uid];
@@ -8239,7 +8248,7 @@
       pr.then(function(){ if(o.shared) delete mySharedSess[id]; else mySharedSess[id]=true; sharedSessSave(); closeOverlay(); renderProfil(); }).catch(function(){ sb.disabled=false; alert("Partage impossible pour le moment, réessaie."); }); }); }
   // del = vrai sur « Mon profil » : corbeille sur mes vidéos pour les supprimer
   function vidTiles(list, del){ var vis=vidVisible(); return list.map(function(v){ var gi=vis.indexOf(v), d=del && v.uid===me.uid && !v.seed;
-    return '<button class="vg-it" data-gi="'+gi+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="vg-like">♥ '+fmtCount(vidLikes(v))+'</span>'+(d?'<span class="vg-del" role="button" data-del="'+esc(v.id)+'" aria-label="Supprimer la vidéo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg></span>':'')+'</button>'; }).join(""); }
+    return '<button class="vg-it" data-gi="'+gi+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="vg-like">▶ '+fmtCount(vidViews(v))+'  ·  ♥ '+fmtCount(vidLikes(v))+'</span>'+(d?'<span class="vg-del" role="button" data-del="'+esc(v.id)+'" aria-label="Supprimer la vidéo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg></span>':'')+'</button>'; }).join(""); }
   function bindVidTiles(root){ root.querySelectorAll(".vg-it[data-gi]").forEach(function(b){ b.addEventListener("click", function(){ var i=+b.dataset.gi; if(i<0) return; closeOverlay(); openFeed(i); }); });
     root.querySelectorAll(".vg-del[data-del]").forEach(function(b){ b.addEventListener("click", function(ev){ ev.stopPropagation(); ev.preventDefault(); if(b._busy) return;
       var v=videos.filter(function(x){ return x.id===b.dataset.del; })[0]; if(!v || !backend || !backend.deleteVideo) return;
@@ -8321,7 +8330,7 @@
       return '<div class="ts-row" data-tsu="'+esc(u)+'"><span class="ts-av'+(ring?" ring":"")+'"><span>'+avHtml(u)+'</span></span><span class="ts-txt"><b>'+esc(pseudoKey(pName(u))||"rider")+(isOfficial(u)?' <i class="ts-off">✓</i>':'')+'</b><span>'+esc(pName(u))+'</span><small>'+sub(u)+'</small></span>'+followBtnHtml(u)+'<button type="button" class="ts-msg" data-tsm="'+esc(u)+'" aria-label="Message"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></button></div>'; };
     var vidsFor=function(q){ var vis=vidVisible(); if(!q) return vis.slice(0,12);
       return vis.filter(function(v){ var t=pseudoKey(v.pseudo||"")+" "+String(v.caption||"").toLowerCase(); return t.indexOf(q)>=0 || lastIds.indexOf(v.uid)>=0; }); };
-    var vidHtml=function(list){ var vis=vidVisible(); return '<div class="ts-grid">'+list.map(function(v){ return '<button type="button" class="ts-vid" data-gi="'+vis.indexOf(v)+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="ts-vc">'+esc(v.caption||"")+'</span><span class="ts-vu">'+esc(v.pseudo||"Rider")+' · ♥ '+fmtCount(vidLikes(v))+'</span></button>'; }).join("")+'</div>'; };
+    var vidHtml=function(list){ var vis=vidVisible(); return '<div class="ts-grid">'+list.map(function(v){ return '<button type="button" class="ts-vid" data-gi="'+vis.indexOf(v)+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="ts-vc">'+esc(v.caption||"")+'</span><span class="ts-vu">'+esc(v.pseudo||"Rider")+' · ▶ '+fmtCount(vidViews(v))+' · ♥ '+fmtCount(vidLikes(v))+'</span></button>'; }).join("")+'</div>'; };
     var draw=function(){ var q=pseudoKey(inp.value.trim())||inp.value.trim().toLowerCase().replace(/[^a-z0-9]/g,""), ids=lastIds, h="";
       if(tab==="top"){ if(ids.length){ h+='<div class="ts-sec"><b>'+(q?"Riders":"Suggestions")+'</b>'+(ids.length>3?'<button type="button" class="ts-all">Tout voir ›</button>':'')+'</div>'+ids.slice(0,3).map(rowHtml).join(""); }
         var vl=vidsFor(q); if(vl.length) h+='<div class="ts-sep"></div>'+vidHtml(vl);

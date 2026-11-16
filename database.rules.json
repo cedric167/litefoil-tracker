@@ -180,6 +180,10 @@
           "$uid": {
             ".write": "auth != null && auth.uid === $uid && auth.token.email_verified === true"
           }
+        },
+        "vn": {
+          ".write": "auth != null && data.parent().exists()",
+          ".validate": "newData.isNumber() && newData.val() === (data.exists() ? data.val() : 0) + 1"
         }
       }
     },
