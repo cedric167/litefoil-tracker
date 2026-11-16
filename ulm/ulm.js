@@ -413,7 +413,7 @@ function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api
     metarBox:function(b){ return jget(API+"?bbox="+b.map(function(x){ return x.toFixed(2); }).join(","), 9000); } };
   if(window.LFNav){ window.LFNav.show(el, api); return; } el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>'; if(showNav.ld) return; showNav.ld=true;
   var s0=document.createElement("script"); s0.src="ulm/safety.js?v=9"; document.head.appendChild(s0);
-  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=15"; sc.onload=function(){ var go=function(k){ var e2=root.querySelector("#ulNav"); if(!e2 || !window.LFNav) return; if(!window.LFSafe && k<20) return setTimeout(function(){ go(k+1); }, 150); window.LFNav.show(e2, api); }; go(0); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
+  var sc=document.createElement("script"); sc.src="ulm/nav.js?v=16"; sc.onload=function(){ var go=function(k){ var e2=root.querySelector("#ulNav"); if(!e2 || !window.LFNav) return; if(!window.LFSafe && k<20) return setTimeout(function(){ go(k+1); }, 150); window.LFNav.show(e2, api); }; go(0); }; sc.onerror=function(){ showNav.ld=false; el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'</div></div>'; }; document.head.appendChild(sc); }
 function render(state){ if(!root) return; var h="";
   if(mode==="nav"){ if(root.querySelector("#ulNav")) return; root.innerHTML=modeBar()+'<div id="ulNav"></div>'; showNav(); return; }
   h=modeBar();
