@@ -164,6 +164,7 @@ async function sendToUids(uids, data, opts) {
 
 exports.chatPush = onValueCreated({ ref: "/chat/{id}", instance: DB_INSTANCE }, async (event) => {
   const m = event.data.val() || {};
+  return; // le salon a été retiré de l’appli (v258) : plus aucune notification pour ses messages
   if (!m.text) return;
   if (m.uid === "litefoil-team") return; // météo / conseils de l'équipe : pas de notification
   const topic = m.topic || "general";
