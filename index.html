@@ -9990,14 +9990,16 @@
   var box=document.getElementById("wcBox"); if(!box) return; var data=null, sea=null, loading=false;
   var esc=function(t){ return String(t==null?"":t).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
   function list(){ return data.cams.filter(function(c){ return c.sea===sea; }); }
+  var PH="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c6f8c"/><stop offset=".55" stop-color="#0f4a63"/><stop offset="1" stop-color="#0b2e3d"/></linearGradient></defs><rect width="320" height="200" fill="url(#g)"/><path d="M0 128q40-14 80 0t80 0 80 0 80 0v72H0z" fill="#fff" opacity=".07"/><g transform="translate(160 84)" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".85"><rect x="-34" y="-20" width="48" height="40" rx="8"/><path d="M14-6l22-12v36L14 6z"/></g></svg>');
   function draw(){ var seas=document.getElementById("wcSeas"), grid=document.getElementById("wcGrid");
     seas.innerHTML=data.seas.map(function(x){ var n=data.cams.filter(function(c){ return c.sea===x.k; }).length; return '<button type="button" data-k="'+x.k+'" class="'+(x.k===sea?"on":"")+'">'+esc(x.name)+'<small>'+n+'</small></button>'; }).join("");
     try{ var on=seas.querySelector("button.on"); if(on) seas.scrollLeft=Math.max(0, on.offsetLeft-seas.clientWidth/2+on.offsetWidth/2); }catch(e){}
-    grid.scrollLeft=0; grid.innerHTML=list().map(function(c,k,L){ return '<button type="button" class="wc-card" data-k="'+k+'"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault_live.jpg" data-fb="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault.jpg">'
-      +(c.embed?'<span class="wc-b"><i></i>LIVE</span><span class="wc-n">'+(k+1)+' / '+L.length+'</span>':'<span class="wc-yt">YouTube ↗</span>')+'<span class="wc-t"><b>'+esc(c.place)+'</b><span>'+esc(c.view)+(c.country?' · '+esc(c.country):'')+'</span></span></button>'; }).join("");
+    grid.scrollLeft=0; grid.innerHTML=list().map(function(c,k,L){ return '<button type="button" class="wc-card" data-k="'+k+'">'+(c.page?'<img alt="" src="'+PH+'">':'<img loading="lazy" alt="" src="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault_live.jpg" data-fb="https://i.ytimg.com/vi/'+esc(c.id)+'/hqdefault.jpg">')
+      +(c.page?'<span class="wc-yt">'+esc(c.src||"Site")+' ↗</span>':c.embed?'<span class="wc-b"><i></i>LIVE</span><span class="wc-n">'+(k+1)+' / '+L.length+'</span>':'<span class="wc-yt">YouTube ↗</span>')+'<span class="wc-t"><b>'+esc(c.place)+'</b><span>'+esc(c.view)+(c.country?' · '+esc(c.country):'')+'</span></span></button>'; }).join("");
     grid.querySelectorAll("img").forEach(function(im){ im.addEventListener("error", function(){ if(im.dataset.fb){ var f=im.dataset.fb; im.dataset.fb=""; im.src=f; } }); }); }
   function yt(c){ return "https://www.youtube.com/watch?v="+encodeURIComponent(c.id); }
-  function open(k, cam){ var l=list(), c=l[k]; if(cam){ l=data.cams.filter(function(x){ return x.sea===cam.sea; }); k=l.indexOf(cam); c=cam; } if(!c) return; if(!c.embed){ window.open(yt(c), "_blank", "noopener"); return; }
+  function open(k, cam){ var l=list(), c=l[k]; if(cam){ l=data.cams.filter(function(x){ return x.sea===cam.sea; }); k=l.indexOf(cam); c=cam; } if(!c) return; if(c.page){ window.open(c.url, "_blank", "noopener"); return; } if(!c.embed){ window.open(yt(c), "_blank", "noopener"); return; }
+    l=l.filter(function(x){ return !x.page; }); k=Math.max(0, l.indexOf(c));
     var old=document.getElementById("wcv"); if(old) old.remove(); var el=document.createElement("div"); el.id="wcv"; el.className="wcv"; var prevOv=document.body.style.overflow; document.body.style.overflow="hidden";
     var close=function(){ el.remove(); document.body.style.overflow=prevOv; };
     var show=function(){ c=l[k]; var p=l[(k-1+l.length)%l.length], n=l[(k+1)%l.length];
@@ -10012,16 +10014,16 @@
   // --- pour la recherche de spot : caméras par nom, caméras proches, webcam du spot choisi ---
   var nrm=function(t){ return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); };
   var km=function(a,b,c,d){ var R=6371, x=(d-b)*Math.PI/180*Math.cos((a+c)*Math.PI/360), y=(c-a)*Math.PI/180; return R*Math.sqrt(x*x+y*y); };
-  var thumb=function(c){ return "https://i.ytimg.com/vi/"+esc(c.id)+"/mqdefault_live.jpg"; };
+  var thumb=function(c){ return c.page ? PH : "https://i.ytimg.com/vi/"+esc(c.id)+"/mqdefault_live.jpg"; };
   var lastSpot=null;
   function near(lat,lon,name){ if(!data || !isFinite(lat) || !isFinite(lon)) return []; var n=nrm(name);
     return data.cams.filter(function(c){ return isFinite(c.lat); }).map(function(c){ var dk=km(lat,lon,c.lat,c.lon); return { c:c, km:dk, nm:!!n && n.length>3 && (nrm(c.place).indexOf(n)>=0 || n.indexOf(nrm(c.place))>=0) }; })
-      .filter(function(x){ return x.c.approx ? (x.nm && x.km<=80) : (x.km<=15 || (x.nm && x.km<=40)); }).sort(function(a,b){ return a.km-b.km; }); }
+      .filter(function(x){ return x.c.approx ? (x.nm && x.km<=80) : (x.km<=15 || (x.nm && x.km<=40)); }).sort(function(a,b){ var ra=a.c.page?2:(a.c.embed?0:1), rb=b.c.page?2:(b.c.embed?0:1); return ra-rb || a.km-b.km; }); }
   function find(q){ q=nrm(q); if(!data || q.length<3) return []; return data.cams.filter(function(c){ var t=nrm(c.place+" "+c.view); return q.split(" ").every(function(w){ return t.indexOf(w)>=0; }); }); }
   function spot(lat,lon,name){ lastSpot=[lat,lon,name]; var el=document.getElementById("mtoLive"); if(!el) return; var L=near(lat,lon,name);
     if(!L.length){ el.hidden=true; el.innerHTML=""; return; } var c=L[0].c, dist=L[0].km<1?"sur place":"à "+Math.round(L[0].km)+" km";
     el.innerHTML='<div class="ms-live"><div class="ms-pip">'+(c.embed?'<iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/'+esc(c.id)+'?autoplay=1&mute=1&playsinline=1&controls=0&rel=0&modestbranding=1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" title="Webcam '+esc(c.place)+'" tabindex="-1"></iframe>':'<img alt="" src="'+thumb(c)+'">')
-      +'<span class="wc-b"><i></i>LIVE</span><button type="button" data-i="0" aria-label="Voir la webcam en grand"></button></div>'
+      +(c.page?'<span class="wc-yt" style="position:absolute;right:8px;top:8px;font-size:10px;font-weight:800;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px">'+esc(c.src||"Site")+' ↗</span>':'<span class="wc-b"><i></i>LIVE</span>')+'<button type="button" data-i="0" aria-label="Voir la webcam en grand"></button></div>'
       +'<div class="ms-live-tx"><small>Webcam '+dist+'</small><b>'+esc(c.place)+'</b><span>'+esc(c.view)+'</span><button type="button" data-i="0">Voir en grand</button></div></div>'
       +(L.length>1?'<div class="ms-more">'+L.slice(1,8).map(function(x,i){ return '<button type="button" class="ms-cam" data-i="'+(i+1)+'"><img alt="" loading="lazy" src="'+thumb(x.c)+'"><i></i><em>'+esc(x.c.place===c.place?x.c.view:x.c.place)+'</em></button>'; }).join("")+'</div>':'');
     el.hidden=false; el.onclick=function(e){ var b=e.target.closest("button[data-i]"); if(b && L[+b.dataset.i]) open(0, L[+b.dataset.i].c); }; }
