@@ -200,6 +200,7 @@ function loadWx(f){ return (apiDown ? Promise.reject(new Error("api")) : fromApi
 // ---------- styles ----------
 var CSS=""
 +"#tab-ulm{padding-bottom:20px}"
++".ul-lang{display:flex;justify-content:flex-end;margin:0 2px 8px;min-height:30px}"
 +".ul-mode{display:flex;gap:4px;background:var(--tile,#f7f9fb);border-radius:16px;padding:4px}.ul-mode button{flex:1;border:0;background:transparent;border-radius:13px;padding:11px 4px;font:inherit;font-size:14.5px;font-weight:800;color:var(--muted,#66727d);cursor:pointer}.ul-mode button.on{background:#12408a;color:#fff;box-shadow:0 4px 12px rgba(18,64,138,.3)}"
 +".ul-card{background:#fff;border:1px solid var(--line-soft,#eef2f5);border-radius:20px;padding:14px;margin-top:12px;box-shadow:0 4px 14px rgba(13,40,45,.06)}"
 +".ul-sky{color:#fff;background:linear-gradient(160deg,#0a2a55 0%,#12408a 55%,#1b63c9 100%);border:0;box-shadow:0 12px 28px rgba(10,42,85,.28)}"
@@ -401,7 +402,13 @@ function tendView(){ if(hist==="err") return '<div class="ul-card"><div class="u
   h+='<div class="ul-ch"><b>'+esc(T("Température et point de rosée (°C)"))+'</b>'+lineChart([Tt,D],["#d1343f","#2f8fe0"],{span:6,dash:true})+'</div>';
   if(C.some(function(p){ return p[1]!=null; })) h+='<div class="ul-ch"><b>'+esc(T("Plafond (ft)"))+'</b>'+lineChart([C],["#66727d"],{min:0,span:2000})+'</div>';
   return h+'</div>'; }
-function modeBar(){ return '<div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div>'; }
+// drapeaux de langue : le même sélecteur que l'appli (LF_I18N), monté une seule fois puis replacé après chaque affichage
+var langHost=null, langBound=false;
+function langPlace(){ try{ var I=window.LF_I18N; if(!I || !I.mountPicker || !root) return; var slot=root.querySelector("#ulLang"); if(!slot) return;
+    if(!langHost){ langHost=document.createElement("div"); I.mountPicker(langHost, "row"); }
+    if(langHost.parentNode!==slot) slot.appendChild(langHost);
+    if(!langBound && I.onChange){ langBound=true; I.onChange(function(){ if(!root || !root.isConnected) return; try{ if(langHost.parentNode) langHost.parentNode.removeChild(langHost); }catch(e){} root.innerHTML=""; render(); }); } }catch(e){} }
+function modeBar(){ setTimeout(langPlace, 0); return '<div class="ul-lang" id="ulLang"></div><div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div>'; }
 function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, refPos:refPos, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, parseMetar:parseMetar, field:F,
     metarBox:function(b){ return jget(API+"?bbox="+b.map(function(x){ return x.toFixed(2); }).join(","), 9000); } };
   if(window.LFNav){ window.LFNav.show(el, api); return; } el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>'; if(showNav.ld) return; showNav.ld=true;
