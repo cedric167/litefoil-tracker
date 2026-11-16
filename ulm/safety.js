@@ -24,16 +24,23 @@ function mid(a,b,f){ return { lat:a.lat+(b.lat-a.lat)*f, lon:a.lon+(b.lon-a.lon)
 
 // ---------- espaces aériens ----------
 // 16/11 : un fichier par pays couvert, chargé seulement si un point de la route (ou le pilote) est dans son emprise
-var REG=[ { k:"fr", f:"data/asp-fr.json?v=1", bb:[[41,-5.6,51.6,10]] },
-          { k:"us", f:"data/asp-us.json?v=1", bb:[[24,-125.5,49.6,-66],[51,-180,72,-129],[18,-161,23,-154],[17,-68,19,-64],[13,144,21,146.5]] } ], regP={};
-function regOf(lat,lon){ for(var i=0;i<REG.length;i++){ var B=REG[i].bb; for(var j=0;j<B.length;j++){ var b=B[j]; if(lat>=b[0] && lat<=b[2] && lon>=b[1] && lon<=b[3]) return REG[i]; } } return null; }
-function covered(lat,lon){ return !!regOf(lat,lon); }
+// bb : rectangles qui déclenchent le chargement du fichier ; cov : contours approchés du pays (lat, lon à plat), qui disent si un point est « couvert »
+var REG=[
+ { k:"fr", f:"data/asp-fr.json?v=1", bb:[[41,-5.6,51.6,10]], cov:[[51.1,2.5,50,4.2,49.5,5.9,49,8.3,47.6,7.6,47.3,7,46.4,6.1,46.5,6.8,45.9,7.1,45.1,6.6,44.1,7.7,43.75,7.55,43,6.2,43.3,5,43.4,3.9,42.4,3.2,42.4,1.7,42.7,0.7,43.3,-1.8,44.6,-1.3,46.2,-1.6,47.3,-2.6,47.8,-4.5,48.5,-4.9,48.9,-3.1,48.6,-1.6,49.7,-2,49.3,-0.2,50.1,1.4,51,1.6],[43.05,9.4,42.5,8.5,41.3,8.7,41.35,9.3,42,9.6]] },
+ { k:"de", f:"data/asp-de.json?v=1", bb:[[47.2,5.8,55.1,15.1]], cov:[[54.9,8.3,54.8,9.9,54.4,11.1,54.7,13.4,53.9,14.3,52.8,14.2,51,15,50.3,12.2,49,12.5,48.6,13.8,47.5,13,47.3,10.2,47.6,7.6,49,8.2,49.2,6.4,50.3,6,51.8,6,53.2,7.2,53.7,7,53.9,8.6]] },
+ { k:"us", f:"data/asp-us.json?v=1", bb:[[24,-125.5,49.6,-66],[51,-180,72,-129],[18,-161,23,-154],[17,-68,19,-64],[13,144,21,146.5]],
+   cov:[[49,-124.8,49,-95.2,48.2,-89.5,46.5,-84.5,45.3,-82.5,43,-82.4,41.7,-83.1,42.9,-78.9,43.6,-76.8,45,-74.9,45,-71.5,47.4,-69.2,47.3,-67.8,44.8,-66.9,41,-69.8,35,-75.4,30.5,-81.2,25,-80,24.5,-82,29.5,-84,29,-89,28.9,-95,25.9,-97.1,29.5,-101.5,28.9,-103.2,31.7,-106.5,31.3,-111,32.5,-114.8,32.5,-117.2,34.4,-120.6,40.4,-124.5,46.3,-124.2],
+        [51,-180,72,-180,72,-141,60,-141,54.5,-130,51,-131],[18,-161,23,-161,23,-154,18,-154],[17,-68,19,-68,19,-64,17,-64],[13,144,21,144,21,146.5,13,146.5]] } ], regP={};
+function inBB(lat,lon,b){ return lat>=b[0] && lat<=b[2] && lon>=b[1] && lon<=b[3]; }
+function regsOf(lat,lon){ return REG.filter(function(r){ return r.bb.some(function(b){ return inBB(lat,lon,b); }); }); }
+function regOf(lat,lon){ return regsOf(lat,lon)[0]||null; }
+function covered(lat,lon){ for(var i=0;i<REG.length;i++){ var c=REG[i].cov; for(var j=0;j<c.length;j++) if(inPoly(lat,lon,c[j])) return true; } return false; }
 function regLoad(r){ if(regP[r.k]) return regP[r.k];
   regP[r.k]=fetch(r.f).then(function(x){ return x.json(); }).then(function(l){ if(!ASP) ASP=[]; var n0=ASP.length; for(var i=0;i<l.length;i++){ var a=l[i]; ASP.push({ i:n0+i, n:a[0], c:a[1], t:a[2], lo:a[3], lr:a[4], up:a[5], ur:a[6], f:a[7], nt:a[8], bb:a[9], p:a[10], cc:a[11]||"FR" }); } });
   regP[r.k].catch(function(){ delete regP[r.k]; }); return regP[r.k]; }
 // loadAsp(points) : charge les pays touchés par ces points ; sans point, celui où se trouve le pilote (France par défaut)
-function loadAsp(pts){ var want={}, list=[]; (pts||[]).forEach(function(p){ var r=p && regOf(p.lat,p.lon); if(r && !want[r.k]){ want[r.k]=1; list.push(r); } });
-  if(!list.length){ var rp=(A && A.refPos) ? A.refPos() : null, r0=rp ? regOf(rp.lat,rp.lon) : null; list.push(r0||REG[0]); }
+function loadAsp(pts){ var want={}, list=[]; (pts||[]).forEach(function(p){ if(!p) return; regsOf(p.lat,p.lon).forEach(function(r){ if(!want[r.k]){ want[r.k]=1; list.push(r); } }); });
+  if(!list.length){ var rp=(A && A.refPos) ? A.refPos() : null, r0=rp ? regsOf(rp.lat,rp.lon) : []; if(r0.length) list=r0; else list.push(REG[0]); }
   return Promise.all(list.map(regLoad)).then(function(){ if(!ASP) ASP=[]; return ASP; }); }
 function inPoly(lat,lon,p){ var c=false; for(var i=0,j=p.length-2;i<p.length;j=i,i+=2){ var yi=p[i], xi=p[i+1], yj=p[j], xj=p[j+1]; if(((yi>lat)!==(yj>lat)) && (lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)) c=!c; } return c; }
 function rule(a){ if(a.t==="P") return [3,T("Zone interdite")]; if(a.c==="A") return [3,T("Classe A : vol à vue interdit")];
