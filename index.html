@@ -5777,8 +5777,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function commGlInit(){ var el=$("commMap"), G=window.maplibregl;
     var gl=new G.Map({ container:el, attributionControl:{ compact:true }, center:[3,30], zoom:1.25, minZoom:1.1, maxZoom:18, maxPitch:60, dragRotate:true, fadeDuration:150,
       style:{ version:8, projection:{ type:"globe" },
-        sources:{ sat:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:17, attribution:"© Esri, Maxar" } },
-        layers:[{ id:"bg", type:"background", paint:{ "background-color":"#061a22" } }, { id:"sat", type:"raster", source:"sat" }],
+        sources:{ sat:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:17, attribution:"© Esri, Maxar" }, lab:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:15 } },
+        layers:[{ id:"bg", type:"background", paint:{ "background-color":"#061a22" } }, { id:"sat", type:"raster", source:"sat" }, { id:"lab", type:"raster", source:"lab" }],
         sky:{ "atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,4,1,6.5,0] } } });
     el.classList.add("gl"); commGl=gl;
     gl.on("load", function(){ try{ gl.addSource("nmc",{ type:"geojson", data:{ type:"FeatureCollection", features:[] } });
@@ -5825,6 +5825,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(commGlTry===2 && window.maplibregl){ try{ commGlInit(); commReady=true; return; }catch(e){ commGl=null; commMap=null; try{ $("commMap").innerHTML=""; $("commMap").classList.remove("gl","maplibregl-map"); }catch(x){} } }
     commMap = L.map($("commMap"),{zoomControl:true,attributionControl:true}).setView([43.0,3.0],9);
     L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,maxNativeZoom:17,attribution:"© Esri, Maxar"}).addTo(commMap);
+      try{ L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,maxNativeZoom:15}).addTo(commMap); }catch(e){}
     commLayers = L.layerGroup().addTo(commMap);
     commMap.on("popupopen", e=>{ const a=e.popup._contentNode&&e.popup._contentNode.querySelector("[data-dm]");
       if(a) a.addEventListener("click", ev=>{ ev.preventDefault(); commMap.closePopup(); openDM(a.dataset.dm,a.dataset.ps); }); });
