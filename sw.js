@@ -1,7 +1,7 @@
 // Service worker for the Lite Foil Tracker page: makes it installable ("add to home
 // screen") and keeps it usable without network — the Bluetooth link to the tracker
 // needs none. Bump CACHE when the page changes so installed copies refresh.
-const CACHE = "lf-tracker-v325";
+const CACHE = "lf-tracker-v326";
 
 // Firebase Cloud Messaging : notifications « appli fermée ». Le worker reçoit le push
 // envoyé par la Cloud Function et affiche la notification même quand l'appli n'est pas
@@ -40,7 +40,7 @@ const ASSETS = ["./", "./index.html", "./i18n/i18n.js", "./i18n/en.json", "./i18
 
 // Cartes déjà vues gardées pour le vol sans réseau : les tuiles affichées (fond de carte, carte aéronautique, satellite, relief)
 // sont conservées sur le téléphone et resservies quand il n'y a plus de réseau. Rien n'est téléchargé d'avance : seulement ce qui a été regardé.
-const TILES = "lf-tiles-v1", TILE_MAX = 4000;
+const TILES = "lf-tiles-v1", TILE_MAX = 2500;
 const TILE_HOSTS = /^(tile.openstreetmap.org|server.arcgisonline.com|nwy-tiles-api.prod.newaydata.com|s3.amazonaws.com)$/;
 async function tileFetch(req) {
   const c = await caches.open(TILES), hit = await c.match(req.url);

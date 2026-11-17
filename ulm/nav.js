@@ -304,7 +304,7 @@ function flyTraffic(F){ if(!F || FLY!==F) return; var on=lget("lf.ulm.ftraf","1"
     if(lb){ lb.hidden=false; lb.textContent="✈ "+n+" "+T("trafic"); }
     // alerte : trafic à moins de 2 NM et 1 000 ft ; annonce « à X heures » par rapport à la route de l'avion
     if(worst && (!F.said.tf || Date.now()-F.said.tf>20000)){ F.said.tf=Date.now(); var rel=((brg(me,worst.a)-(F.trk||0))%360+360)%360, hr=Math.round(rel/30)||12;
-      say(T("Trafic")+", "+hr+" "+T("heures")+", "+(worst.d/NM).toFixed(1).replace(".", A.lang()===0?" virgule ":" point ")+" "+T("nautiques")+", "+T(worst.dAlt>200?"au-dessus":worst.dAlt<-200?"en dessous":"même altitude")); } }).catch(function(){ F.trBusy=false; }); }
+      say(T("Trafic")+", "+hr+" "+T("heures")+", "+(worst.d/NM).toFixed(1).replace(".", A.lang()===0?" virgule ":" point ")+" "+T("nautiques")+", "+T(worst.dAlt>200?"au-dessus":worst.dAlt<-200?"en dessous":"même altitude"), "traf", true); } }).catch(function(){ F.trBusy=false; }); }
 function flyRadar(F){ if(!F || FLY!==F) return; var on=lget("lf.ulm.frad","0")==="1"; if(!on){ if(F.rad){ try{ F.map.removeLayer(F.rad); }catch(e){} F.rad=null; } if(F.radT){ clearInterval(F.radT); F.radT=null; } var rl=F.el.querySelector("#nvRadL"); if(rl) rl.hidden=true; return; }
   if(!F.radT) F.radT=setInterval(function(){ flyRadar(F); }, 300000);
   fetch("https://api.rainviewer.com/public/weather-maps.json").then(function(r){ return r.json(); }).then(function(j){ if(FLY!==F || lget("lf.ulm.frad","0")!=="1") return; var p=j && j.radar && j.radar.past, last=p && p[p.length-1]; if(!last) return;
@@ -373,7 +373,15 @@ function onClick(e){ var b=e.target.closest("button"); if(!b || !box.contains(b)
 
 // ---------- navigation en vol ----------
 var PLANE='<svg viewBox="0 0 48 48"><path d="M24 3c1.800 0 3 2.200 3 5v9l15 9v4l-15-4.500V35l4.500 3.500V42L24 40l-7.500 2v-3.500L21 35v-9.500L6 30v-4l15-9V8c0-2.800 1.200-5 3-5z" fill="#fff" stroke="#0a1220" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-function say(txt){ if(!FLY || !FLY.voice) return; try{ var u=new SpeechSynthesisUtterance(txt), i=A.lang(); u.lang=i===1?"en-GB":i===2?"es-ES":"fr-FR"; u.rate=1.02; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+// L'appli Android (WebView) n'a pas de synthèse vocale : les alertes importantes ont une annonce enregistrée (ulm/snd), en français et en anglais.
+var TTS_OK=("speechSynthesis" in window) && (typeof SpeechSynthesisUtterance!=="undefined") && !/; wv\)/.test(navigator.userAgent||""), sndEl=null, sndCtx=null;
+function sndUnlock(){ try{ if(!sndEl){ sndEl=new Audio(); sndEl.preload="auto"; } sndEl.muted=true; sndEl.src="ulm/snd/fr-next.mp3"; var p=sndEl.play(); if(p && p.then) p.then(function(){ sndEl.pause(); sndEl.muted=false; }).catch(function(){ sndEl.muted=false; }); }catch(e){}
+  try{ var C=window.AudioContext||window.webkitAudioContext; if(C && !sndCtx) sndCtx=new C(); if(sndCtx && sndCtx.state==="suspended") sndCtx.resume(); }catch(e){} }
+function alarm(n){ try{ if(!sndCtx) return; var t=sndCtx.currentTime; for(var i=0;i<(n||3);i++){ var o=sndCtx.createOscillator(), g=sndCtx.createGain(); o.type="square"; o.frequency.value=i%2?1250:950; g.gain.setValueAtTime(0.0001,t+i*0.22); g.gain.exponentialRampToValueAtTime(0.35,t+i*0.22+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.22+0.19); o.connect(g); g.connect(sndCtx.destination); o.start(t+i*0.22); o.stop(t+i*0.22+0.2); } }catch(e){} }
+function say(txt, key, urgent){ if(!FLY || !FLY.voice) return; if(urgent) alarm(3);
+  var go=function(){ if(TTS_OK){ try{ var u2=new SpeechSynthesisUtterance(txt), i=A.lang(); u2.lang=i===1?"en-GB":i===2?"es-ES":"fr-FR"; u2.rate=1.02; speechSynthesis.cancel(); speechSynthesis.speak(u2); return; }catch(e){} }
+    if(key){ try{ if(!sndEl) sndEl=new Audio(); sndEl.muted=false; sndEl.src="ulm/snd/"+(A.lang()===0?"fr":"en")+"-"+key+".mp3?v=1"; var p=sndEl.play(); if(p && p.catch) p.catch(function(){}); }catch(e){} } else if(!urgent) alarm(1); };
+  if(urgent) setTimeout(go, 750); else go(); }
 // Android donne une hauteur GPS brute (au-dessus de l'ellipsoïde) : on retire l'ondulation du géoïde (EGM96, grille 1°) pour avoir
 // l'altitude au-dessus de la mer, comme sur iPhone. Écart corrigé : environ 50 m (160 ft) en France.
 var GEO=null, geoSt=0, IS_AND=/Android/i.test(navigator.userAgent||"");
@@ -437,7 +445,7 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
   document.body.appendChild(el);
   try{ var tp=el.querySelector(".nv-top"); if(localStorage.getItem("lf.ulm.topmin")==="1") tp.classList.add("min");
     tp.addEventListener("click", function(e){ if(e.target.closest("button, .nv-ban")) return; var m=tp.classList.toggle("min"); try{ localStorage.setItem("lf.ulm.topmin", m?"1":"0"); }catch(x){} }); }catch(e){}
-  geoLoad(); vpLock(true); try{ history.pushState({ lfFly:1 },""); window.addEventListener("popstate", flyBack); }catch(e){}
+  sndUnlock(); geoLoad(); vpLock(true); try{ history.pushState({ lfFly:1 },""); window.addEventListener("popstate", flyBack); }catch(e){}
   FLY={ el:el, rot:rotSt===2, brg:0, hup:false, pts:JSON.parse(JSON.stringify(P.pts)), i:1, pos:null, trk:null, follow:true, voice:true, trail:[], last:null, done:false, sim:!!sim, said:{}, aspT:0, wxSug:null };
   if(window.LFSafe) window.LFSafe.loadAsp(FLY.pts).catch(function(){});
   FLY.wxT=setInterval(flyWx, 600000); setTimeout(flyWx, sim?4000:25000);
@@ -469,7 +477,7 @@ function demBlob(url, net){ var C=window.caches ? caches.open("lf-tiles-v1") : P
   return C.then(function(c){ return (c ? c.match(url) : Promise.resolve(null)).then(function(hit){ if(hit) return hit.blob(); if(!net) throw new Error("hors ligne");
       return fetch(url,{ mode:"cors", credentials:"omit" }).then(function(r){ if(!r.ok) throw new Error("tuile"); if(c){ try{ c.put(url, r.clone()); }catch(e){} } return r.blob(); }); }); }); }
 function demTile(tx, ty, net){ var k=tx+"/"+ty; if(demMem[k]) return demMem[k];
-  var p=demBlob(demUrl(tx,ty), net).then(function(b){ return createImageBitmap(b); }).then(function(bm){ var cv=document.createElement("canvas"); cv.width=cv.height=256; var x=cv.getContext("2d",{ willReadFrequently:true }); x.drawImage(bm,0,0,256,256); return x.getImageData(0,0,256,256).data; });
+  var p=demBlob(demUrl(tx,ty), net).then(function(b){ return createImageBitmap(b,{ colorSpaceConversion:"none", premultiplyAlpha:"none" }).catch(function(){ return createImageBitmap(b); }); }).then(function(bm){ var cv=document.createElement("canvas"); cv.width=cv.height=256; var x=cv.getContext("2d",{ willReadFrequently:true }); x.drawImage(bm,0,0,256,256); return x.getImageData(0,0,256,256).data; });
   demMem[k]=p; demOrd.push(k); if(demOrd.length>36){ var old=demOrd.shift(); delete demMem[old]; } p.catch(function(){ delete demMem[k]; }); return p; }
 function demElev(pts, net){ return Promise.all(pts.map(function(q){ var t=demXY(q.lat,q.lon), tx=Math.floor(t.x), ty=Math.floor(t.y);
     return demTile(tx,ty,net).then(function(d){ var px=Math.min(255,Math.floor((t.x-tx)*256)), py=Math.min(255,Math.floor((t.y-ty)*256)), i=(py*256+px)*4; return Math.max(0, d[i]*256+d[i+1]+d[i+2]/256-32768); }); })); }
@@ -537,7 +545,7 @@ function flyNight(F, remM, kt){ var ban=F.el.querySelector("#nvBanN"); if(!ban |
   if(!late && !soon){ ban.hidden=true; return; }
   ban.className="nv-ban "+((late || left<=15)?"r":"a");
   ban.textContent="🌙 "+(left<=0 ? T("Nuit aéronautique : vol de jour terminé") : late ? T("Arrivée après la nuit aéronautique")+" ("+hm(new Date(night))+")" : T("Nuit aéronautique dans")+" "+left+" min ("+hm(new Date(night))+")"); ban.hidden=false;
-  var key=late?"ngL":"ngS"; if(!F.said[key]){ F.said[key]=1; say(left<=0 ? T("Nuit aéronautique : vol de jour terminé") : late ? T("Attention, arrivée prévue après la nuit aéronautique") : T("Nuit aéronautique dans")+" "+left+" "+T("minutes")); } }
+  var key=late?"ngL":"ngS"; if(!F.said[key]){ F.said[key]=1; say(left<=0 ? T("Nuit aéronautique : vol de jour terminé") : late ? T("Attention, arrivée prévue après la nuit aéronautique") : T("Nuit aéronautique dans")+" "+left+" "+T("minutes"), "night"); } }
 function circlePts(c, r){ var o=[]; for(var a=0;a<=360;a+=10){ var q=destPt(c, a, r); o.push([q.lon,q.lat]); } return o; }
 function flyGlideRing(F){ var p=F.pos; if(!p) return; var agl=(F.altM!=null && F.gnd!=null) ? F.altM-F.gnd : null, r=(agl!=null && agl>60) ? Math.max(0,(agl-150))*(+P.ac.glide||9) : 0; F.glR=r;   // 150 m gardés pour le tour de piste
   try{ if(r>300){ if(!F.gr){ F.gr=L.circle([p.lat,p.lon],{ radius:r, color:"#35d07f", weight:2.5, dashArray:"8 8", fill:true, fillColor:"#35d07f", fillOpacity:.06, interactive:false }).addTo(F.map); } else { F.gr.setLatLng([p.lat,p.lon]); F.gr.setRadius(r); } } else if(F.gr){ F.map.removeLayer(F.gr); F.gr=null; } }catch(e){}
@@ -549,22 +557,23 @@ function flyTerr(g){ var F=FLY; if(!F || !F.pos || Date.now()-(F.terT||0)<8000) 
     F.gnd=Math.max(0,+j.elevation[0]||0); flyGlideRing(F);
     var ban=F.el.querySelector("#nvBanT"); if(!ban) return; var alt=F.altM; if(alt==null || F.done){ ban.hidden=true; return; }
     // en montée ou en descente, on compare le relief à l'altitude qu'aura l'avion à ce moment-là ; au sol ou en approche d'un terrain, pas d'alerte
-    var vz=(F.vzM||0), worst=null; if(alt-F.gnd<90 && gs<25){ ban.hidden=true; return; }
+    var vz=Math.max(0,(F.vzM||0)), worst=null; if(alt-F.gnd<90 && gs<25){ ban.hidden=true; return; }
+    try{ var nf1=A.nearest(p.lat,p.lon,1); if(nf1 && nf1[0] && nf1[0][0]<5 && alt-F.gnd<600){ ban.hidden=true; F.said.ter=0; return; } }catch(e){}
     var to=F.pts[F.i], near=to && F.i===F.pts.length-1 && distM(p,to)<9000;
-    for(var i=1;i<j.elevation.length;i++){ var e=Math.max(0,+j.elevation[i]||0), aAt=alt+Math.max(-4,Math.min(4,vz))*T0[i], clr=aAt-e; if(clr<150 && !(near && T0[i]>=60)){ worst={ s:T0[i], e:e, clr:clr }; break; } }
+    for(var i=1;i<j.elevation.length;i++){ var e=Math.max(0,+j.elevation[i]||0), aAt=alt+Math.min(4,vz)*T0[i], clr=aAt-e; if(clr<150 && !(near && T0[i]>=60)){ worst={ s:T0[i], e:e, clr:clr }; break; } }
     if(!worst){ ban.hidden=true; F.said.ter=0; return; }
     var red=worst.s<=120, tx=(red?"⛰️ "+T("RELIEF DEVANT"):"⛰️ "+T("Relief devant"))+" · "+T("dans")+" "+(worst.s<60?worst.s+" s":Math.round(worst.s/60)+" min")+" · "+T("sommet à")+" "+nf(worst.e*FT)+" ft";
     ban.className="nv-ban "+(red?"r":"a"); ban.textContent=tx; ban.hidden=false;
-    if(!F.said.ter || Date.now()-F.said.ter>(red?15000:45000)){ F.said.ter=Date.now(); say(red ? T("Relief droit devant. Monte ou vire.") : T("Relief sur ta route dans")+" "+Math.round(worst.s/60)+" "+T("minutes")); } }).catch(function(){}); }
+    if(!F.said.ter || Date.now()-F.said.ter>(red?15000:45000)){ F.said.ter=Date.now(); say(red ? T("Relief droit devant. Monte ou vire.") : T("Relief sur ta route dans")+" "+Math.round(worst.s/60)+" "+T("minutes"), red?"ter_red":"ter_org", red); } }).catch(function(){}); }
 function flyAsp(g){ var F=FLY, S=window.LFSafe; if(!F || !S || !S.ready() || Date.now()-F.aspT<4000) return; F.aspT=Date.now(); var alt=(g.alt!=null && isFinite(g.alt)) ? g.alt*FT : P.alt, ban=F.el.querySelector("#nvBanA"); if(!ban) return;
   var here=S.at(F.pos.lat, F.pos.lon, alt, 0).filter(function(x){ return x.sev>=1; })[0], next=null;
   if(!here && F.trk!=null && F.gs>8){ var ah=destPt(F.pos, F.trk, F.gs*120); next=S.at(ah.lat, ah.lon, alt, 0).filter(function(x){ return x.sev>=1; })[0]; }
   var x=here||next; if(!x){ ban.hidden=true; return; } var a=x.a, txt=(here?T("Tu es dans"):T("Dans 2 minutes :"))+" "+a.n+" · "+x.msg+(a.f?" · "+a.f+" MHz":"");
-  ban.className="nv-ban "+(x.sev>=3?"r":"a"); ban.textContent=(x.sev>=3?"⛔ ":"⚠️ ")+txt; ban.hidden=false; var key=(here?"in:":"nx:")+a.i; if(!F.said[key]){ F.said[key]=1; say((here?T("Tu es dans"):T("Dans 2 minutes :"))+" "+a.n+". "+x.msg); } }
+  ban.className="nv-ban "+(x.sev>=3?"r":"a"); ban.textContent=(x.sev>=3?"⛔ ":"⚠️ ")+txt; ban.hidden=false; var key=(here?"in:":"nx:")+a.i; if(!F.said[key]){ F.said[key]=1; say((here?T("Tu es dans"):T("Dans 2 minutes :"))+" "+a.n+". "+x.msg, "zone", x.sev>=3); } }
 // météo devant : nouvelle analyse toutes les 10 minutes sur le reste de la route
 function flyWx(){ var F=FLY, S=window.LFSafe; if(!F || !S || F.done) return; var here=F.pos||F.pts[0], pts=[{ name:"", code:"", lat:here.lat, lon:here.lon }].concat(F.pts.slice(F.i)), tas=(+P.ac.tas||150)/1.852, ban=F.el.querySelector("#nvBanW"); if(pts.length<2 || !ban) return;
   S.routeWx(pts, tas, new Date()).then(function(r){ if(FLY!==F) return; if(r.worst<2){ ban.hidden=true; F.wxSug=null; return; } var bad=r.legs.filter(function(l){ return l.lvl>=2; })[0], why=bad?bad.why.join(", "):"";
-    ban.textContent="⛈️ "+T("Météo dégradée devant")+(why?" : "+why:"")+". "+T("Pose-toi ou fais demi-tour"); ban.hidden=false; if(!F.said.wx){ F.said.wx=1; say(T("Météo dégradée devant")+". "+why); }
+    ban.textContent="⛈️ "+T("Météo dégradée devant")+(why?" : "+why:"")+". "+T("Pose-toi ou fais demi-tour"); ban.hidden=false; if(!F.said.wx){ F.said.wx=1; say(T("Météo dégradée devant")+". "+why, "wx"); }
     S.suggest(pts, tas, new Date(), r, A).then(function(sg){ if(FLY!==F || !sg || !sg.route) return; F.wxSug=sg.route; ban.textContent="⛈️ "+T("Météo dégradée devant")+(why?" : "+why:"")+". 👉 "+T("Toucher pour contourner par")+" "+sg.route.via.name+" (+"+Math.round(sg.route.extra)+" NM)"; if(!F.said.sg){ F.said.sg=1; say(T("Route conseillée : passer par")+" "+sg.route.via.name); } }).catch(function(){}); }).catch(function(){}); }
 function pos60(v, pos, neg){ var a=Math.abs(v), d0=Math.floor(a), m=(a-d0)*60; return (v>=0?pos:neg)+" "+(d0<10?"0":"")+d0+"° "+(m<10?"0":"")+m.toFixed(2)+"′"; }
 function sosSheet(){ var F=FLY, p=F.pos||F.pts[0], o=F.el.querySelector("#nvNear"); if(o) o.remove();
@@ -598,7 +607,7 @@ function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon
   F.pos=p; F.gs=gs; flyGlide(F, p, F.trk, F.sim ? 900 : dtFix); if(F.gl) fly3dData(F);
   // passage au point suivant
   while(!F.done){ var to=F.pts[F.i], fr=F.pts[F.i-1], dTo=distM(p,to), leg=distM(fr,to), passed=F.direct?false:(distM(fr,p)*Math.cos(rad(brg(fr,p)-brg(fr,to)))>=leg);
-    if(dTo<(F.i===F.pts.length-1?600:1300) || (passed && dTo<6000)){ if(F.i>=F.pts.length-1){ F.done=true; say(T("Tu es arrivé")+" : "+spk(to)); break; } F.i++; F.direct=false; var nx=F.pts[F.i]; say(spk(to)+" "+T("atteint")+". "+T("Prochain point :")+" "+spk(nx)+", "+T("cap")+" "+Math.round(brg(p,nx))+", "+Math.round(distM(p,nx)/NM)+" "+T("nautiques")); } else break; }
+    if(dTo<(F.i===F.pts.length-1?600:1300) || (passed && dTo<6000)){ if(F.i>=F.pts.length-1){ F.done=true; say(T("Tu es arrivé")+" : "+spk(to), "arr"); break; } F.i++; F.direct=false; var nx=F.pts[F.i]; say(spk(to)+" "+T("atteint")+". "+T("Prochain point :")+" "+spk(nx)+", "+T("cap")+" "+Math.round(brg(p,nx))+", "+Math.round(distM(p,nx)/NM)+" "+T("nautiques"), "next"); } else break; }
   var to2=F.pts[F.i], fr2=F.direct?F.direct:F.pts[F.i-1], d2=distM(p,to2), b2=brg(p,to2), kt=gs*1.94384, set=function(id,v){ var e=el.querySelector("#"+id); if(e && e.dataset.v!==v){ e.dataset.v=v; e.innerHTML=v; } };
   F.act.setLatLngs([[p.lat,p.lon],[to2.lat,to2.lon]]);
   set("nvNx", F.done ? "✓ "+esc(T("Tu es arrivé")) : esc((to2.code?to2.code+" · ":"")+to2.name)); set("nvDs", (d2/NM).toFixed(d2<18520?1:0)+"<small>NM</small>"); set("nvBg", d3(b2)); set("nvEt", kt>15 ? fDur(d2/NM/kt*60) : "–");
