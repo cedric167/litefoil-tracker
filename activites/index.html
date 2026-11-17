@@ -749,7 +749,7 @@ document.querySelectorAll(".seg button").forEach(b=> b.onclick=()=>{ filter=b.da
 const mapStyle = {
   version:8,
   sources:{
-    esri:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,attribution:"Esri World Imagery"},
+    esri:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:17,attribution:"Esri World Imagery"},
     dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14}
   },
   layers:[{id:"sat",type:"raster",source:"esri"}]
@@ -758,7 +758,7 @@ const mapStyle = {
 const flyStyle = {
   version:8,
   sources:{
-    esri:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:19,attribution:"Esri World Imagery"},
+    esri:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:17,attribution:"Esri World Imagery"},
     places:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:17},
     dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14},
     demShade:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14}
@@ -828,7 +828,7 @@ function drawDetailMap(a){
     if(!a.points||!a.points.length) return;
     detMap.addSource("trk",{type:"geojson",data:lineGeo(a.points)});
     detMap.addLayer({id:"trk",type:"line",source:"trk",paint:{"line-color":"#ff5a1f","line-width":4,"line-opacity":.95},layout:{"line-join":"round","line-cap":"round"}});
-    detMap.fitBounds(bounds(a.points),{padding:40,duration:0});
+    detMap.fitBounds(bounds(a.points),{padding:40,duration:0,maxZoom:17}); // sortie très courte : pas plus près que le niveau 17, sinon Esri n'a plus d'image (« Map data not yet available »)
   };
   if(detMap.isStyleLoaded()) draw(); else detMap.once("load",draw);
   detMap.resize();

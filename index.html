@@ -3722,7 +3722,7 @@
   function mapInit(){
     if (lfReady || !window.L || !$("map")) return;
     lfMap = L.map($("map"), { zoomControl: true, attributionControl: true }).setView([46.6, 2.4], 5);
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, attribution: "© Esri, Maxar, Earthstar Geographics" }).addTo(lfMap);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, maxNativeZoom: 17, attribution: "© Esri, Maxar, Earthstar Geographics" }).addTo(lfMap);
     lfTrail = L.polyline([], { color: "#19e3ff", weight: 4, opacity: 0.95 }).addTo(lfMap);
     lfMap.on("dragstart", function(){ lfFollow = false; var r = $("mapRecenter"); if (r) r.hidden = false; });
     lfReady = true;
@@ -5749,7 +5749,7 @@
   function commGlInit(){ var el=$("commMap"), G=window.maplibregl;
     var gl=new G.Map({ container:el, attributionControl:{ compact:true }, center:[3,30], zoom:1.25, minZoom:1.1, maxZoom:18, maxPitch:60, dragRotate:true, fadeDuration:150,
       style:{ version:8, projection:{ type:"globe" },
-        sources:{ sat:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:19, attribution:"© Esri, Maxar" } },
+        sources:{ sat:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:17, attribution:"© Esri, Maxar" } },
         layers:[{ id:"bg", type:"background", paint:{ "background-color":"#061a22" } }, { id:"sat", type:"raster", source:"sat" }],
         sky:{ "atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,4,1,6.5,0] } } });
     el.classList.add("gl"); commGl=gl;
@@ -5796,7 +5796,7 @@
     if(commGlTry<2){ commGlLoad(function(){ if(commReady) return; commMapInit(); if(commMap){ try{ commMap.invalidateSize(); renderMap(); commRecenter(); }catch(e){} } }); if(commGlTry<2 || commReady) return; }
     if(commGlTry===2 && window.maplibregl){ try{ commGlInit(); commReady=true; return; }catch(e){ commGl=null; commMap=null; try{ $("commMap").innerHTML=""; $("commMap").classList.remove("gl","maplibregl-map"); }catch(x){} } }
     commMap = L.map($("commMap"),{zoomControl:true,attributionControl:true}).setView([43.0,3.0],9);
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"© Esri, Maxar"}).addTo(commMap);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,maxNativeZoom:17,attribution:"© Esri, Maxar"}).addTo(commMap);
     commLayers = L.layerGroup().addTo(commMap);
     commMap.on("popupopen", e=>{ const a=e.popup._contentNode&&e.popup._contentNode.querySelector("[data-dm]");
       if(a) a.addEventListener("click", ev=>{ ev.preventDefault(); commMap.closePopup(); openDM(a.dataset.dm,a.dataset.ps); }); });
