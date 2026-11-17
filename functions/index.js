@@ -810,15 +810,16 @@ async function liveApi(req, res, sid) {
   if (L.status === "ended" && b.status !== "ended") return res.json({ ok: true, ended: true });
   const up = { upd: Date.now() };
   const pts = (Array.isArray(b.pts) ? b.pts : []).filter((q) => q && isFinite(+q.lat) && isFinite(+q.lng) && Math.abs(+q.lat) <= 90 && Math.abs(+q.lng) <= 180).slice(-60);
-  let lt = +L.lt || 0, dist = +L.dist || 0, prev = L.last || null;
+  let lt = +L.lt || 0, dist = +L.dist || 0, prev = L.last || null, kept = L.kp || null; const add = {};
   for (const q of pts) {
     const pt = { lat: +(+q.lat).toFixed(6), lng: +(+q.lng).toFixed(6), t: +q.t || Date.now(), spd: isFinite(+q.spd) ? Math.round(+q.spd * 10) / 10 : 0 };
     if (prev && pt.t <= (+prev.t || 0)) continue;
     if (prev) { const d = hav(prev, pt); if (d < 5000) dist += d; }
     prev = pt;
-    if (pt.t - lt >= 15000) { lt = pt.t; await db.ref("liveTrk/" + sid).push([pt.lat, pt.lng]); }
+    if (pt.t - lt >= 3000 && (!kept || hav(kept, pt) >= 3 || pt.t - lt >= 30000)) { lt = pt.t; kept = { lat: pt.lat, lng: pt.lng }; add[db.ref("liveTrk/" + sid).push().key] = [pt.lat, pt.lng]; }
   }
-  if (prev && prev !== L.last) { up.last = prev; up.lt = lt; up.dist = Math.round(dist); }
+  if (Object.keys(add).length) await db.ref("liveTrk/" + sid).update(add);
+  if (prev && prev !== L.last) { up.last = prev; up.lt = lt; up.dist = Math.round(dist); if (kept) up.kp = kept; }
   if (b.soc != null && isFinite(+b.soc)) up.soc = Math.max(0, Math.min(100, Math.round(+b.soc)));
   const st = String(b.status || "");
   if (["alert", "sos", "ok", "ended"].indexOf(st) >= 0) {
@@ -900,7 +901,7 @@ function load(){fetch("/l/"+SID+".json",{cache:"no-store"}).then(function(r){ret
  document.getElementById("dur").textContent=d.t0?dur((d.endT||d.now)-d.t0):"–";
  document.getElementById("soc").textContent=d.soc==null?"–":d.soc+" %";
 }).catch(function(){});}
-load();setInterval(load,10000);
+load();setInterval(load,5000);
 </script></body></html>`);
 }
 

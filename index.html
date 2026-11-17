@@ -10268,7 +10268,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(!S.first) S.first=pt; if(S.last){ var d=hav(S.last,pt); if(d<5000) S.trav+=d; } S.last=pt;
     S.hist.push(pt); var lim=Date.now()-35*60000; while(S.hist.length && S.hist[0].t<lim) S.hist.shift();
     S.buf.push({ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60);
-    if(Date.now()-S.lastPost>20000) post(); });
+    if(Date.now()-S.lastPost>8000) post(); }); // 17/11 : position envoyée toutes les 8 s (avant : 20 s) pour un direct plus fluide
   function waList(){ try{ return JSON.parse(ls("lf.sec.wa")||"[]")||[]; }catch(e){ return []; } }
   function waNum(p){ p=String(p||"").replace(/[^0-9+]/g,""); if(p.indexOf("+")===0) p=p.slice(1); else if(p.indexOf("00")===0) p=p.slice(2); else if(p.length===10 && p[0]==="0") p="33"+p.slice(1); return p.replace(/[^0-9]/g,""); }
   function waUrl(c, txt){ return "https://wa.me/"+waNum(c.p)+"?text="+encodeURIComponent(txt); }
