@@ -2231,5 +2231,6 @@
  "Seuls tes amis voient tes sessions partagées, avec le parcours sur la carte.": "Only your friends see your shared sessions, with the route on the map.",
  "Seuls tes amis voient tes sorties partagées, avec le parcours sur la carte.": "Only your friends see your shared outings, with the route on the map.",
  "SwipChat hors ligne, réessaie dans un instant.": "SwipChat is offline, try again in a moment.",
- "Changer ›": "Change ›"
+ "Changer ›": "Change ›",
+ "Nouveau : tes sessions partagées peuvent s'afficher sur une vraie carte satellite pour tes amis. Ton parcours devient alors visible sur la carte.\n\nMettre à jour tes sessions déjà partagées ({#}) ?": "New: your shared sessions can now be shown on a real satellite map for your friends. Your route then becomes visible on the map.\n\nUpdate your already shared sessions ({#})?"
 }

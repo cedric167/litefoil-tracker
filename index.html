@@ -8600,6 +8600,18 @@
   // 13/11 : la liste des sorties montrées sur le profil est copiée dans le téléphone pour la page Activités
   function sharedSessSave(){ try{ localStorage.setItem("lf.comm.sharedSess", JSON.stringify(Object.keys(mySharedSess))); }catch(e){} }
   function sharedSessLoad(){ return (backend && backend.getSessions && me.uid) ? backend.getSessions(me.uid).then(function(l){ mySharedSess={}; l.forEach(function(x){ mySharedSess[x.id]=true; }); sharedSessSave(); }) : Promise.reject(new Error("pas connecté")); }
+  // 17/11 : les sessions partagées avant la carte satellite n'ont que le dessin du parcours. Leur propriétaire est invité, une seule fois,
+  // à les mettre à jour pour que ses amis voient la carte (c'est lui qui décide : le parcours devient visible sur la carte).
+  (function(){ var tries=0, iv=setInterval(function(){ tries++; if(tries>120){ clearInterval(iv); return; }
+      if(!(backend && backend.getSessions && me.uid && profileReady())) return; clearInterval(iv);
+      try{ if(localStorage.getItem("lf.sess.mapAsk")) return; }catch(e){ return; }
+      setTimeout(function(){ backend.getSessions(me.uid).then(function(l){ var raw={}; localSess().forEach(function(x){ raw[String(x.id||("s"+sessSummary(x).t)).replace(/[.#$\[\]\/]/g,"_")]=x; });
+          var todo=l.filter(function(o){ return !o.trk && raw[o.id] && sessSummary(raw[o.id]).trk; }); if(!todo.length) return;
+          var ok=confirm("Nouveau : tes sessions partagées peuvent s'afficher sur une vraie carte satellite pour tes amis. Ton parcours devient alors visible sur la carte.\n\nMettre à jour tes sessions déjà partagées ("+todo.length+") ?");
+          try{ localStorage.setItem("lf.sess.mapAsk", ok?"1":"0"); }catch(e){}
+          if(ok) Promise.all(todo.map(function(o){ return backend.shareSession(o.id, sessSummary(raw[o.id])).catch(function(){}); })).then(function(){ renderProfil(); });
+        }).catch(function(){}); }, 6000);
+    }, 500); })();
   window.profilOnShow=function(){ renderProfil(); publishRatings(); if(backend && backend.getSessions && me.uid && profileReady()) sharedSessLoad().then(renderProfil).catch(function(){}); };
   // Demande venue de la page Activités : index.html?sessShare=<id>&sessOp=1 (montrer) ou 0 (retirer). On attend la connexion, on agit, on y retourne.
   (function(){ var q; try{ q=new URLSearchParams(location.search); }catch(e){ return; } var sid=q.get("sessShare"); if(!sid) return; var op=q.get("sessOp")!=="0", tries=0;
