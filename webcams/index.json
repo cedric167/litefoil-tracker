@@ -343,6 +343,20 @@
   },
   {
    "sea": "med",
+   "place": "Menton",
+   "view": "Vue panoramique",
+   "page": true,
+   "url": "https://www.skylinewebcams.com/fr/webcam/france/provence-alpes-cote-dazur/menton/vue-panoramique.html",
+   "by": "SkylineWebcams",
+   "src": "Skyline",
+   "match": [
+    "menton"
+   ],
+   "lat": 43.775,
+   "lon": 7.503
+  },
+  {
+   "sea": "med",
    "place": "Marseille",
    "view": "Vieux-Port",
    "id": "fbVllrQsIPk",
