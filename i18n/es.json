@@ -2273,5 +2273,6 @@
  "Seuls tes amis voient tes sorties partagées, avec le parcours sur la carte.": "Solo tus amigos ven tus salidas compartidas, con el recorrido en el mapa.",
  "SwipChat hors ligne, réessaie dans un instant.": "SwipChat sin conexión, inténtalo de nuevo en un momento.",
  "Changer ›": "Cambiar ›",
- "Nouveau : tes sessions partagées peuvent s'afficher sur une vraie carte satellite pour tes amis. Ton parcours devient alors visible sur la carte.\n\nMettre à jour tes sessions déjà partagées ({#}) ?": "Nuevo: tus sesiones compartidas pueden mostrarse en un mapa satélite real para tus amigos. Tu recorrido será visible en el mapa.\n\n¿Actualizar tus sesiones ya compartidas ({#})?"
+ "Nouveau : tes sessions partagées peuvent s'afficher sur une vraie carte satellite pour tes amis. Ton parcours devient alors visible sur la carte.\n\nMettre à jour tes sessions déjà partagées ({#}) ?": "Nuevo: tus sesiones compartidas pueden mostrarse en un mapa satélite real para tus amigos. Tu recorrido será visible en el mapa.\n\n¿Actualizar tus sesiones ya compartidas ({#})?",
+ "Ton parcours sera affiché sur une carte satellite, visible par les personnes choisies dans « Qui peut voir ».": "Tu recorrido se mostrará en un mapa satélite, visible para las personas elegidas en «Quién puede ver»."
 }

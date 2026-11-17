@@ -612,6 +612,7 @@
   .fd-img{ background:#e9eff2; min-height:120px; } .fd-img img{ display:block; width:100%; max-height:520px; object-fit:cover; }
   .fd-vid{ position:relative; display:block; width:100%; height:300px; border:0; border-radius:0; padding:0; background:#0b3a55 center/cover no-repeat; min-height:0; box-shadow:none; }
   .fd-vid i{ position:absolute; left:50%; top:50%; width:54px; height:54px; margin:-27px 0 0 -27px; border-radius:50%; background:rgba(255,255,255,.92); color:#0b0d10; font-style:normal; font-size:20px; display:flex; align-items:center; justify-content:center; padding-left:4px; }
+  .fd-sess[data-fa]{ cursor:pointer; }
   .fd-sess{ margin:0 12px 10px; border:1px solid var(--line); border-radius:16px; overflow:hidden; }
   .fd-map{ height:120px; background:linear-gradient(160deg,#0f6f8a,#0b3a55); position:relative; }
   .fd-map svg{ position:absolute; top:10%; left:8%; width:84%; height:80%; fill:none; stroke:#5bd8dc; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
@@ -8436,7 +8437,7 @@
     return out.sort(function(a,b){ return b.t-a.t; }).slice(0,60); }
   function fdSig(uid, items){ var c=fdCache[uid||"*"]; return (c&&c.posts?"1":"0")+"|"+(me.pseudo||"")+"|"+(me.av?me.av.length:0)+"|"+items.map(function(it){ return it.k+":"+(it.p?Object.keys(it.p.likes||{}).length:vidLikes(it.v)); }).join(","); }
   function fdNum(n,one,many){ return n+" "+(n>1?many:one); }
-  function fdSessHtml(o){ return '<div class="fd-sess">'+(o.shape?'<div class="fd-map"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(String(o.shape).replace(/[^0-9., -]/g,""))+'"/></svg></div>':'')
+  function fdSessHtml(o){ var mp=sessMapHtml(o.trk, 600, 320); return '<div class="fd-sess" data-fa="sess" role="button" aria-label="Voir la session">'+(mp ? mp : o.shape?'<div class="fd-map"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(String(o.shape).replace(/[^0-9., -]/g,""))+'"/></svg></div>':'')
       +'<div class="fd-st"><div><b>'+((+o.d||0)/1000).toFixed(1).replace(".",",")+' km</b><span>Distance</span></div><div><b>'+pfDur(o.dur)+'</b><span>Durée</span></div><div><b>'+String(+o.vmax||0).replace(".",",")+' km/h</b><span>Vitesse max</span></div></div></div>'; }
   function fdPostHtml(it){ var p=it.p, v=it.v, u=p?p.uid:v.uid, h='<div class="fd-card fd-post" data-k="'+esc(it.k)+'">';
     var what = v ? " a publié une vidéo" : (p.sess ? " a partagé une session" : "");
@@ -8503,6 +8504,7 @@
       if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, von?"1":"0"); }catch(e){} } else backend.likeVideo(v.id, von).catch(function(){});
       return; }
     var p=it.p; if(!p) return;
+    if(a==="sess"){ if(p.sess) openSessDetail(p.sess, false); return; }
     if(a==="share"){ shareProfile(p.uid); return; }
     if(a==="more"){ if(p.uid===me.uid || isOfficial(me.uid)){ if(!confirm("Supprimer définitivement cette publication ?")) return;
         backend.deletePost(p).then(function(){ Object.keys(fdCache).forEach(function(x){ var c=fdCache[x]; if(c && c.posts) c.posts=c.posts.filter(function(q){ return fdKey(q)!==it.k; }); }); fdRefresh(); }).catch(function(){ alert("Suppression impossible pour le moment, réessaie."); }); }
@@ -8539,8 +8541,8 @@
       +'<div class="fc-lbl">Qui peut voir</div><div class="fc-row fc-seg" id="fcVis">'+Object.keys(FD_VIS).map(function(v){ return '<button type="button" data-v="'+v+'" class="'+(v===vis?"on":"")+'">'+FD_VIS[v]+'</button>'; }).join("")+'</div>'
       +'<div class="res-err" id="fcErr"></div><button class="primary" id="fcGo">Publier</button></div></div>';
     $("fcClose").addEventListener("click", closeOverlay);
-    var drawSess=function(){ var b=$("fcSess"); b.hidden=!sess; if(!sess) return; b.innerHTML='<div class="fc-att">'+sessIcon(sess.sport||sess.cat)+' '+esc(sess.cat||"Session")+' · '+((+sess.d||0)/1000).toFixed(1).replace(".",",")+' km · '+pfDur(sess.dur)+'<button type="button" aria-label="Retirer">✕</button></div>'; b.querySelector("button").addEventListener("click", function(){ sess=null; drawSess(); }); };
-    var setSess=function(raw){ var x=sessSummary(raw); sess={t:x.t, sport:x.sport, cat:x.cat, d:x.d, dur:x.dur, vmax:x.vmax}; if(x.shape) sess.shape=String(x.shape).slice(0,1200); $("fcPick").hidden=true; drawSess(); };
+    var drawSess=function(){ var b=$("fcSess"); b.hidden=!sess; if(!sess) return; b.innerHTML='<div class="fc-att">'+sessIcon(sess.sport||sess.cat)+' '+esc(sess.cat||"Session")+' · '+((+sess.d||0)/1000).toFixed(1).replace(".",",")+' km · '+pfDur(sess.dur)+'<button type="button" aria-label="Retirer">✕</button></div>'+(sess.trk?'<div class="note" style="margin-top:6px">Ton parcours sera affiché sur une carte satellite, visible par les personnes choisies dans « Qui peut voir ».</div>':''); b.querySelector("button").addEventListener("click", function(){ sess=null; drawSess(); }); };
+    var setSess=function(raw){ var x=sessSummary(raw); sess={t:x.t, sport:x.sport, cat:x.cat, d:x.d, dur:x.dur, vmax:x.vmax}; if(x.shape) sess.shape=String(x.shape).slice(0,1200); if(x.trk) sess.trk=String(x.trk).slice(0,6000); $("fcPick").hidden=true; drawSess(); };
     var pickSess=function(){ var l=localSess().slice(0,12), b=$("fcPick"); b.hidden=false;
       b.innerHTML = l.length ? l.map(function(a,i){ var x=sessSummary(a); return '<button type="button" data-i="'+i+'">'+sessIcon(x.sport||x.cat)+' '+esc(x.cat||"Session")+' · '+(x.d/1000).toFixed(1).replace(".",",")+' km · '+new Date(x.t).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+'</button>'; }).join("") : '<div class="comm-empty">Pas encore de session enregistrée.</div>';
       b.querySelectorAll("button").forEach(function(x){ x.addEventListener("click", function(){ setSess(l[+x.dataset.i]); }); }); };
