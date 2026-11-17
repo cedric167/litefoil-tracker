@@ -2233,5 +2233,11 @@
  "SwipChat hors ligne, réessaie dans un instant.": "SwipChat is offline, try again in a moment.",
  "Changer ›": "Change ›",
  "Nouveau : tes sessions partagées peuvent s'afficher sur une vraie carte satellite pour tes amis. Ton parcours devient alors visible sur la carte.\n\nMettre à jour tes sessions déjà partagées ({#}) ?": "New: your shared sessions can now be shown on a real satellite map for your friends. Your route then becomes visible on the map.\n\nUpdate your already shared sessions ({#})?",
- "Ton parcours sera affiché sur une carte satellite, visible par les personnes choisies dans « Qui peut voir ».": "Your route will be shown on a satellite map, visible to the people chosen in \"Who can see\"."
+ "Ton parcours sera affiché sur une carte satellite, visible par les personnes choisies dans « Qui peut voir ».": "Your route will be shown on a satellite map, visible to the people chosen in \"Who can see\".",
+ "Pertinentes": "Top",
+ "Récentes": "Latest",
+ "Tire pour actualiser": "Pull to refresh",
+ "Relâche pour actualiser": "Release to refresh",
+ "Actualisation…": "Refreshing…",
+ "Ajoute des amis ou abonne-toi à des riders pour remplir cet onglet.": "Add friends or follow riders to fill this tab."
 }

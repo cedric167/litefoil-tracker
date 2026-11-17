@@ -590,6 +590,12 @@
   .pf-grid.fd{ display:block; margin:0; }
   .up-wrap .pf-grid.fd{ margin:0; }
   .fl-top{ display:flex; gap:10px; align-items:center; margin:6px 0 12px; }
+  .fl-pull{ height:0; overflow:hidden; display:flex; align-items:flex-end; justify-content:center; color:var(--muted); font-size:13px; font-weight:700; } .fl-pull span{ padding-bottom:10px; }
+  #tab-fil{ overscroll-behavior-y:contain; }
+  .fd-modes{ display:flex; gap:4px; background:#e9eff2; border-radius:16px; padding:4px; margin-bottom:10px; }
+  .fd-modes button{ flex:1; display:flex; gap:6px; align-items:center; justify-content:center; border:0; background:none; border-radius:12px; padding:9px 0; font-size:13px; font-weight:700; color:var(--muted); min-height:0; box-shadow:none; white-space:nowrap; }
+  .fd-modes button.on{ background:#fff; color:#0b3d47; box-shadow:0 2px 8px rgba(8,40,48,.12); } .fd-modes button.on svg{ color:#14b8ab; }
+  .fd-modes svg.i{ width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .fl-me{ flex:none; display:flex; align-items:center; gap:8px; padding:5px 14px 5px 5px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:13.5px; font-weight:700; min-height:0; box-shadow:var(--sh-sm); max-width:46%; }
   .fl-me b{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .fd-av{ flex:none; width:40px; height:40px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#148a90,#5acdd1); color:#fff; font-weight:800; font-size:16px; }
@@ -2637,6 +2643,7 @@
   <section id="tab-bonride" class="tabpane" hidden></section>
   <section id="tab-fil" class="tabpane" hidden>
     <!-- 17/11 : fil d'actualité (essai) : en haut mon profil et la recherche de profils, puis les publications -->
+    <div class="fl-pull" id="flPull" aria-hidden="true"><span id="flPullTx"></span></div>
     <div class="fl-top">
       <button type="button" class="fl-me" id="flMe" aria-label="Mon profil"><span class="fd-av" id="flAv"></span><b id="flName">Mon profil</b></button>
       <button type="button" class="fl-search" id="flSearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Rechercher un profil</button>
@@ -8434,8 +8441,17 @@
   function fdItems(uid){ var c=fdCache[uid||"*"], seen={}, out=[];
     ((c&&c.posts)||[]).forEach(function(p){ var k=fdKey(p); if(seen[k] || blocked.has(p.uid)) return; seen[k]=1; out.push({t:+p.t||0, k:k, p:p}); });
     vidVisible().forEach(function(v){ if(v && v.id && (!uid || v.uid===uid)) out.push({t:+v.t||0, k:"v/"+v.id, v:v}); });
+    if(!uid && fdMode==="amis"){ var fol={}; followingOf(me.uid).forEach(function(u){ fol[u]=1; }); out=out.filter(function(it){ var u=it.p?it.p.uid:it.v.uid; return myFriends[u] || fol[u]; }); }
+    if(!uid && fdMode==="top"){ var now=Date.now(), fo={}; followingOf(me.uid).forEach(function(u){ fo[u]=1; });
+      // pertinence : j'aime, commentaires et proches font monter, l'ancienneté fait descendre
+      out.forEach(function(it){ var u=it.p?it.p.uid:it.v.uid, lk=it.p?Object.keys(it.p.likes||{}).length:vidLikes(it.v), nc=it.p?fdCmList(it.k).length:0, h=Math.max(0,(now-it.t)/3600000);
+        it.s=(1+lk*2+nc*3+((myFriends[u]||fo[u])?4:0)+(it.v?Math.min(3,vidViews(it.v)/20):0))/Math.pow(h+2,1.1); });
+      return out.sort(function(a,b){ return b.s-a.s || b.t-a.t; }).slice(0,60); }
     return out.sort(function(a,b){ return b.t-a.t; }).slice(0,60); }
-  function fdSig(uid, items){ var c=fdCache[uid||"*"]; return (c&&c.posts?"1":"0")+"|"+(me.pseudo||"")+"|"+(me.av?me.av.length:0)+"|"+items.map(function(it){ return it.k+":"+(it.p?Object.keys(it.p.likes||{}).length:vidLikes(it.v)); }).join(","); }
+  var fdMode="top"; try{ var fm0=localStorage.getItem("lf.fd.mode"); if(fm0==="top"||fm0==="new"||fm0==="amis") fdMode=fm0; }catch(e){}
+  function fdModeHtml(){ var M=[["top","Pertinentes",'<path d="M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6-5.300-2.900-5.300 2.900 1.100-6L3.400 9.400l6-.8z"/>'],["new","Récentes",'<circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/>'],["amis","Amis",'<circle cx="9" cy="8" r="3.400"/><path d="M2.800 19.500c.6-3.300 3-5.200 6.200-5.200s5.600 1.900 6.200 5.200"/><circle cx="17.200" cy="9" r="2.600"/><path d="M17.500 14.400c2 .3 3.400 1.800 3.900 4.100"/>']];
+    return '<div class="fd-modes" role="tablist" aria-label="Tri du fil">'+M.map(function(m){ return '<button type="button" data-fa="mode" data-m="'+m[0]+'" class="'+(fdMode===m[0]?"on":"")+'"><svg class="i" viewBox="0 0 24 24">'+m[2]+'</svg>'+m[1]+'</button>'; }).join("")+'</div>'; }
+  function fdSig(uid, items){ var c=fdCache[uid||"*"]; return (c&&c.posts?"1":"0")+"|"+(uid?"":fdMode)+"|"+(me.pseudo||"")+"|"+(me.av?me.av.length:0)+"|"+items.map(function(it){ return it.k+":"+(it.p?Object.keys(it.p.likes||{}).length:vidLikes(it.v)); }).join(","); }
   function fdNum(n,one,many){ return n+" "+(n>1?many:one); }
   function fdSessHtml(o){ var mp=sessMapHtml(o.trk, 600, 320); return '<div class="fd-sess" data-fa="sess" role="button" aria-label="Voir la session">'+(mp ? mp : o.shape?'<div class="fd-map"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(String(o.shape).replace(/[^0-9., -]/g,""))+'"/></svg></div>':'')
       +'<div class="fd-st"><div><b>'+((+o.d||0)/1000).toFixed(1).replace(".",",")+' km</b><span>Distance</span></div><div><b>'+pfDur(o.dur)+'</b><span>Durée</span></div><div><b>'+String(+o.vmax||0).replace(".",",")+' km/h</b><span>Vitesse max</span></div></div></div>'; }
@@ -8464,9 +8480,9 @@
   function fdDraw(box, uid, force){ var k=uid||"*", c=fdCache[k], items=fdItems(uid), sig=fdSig(uid, items);
     if(!force && box._fdK===k && box._fdSig===sig && box.querySelector(".fd-wrap")) return;
     box._fdK=k; box._fdSig=sig; box._fdMap={}; items.forEach(function(it){ box._fdMap[it.k]=it; });
-    var mine=!uid || uid===me.uid, h='<div class="fd-wrap">'+(mine?fdCompHtml():"");
+    var mine=!uid || uid===me.uid, h='<div class="fd-wrap">'+(mine?fdCompHtml():"")+(uid?"":fdModeHtml());
     if(items.length) h+=items.map(fdPostHtml).join("");
-    else h+='<div class="comm-empty">'+(c&&c.posts ? (mine ? "Aucune publication pour l\'instant.<br>Publie la première : une photo, une session ou quelques mots." : "Aucune publication pour l\'instant.") : "Chargement…")+'</div>';
+    else h+='<div class="comm-empty">'+(c&&c.posts ? (mine ? "Aucune publication pour l\'instant.<br>Publie la première : une photo, une session ou quelques mots." : "Aucune publication pour l\'instant.") : "Chargement…")+(!uid && fdMode==="amis" && c && c.posts ? "<br>Ajoute des amis ou abonne-toi à des riders pour remplir cet onglet." : "")+'</div>';
     box.innerHTML=h+'</div>';
     if(!box._fdBound){ box._fdBound=true; box.addEventListener("click", function(ev){ fdClick(box, ev); });
       box.addEventListener("keydown", function(ev){ if(ev.key==="Enter" && ev.target && ev.target.matches && ev.target.matches(".fd-ci input")){ var b=ev.target.parentNode.querySelector("[data-fa=cmsend]"); if(b) b.click(); } }); }
@@ -8493,6 +8509,7 @@
   function fdClick(box, ev){ var t=ev.target.closest ? ev.target.closest("[data-fa]") : null; if(!t || !box.contains(t)) return; var a=t.dataset.fa;
     if(a==="up"){ openUserProfile(t.dataset.u); return; }
     if(a==="me"){ lfGoTab("profil"); return; }
+    if(a==="mode"){ fdMode=t.dataset.m; try{ localStorage.setItem("lf.fd.mode", fdMode); }catch(e){} fdDraw(box, null, true); window.scrollTo(0,0); return; }
     if(a==="new"){ fdCompose({}); return; } if(a==="newph"){ fdCompose({pick:"ph"}); return; } if(a==="newss"){ fdCompose({pick:"ss"}); return; }
     if(a==="newvid"){ openVideoUpload(); return; }
     var el=t.closest(".fd-post"), it=el && box._fdMap[el.dataset.k]; if(!it) return;
@@ -8563,6 +8580,18 @@
         ["*", me.uid].forEach(function(k){ var c=fdCache[k]; if(c && c.posts) c.posts.push(q); }); closeOverlay(); fdRefresh(); })
         .catch(function(){ go.disabled=false; go.textContent="Publier"; $("fcErr").textContent="Publication impossible pour le moment, réessaie."; }); });
     if(o.pick==="ph") $("fcFile").click(); else if(o.pick==="ss") pickSess(); else if(sess){ var raw0=sess; sess=null; setSess(raw0); } else setTimeout(function(){ try{ $("fcTx").focus(); }catch(e){} }, 80); }
+  // tirer vers le bas, en haut de la page, recharge le fil
+  function fdPullRefresh(done){ fdLoad(null).then(function(l){ fdCache["*"]={posts:l, at:Date.now()}; }, function(){}).then(function(){ var b=$("filFeed"); if(b) fdDraw(b, null, true); if(done) done(); }); }
+  (function(){ var pane=$("tab-fil"), bar=$("flPull"), tx=$("flPullTx"); if(!pane || !bar) return; var y0=null, dy=0, busy=false, MAX=64, GO=56;
+    var set=function(h, anim){ bar.style.transition=anim?"height .2s ease":"none"; bar.style.height=h+"px"; };
+    var top=function(){ return (window.scrollY||document.documentElement.scrollTop||0)<=0; };
+    pane.addEventListener("touchstart", function(e){ var g=$("gOverlay"); y0=(!busy && !pane.hidden && top() && e.touches.length===1 && !(g && !g.hidden)) ? e.touches[0].clientY : null; dy=0; }, {passive:true});
+    pane.addEventListener("touchmove", function(e){ if(y0===null) return; dy=e.touches[0].clientY-y0; if(dy<=0 || !top()){ set(0); if(dy<-8) y0=null; return; }
+      var h=Math.min(MAX, dy*0.5); set(h); tx.textContent = h>=GO ? "Relâche pour actualiser" : "Tire pour actualiser"; }, {passive:true});
+    var end=function(){ if(y0===null) return; var h=Math.min(MAX, dy*0.5); y0=null;
+      if(h<GO){ set(0, true); return; }
+      busy=true; set(44, true); tx.textContent="Actualisation…"; fdPullRefresh(function(){ busy=false; set(0, true); }); };
+    pane.addEventListener("touchend", end, {passive:true}); pane.addEventListener("touchcancel", function(){ y0=null; if(!busy) set(0, true); }, {passive:true}); })();
   window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent=me.pseudo||"Mon profil"; fdMount($("filFeed"), null); };
   (function(){ var m=$("flMe"); if(m) m.addEventListener("click", function(){ lfGoTab("profil"); window.scrollTo(0,0); });
     var sb=$("flSearch"); if(sb) sb.addEventListener("click", function(){ openFriendSearch(); });
