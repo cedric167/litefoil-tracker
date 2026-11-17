@@ -579,6 +579,7 @@
   .fd-av img{ width:100%; height:100%; object-fit:cover; display:block; }
   .fd-av.s{ width:30px; height:30px; font-size:12.5px; } .fl-me .fd-av{ width:34px; height:34px; font-size:14px; }
   .fl-search{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:11px 14px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--muted); font-size:14px; font-weight:500; text-align:left; min-height:0; box-shadow:var(--sh-sm); }
+  .fl-search{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } #bnav [data-nav="fil"]{ white-space:nowrap; }
   .fl-search svg{ width:17px; height:17px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
   .fl-back{ display:inline-flex; align-items:center; gap:4px; border:0; background:none; padding:4px 2px 8px; font-size:13.5px; font-weight:700; color:var(--accent-ink); min-height:0; box-shadow:none; }
   .fd-card{ background:#fff; border:1px solid var(--line-soft); border-radius:20px; box-shadow:var(--sh-sm); margin-bottom:10px; overflow:hidden; }
@@ -5779,7 +5780,7 @@
     });
     if(sharing && me.pos){
       if(commMap.getZoom()>=12) nmCircle([me.pos.lat,me.pos.lng], "#19c3cf", .18);
-      nmMarker([me.pos.lat,me.pos.lng], riderIcon(me.uid,{},true), 500, function(){ nearMapClose(); var nb=document.querySelector('#bnav [data-nav="profil"]'); if(nb) nb.click(); else showTab("profil"); });
+      nmMarker([me.pos.lat,me.pos.lng], riderIcon(me.uid,{},true), 500, function(){ nearMapClose(); var nb=document.querySelector('#bnav [data-nav="profil"]'); if(nb) nb.click(); else lfGoTab("profil"); });
     }
     commCircFlush();
     nmPaint();
@@ -7431,7 +7432,7 @@
 
   // ---------- créer une story ----------
   function stSmall(dataUrl, max){ return new Promise(function(res){ if(!dataUrl){ res(""); return; } var im=new Image(); im.onload=function(){ try{ var sc=Math.min(1,max/Math.max(im.width,im.height)), c=document.createElement("canvas"); c.width=Math.max(1,Math.round(im.width*sc)); c.height=Math.max(1,Math.round(im.height*sc)); c.getContext("2d").drawImage(im,0,0,c.width,c.height); res(c.toDataURL("image/jpeg",0.6)); }catch(e){ res(""); } }; im.onerror=function(){ res(""); }; im.src=dataUrl; }); }
-  function openStoryCreate(){ if(!charterOk){ showTab("communaute"); showCharter(); return; } if(!profileReady()){ askProfile("Valide ton profil pour publier une story."); return; }
+  function openStoryCreate(){ if(!charterOk){ lfGoTab("communaute"); showCharter(); return; } if(!profileReady()){ askProfile("Valide ton profil pour publier une story."); return; }
     var old=$("stc"); if(old) old.remove();
     var el=document.createElement("div"); el.id="stc"; el.className="stc"; document.body.appendChild(el); var prevOv=document.body.style.overflow; document.body.style.overflow="hidden";
     // 13/11 : plusieurs stories d'un coup (jusqu'à STORY_MAX photos / vidéos choisies dans la galerie), chacune avec son texte
@@ -8351,6 +8352,7 @@
   function friendRows(ids){ return ids.map(function(u){ return '<div class="pf-fr" data-up="'+esc(u)+'"><span class="pf-fav">'+avHtml(u)+'</span><span><b>'+esc(pName(u))+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'</b><small>@'+esc(pseudoKey(pName(u))||"rider")+'</small></span>'+friendBtnHtml(u)+'</div>'; }).join(""); }
   function bindFriendRows(root, after){ bindFriendBtns(root, after); root.querySelectorAll("[data-up]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.up); }); }); }
   // ---------- 17/11 : fil d'actualité (accueil du fil + fil par profil) ----------
+  function lfGoTab(n){ var t=document.querySelector('.tab[data-tab="'+n+'"]'); if(t) t.click(); }
   var fdCache={}, fdImgs={}, fdCms={};
   var FD_VIS={ pub:"Public", fol:"Abonnés", fr:"Amis", me:"Moi seul" };
   var FD_IC={ ph:'<svg class="i" viewBox="0 0 24 24" style="color:#1a9c55"><rect x="3.5" y="5" width="17" height="14" rx="3"/><circle cx="9" cy="10.5" r="1.8"/><path d="M4 17l5-4 4 3 3-2.5 4 3.5"/></svg>',
@@ -8427,7 +8429,7 @@
     backend.getPostComments(it.p).then(function(l){ fdCms[it.k]=l; if(!box.hidden && !(box.querySelector("input")||{}).value) paint(); }).catch(function(){ if(!fdCms[it.k]){ fdCms[it.k]=[]; paint(); } }); }
   function fdClick(box, ev){ var t=ev.target.closest ? ev.target.closest("[data-fa]") : null; if(!t || !box.contains(t)) return; var a=t.dataset.fa;
     if(a==="up"){ openUserProfile(t.dataset.u); return; }
-    if(a==="me"){ showTab("profil"); return; }
+    if(a==="me"){ lfGoTab("profil"); return; }
     if(a==="new"){ fdCompose({}); return; } if(a==="newph"){ fdCompose({pick:"ph"}); return; } if(a==="newss"){ fdCompose({pick:"ss"}); return; }
     if(a==="newvid"){ openVideoUpload(); return; }
     var el=t.closest(".fd-post"), it=el && box._fdMap[el.dataset.k]; if(!it) return;
@@ -8493,9 +8495,9 @@
         .catch(function(){ go.disabled=false; go.textContent="Publier"; $("fcErr").textContent="Publication impossible pour le moment, réessaie."; }); });
     if(o.pick==="ph") $("fcFile").click(); else if(o.pick==="ss") pickSess(); else if(sess){ var raw0=sess; sess=null; setSess(raw0); } else setTimeout(function(){ try{ $("fcTx").focus(); }catch(e){} }, 80); }
   window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent=me.pseudo||"Mon profil"; fdMount($("filFeed"), null); };
-  (function(){ var m=$("flMe"); if(m) m.addEventListener("click", function(){ showTab("profil"); window.scrollTo(0,0); });
+  (function(){ var m=$("flMe"); if(m) m.addEventListener("click", function(){ lfGoTab("profil"); window.scrollTo(0,0); });
     var sb=$("flSearch"); if(sb) sb.addEventListener("click", function(){ openFriendSearch(); });
-    var bk=$("pfBackFil"); if(bk) bk.addEventListener("click", function(){ showTab("fil"); window.scrollTo(0,0); }); })();
+    var bk=$("pfBackFil"); if(bk) bk.addEventListener("click", function(){ lfGoTab("fil"); window.scrollTo(0,0); }); })();
   // mon profil
   function renderProfil(){ var pane=$("tab-profil"); if(!pane || pane.hidden) return;
     var av=$("pfAv"); if(av) av.innerHTML = me.av?'<img src="'+esc(me.av)+'" alt="">':(me.pseudo?esc(me.pseudo.charAt(0).toUpperCase()):"+");
@@ -8621,7 +8623,7 @@
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="pvClose">✕</button><b>Vues du profil</b><span></span></div><div class="gc-body" id="pvBody"></div></div>';
     $("pvClose").addEventListener("click", function(){ closeOverlay(); }); pvRender();
     pvSeen=Date.now(); try{ localStorage.setItem("lf.comm.pvseen", String(pvSeen)); }catch(e){} setTimeout(pvBadge, 1500); }
-  function openUserProfile(uid){ if(!uid) return; if(uid===me.uid){ closeOverlay(); showTab("profil"); return; }
+  function openUserProfile(uid){ if(!uid) return; if(uid===me.uid){ closeOverlay(); lfGoTab("profil"); return; }
     if(pvOn && profileReady() && backend && backend.recordProfileView) backend.recordProfileView(uid).catch(function(){});
     var g=gOverlay(); g.hidden=false; var p=profileMap[uid]||{}, tab="fil", sess=null, nFr="…";
     var vids=videos.filter(function(v){ return v && v.uid===uid; });
