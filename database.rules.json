@@ -353,6 +353,64 @@
           ".validate": false
         }
       }
+    },
+    "feed": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "uid"
+      ],
+      "$pid": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && auth.token.email_verified === true) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('official/'+auth.uid).exists())))",
+        ".validate": "!newData.exists() || (newData.child('t').isNumber() && (!newData.child('text').exists() || (newData.child('text').isString() && newData.child('text').val().length <= 1000)) && (!newData.child('spot').exists() || (newData.child('spot').isString() && newData.child('spot').val().length <= 60)) && (!newData.child('sess/shape').exists() || (newData.child('sess/shape').isString() && newData.child('sess/shape').val().length <= 1200)) && (data.exists() || (newData.child('t').val() === now && newData.child('uid').val() === auth.uid && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())))",
+        "likes": {
+          "$l": {
+            ".write": "auth != null && auth.uid === $l && auth.token.email_verified === true && data.parent().parent().exists()",
+            ".validate": "newData.val() === true"
+          }
+        }
+      }
+    },
+    "posts": {
+      "$uid": {
+        "$vis": {
+          ".read": "$vis.matches(/^(fol|fr|me)$/) && auth != null && (auth.uid === $uid || $vis === 'pub' || ($vis === 'fol' && (root.child('follows/'+auth.uid+'/'+$uid).exists() || root.child('friends/'+$uid+'/'+auth.uid).exists())) || ($vis === 'fr' && root.child('friends/'+$uid+'/'+auth.uid).exists()))",
+          "$pid": {
+            ".write": "auth != null && $vis.matches(/^(fol|fr|me)$/) && ((auth.uid === $uid && auth.token.email_verified === true && (!data.exists() || !newData.exists())) || (data.exists() && !newData.exists() && root.child('official/'+auth.uid).exists()))",
+            ".validate": "!newData.exists() || (newData.child('t').isNumber() && (!newData.child('text').exists() || (newData.child('text').isString() && newData.child('text').val().length <= 1000)) && (!newData.child('spot').exists() || (newData.child('spot').isString() && newData.child('spot').val().length <= 60)) && (!newData.child('sess/shape').exists() || (newData.child('sess/shape').isString() && newData.child('sess/shape').val().length <= 1200)) && (data.exists() || (newData.child('t').val() === now && newData.child('uid').val() === auth.uid && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())))",
+            "likes": {
+              "$l": {
+                ".write": "auth != null && auth.uid === $l && auth.token.email_verified === true && data.parent().parent().exists()",
+                ".validate": "newData.val() === true"
+              }
+            }
+          }
+        }
+      }
+    },
+    "postMedia": {
+      "$uid": {
+        "$vis": {
+          ".read": "$vis.matches(/^(pub|fol|fr|me)$/) && auth != null && (auth.uid === $uid || $vis === 'pub' || ($vis === 'fol' && (root.child('follows/'+auth.uid+'/'+$uid).exists() || root.child('friends/'+$uid+'/'+auth.uid).exists())) || ($vis === 'fr' && root.child('friends/'+$uid+'/'+auth.uid).exists()))",
+          "$pid": {
+            ".write": "auth != null && $vis.matches(/^(pub|fol|fr|me)$/) && ((auth.uid === $uid && auth.token.email_verified === true) || (!newData.exists() && root.child('official/'+auth.uid).exists()))",
+            ".validate": "newData.child('img').isString() && newData.child('img').val().length <= 400000"
+          }
+        }
+      }
+    },
+    "postComments": {
+      "$uid": {
+        "$vis": {
+          ".read": "$vis.matches(/^(pub|fol|fr|me)$/) && auth != null && (auth.uid === $uid || $vis === 'pub' || ($vis === 'fol' && (root.child('follows/'+auth.uid+'/'+$uid).exists() || root.child('friends/'+$uid+'/'+auth.uid).exists())) || ($vis === 'fr' && root.child('friends/'+$uid+'/'+auth.uid).exists()))",
+          "$pid": {
+            ".write": "auth != null && !newData.exists() && (auth.uid === $uid || root.child('official/'+auth.uid).exists())",
+            "$cid": {
+              ".write": "auth != null && $vis.matches(/^(pub|fol|fr|me)$/) && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || auth.uid === $uid || root.child('official/'+auth.uid).exists())))",
+              ".validate": "!newData.exists() || (newData.child('text').isString() && newData.child('text').val().length <= 300 && (data.exists() || (auth.token.email_verified === true && root.child('profiles/'+auth.uid+'/nk').exists() && newData.child('pseudo').val() === root.child('profiles/'+auth.uid+'/pseudo').val())))"
+            }
+          }
+        }
+      }
     }
   }
 }
