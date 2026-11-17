@@ -333,6 +333,13 @@ function onClick(e){ var b=e.target.closest("button"); if(!b || !box.contains(b)
 // ---------- navigation en vol ----------
 var PLANE='<svg viewBox="0 0 48 48"><path d="M24 3c1.800 0 3 2.200 3 5v9l15 9v4l-15-4.500V35l4.500 3.500V42L24 40l-7.500 2v-3.500L21 35v-9.500L6 30v-4l15-9V8c0-2.800 1.200-5 3-5z" fill="#fff" stroke="#0a1220" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 function say(txt){ if(!FLY || !FLY.voice) return; try{ var u=new SpeechSynthesisUtterance(txt), i=A.lang(); u.lang=i===1?"en-GB":i===2?"es-ES":"fr-FR"; u.rate=1.02; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+// Android donne une hauteur GPS brute (au-dessus de l'ellipsoïde) : on retire l'ondulation du géoïde (EGM96, grille 1°) pour avoir
+// l'altitude au-dessus de la mer, comme sur iPhone. Écart corrigé : environ 50 m (160 ft) en France.
+var GEO=null, geoSt=0, IS_AND=/Android/i.test(navigator.userAgent||"");
+function geoLoad(){ if(geoSt || !IS_AND) return; geoSt=1; fetch("ulm/geoid.json?v=1").then(function(r){ return r.json(); }).then(function(j){ var s=atob(j.d), a=new Int8Array(s.length); for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i); a[i]=c>127?c-256:c; } GEO={ S:j.step, R:j.rows, C:j.cols, a:a }; geoSt=2; }).catch(function(){ geoSt=0; }); }
+function geoN(lat, lon){ var G=GEO; if(!G) return 0; var y=(90-lat)/G.S, x=((((lon+180)%360)+360)%360)/G.S, r0=Math.max(0,Math.min(G.R-2,Math.floor(y))), xf=Math.floor(x), c0=xf%G.C, c1=(c0+1)%G.C, fy=y-r0, fx=x-xf, v=function(r,c){ return G.a[r*G.C+c]; };
+  return (v(r0,c0)*(1-fx)+v(r0,c1)*fx)*(1-fy)+(v(r0+1,c0)*(1-fx)+v(r0+1,c1)*fx)*fy; }
+function mslAlt(alt, lat, lon){ if(alt==null || !isFinite(alt)) return alt; return (IS_AND && GEO) ? alt-geoN(lat,lon) : alt; }
 var ROT_SRC="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js", rotSt=0, vpOld=null;
 function rotLoad(cb){ if(rotSt===2 || rotSt===3) return cb(); var done=false, fin=function(ok){ if(done) return; done=true; rotSt=ok?2:3; cb(); };
   var sc=document.createElement("script"); sc.src=ROT_SRC; sc.onload=function(){ fin(!!(L.Map.prototype.setBearing)); }; sc.onerror=function(){ fin(false); }; document.head.appendChild(sc); setTimeout(function(){ fin(false); }, 5000); }
@@ -350,12 +357,12 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
       +'<button data-f="full" aria-label="'+esc(T("Toute la carte"))+'"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>'
       +'<button data-f="zin" aria-label="'+esc(T("Zoom avant"))+'">+</button><button data-f="zout" aria-label="'+esc(T("Zoom arrière"))+'">−</button></div>'
     +'<div class="nv-acc" id="nvAcc" hidden></div><div class="nv-msg" id="nvMsg">'+esc(T("Recherche du signal GPS…"))+'</div></div>'
-    +'<div class="nv-bot"><div class="nv-st"><div><b id="nvGs">–</b><span>'+esc(T("Vitesse sol"))+'</span></div><div><b id="nvAl">–</b><span>'+esc(T("Altitude"))+'</span></div><div><b id="nvRm">–</b><span>'+esc(T("Reste"))+'</span></div><div><b id="nvEa">–</b><span>'+esc(T("Arrivée"))+'</span></div></div>'
+    +'<div class="nv-bot"><div class="nv-st"><div><b id="nvGs">–</b><span>'+esc(T("Vitesse sol"))+'</span></div><div><b id="nvAl">–</b><span id="nvVz">'+esc(T("Altitude"))+'</span></div><div><b id="nvRm">–</b><span>'+esc(T("Reste"))+'</span></div><div><b id="nvEa">–</b><span>'+esc(T("Arrivée"))+'</span></div></div>'
     +'<div class="nv-bts"><button data-f="center" class="on" style="flex:.6" aria-label="'+esc(T("Recentrer"))+'">◎</button><button data-f="voice" class="on" style="flex:.6" aria-label="'+esc(T("Voix"))+'">🔊</button><button data-f="next">⏭ '+esc(T("Suivant"))+'</button><button data-f="near" style="background:#b86a00">🛬 '+esc(T("Terrain"))+'</button><button data-f="sos" class="sos">🆘 SOS</button><button data-f="quit" style="flex:.6;background:#3a4252" aria-label="'+esc(T("Quitter"))+'">✕</button></div></div>';
   document.body.appendChild(el);
   try{ var tp=el.querySelector(".nv-top"); if(localStorage.getItem("lf.ulm.topmin")==="1") tp.classList.add("min");
     tp.addEventListener("click", function(e){ if(e.target.closest("button, .nv-ban")) return; var m=tp.classList.toggle("min"); try{ localStorage.setItem("lf.ulm.topmin", m?"1":"0"); }catch(x){} }); }catch(e){}
-  vpLock(true); try{ history.pushState({ lfFly:1 },""); window.addEventListener("popstate", flyBack); }catch(e){}
+  geoLoad(); vpLock(true); try{ history.pushState({ lfFly:1 },""); window.addEventListener("popstate", flyBack); }catch(e){}
   FLY={ el:el, rot:rotSt===2, brg:0, hup:false, pts:JSON.parse(JSON.stringify(P.pts)), i:1, pos:null, trk:null, follow:true, voice:true, trail:[], last:null, done:false, sim:!!sim, said:{}, aspT:0, wxSug:null };
   if(window.LFSafe) window.LFSafe.loadAsp(FLY.pts).catch(function(){});
   FLY.wxT=setInterval(flyWx, 600000); setTimeout(flyWx, sim?4000:25000);
@@ -367,7 +374,7 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
   m.on("dragstart", function(){ FLY.follow=false; el.querySelector('[data-f="center"]').classList.remove("on"); });
   el.addEventListener("click", flyClick);
   try{ if(navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ if(FLY) FLY.wl=w; else w.release(); }).catch(function(){}); }catch(e){}
-  if(sim) simulate(); else if(navigator.geolocation){ FLY.watch=navigator.geolocation.watchPosition(function(g){ onPos({ lat:g.coords.latitude, lon:g.coords.longitude, alt:g.coords.altitude, spd:g.coords.speed, hdg:g.coords.heading, acc:g.coords.accuracy, t:g.timestamp||Date.now() }); }, function(){ var mm=el.querySelector("#nvMsg"); if(mm) mm.textContent=T("Position indisponible. Autorise la localisation."); }, { enableHighAccuracy:true, maximumAge:0, timeout:20000 }); }
+  if(sim) simulate(); else if(navigator.geolocation){ FLY.watch=navigator.geolocation.watchPosition(function(g){ onPos({ lat:g.coords.latitude, lon:g.coords.longitude, alt:mslAlt(g.coords.altitude, g.coords.latitude, g.coords.longitude), spd:g.coords.speed, hdg:g.coords.heading, acc:g.coords.accuracy, t:g.timestamp||Date.now() }); }, function(){ var mm=el.querySelector("#nvMsg"); if(mm) mm.textContent=T("Position indisponible. Autorise la localisation."); }, { enableHighAccuracy:true, maximumAge:0, timeout:20000 }); }
   toast(T("L'écran reste allumé pendant la navigation. Garde toujours la carte officielle et le regard dehors."));
   setTimeout(function(){ if(FLY) say(T("Prochain point :")+" "+spk(FLY.pts[1])+", "+T("cap")+" "+Math.round(brg(FLY.pts[0],FLY.pts[1]))); }, 900); }
 function spk(p){ return p.name; }
@@ -423,7 +430,10 @@ function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon
   var xt=Math.asin(Math.sin(distM(fr2,p)/6371000)*Math.sin(rad(brg(fr2,p)-brg(fr2,to2))))*6371000, xn=xt/NM, cd=el.querySelector("#nvCd"); if(cd) cd.style.left=Math.max(4,Math.min(96,50-xn/2*40))+"%";
   set("nvCt", Math.abs(xn)<0.15 ? "✓ "+esc(T("Sur la route")) : esc(T("Écart de route"))+" : "+Math.abs(xn).toFixed(1)+" NM "+esc(T(xn>0?"à droite":"à gauche")));
   var rem=d2; for(var j=F.i;j<F.pts.length-1;j++) rem+=distM(F.pts[j],F.pts[j+1]);
-  set("nvGs", Math.round(kt)+"<small>kt</small>"); set("nvAl", (g.alt!=null && isFinite(g.alt)) ? nf(g.alt*FT)+"<small>ft</small>" : "–"); set("nvRm", (rem/NM).toFixed(0)+"<small>NM</small>"); set("nvEa", kt>15 ? hm(new Date(Date.now()+rem/NM/kt*3600000)) : "–");
+  set("nvGs", Math.round(kt)+"<small>kt</small>"); set("nvAl", (g.alt!=null && isFinite(g.alt)) ? nf(g.alt*FT)+"<small>ft</small>" : "–");
+  // vitesse verticale : pente de l'altitude sur les 4 à 8 dernières secondes, affichée à partir de 100 ft/min
+  if(g.alt!=null && isFinite(g.alt)){ F.alts=F.alts||[]; F.alts.push([g.t, g.alt]); while(F.alts.length>2 && g.t-F.alts[0][0]>8000) F.alts.shift(); var a0=F.alts[0], vz=(g.t-a0[0]>=4000) ? (g.alt-a0[1])*FT/((g.t-a0[0])/60000) : 0, vr=Math.round(vz/50)*50, vzE=el.querySelector("#nvVz");
+    if(vzE){ var tx=Math.abs(vr)>=100 ? (vr>0?"↑ ":"↓ ")+nf(Math.abs(vr))+" ft/min" : T("Altitude"); if(vzE.textContent!==tx){ vzE.textContent=tx; vzE.style.color=Math.abs(vr)>=100 ? (vr>0?"#35d07f":"#ffb020") : ""; vzE.style.opacity=Math.abs(vr)>=100?"1":""; } } } set("nvRm", (rem/NM).toFixed(0)+"<small>NM</small>"); set("nvEa", kt>15 ? hm(new Date(Date.now()+rem/NM/kt*3600000)) : "–");
   try{ flyAsp(g); }catch(e){} }
 function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY) return; var F=FLY, d=b.dataset;
   if(d.f==="lay"){ var ly=F.el.querySelector("#nvLay"); ly.hidden=!ly.hidden; b.classList.toggle("on", !ly.hidden); return; }
