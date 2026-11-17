@@ -7743,7 +7743,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +'<label>Activité<select id="evTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+CHANS[k]+'</option>'; }).join("")+'</select></label>'
         +'<div class="ev-2"><label>Date<input id="evDate" type="date" min="'+minD+'" value="'+dflt+'"></label><label>Heure<input id="evTime" type="time" value="10:00"></label></div>'
         +'<label>Lieu / spot<input id="evPlace" maxlength="80" placeholder="Ex. : Plage sud, Port-Barcarès"></label>'
-        +'<button type="button" class="gi-act" id="evPick" style="margin-top:-4px">🌍 Choisir le lieu sur la carte</button><div class="gc-count" id="evPickTx" style="color:#1a9c55;font-weight:700" hidden></div>'
+        +'<button type="button" class="gi-act" id="evMapBtn" style="margin-top:-4px">🌍 Choisir le lieu sur la carte</button><div class="gc-count" id="evMapTx" style="color:#1a9c55;font-weight:700" hidden></div>'
         +'<label>Places (optionnel)<input id="evMax" type="number" min="2" max="500" inputmode="numeric" placeholder="Illimité"></label>'
         +'<label>Description (optionnel)<textarea id="evDesc" maxlength="400" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Niveau, matériel, point de rendez-vous…"></textarea></label>'
         +'<div class="gc-count">L\'événement sera annoncé dans '+where+' et tu seras inscrit automatiquement.</div>'
@@ -7753,9 +7753,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     +'</div>';
     $("evClose").addEventListener("click", closeOverlay); $("evCancel").addEventListener("click", closeOverlay);
     var photo=evPhotoPicker($("evPhotoHost")), evLL=null;
-    var evOpenPick=function(){ try{ evPickPlace(evLL, function(p){ evLL=p; var pl=$("evPlace"), tx=$("evPickTx"); if(pl && p.name) pl.value=p.name.slice(0,80);
-      if(tx){ tx.hidden=false; tx.textContent="✓ Point de rendez-vous placé sur la carte"; } var b=$("evPick"); if(b) b.textContent="🌍 Modifier le lieu sur la carte"; }); }catch(e){ alert("Carte indisponible : "+((e&&e.message)||e)); } };
-    $("evPick").addEventListener("click", evOpenPick);
+    var evOpenPick=function(){ try{ evPickPlace(evLL, function(p){ evLL=p; var pl=$("evPlace"), tx=$("evMapTx"); if(pl && p.name) pl.value=p.name.slice(0,80);
+      if(tx){ tx.hidden=false; tx.textContent="✓ Point de rendez-vous placé sur la carte"; } var b=$("evMapBtn"); if(b) b.textContent="🌍 Modifier le lieu sur la carte"; }); }catch(e){ alert("Carte indisponible : "+((e&&e.message)||e)); } };
+    $("evMapBtn").addEventListener("click", evOpenPick);
     // toucher le champ Lieu ouvre aussi la carte la première fois (on peut ensuite écrire le lieu à la main en fermant la carte)
     (function(){ var pi=$("evPlace"), asked=false; if(pi) pi.addEventListener("focus", function(){ if(asked || evLL || pi.value) return; asked=true; try{ pi.blur(); }catch(e){} evOpenPick(); }); })();
     var err=function(s){ var e=$("evErr"); e.textContent=s; e.hidden=!s; };
