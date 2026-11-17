@@ -2257,5 +2257,9 @@
  "a partagé un événement": "shared an event",
  "Voir ›": "View ›",
  "Carte indisponible pour le moment. Écris le lieu à la main.": "Map unavailable right now. Type the place by hand.",
- "Choisir un autre lieu": "Choose another place"
+ "Choisir un autre lieu": "Choose another place",
+ "Pilotes autour de toi": "Pilots around you",
+ "Aucun pilote visible pour l'instant": "No pilot visible right now",
+ "{#} pilote autour de toi": "{#} pilot around you",
+ "{#} pilotes autour de toi": "{#} pilots around you"
 }

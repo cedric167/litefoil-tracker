@@ -2298,5 +2298,9 @@
  "a partagé un événement": "compartió un evento",
  "Voir ›": "Ver ›",
  "Carte indisponible pour le moment. Écris le lieu à la main.": "Mapa no disponible ahora. Escribe el lugar a mano.",
- "Choisir un autre lieu": "Elegir otro lugar"
+ "Choisir un autre lieu": "Elegir otro lugar",
+ "Pilotes autour de toi": "Pilotos cerca de ti",
+ "Aucun pilote visible pour l'instant": "Ningún piloto visible por ahora",
+ "{#} pilote autour de toi": "{#} piloto cerca de ti",
+ "{#} pilotes autour de toi": "{#} pilotos cerca de ti"
 }

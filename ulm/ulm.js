@@ -69,7 +69,7 @@ var TR = {
  "brume":["mist","neblina"], "brouillard":["fog","niebla"], "fumée":["smoke","humo"], "cendres volcaniques":["volcanic ash","ceniza volcánica"], "poussière":["dust","polvo"], "sable":["sand","arena"],
  "brume sèche":["haze","calima"], "tourbillons de poussière":["dust whirls","remolinos de polvo"], "grains":["squalls","turbonadas"], "trombe":["funnel cloud","tromba"],
  "tempête de sable":["sandstorm","tormenta de arena"], "tempête de poussière":["duststorm","tormenta de polvo"], "pas de temps significatif":["no significant weather","sin tiempo significativo"],
- "Météo terrain":["Airfield weather","Meteo del campo"],"Plan de vol":["Flight plan","Plan de vuelo"],
+ "Météo terrain":["Airfield weather","Meteo del campo"],"Pilotes autour de moi":["Pilots near me","Pilotos cerca de mí"],"La communauté ULM / Avion sur la sphère":["The ultralight / aircraft community on the globe","La comunidad ULM / Avión en el globo"],"Plan de vol":["Flight plan","Plan de vuelo"],
  "Espace ULM / Avion":["Ultralight / Aircraft area","Zona ULM / Avión"], "ou plus":["or more","o más"]
 };
 function lang(){ var l=""; try{ l=localStorage.getItem("lf-lang")||""; }catch(e){} if(!l) l=(navigator.language||"fr").slice(0,2); l=l.toLowerCase(); return l==="en"?1:l==="es"?2:0; }
@@ -201,6 +201,7 @@ function loadWx(f){ return (apiDown ? Promise.reject(new Error("api")) : fromApi
 var CSS=""
 +"#tab-ulm{padding-bottom:20px}"
 +".ul-lang{display:flex;justify-content:flex-end;margin:0 2px 8px;min-height:30px}"
++".ul-pil{display:flex;align-items:center;gap:10px;width:100%;margin:10px 0 0;padding:12px 14px;border:0;border-radius:16px;background:linear-gradient(135deg,#0b3a55,#14808c);color:#fff;font:inherit;text-align:left;cursor:pointer}.ul-pil span{font-size:24px}.ul-pil b{font-size:15.5px;display:block}.ul-pil small{display:block;font-size:12.5px;opacity:.85;font-weight:500}.ul-pil b,.ul-pil small{flex:none}.ul-pil i{margin-left:auto;font-style:normal;font-size:22px;opacity:.8}"
 +".ul-mode{display:flex;gap:4px;background:var(--tile,#f7f9fb);border-radius:16px;padding:4px}.ul-mode button{flex:1;border:0;background:transparent;border-radius:13px;padding:11px 4px;font:inherit;font-size:14.5px;font-weight:800;color:var(--muted,#66727d);cursor:pointer}.ul-mode button.on{background:#12408a;color:#fff;box-shadow:0 4px 12px rgba(18,64,138,.3)}"
 +".ul-card{background:#fff;border:1px solid var(--line-soft,#eef2f5);border-radius:20px;padding:14px;margin-top:12px;box-shadow:0 4px 14px rgba(13,40,45,.06)}"
 +".ul-sky{color:#fff;background:linear-gradient(160deg,#0a2a55 0%,#12408a 55%,#1b63c9 100%);border:0;box-shadow:0 12px 28px rgba(10,42,85,.28)}"
@@ -408,7 +409,7 @@ function langPlace(){ try{ var I=window.LF_I18N; if(!I || !I.mountPicker || !roo
     if(!langHost){ langHost=document.createElement("div"); I.mountPicker(langHost, "row"); }
     if(langHost.parentNode!==slot) slot.appendChild(langHost);
     if(!langBound && I.onChange){ langBound=true; I.onChange(function(){ if(!root || !root.isConnected) return; try{ if(langHost.parentNode) langHost.parentNode.removeChild(langHost); }catch(e){} root.innerHTML=""; render(); }); } }catch(e){} }
-function modeBar(){ setTimeout(langPlace, 0); return '<div class="ul-lang" id="ulLang"></div><div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div>'; }
+function modeBar(){ setTimeout(langPlace, 0); return '<div class="ul-lang" id="ulLang"></div><div class="ul-mode"><button data-mode="wx" class="'+(mode==="wx"?"on":"")+'">🌤️ '+esc(T("Météo terrain"))+'</button><button data-mode="nav" class="'+(mode==="nav"?"on":"")+'">🧭 '+esc(T("Plan de vol"))+'</button></div><button type="button" class="ul-pil" id="ulPil"><span>🌍</span><b>'+esc(T("Pilotes autour de moi"))+'</b><small>'+esc(T("La communauté ULM / Avion sur la sphère"))+'</small><i>›</i></button>'; }
 function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api={ lang:lang, loadDB:loadDB, refPos:refPos, search:search, nearest:nearest, byCode:byCode, sunTimes:sunTimes, loadWx:loadWx, fltCat:fltCat, parseMetar:parseMetar, field:F,
     metarBox:function(b){ return jget(API+"?bbox="+b.map(function(x){ return x.toFixed(2); }).join(","), 9000); } };
   if(window.LFNav){ window.LFNav.show(el, api); return; } el.innerHTML='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>'; if(showNav.ld) return; showNav.ld=true;
@@ -441,6 +442,7 @@ function select(f){ F=f; WX=null; hist=null; fc=null; rwSel=""; view="metar"; ls
 function reload(){ if(!F) return; var my=++seq; hist=null; render("load");
   loadWx(F).then(function(o){ if(my!==seq) return; WX=o; lastLoad=Date.now(); render(); if(view==="tend") loadHist(); if(view==="prev" && !fc) loadFc(); }).catch(function(){ if(my!==seq) return; render("err"); }); }
 function onClick(e){ var b=e.target.closest("button"); if(!b || !root.contains(b)) return;
+  if(b.id==="ulPil"){ if(window.__nearOpen) window.__nearOpen("ulm"); return; }
   if(b.dataset.mode){ mode=b.dataset.mode; lset("lf.ulm.mode", mode); root.innerHTML=""; render(); return; }
   if(mode==="nav") return;
   if(b.dataset.code){ loadDB().then(function(){ var f=byCode(b.dataset.code); if(f) select(f); }); return; }

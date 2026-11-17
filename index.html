@@ -4534,7 +4534,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var el=document.getElementById("mtoUlm"); if(el) el.hidden=!on; };
   window.ulmOnShow = function(){ var p=document.getElementById("tab-ulm"); if(!p) return; if(window.LFUlm){ window.LFUlm.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=19"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
+    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=20"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
@@ -5874,10 +5874,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     ov.innerHTML='<div class="nm-lv-h"><button type="button" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div><b>'+esc(nm)+'</b><small><i></i>Suivi en direct</small></div></div>'+(sid==="demo"?'<div class="nm-lv-demo">Démonstration : ici s\'affiche la carte en direct de ton ami (position, vitesse, trace).</div>':'<iframe src="'+LIVE_BASE+'/l/'+encodeURIComponent(sid)+'" title="Suivi en direct" allow="geolocation"></iframe>');
     document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); }); }
   (function(){ var b=$("nmLive"); if(b) b.addEventListener("click", function(e){ var x=e.target.closest("button[data-sid]"); if(x) lfLiveView(x.dataset.sid, x.dataset.nm); }); })();
-  function nearMapClose(){ if(nmLiveIv){ clearInterval(nmLiveIv); nmLiveIv=null; } var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); }
-  function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+" membre"+(n>1?"s":"")+" autour de toi") : "Personne autour pour l'instant";
+  function nearMapClose(){ if(nmLiveIv){ clearInterval(nmLiveIv); nmLiveIv=null; } var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); if(nmSport) nmSportSet(""); }
+  function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+(nmSport==="ulm"?" pilote":" membre")+(n>1?"s":"")+" autour de toi") : (nmSport==="ulm" ? "Aucun pilote visible pour l'instant" : "Personne autour pour l'instant");
     var g=$("nmGhost"); if(g) g.classList.toggle("off", !sharing); }
-  window.__nearOpen=nearMapOpen; window.__nearClose=nearMapClose;
+  window.__nearOpen=function(sp){ nmSportSet(typeof sp==="string" ? sp : ""); nearMapOpen(); }; window.__nearClose=nearMapClose;
   // liste des membres d'un groupe (même endroit) : on choisit qui ouvrir
   function nmGroupList(ids){ var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12600";
     ov.innerHTML='<div class="mm-card"><div class="at-grab"></div><b class="cs-h">'+ids.length+' membres ici</b><div class="nm-gl">'+ids.map(function(k){ var pr=profileMap[k]||{}, col=avatarColor(k), nm=(riders[k]&&riders[k].pseudo)||"Membre";
@@ -5948,9 +5948,15 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 
   // ---------- liste ----------
   function seenAgo(t){ var m=Math.max(1,Math.round((Date.now()-(+t||0))/60000)); if(m<60) return "il y a "+m+" min"; var h=Math.round(m/60); if(h<48) return "il y a "+h+" h"; return "il y a "+Math.round(h/24)+" j"; }
+  // nmSport : la carte ouverte depuis un espace (ULM / Avion) ne montre que les membres qui ont choisi ce sport
+  let nmSport="";
+  function nmHasSport(u){ if(!nmSport) return true; var p=profileMap[u]||{}; return String(p.sports||"").split(",").indexOf(nmSport)>=0; }
+  function presApply(){ var map=lastPresenceRaw||{}; riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k) && nmHasSport(k)) riders[k]=map[k]; }
+  function nmSportSet(sp){ sp=sp||""; var ch=(sp!==nmSport); nmSport=sp; var hb=document.querySelector("#nearMap .nm-sh-head > b"); if(hb) hb.textContent = sp==="ulm" ? "Pilotes autour de toi" : "Membres autour de toi";
+    if(ch){ presApply(); try{ renderList(); renderMap(); }catch(e){} } }
   function onPresence(map){
     lastPresenceRaw = map || {};
-    riders={}; for(const k in map) if(k!==me.uid && !blocked.has(k)) riders[k]=map[k];
+    presApply();
     var _cc=$("commCount"); if(_cc) _cc.textContent = Object.keys(riders).length;
     recomputeMembers();
     renderList(); renderMap();
@@ -9478,7 +9484,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var mw=$("commWrap"); if(mw) mw.addEventListener("click", function(e){ if(e.target.closest(".nm-pin, .nm-grp, .leaflet-marker-icon, .leaflet-control, .leaflet-popup, .maplibregl-marker, .maplibregl-ctrl")) return; if(!sh.classList.contains("min")) set(true); });
   })();
   var _nearAllow=false;
-  $("chatSeg").addEventListener("click", function(e){ var b=e.target.closest("button[data-ch]"); if(!b || b.dataset.ch!=="near" || _nearAllow) return; e.stopImmediatePropagation(); e.preventDefault(); nearMapOpen(); }, true);
+  $("chatSeg").addEventListener("click", function(e){ var b=e.target.closest("button[data-ch]"); if(!b || b.dataset.ch!=="near" || _nearAllow) return; e.stopImmediatePropagation(); e.preventDefault(); nmSportSet(""); nearMapOpen(); }, true);
   $("nmChat").addEventListener("click", function(){ nearMapClose(); var b=document.querySelector('#chatSeg [data-ch="near"]'); _nearAllow=true; try{ b.click(); }finally{ _nearAllow=false; } setTimeout(function(){ try{ $("chatInput").focus(); }catch(e){} },120); });
   // sortir les overlays du panneau (l'animation du .tabpane casse le position:fixed) → au <body>
   ["commOnboard","commSheet","geoHelp"].forEach(idv=>{ const el=$(idv); if(el && el.parentElement!==document.body) document.body.appendChild(el); });
