@@ -1,7 +1,7 @@
 // Service worker for the Lite Foil Tracker page: makes it installable ("add to home
 // screen") and keeps it usable without network — the Bluetooth link to the tracker
 // needs none. Bump CACHE when the page changes so installed copies refresh.
-const CACHE = "lf-tracker-v316";
+const CACHE = "lf-tracker-v317";
 
 // Firebase Cloud Messaging : notifications « appli fermée ». Le worker reçoit le push
 // envoyé par la Cloud Function et affiche la notification même quand l'appli n'est pas
@@ -38,13 +38,27 @@ const ASSETS = ["./", "./index.html", "./i18n/i18n.js", "./i18n/en.json", "./i18
   "./vesc/js/profiles.js",
   "./bms/", "./bms/index.html", "./bms/css/bms.css", "./bms/js/app.js", "./bms/js/protocol.js", "./vesc/img/motors/motor_6579.svg", "./vesc/img/propeller.webp", "./vesc/config/index.json"];
 
+// Cartes déjà vues gardées pour le vol sans réseau : les tuiles affichées (fond de carte, carte aéronautique, satellite, relief)
+// sont conservées sur le téléphone et resservies quand il n'y a plus de réseau. Rien n'est téléchargé d'avance : seulement ce qui a été regardé.
+const TILES = "lf-tiles-v1", TILE_MAX = 4000;
+const TILE_HOSTS = /^(tile.openstreetmap.org|server.arcgisonline.com|nwy-tiles-api.prod.newaydata.com|s3.amazonaws.com)$/;
+async function tileFetch(req) {
+  const c = await caches.open(TILES), hit = await c.match(req.url);
+  try {
+    // réseau d'abord quand il répond vite : la carte reste à jour ; sinon la copie gardée
+    const res = await Promise.race([fetch(req.url, { mode: "cors", credentials: "omit" }), new Promise((_, no) => setTimeout(() => no(new Error("lent")), hit ? 2500 : 15000))]);
+    if (res && res.ok) { c.put(req.url, res.clone()).then(() => { if (Math.random() < 0.02) c.keys().then((k) => { if (k.length > TILE_MAX) k.slice(0, k.length - TILE_MAX + 400).forEach((x) => c.delete(x)); }); }).catch(() => {}); }
+    return (res && res.ok) || !hit ? res : hit;
+  } catch (e) { if (hit) return hit; throw e; }
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== TILES).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -68,6 +82,7 @@ self.addEventListener("notificationclick", (event) => {
 // other origins (the sportstracklive API) are left alone.
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
+  if (event.request.method === "GET" && TILE_HOSTS.test(url.hostname) && (url.hostname !== "s3.amazonaws.com" || url.pathname.indexOf("/elevation-tiles-prod/") === 0)) { event.respondWith(tileFetch(event.request)); return; }
   if (url.origin !== self.location.origin || event.request.method !== "GET") return;
   // vidéos : lecture directe par le réseau (requêtes partielles « Range », trop lourdes pour le cache)
   if (/\.(mp4|mov|webm|mp3|m4a)$/i.test(url.pathname) || event.request.headers.has("range")) return;
