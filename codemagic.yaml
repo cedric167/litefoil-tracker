@@ -68,6 +68,13 @@ workflows:
   # La recette « ios-appstore » ci-dessus reste intacte tant que celle-ci n'a pas été validée sur une vraie montre.
   ios-watch:
     name: Lite Foil - iOS + Apple Watch (TestFlight)
+    # se lance tout seul quand une étiquette Git « watch-… » est poussée (pas besoin de l'interface Codemagic)
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "watch-*"
+          include: true
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
