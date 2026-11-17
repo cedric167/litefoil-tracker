@@ -169,6 +169,7 @@ var CSS=""
 +".nv-fly.full .nv-nx{order:2;flex:none}.nv-fly.full .nv-nx>div,.nv-fly.full .nv-cdi,.nv-fly.full .nv-cdt,.nv-fly.full .nv-big span{display:none}"
 +".nv-fly.full .nv-big{order:1;display:flex;gap:12px;margin:0}.nv-fly.full .nv-big b{font-size:16px}.nv-fly.full .nv-ban{order:3;flex:0 0 100%;margin:2px 0 3px;max-width:86vw}"
 +".nv-msg{font-size:14px;padding:10px 14px}"
++".nv-acc{position:absolute;left:8px;bottom:8px;z-index:510;font-size:11.5px;font-weight:800;padding:5px 9px;border-radius:999px;background:rgba(10,18,32,.82);color:#fff;border:1px solid rgba(255,255,255,.14)}.nv-acc[hidden]{display:none}.nv-acc:before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#35d07f}.nv-acc.o:before{background:#ffb020}.nv-acc.r:before{background:#ff5a6e}"
 +".nv-bot{position:relative;z-index:500;background:#0a1220;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.1)}.nv-st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.nv-st div{background:rgba(255,255,255,.08);border-radius:13px;padding:8px 2px;text-align:center;min-width:0}"
 +".nv-st b{display:block;font-size:19px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}.nv-st b small{font-size:10px;font-weight:700;opacity:.7;margin-left:2px}.nv-st span{display:block;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.6}"
 +".nv-bts{display:flex;gap:6px;margin-top:8px}.nv-bts button{flex:1;border:0;border-radius:13px;padding:11px 2px;font:inherit;font-size:12.5px;font-weight:800;color:#fff;background:rgba(255,255,255,.12);cursor:pointer;white-space:nowrap}.nv-bts button.on{background:#c2379f}.nv-bts button.sos{background:#d1343f}"
@@ -348,7 +349,7 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
       +'<button data-f="rot" id="nvRot" aria-label="'+esc(T("Orientation de la carte"))+'"><svg viewBox="0 0 24 24" id="nvNd"><path d="M12 3l4 9h-8z" fill="#ff5a6e" stroke="none"/><path d="M12 21l-4-9h8z" fill="#fff" stroke="none"/></svg></button>'
       +'<button data-f="full" aria-label="'+esc(T("Toute la carte"))+'"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>'
       +'<button data-f="zin" aria-label="'+esc(T("Zoom avant"))+'">+</button><button data-f="zout" aria-label="'+esc(T("Zoom arrière"))+'">−</button></div>'
-    +'<div class="nv-msg" id="nvMsg">'+esc(T("Recherche du signal GPS…"))+'</div></div>'
+    +'<div class="nv-acc" id="nvAcc" hidden></div><div class="nv-msg" id="nvMsg">'+esc(T("Recherche du signal GPS…"))+'</div></div>'
     +'<div class="nv-bot"><div class="nv-st"><div><b id="nvGs">–</b><span>'+esc(T("Vitesse sol"))+'</span></div><div><b id="nvAl">–</b><span>'+esc(T("Altitude"))+'</span></div><div><b id="nvRm">–</b><span>'+esc(T("Reste"))+'</span></div><div><b id="nvEa">–</b><span>'+esc(T("Arrivée"))+'</span></div></div>'
     +'<div class="nv-bts"><button data-f="center" class="on" style="flex:.6" aria-label="'+esc(T("Recentrer"))+'">◎</button><button data-f="voice" class="on" style="flex:.6" aria-label="'+esc(T("Voix"))+'">🔊</button><button data-f="next">⏭ '+esc(T("Suivant"))+'</button><button data-f="near" style="background:#b86a00">🛬 '+esc(T("Terrain"))+'</button><button data-f="sos" class="sos">🆘 SOS</button><button data-f="quit" style="flex:.6;background:#3a4252" aria-label="'+esc(T("Quitter"))+'">✕</button></div></div>';
   document.body.appendChild(el);
@@ -366,7 +367,7 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
   m.on("dragstart", function(){ FLY.follow=false; el.querySelector('[data-f="center"]').classList.remove("on"); });
   el.addEventListener("click", flyClick);
   try{ if(navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ if(FLY) FLY.wl=w; else w.release(); }).catch(function(){}); }catch(e){}
-  if(sim) simulate(); else if(navigator.geolocation){ FLY.watch=navigator.geolocation.watchPosition(function(g){ onPos({ lat:g.coords.latitude, lon:g.coords.longitude, alt:g.coords.altitude, spd:g.coords.speed, hdg:g.coords.heading, t:g.timestamp||Date.now() }); }, function(){ var mm=el.querySelector("#nvMsg"); if(mm) mm.textContent=T("Position indisponible. Autorise la localisation."); }, { enableHighAccuracy:true, maximumAge:1000, timeout:20000 }); }
+  if(sim) simulate(); else if(navigator.geolocation){ FLY.watch=navigator.geolocation.watchPosition(function(g){ onPos({ lat:g.coords.latitude, lon:g.coords.longitude, alt:g.coords.altitude, spd:g.coords.speed, hdg:g.coords.heading, acc:g.coords.accuracy, t:g.timestamp||Date.now() }); }, function(){ var mm=el.querySelector("#nvMsg"); if(mm) mm.textContent=T("Position indisponible. Autorise la localisation."); }, { enableHighAccuracy:true, maximumAge:0, timeout:20000 }); }
   toast(T("L'écran reste allumé pendant la navigation. Garde toujours la carte officielle et le regard dehors."));
   setTimeout(function(){ if(FLY) say(T("Prochain point :")+" "+spk(FLY.pts[1])+", "+T("cap")+" "+Math.round(brg(FLY.pts[0],FLY.pts[1]))); }, 900); }
 function spk(p){ return p.name; }
@@ -392,11 +393,26 @@ function sosSheet(){ var F=FLY, p=F.pos||F.pts[0], o=F.el.querySelector("#nvNear
    +'<button class="f" data-f="near"><div><b>🛬 '+esc(T("Terrain le plus proche"))+'</b></div></button></div>'); }
 function simulate(){ var k=0, seg=0, spd=(+P.ac.tas||150)/3.6*14; FLY.simT=setInterval(function(){ if(!FLY) return; var a=FLY.pts[seg], b=FLY.pts[seg+1]; if(!b){ clearInterval(FLY.simT); return; } var d=distM(a,b); k+=spd/d; if(k>=1){ k=0; seg++; if(!FLY.pts[seg+1]){ onPos({ lat:b.lat, lon:b.lon, alt:(b.elev||0)/FT, spd:0, t:Date.now() }); clearInterval(FLY.simT); return; } a=FLY.pts[seg]; b=FLY.pts[seg+1]; }
     var p=mid(a,b,k), off=Math.sin(k*Math.PI)*0.004; onPos({ lat:p.lat+off, lon:p.lon+off, alt:P.alt/FT, spd:(+P.ac.tas||150)/3.6, t:Date.now() }); }, 1000); }
+// l'avion glisse en continu de sa position affichée vers le nouveau point GPS (au lieu de sauter une fois par seconde)
+function flyGlide(F, p, trk, dur){ var a=F.vis, el=F.el; if(F.raf) cancelAnimationFrame(F.raf);
+  var put=function(la, lo, tk){ F.vis={ lat:la, lon:lo, trk:tk }; F.me.setLatLng([la,lo]); if(tk!=null){ if(F.hup && Math.abs(((-tk-F.brg+540)%360)-180)>0.4) flyBearing(F, -tk); var pl=el.querySelector("#nvPl"); if(pl) pl.style.transform="rotate("+(tk+(F.brg||0))+"deg)"; } };
+  if(!a || distM(a,p)>3000 || !window.requestAnimationFrame || document.hidden){ put(p.lat, p.lon, trk); if(F.follow) F.map.setView([p.lat,p.lon], F.map.getZoom(), { animate:false }); return; }
+  var t0=performance.now(), dt=(trk==null || a.trk==null) ? 0 : (((trk-a.trk+540)%360)-180), tk0=a.trk==null ? trk : a.trk;
+  if(F.follow){ try{ F.map.panTo([p.lat,p.lon], { animate:true, duration:dur/1000, easeLinearity:1, noMoveStart:true }); }catch(e){} }
+  var step=function(now){ if(FLY!==F) return; var k=Math.min(1,(now-t0)/dur); put(a.lat+(p.lat-a.lat)*k, a.lon+(p.lon-a.lon)*k, tk0==null ? null : tk0+dt*k); if(k<1) F.raf=requestAnimationFrame(step); };
+  F.raf=requestAnimationFrame(step); }
 function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon }, mm=el.querySelector("#nvMsg"); if(mm) mm.remove();
+  // précision : un point très imprécis est écarté si un bon point est arrivé dans les 8 dernières secondes
+  var acc=(g.acc!=null && isFinite(g.acc)) ? g.acc : null, ga=el.querySelector("#nvAcc");
+  if(ga && acc!=null){ ga.hidden=false; ga.textContent="GPS ±"+Math.round(acc)+" m"; ga.className="nv-acc "+(acc<=15?"g":acc<=50?"o":"r"); }
+  if(acc!=null){ if(acc>120 && F.goodT && g.t-F.goodT<8000) return; if(acc<=120) F.goodT=g.t; }
+  var dtFix=F.fixT ? Math.max(250, Math.min(1500, g.t-F.fixT)) : 1000; F.fixT=g.t;
   var gs=(g.spd!=null && isFinite(g.spd) && g.spd>=0) ? g.spd : (F.last ? distM(F.last,p)/Math.max(0.5,(g.t-F.last.t)/1000) : 0);
-  if(F.last && distM(F.last,p)>25) F.trk=brg(F.last,p); else if(g.hdg!=null && isFinite(g.hdg) && gs>3) F.trk=g.hdg;
+  // cap : la route GPS (mesurée par effet Doppler, précise dès qu'on avance), sinon le cap entre deux points espacés ; lissé pour ne pas trembler
+  var nt=null; if(g.hdg!=null && isFinite(g.hdg) && g.hdg>=0 && gs>5) nt=g.hdg; else if(F.last && distM(F.last,p)>25) nt=brg(F.last,p);
+  if(nt!=null) F.trk = F.trk==null ? nt : ((F.trk+((((nt-F.trk+540)%360)-180)*0.6))+360)%360;
   if(!F.last || distM(F.last,p)>25){ F.last={ lat:p.lat, lon:p.lon, t:g.t }; F.trail.push([p.lat,p.lon]); if(F.trail.length>600) F.trail.shift(); F.tr.setLatLngs(F.trail); }
-  F.pos=p; F.gs=gs; F.me.setLatLng([p.lat,p.lon]); var pl=el.querySelector("#nvPl"); if(F.hup && F.trk!=null) flyBearing(F, -F.trk); if(pl && F.trk!=null) pl.style.transform="rotate("+(F.trk+(F.brg||0))+"deg)"; if(F.follow) F.map.setView([p.lat,p.lon], F.map.getZoom(), { animate:true });
+  F.pos=p; F.gs=gs; flyGlide(F, p, F.trk, F.sim ? 900 : dtFix);
   // passage au point suivant
   while(!F.done){ var to=F.pts[F.i], fr=F.pts[F.i-1], dTo=distM(p,to), leg=distM(fr,to), passed=F.direct?false:(distM(fr,p)*Math.cos(rad(brg(fr,p)-brg(fr,to)))>=leg);
     if(dTo<(F.i===F.pts.length-1?600:1300) || (passed && dTo<6000)){ if(F.i>=F.pts.length-1){ F.done=true; say(T("Tu es arrivé")+" : "+spk(to)); break; } F.i++; F.direct=false; var nx=F.pts[F.i]; say(spk(to)+" "+T("atteint")+". "+T("Prochain point :")+" "+spk(nx)+", "+T("cap")+" "+Math.round(brg(p,nx))+", "+Math.round(distM(p,nx)/NM)+" "+T("nautiques")); } else break; }
@@ -428,7 +444,7 @@ function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY
   if(d.f==="nclose"){ var o2=F.el.querySelector("#nvNear"); if(o2) o2.remove(); return; }
   if(d.direct){ var f=A.byCode(d.direct), o3=F.el.querySelector("#nvNear"); if(o3) o3.remove(); if(!f) return; var here=F.pos||F.pts[0]; F.pts=[{ name:"", lat:here.lat, lon:here.lon }, ptOf(f)]; F.i=1; F.done=false; F.direct={ lat:here.lat, lon:here.lon };
     F.line.setLatLngs([[here.lat,here.lon],[f.lat,f.lon]]); L.marker([f.lat,f.lon],{ icon:mkIcon(1,2), interactive:false }).addTo(F.map); say(T("Direct vers")+" "+f.name+", "+T("cap")+" "+Math.round(brg(here,f))+", "+Math.round(distM(here,f)/NM)+" "+T("nautiques")); if(F.pos) onPos({ lat:F.pos.lat, lon:F.pos.lon, spd:F.gs, t:Date.now() }); return; } }
-function stopFly(){ if(!FLY) return; var F=FLY; FLY=null; vpLock(false); try{ window.removeEventListener("popstate", flyBack); if(!F.popped && history.state && history.state.lfFly) history.back(); }catch(e){} try{ if(F.watch!=null) navigator.geolocation.clearWatch(F.watch); }catch(e){} if(F.simT) clearInterval(F.simT); if(F.wxT) clearInterval(F.wxT); try{ if(F.wl) F.wl.release(); }catch(e){} try{ speechSynthesis.cancel(); }catch(e){} try{ F.map.remove(); }catch(e){} F.el.remove(); paint(); }
+function stopFly(){ if(!FLY) return; var F=FLY; FLY=null; if(F.raf){ try{ cancelAnimationFrame(F.raf); }catch(e){} } vpLock(false); try{ window.removeEventListener("popstate", flyBack); if(!F.popped && history.state && history.state.lfFly) history.back(); }catch(e){} try{ if(F.watch!=null) navigator.geolocation.clearWatch(F.watch); }catch(e){} if(F.simT) clearInterval(F.simT); if(F.wxT) clearInterval(F.wxT); try{ if(F.wl) F.wl.release(); }catch(e){} try{ speechSynthesis.cancel(); }catch(e){} try{ F.map.remove(); }catch(e){} F.el.remove(); paint(); }
 
 window.LFNav={ show:function(el, api){ A=api; if(window.LFSafe) window.LFSafe.init(api); if(box!==el){ box=el; box.addEventListener("click", onClick); if(!document.getElementById("nvCss")){ var st=document.createElement("style"); st.id="nvCss"; st.textContent=CSS; document.head.appendChild(st); } }
     if(!P){ loadPlan(); aero=!!lget("lf.ulm.aero",false); if(!P.pts.length && api.field) P.pts.push(ptOf(api.field)); }
