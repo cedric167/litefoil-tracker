@@ -302,7 +302,7 @@
    "sea": "med",
    "place": "Saint-Laurent-du-Var",
    "view": "Port de plaisance",
-   "id": "ZoMu-yW9Y2U",
+   "id": "47yAkf4-NGU",
    "embed": true,
    "by": "Port de Saint-Laurent-du-Var (officiel)",
    "match": [
@@ -8547,7 +8547,7 @@
    "view": "Caribbean Beach - Aruba",
    "country": "Antilles",
    "area": "Saint-Martin & Saint-Barth",
-   "id": "Stm27AKMlaI",
+   "id": "MyGlGCi3iq8",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8564,7 +8564,7 @@
    "view": "Curaçao - Willemstad - Mambo Beach",
    "country": "Antilles néerl.",
    "area": "Aruba, Bonaire & Curaçao",
-   "id": "IxuNt-H47g4",
+   "id": "gWdzi12_ito",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -9409,5 +9409,5 @@
    "approx": true
   }
  ],
- "updated": "2026-11-16"
+ "updated": "2026-11-17"
 }
