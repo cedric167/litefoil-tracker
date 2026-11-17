@@ -10248,7 +10248,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var A=api();
     if(cLive.checked && A && A.me().ready){ var sid=rnd(12), k=rnd(24), me=A.me(), ct={}; contacts().forEach(function(u){ ct[u]=true; });
       S.live={ sid:sid, k:k, url:BASE+"/l/"+sid, api:BASE+"/api/live/"+sid };
-      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:S.cat, contacts:ct }).then(function(){ if(A.livePublish) A.livePublish(sid, S.cat); }).catch(function(){});
+      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:S.cat, em:(S.milieu==="mer"?"196":"112"), contacts:ct }).then(function(){ if(A.livePublish) A.livePublish(sid, S.cat); }).catch(function(){});
       ls("lf.sec.cur", JSON.stringify({ t0:S.t0, live:S.live, cat:S.cat, milieu:S.milieu }));
       var gs=guardians ? contacts().filter(function(u){ return A.contacts().some(function(c){ return c.uid===u; }); }) : [];
       S.live.to=gs; S.live.cat=S.cat;
@@ -10343,7 +10343,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(!S.live && A && me && me.ready){ var sid=rnd(12), k=rnd(24), ct={}; g.forEach(function(u){ ct[u]=true; });
       S.live={ sid:sid, k:k, url:BASE+"/l/"+sid, api:BASE+"/api/live/"+sid, sos:true }; started=true;
       if(pos) S.buf.push({ lat:pos.lat, lng:pos.lon, t:Date.now(), spd:0 });
-      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:"SOS · "+K.lb, contacts:ct }).then(function(){ return post("sos"); }).catch(function(){}); }
+      A.liveCreate(sid,{ k:k, ps:me.pseudo, cat:"SOS · "+K.lb, em:String((K.calls&&K.calls[0]&&K.calls[0][0])||"112"), contacts:ct }).then(function(){ return post("sos"); }).catch(function(){}); }
     else if(S.live) post("sos");
     var url=S.live?S.live.url:"", txt="🆘 SOS ("+K.tx+") : j'ai besoin d'aide."+(pos?" Ma position : "+mapUrl(pos):" Position en cours de recherche.")+(url?" Suivi en direct : "+url:"");
     SOS={ t:Date.now(), kind:kind, to:g.slice(0,25), sent:{}, live:S.live&&S.live.sos?S.live:null, url:url }; sosAck={}; sosSave();

@@ -834,7 +834,7 @@ async function liveApi(req, res, sid) {
       const ps = L.ps || "Un rider";
       await sendToUids(uids, { type: "safety", channel: "live:" + sid, live: String(sid),
         title: st === "sos" ? "🆘 SOS de " + ps : "⚠️ " + ps + " ne bouge plus",
-        body: st === "sos" ? ps + " a déclenché un SOS en mer. Ouvre sa position." : ps + " est immobile depuis un moment et ne répond pas. Vérifie sa position." }).catch(() => {});
+        body: st === "sos" ? ps + (String(L.em || "") === "196" || /^SOS · En mer/.test(String(L.cat || "")) ? " a déclenché un SOS en mer." : " a déclenché un SOS.") + " Ouvre sa position." : ps + " est immobile depuis un moment et ne répond pas. Vérifie sa position." }).catch(() => {});
     }
   }
   return res.json({ ok: true });
@@ -853,6 +853,12 @@ async function livePage(req, res, sid, asJson, base) {
   if (!L) return res.status(404).send(sharePageHtml({ title: "Suivi introuvable · Lite Foil", desc: "Ce suivi n'existe plus.", url: base + "/l/" + sid, app: SHARE_APP,
     body: `<div class="pf"><div class="empty">Ce suivi de sortie n'existe pas ou a expiré.</div></div>` }));
   const ps = escH(L.ps || "Rider");
+  // numéro de secours selon la sortie ; les versions de l'appli qui ne l'envoient pas encore sont devinées d'après l'activité
+  const emG = (c) => /^SOS · Blessure/.test(c) ? "15" : /^SOS · Agression/.test(c) ? "17" : /^SOS · Autre/.test(c) ? "112" : /^SOS · En mer/.test(c) ? "196"
+    : /skate|snow|roller/i.test(c) ? "112" : /foil|surf|kite|wing|paddle|sup\b|nage|voile|jet|kayak|cano|bodyboard|d[ée]riveur|bateau/i.test(c) ? "196" : "112";
+  const em = ["196", "112", "15", "17"].indexOf(String(L.em || "")) >= 0 ? String(L.em) : emG(String(L.cat || ""));
+  const emLb = { "196": "Secours en mer 196", "112": "Secours 112", "15": "SAMU 15", "17": "Police 17" }[em];
+  const emTx = { "196": "196</a> (CROSS, secours en mer)", "112": "112</a> (secours)", "15": "15</a> (SAMU)", "17": "17</a> (police, gendarmerie)" }[em];
   return res.send(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sortie en direct de ${ps} · Lite Foil</title><meta property="og:title" content="Suis la sortie de ${ps} en direct"><meta property="og:description" content="Position, vitesse et trace en direct, avec alerte en cas de problème. Lite Foil, sécurité en mer.">
 <meta property="og:image" content="${escH(SHARE_ICON)}"><link rel="icon" href="${escH(SHARE_ICON)}"><meta name="theme-color" content="#04121a">
@@ -874,7 +880,7 @@ async function livePage(req, res, sid, asJson, base) {
 <div class="ban" id="ban"></div>
 <div class="card"><div class="stats"><div><b id="spd">–</b><span>km/h</span></div><div><b id="dist">–</b><span>km</span></div><div><b id="dur">–</b><span>durée</span></div><div><b id="soc">–</b><span>batterie</span></div></div>
 <div class="coord"><span>Position</span><b id="coord">–</b></div>
-<div class="acts"><a id="nav" href="#" target="_blank" rel="noopener">📍 Itinéraire</a><a class="red" href="tel:196">📞 Secours en mer 196</a></div></div>
+<div class="acts"><a id="nav" href="#" target="_blank" rel="noopener">📍 Itinéraire</a><a class="red" href="tel:${em}">📞 ${emLb}</a></div></div>
 <script>
 var SID=${JSON.stringify(sid)},map=L.map("map",{zoomControl:false,attributionControl:false}).setView([46.5,2.5],5);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19}).addTo(map);
@@ -888,7 +894,7 @@ function load(){fetch("/l/"+SID+".json",{cache:"no-store"}).then(function(r){ret
  var pill=document.getElementById("pill");pill.className="pill "+(st==="live"?"":st);pill.textContent={live:"● En direct",ended:"Sortie terminée",sos:"🆘 SOS",alert:"⚠️ Immobile",stale:"⚠️ Sans nouvelles"}[st];
  document.getElementById("sub").textContent=(d.cat?d.cat+" · ":"")+(d.upd?"mis à jour "+ago(d.now-d.upd):"en attente de position");
  var ban=document.getElementById("ban");ban.className="ban "+(st==="sos"?"sos":st==="alert"?"alert":st==="stale"?"stale":"");
- ban.innerHTML=st==="sos"?"🆘 SOS déclenché "+ago(d.now-d.alertT)+". Appelle le <a href='tel:196'>196</a> (CROSS, secours en mer) et donne la position ci-dessous.":st==="alert"?"⚠️ ${ps} ne bouge plus et n'a pas répondu à l'alerte. Essaie de l'appeler ; sans réponse, appelle le <a href='tel:196'>196</a>.":st==="stale"?"Plus de position depuis "+Math.round((d.now-d.upd)/60000)+" min (zone sans réseau ?). Dernière position ci-dessous.":"";
+ ban.innerHTML=st==="sos"?"🆘 SOS déclenché "+ago(d.now-d.alertT)+". Appelle le <a href='tel:${em}'>${emTx} et donne la position ci-dessous.":st==="alert"?"⚠️ ${ps} ne bouge plus et n'a pas répondu à l'alerte. Essaie de l'appeler ; sans réponse, appelle le <a href='tel:${em}'>${em}</a>.":st==="stale"?"Plus de position depuis "+Math.round((d.now-d.upd)/60000)+" min (zone sans réseau ?). Dernière position ci-dessous.":"";
  if((st==="sos"||st==="alert")&&lastStatus!==st)beep();lastStatus=st;
  var pts=(d.trk||[]).map(function(p){return[p[0],p[1]];});if(d.last)pts.push([d.last.lat,d.last.lng]);line.setLatLngs(pts);
  if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon({className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else mk.setLatLng(ll);
