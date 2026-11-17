@@ -8384,7 +8384,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +'<span class="ps-inf"><span class="ps-t">'+sessIcon(o.sport||o.cat)+'<b>'+esc(sessName(o))+'</b>'+(mine&&!o.shared?'<i>🔒</i>':'')+'<small>'+dt.toLocaleDateString("fr-FR", same?{day:"numeric",month:"short"}:{day:"numeric",month:"short",year:"numeric"})+'</small></span>'
       +'<span class="ps-k"><span><b>'+(km>=10?km.toFixed(0):km.toFixed(1).replace(".",","))+' km</b>Distance</span><span><b>'+pfDur(o.dur)+'</b>Durée</span>'+(+o.vmax?'<span><b>'+String(o.vmax).replace(".",",")+' km/h</b>Vitesse max</span>':'')+'</span></span></button>'; }
   function pfDur(sec){ sec=+sec||0; var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60); return h? h+" h "+String(m).padStart(2,"0") : m+" min"; }
-  function openSessDetail(o, mine, raw){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
+  function openSessDetail(o, mine, raw, who){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="sdClose">✕</button><b>'+sessIcon(o.sport||o.cat)+' '+esc(o.cat||"Session")+'</b><span></span></div><div class="gc-body">'
       +(sessMapHtml(o.trk, 600, 380) ? '<div class="ps-det">'+sessMapHtml(o.trk, 600, 380)+'</div>' : '')
       +(o.shape&&!sessMapHtml(o.trk, 600, 380)?'<div class="pf-sess" style="aspect-ratio:16/10;border-radius:14px;cursor:default"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg></div>':'')
@@ -8392,6 +8392,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +(o.steps?'<div><span>👣 Pas</span><b>'+o.steps.toLocaleString("fr-FR")+(o.dur?' · '+Math.round(o.steps/(o.dur/60))+' /min':'')+'</b></div>':'')
       +(o.nJ?'<div><span>🦘 Sauts</span><b>'+o.nJ+'</b></div><div><span>⬆️ Meilleure hauteur</span><b>'+Math.round((o.jH||0)*100)+' cm</b></div>':'')
       +(o.jD?'<div><span>📏 Meilleure distance'+(raw&&+raw.official>0?' (officielle)':' (estimée)')+'</span><b>'+o.jD.toFixed(2).replace(".",",")+' m</b></div>':'')+'</div>'
+      +(o.trk?'<button class="primary" id="sdFly" style="margin-top:12px">🎬 Revoir le parcours en 3D</button>':'')
       +(mine&&raw&&/longueur|perche/.test(String(o.sport))?'<button class="av-btn" id="sdOfficial" style="margin-top:10px">📏 Entrer ma mesure officielle</button>':'')
       +(mine&&raw?'<button class="av-btn" id="sdDel" style="margin-top:10px;color:#c0392b">🗑 Supprimer cette session</button>':'')
       +(mine&&raw?'<button class="av-btn" id="sdFil" style="margin-top:10px">📰 Publier sur mon fil d\'actualité</button>':'')
@@ -8402,6 +8403,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       try{ var arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(function(x){ return String(x.id)!==id; }); localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){}
       if(mySharedSess[key] && backend && backend.unshareSession){ backend.unshareSession(key).catch(function(){}); delete mySharedSess[key]; sharedSessSave(); }
       closeOverlay(); publishRatings(); publishMyStats(); renderProfil(); });
+    // survol 3D du parcours d'un rider : la page Activités le rejoue à partir du tracé partagé
+    var sfl=$("sdFly"); if(sfl) sfl.addEventListener("click", function(){ var k=String(o.sport||"").toLowerCase(), mil=(LF_SP[k]&&LF_SP[k].mil)||"terre";
+      try{ sessionStorage.setItem("lf.fly", JSON.stringify({ trk:o.trk, dur:+o.dur||0, milieu:mil, name:(who?who+" · ":"")+sessName(o) })); }catch(e){ return; }
+      location.href="activites/index.html?fly=1"; });
     var sf=$("sdFil"); if(sf) sf.addEventListener("click", function(){ closeOverlay(); fdCompose({sess:raw}); });
     var so=$("sdOfficial"); if(so) so.addEventListener("click", function(){ var v=prompt("Ta meilleure mesure officielle sur cette séance, en mètres (ex. 6,42) :", raw.official?String(raw.official).replace(".",","):"");
       if(v==null) return; var x=parseFloat(String(v).replace(",",".")); if(!(x>0 && x<12)){ alert("Mesure invalide."); return; }
@@ -8522,7 +8527,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, von?"1":"0"); }catch(e){} } else backend.likeVideo(v.id, von).catch(function(){});
       return; }
     var p=it.p; if(!p) return;
-    if(a==="sess"){ if(p.sess) openSessDetail(p.sess, false); return; }
+    if(a==="sess"){ if(p.sess) openSessDetail(p.sess, false, null, p.uid===me.uid?(me.pseudo||""):pName(p.uid)); return; }
     if(a==="share"){ shareProfile(p.uid); return; }
     if(a==="more"){ if(p.uid===me.uid || isOfficial(me.uid)){ if(!confirm("Supprimer définitivement cette publication ?")) return;
         backend.deletePost(p).then(function(){ Object.keys(fdCache).forEach(function(x){ var c=fdCache[x]; if(c && c.posts) c.posts=c.posts.filter(function(q){ return fdKey(q)!==it.k; }); }); fdRefresh(); }).catch(function(){ alert("Suppression impossible pour le moment, réessaie."); }); }
@@ -8759,7 +8764,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       else if(tab==="pal"){ gr.innerHTML = palmaresHtml(uid, false); }
       else if(!sess){ gr.innerHTML='<div class="comm-empty">🔒 Ses sessions sont visibles par ses amis.</div>'; }
       else { gr.classList.add("fd"); gr.innerHTML = sess.length ? sess.map(function(o,i){ return sessTile(o,i,false); }).join("") : '<div class="comm-empty">Aucune session partagée.</div>';
-        gr.querySelectorAll(".ps-row").forEach(function(b){ b.addEventListener("click", function(){ openSessDetail(sess[+b.dataset.si], false); }); }); }
+        gr.querySelectorAll(".ps-row").forEach(function(b){ b.addEventListener("click", function(){ openSessDetail(sess[+b.dataset.si], false, null, pName(uid)); }); }); }
     };
     draw();
     if(backend && backend.getFriends) backend.getFriends(uid).then(function(m){ nFr=Object.keys(m||{}).length; if(!g.hidden) draw(); });

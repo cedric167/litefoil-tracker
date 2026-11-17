@@ -1030,7 +1030,8 @@ function runFly(a,pts){
   try{ flyDraw(false); }catch(e){}
   flyRAF=requestAnimationFrame(frame);
 }
-function stopFly(){ cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
+let flyGuest=false; // parcours d'un autre rider ouvert depuis le fil ou un profil : à la fermeture on retourne au fil
+function stopFly(){ if(flyGuest){ flyGuest=false; cancelAnimationFrame(flyRAF); location.replace("../index.html?tab=fil"); return; } cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
@@ -1156,6 +1157,19 @@ function parseGPX(xml){
 }
 function haversine(la1,lo1,la2,lo2){const R=6371000,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180,a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(a));}
 function bearingTo(la1,lo1,la2,lo2){const y=Math.sin((lo2-lo1)*Math.PI/180)*Math.cos(la2*Math.PI/180);const x=Math.cos(la1*Math.PI/180)*Math.sin(la2*Math.PI/180)-Math.sin(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.cos((lo2-lo1)*Math.PI/180);return (Math.atan2(y,x)*180/Math.PI+360)%360;}
+
+// 17/11 : parcours d'un autre rider (publication du fil ou session partagée), rejoué en 3D à partir du tracé partagé.
+// Le tracé ne contient que des positions : la vitesse affichée est la vitesse moyenne, l'altitude vient du relief.
+(function(){ let g=null; try{ g=JSON.parse(sessionStorage.getItem("lf.fly")||"null"); sessionStorage.removeItem("lf.fly"); }catch(e){}
+  if(!g || !g.trk || !/[?&]fly=1/.test(location.search)) return;
+  const pts=String(g.trk).split(";").map(x=>{ const c=x.split(","); return {lat:+c[0],lon:+c[1]}; }).filter(p=>isFinite(p.lat)&&isFinite(p.lon)&&Math.abs(p.lat)<=85);
+  if(pts.length<2) return;
+  let dist=0; pts.forEach((p,i)=>{ if(i) dist+=haversine(pts[i-1].lat,pts[i-1].lon,p.lat,p.lon); p.dist=dist; });
+  const tot=dist||1, dur=Math.max(1,+g.dur||Math.round(tot/3)), kmh=tot/dur*3.6;
+  pts.forEach(p=>{ p.t=p.dist/tot*dur; p.speed=kmh; p.alt=0; });
+  flyGuest=true;
+  startFly({id:"guest",name:String(g.name||"Session").slice(0,60),milieu:(g.milieu==="mer"||g.milieu==="air")?g.milieu:"terre",points:pts,duration:dur,moving:dur}).catch(()=>{ flyGuest=false; });
+})();
 
 load();
 </script>
