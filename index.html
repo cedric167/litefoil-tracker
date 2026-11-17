@@ -2274,7 +2274,7 @@
     <button class="tab active" data-tab="dash">Accueil</button>
     <button class="tab" data-tab="tracking">Tracking</button>
     <button class="tab" data-tab="meteo">Météo</button>
-    <button class="tab" data-tab="communaute">Papote<span class="tbadge" id="tabCommBadge" hidden></span></button>
+    <button class="tab" data-tab="communaute">SwipChat<span class="tbadge" id="tabCommBadge" hidden></span></button>
     <button class="tab" data-tab="videos">Swip</button>
     <button class="tab" data-tab="profil">Profil</button>
     <button class="tab" data-tab="fil">Fil d'actualité</button>
@@ -2286,7 +2286,7 @@
   <nav class="bnav" id="bnav" aria-label="Menu">
     <button data-nav="dash" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Accueil</button>
     <button data-nav="meteo"><svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/></svg>Météo</button>
-    <button data-nav="communaute" class="bn-comm"><span class="bn-big"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg></span>Papote<i class="bn-badge" id="bnCommBadge" hidden></i></button>
+    <button data-nav="communaute" class="bn-comm"><span class="bn-big"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg></span>SwipChat<i class="bn-badge" id="bnCommBadge" hidden></i></button>
     <button data-nav="tracking"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Tracking</button>
     <button data-nav="fil"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M8 8.5h8M8 12.5h8M8 16.5h5"/></svg>Fil d'actu<i class="bn-badge" id="bnProfBadge" hidden></i></button>
     <button data-nav="videos"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg>Swip</button>
@@ -4451,7 +4451,7 @@
     syncBottomNav(name);
     // barre du haut : titre de la page ; animation douce à l'ouverture d'un onglet
     document.body.dataset.tab = name;
-    var _t=$("abTitle"); if(_t) _t.textContent = ({meteo:"Météo", ulm:"ULM / Avion", bonride:"Le Bon Ride", communaute:"Papote", tracking:"Tracking", profil:"Mon profil", fil:"Fil d'actualité", videos:"Swip", ultra:"Lite Foil Ultra", tracker:"Tracker GPS", batterie:"Batterie", moteur:"Moteur", remote:"Télécommande"})[name] || "Lite Foil";
+    var _t=$("abTitle"); if(_t) _t.textContent = ({meteo:"Météo", ulm:"ULM / Avion", bonride:"Le Bon Ride", communaute:"SwipChat", tracking:"Tracking", profil:"Mon profil", fil:"Fil d'actualité", videos:"Swip", ultra:"Lite Foil Ultra", tracker:"Tracker GPS", batterie:"Batterie", moteur:"Moteur", remote:"Télécommande"})[name] || "Lite Foil";
     var _pn=document.getElementById("tab-"+name); if(_pn){ _pn.classList.remove("pane-in"); void _pn.offsetWidth; _pn.classList.add("pane-in"); }
   }
   for (const tab of document.querySelectorAll(".tab")) {
@@ -7669,14 +7669,14 @@
       var p=ds.split("-"), h=ts.split(":"); var when=new Date(+p[0],+p[1]-1,+p[2],+h[0]||0,+h[1]||0).getTime();
       if(!(when>Date.now()-5*60000)){ err("La date est déjà passée."); return; }
       if(!(max>=2)) max=0; if(max>500) max=500;
-      if(!backend){ err("Papote hors ligne, réessaie dans un instant."); return; }
+      if(!backend){ err("SwipChat hors ligne, réessaie dans un instant."); return; }
       var btn=$("evCreate"); btn.disabled=true; btn.textContent="Création…"; err("");
       var o2={title:title,topic:CHANS[topic]?topic:"efoil",when:when,place:place,desc:desc}; if(max) o2.max=max;
       photo.get().catch(function(){ return null; }).then(function(img){ if(img) o2.img=img; return backend.createEvent(o2); }).then(function(eid){
         bumpEvCount("eo");
         var ev={id:eid,title:title,when:when,place:place,topic:o2.topic};
         var ch=announceCh||"salon";
-        var txt="📅 "+title+" · "+fmtEvWhen(when)+(place?" · "+place:"")+" — inscris-toi dans Événements (Papote)";
+        var txt="📅 "+title+" · "+fmtEvWhen(when)+(place?" · "+place:"")+" — inscris-toi dans Événements (SwipChat)";
         backend.sendMessage(ch, txt.slice(0,400), null, null, {ev:ev, topic:o2.topic}).catch(function(){});
         closeOverlay(); openEventDetail(eid, Object.assign({by:me.uid,byPseudo:me.pseudo,att:(function(){ var a={}; a[me.uid]={pseudo:me.pseudo}; return a; })()}, o2, {id:eid}));
       }).catch(function(e){ btn.disabled=false; btn.textContent="Créer l'événement"; err("Impossible de créer l'événement : "+((e&&(e.code||e.message))||"erreur")+(String(e&&e.code).indexOf("PERMISSION")>=0?" (les règles Firebase doivent autoriser /events)":"")); });
@@ -7735,7 +7735,7 @@
     var c=$("evdCancelEv"); if(c) c.addEventListener("click", function(){ if(!confirm("Annuler « "+e.title+" » ? Les inscrits le verront comme annulé.")) return; c.disabled=true;
       backend.cancelEvent(e.id).then(function(){ backend.sendMessage("salon", ("❌ Annulé : "+e.title+" · "+fmtEvWhen(e.when)).slice(0,400), null, null, {topic:e.topic}).catch(function(){}); refetch(); }).catch(fail); });
     var s=$("evdShare"); if(s) s.addEventListener("click", function(){ s.disabled=true;
-      backend.sendMessage("salon", ("📅 "+e.title+" · "+fmtEvWhen(e.when)+(e.place?" · "+e.place:"")+" — inscris-toi dans Événements (Papote)").slice(0,400), null, null, {ev:{id:e.id,title:e.title,when:e.when,place:e.place||"",topic:e.topic}, topic:e.topic})
+      backend.sendMessage("salon", ("📅 "+e.title+" · "+fmtEvWhen(e.when)+(e.place?" · "+e.place:"")+" — inscris-toi dans Événements (SwipChat)").slice(0,400), null, null, {ev:{id:e.id,title:e.title,when:e.when,place:e.place||"",topic:e.topic}, topic:e.topic})
         .then(function(){ s.textContent="✓ Partagé dans le salon"; }).catch(function(){ s.disabled=false; }); });
     var dc=$("evdChat"); if(dc) dc.addEventListener("click", function(){ openEventChat(e.id); });
     var ph=$("evdPhoto"), phf=$("evdPhotoFile"); if(ph&&phf){ ph.addEventListener("click", function(){ phf.click(); });
