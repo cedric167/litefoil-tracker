@@ -2227,5 +2227,7 @@
  "Commentaire non envoyé, réessaie.": "Comment not sent, try again.",
  "Pas encore de session enregistrée.": "No recorded session yet.",
  "📰 Publier sur mon fil d'actualité": "📰 Post to my news feed",
- "Valide ton profil pour publier, aimer et commenter.": "Validate your profile to post, like and comment."
+ "Valide ton profil pour publier, aimer et commenter.": "Validate your profile to post, like and comment.",
+ "Seuls tes amis voient tes sessions partagées, avec le parcours sur la carte.": "Only your friends see your shared sessions, with the route on the map.",
+ "Seuls tes amis voient tes sorties partagées, avec le parcours sur la carte.": "Only your friends see your shared outings, with the route on the map."
 }

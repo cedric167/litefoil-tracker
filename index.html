@@ -570,14 +570,19 @@
   .pf-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin:0 -16px; }
   .pf-grid .comm-empty{ grid-column:1/-1; padding:28px 16px; }
   /* 17/11 : sessions en cartes, onglets du profil d'un rider en pastilles */
-  .ps-row{ display:flex; gap:12px; align-items:center; width:100%; text-align:left; background:#fff; border:1px solid var(--line-soft); border-radius:18px; padding:10px; margin:0 0 10px; box-shadow:var(--sh-sm); min-height:0; font-family:inherit; font-weight:400; color:var(--text); cursor:pointer; }
-  .ps-map{ flex:none; width:78px; height:78px; border-radius:14px; background:linear-gradient(160deg,#0f6f8a,#0b3a55); position:relative; }
-  .ps-map svg{ position:absolute; top:12%; left:12%; width:76%; height:76%; fill:none; stroke:#5bd8dc; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
-  .ps-inf{ flex:1; min-width:0; display:block; }
-  .ps-t{ display:flex; align-items:center; gap:8px; font-size:15px; } .ps-t b{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .ps-t i{ font-style:normal; font-size:12px; }
-  .ps-t small{ margin-left:auto; flex:none; color:var(--muted); font-size:12px; font-weight:500; } .ps-t > svg, .ps-t > span:first-child{ flex:none; }
-  .ps-k{ display:flex; gap:16px; margin-top:8px; } .ps-k span{ font-size:11px; color:var(--muted); line-height:1.25; } .ps-k b{ display:block; font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap; }
-  .ps-go{ flex:none; width:16px; height:16px; fill:none; stroke:var(--muted-2); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .ps-row{ display:block; width:100%; text-align:left; background:#fff; border:1px solid var(--line-soft); border-radius:18px; padding:0; margin:0 0 12px; box-shadow:var(--sh-sm); min-height:0; font-family:inherit; font-weight:400; color:var(--text); cursor:pointer; overflow:hidden; }
+  .ps-map{ display:block; height:120px; background:linear-gradient(160deg,#0f6f8a,#0b3a55); position:relative; }
+  .ps-map svg{ position:absolute; top:10%; left:10%; width:80%; height:80%; fill:none; stroke:#5bd8dc; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+  .ps-sat{ display:block; position:relative; overflow:hidden; background:#0b3a55; }
+  .ps-sat img{ position:absolute; display:block; max-width:none; }
+  .ps-sat svg{ position:absolute; left:0; top:0; width:100%; height:100%; }
+  .ps-sat polyline{ fill:none; stroke:#19d3e6; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; } .ps-sat polyline.o{ stroke:#fff; stroke-width:9; opacity:.9; }
+  .ps-sat i{ position:absolute; right:6px; bottom:4px; font-style:normal; font-size:9px; color:#fff; opacity:.75; text-shadow:0 1px 2px #000; }
+  .ps-det{ border-radius:14px; overflow:hidden; }
+  .ps-inf{ display:block; padding:11px 14px 13px; }
+  .ps-t{ display:flex; align-items:center; gap:8px; font-size:15.5px; } .ps-t b{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .ps-t i{ font-style:normal; font-size:12px; }
+  .ps-t small{ margin-left:auto; flex:none; color:var(--muted); font-size:12.5px; font-weight:500; }
+  .ps-k{ display:flex; gap:22px; margin-top:9px; } .ps-k span{ font-size:11.5px; color:var(--muted); line-height:1.25; white-space:nowrap; } .ps-k b{ display:block; font-size:16px; font-weight:700; color:var(--text); }
   .up-wrap .pf-tabs{ border-top:0; margin:4px 0 12px; padding:4px; gap:4px; background:#e9eff2; border-radius:16px; }
   .up-wrap .pf-tabs button{ border-top:0; margin-top:0; padding:10px 0; border-radius:12px !important; font-size:13px; white-space:nowrap; min-height:0; box-shadow:none; }
   .up-wrap .pf-tabs button.on{ background:#fff; color:#0b3d47; box-shadow:0 2px 8px rgba(8,40,48,.12); }
@@ -8321,18 +8326,34 @@
     if(!k) k=/foil [ée]lectrique|efoil|electric/.test(sp)?"efoil":/wing/.test(sp)?"wingfoil":/kite/.test(sp)?"kitesurf":/surf/.test(sp)?"surf":/paddle|sup/.test(sp)?"sup":/v[ée]lo|bike/.test(sp)?"velo":/snow/.test(sp)?"snowboard":/ski/.test(sp)?"ski":/trail/.test(sp)?"trail":/rando/.test(sp)?"rando":/marche/.test(sp)?"marche":/run|course/.test(sp)?"running":"other";
     return spIco(k); }
   function localSess(){ try{ return JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]").filter(function(a){ return a && (+a.distanceM||0)>=100; }); }catch(e){ return []; } }
-  function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now(), sport:String(a.activityType||a.milieu||"").slice(0,24), cat:String(a.categoryName||"").slice(0,40), d:Math.round(+a.distanceM||0), dur:Math.round(+a.durationSec||0), vmax:+(+a.maxSpeedKmh||0).toFixed(1), shape:sessShape(a.points), steps:+a.steps||undefined, nJ:(a.jumps||[]).length||undefined,
+  function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now(), sport:String(a.activityType||a.milieu||"").slice(0,24), cat:String(a.categoryName||"").slice(0,40), d:Math.round(+a.distanceM||0), dur:Math.round(+a.durationSec||0), vmax:+(+a.maxSpeedKmh||0).toFixed(1), shape:sessShape(a.points), trk:sessTrk(a.points)||undefined, steps:+a.steps||undefined, nJ:(a.jumps||[]).length||undefined,
       jH:(a.jumps||[]).reduce(function(x,j){ return Math.max(x,+j.h||0); },0)||undefined, jD:Math.max(+a.official||0,(a.jumps||[]).reduce(function(x,j){ return Math.max(x,+j.d||0); },0))||undefined }; }
   function sessName(o){ var k=String(o.sport||"").toLowerCase(); return o.cat || (LF_SP[k]&&LF_SP[k].name) || "Session"; }
-  function sessTile(o, i, mine){ var km=(o.d/1000), dt=new Date(o.t), same=dt.getFullYear()===new Date().getFullYear();
-    return '<button type="button" class="ps-row" data-si="'+i+'"><span class="ps-map">'+(o.shape?'<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg>':'')+'</span>'
+  function sessTrk(pts){ if(!pts || pts.length<2) return ""; var step=Math.max(1,Math.ceil(pts.length/150)), o=[], add=function(p){ var la=+p.lat, lo=+p.lon; if(isFinite(la) && isFinite(lo) && (la || lo)) o.push(la.toFixed(5)+","+lo.toFixed(5)); };
+    for(var i=0;i<pts.length;i+=step) add(pts[i]); add(pts[pts.length-1]); return o.length>1 ? o.join(";") : ""; }
+  // carte satellite fixe : tuiles posées en pourcentage (suit la largeur de la carte), parcours dessiné par-dessus
+  function sessMapHtml(trk, W, H){ var pts=String(trk||"").split(";").map(function(x){ var c=x.split(","); return [+c[0],+c[1]]; }).filter(function(p){ return isFinite(p[0]) && isFinite(p[1]) && Math.abs(p[0])<=85 && Math.abs(p[1])<=180; });
+    if(pts.length<2) return "";
+    var px=function(p,z){ var n=256*Math.pow(2,z), si=Math.sin(p[0]*Math.PI/180); return [(p[1]+180)/360*n, (0.5-Math.log((1+si)/(1-si))/(4*Math.PI))*n]; };
+    var z=17, q, x0, x1, y0, y1, ex=function(k,f){ return f.apply(null, q.map(function(c){ return c[k]; })); };
+    for(; z>=2; z--){ q=pts.map(function(p){ return px(p,z); }); x0=ex(0,Math.min); x1=ex(0,Math.max); y0=ex(1,Math.min); y1=ex(1,Math.max); if(x1-x0<=W*0.8 && y1-y0<=H*0.72) break; }
+    // agrandissement fin (jusqu'à ×2) pour que le parcours remplisse bien la carte entre deux niveaux de zoom
+    var kz=Math.max(1, Math.min(2, W*0.8/((x1-x0)||1), H*0.72/((y1-y0)||1))), W0=W, H0=H; W=W/kz; H=H/kz;
+    var L=(x0+x1)/2-W/2, T=(y0+y1)/2-H/2, n=Math.pow(2,z), h="";
+    for(var ty=Math.floor(T/256); ty*256<T+H; ty++){ if(ty<0 || ty>=n) continue; for(var tx=Math.floor(L/256); tx*256<L+W; tx++){ var xx=((tx%n)+n)%n;
+      h+='<img alt="" src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/'+z+'/'+ty+'/'+xx+'" style="left:'+((tx*256-L)/W*100).toFixed(3)+'%;top:'+((ty*256-T)/H*100).toFixed(3)+'%;width:'+(256/W*100+0.15).toFixed(3)+'%;height:'+(256/H*100+0.15).toFixed(3)+'%">'; } }
+    var d=q.map(function(c){ return (c[0]-L).toFixed(1)+","+(c[1]-T).toFixed(1); }).join(" "), s0=q[0], s1=q[q.length-1];
+    return '<span class="ps-sat" style="padding-top:'+(H/W*100).toFixed(2)+'%">'+h+'<svg viewBox="0 0 '+W.toFixed(1)+' '+H.toFixed(1)+'" preserveAspectRatio="none"><polyline class="o" style="stroke-width:'+(9/kz).toFixed(2)+'" points="'+d+'"/><polyline style="stroke-width:'+(5/kz).toFixed(2)+'" points="'+d+'"/>'
+      +'<circle cx="'+(s0[0]-L).toFixed(1)+'" cy="'+(s0[1]-T).toFixed(1)+'" r="'+(7/kz).toFixed(2)+'" fill="#2fd27a" stroke="#fff" stroke-width="'+(3/kz).toFixed(2)+'"/><circle cx="'+(s1[0]-L).toFixed(1)+'" cy="'+(s1[1]-T).toFixed(1)+'" r="'+(7/kz).toFixed(2)+'" fill="#ff4d5e" stroke="#fff" stroke-width="'+(3/kz).toFixed(2)+'"/></svg><i>© Esri</i></span>'; }
+  function sessTile(o, i, mine){ var km=(o.d/1000), dt=new Date(o.t), same=dt.getFullYear()===new Date().getFullYear(), map=i<10 ? sessMapHtml(o.trk, 600, 250) : ""; // carte pour les 10 plus récentes, dessin du parcours ensuite (poids des images)
+    return '<button type="button" class="ps-row" data-si="'+i+'">'+(map || '<span class="ps-map">'+(o.shape?'<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg>':'')+'</span>')
       +'<span class="ps-inf"><span class="ps-t">'+sessIcon(o.sport||o.cat)+'<b>'+esc(sessName(o))+'</b>'+(mine&&!o.shared?'<i>🔒</i>':'')+'<small>'+dt.toLocaleDateString("fr-FR", same?{day:"numeric",month:"short"}:{day:"numeric",month:"short",year:"numeric"})+'</small></span>'
-      +'<span class="ps-k"><span><b>'+(km>=10?km.toFixed(0):km.toFixed(1).replace(".",","))+' km</b>Distance</span><span><b>'+pfDur(o.dur)+'</b>Durée</span>'+(+o.vmax?'<span><b>'+String(o.vmax).replace(".",",")+' km/h</b>Vitesse max</span>':'')+'</span></span>'
-      +'<svg class="ps-go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>'; }
+      +'<span class="ps-k"><span><b>'+(km>=10?km.toFixed(0):km.toFixed(1).replace(".",","))+' km</b>Distance</span><span><b>'+pfDur(o.dur)+'</b>Durée</span>'+(+o.vmax?'<span><b>'+String(o.vmax).replace(".",",")+' km/h</b>Vitesse max</span>':'')+'</span></span></button>'; }
   function pfDur(sec){ sec=+sec||0; var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60); return h? h+" h "+String(m).padStart(2,"0") : m+" min"; }
   function openSessDetail(o, mine, raw){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="sdClose">✕</button><b>'+sessIcon(o.sport||o.cat)+' '+esc(o.cat||"Session")+'</b><span></span></div><div class="gc-body">'
-      +(o.shape?'<div class="pf-sess" style="aspect-ratio:16/10;border-radius:14px;cursor:default"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg></div>':'')
+      +(sessMapHtml(o.trk, 600, 380) ? '<div class="ps-det">'+sessMapHtml(o.trk, 600, 380)+'</div>' : '')
+      +(o.shape&&!sessMapHtml(o.trk, 600, 380)?'<div class="pf-sess" style="aspect-ratio:16/10;border-radius:14px;cursor:default"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(o.shape)+'"/></svg></div>':'')
       +'<div class="rc-how" style="margin-top:12px"><div><span>📅 Date</span><b>'+dt.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})+'</b></div><div><span>📍 Distance</span><b>'+(o.d/1000).toFixed(2).replace(".",",")+' km</b></div><div><span>⏱️ Durée</span><b>'+pfDur(o.dur)+'</b></div><div><span>⚡ Vitesse max</span><b>'+String(o.vmax||0).replace(".",",")+' km/h</b></div>'
       +(o.steps?'<div><span>👣 Pas</span><b>'+o.steps.toLocaleString("fr-FR")+(o.dur?' · '+Math.round(o.steps/(o.dur/60))+' /min':'')+'</b></div>':'')
       +(o.nJ?'<div><span>🦘 Sauts</span><b>'+o.nJ+'</b></div><div><span>⬆️ Meilleure hauteur</span><b>'+Math.round((o.jH||0)*100)+' cm</b></div>':'')
@@ -8340,7 +8361,7 @@
       +(mine&&raw&&/longueur|perche/.test(String(o.sport))?'<button class="av-btn" id="sdOfficial" style="margin-top:10px">📏 Entrer ma mesure officielle</button>':'')
       +(mine&&raw?'<button class="av-btn" id="sdDel" style="margin-top:10px;color:#c0392b">🗑 Supprimer cette session</button>':'')
       +(mine&&raw?'<button class="av-btn" id="sdFil" style="margin-top:10px">📰 Publier sur mon fil d\'actualité</button>':'')
-      +(mine?'<button class="primary" id="sdShare" style="margin-top:14px">'+(o.shared?"Ne plus montrer à mes amis":"Montrer à mes amis sur mon profil")+'</button><div class="note" style="margin-top:8px">Seuls tes amis voient tes sessions partagées. La position exacte n\'est jamais partagée, seulement la forme du parcours.</div>':'')
+      +(mine?'<button class="primary" id="sdShare" style="margin-top:14px">'+(o.shared?"Ne plus montrer à mes amis":"Montrer à mes amis sur mon profil")+'</button><div class="note" style="margin-top:8px">Seuls tes amis voient tes sessions partagées, avec le parcours sur la carte.</div>':'')
       +'</div></div>';
     $("sdClose").addEventListener("click", closeOverlay);
     var sdl=$("sdDel"); if(sdl) sdl.addEventListener("click", function(){ if(!confirm("Supprimer définitivement cette session ?")) return; var id=String(raw.id||("s"+o.t)), key=id.replace(/[.#$\[\]\/]/g,"_");
@@ -8401,8 +8422,8 @@
       +(p?'<button type="button" class="fd-more" data-fa="more" aria-label="Options">•••</button>':'')+'</div>';
     if(v){ if(v.caption) h+='<div class="fd-tx">'+esc(v.caption)+'</div>';
       h+='<button type="button" class="fd-vid" data-fa="vid" style="background-image:url('+esc(v.thumb||"")+')" aria-label="Lire la vidéo"><i>▶</i></button>'
-        +'<div class="fd-cnt"><span>♥ '+fdNum(vidLikes(v),"j\'aime","j\'aime")+'</span><span>▶ '+fmtCount(vidViews(v))+'</span></div>'
-        +'<div class="fd-bar"><button type="button" data-fa="vid">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="vid">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="vshare">'+FD_IC.sh+'Partager</button></div></div>';
+        +'<div class="fd-cnt"><span class="fd-nl">♥ '+fdNum(vidLikes(v),"j\'aime","j\'aime")+'</span><span>▶ '+fmtCount(vidViews(v))+'</span></div>'
+        +'<div class="fd-bar"><button type="button" data-fa="vlike" class="'+(vidLiked(v)?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="vid">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="vshare">'+FD_IC.sh+'Partager</button></div></div>';
       return h; }
     if(p.text) h+='<div class="fd-tx">'+esc(p.text)+'</div>';
     if(p.im) h+='<div class="fd-img" data-im="1">'+(fdImgs[it.k]?'<img alt="" src="'+esc(fdImgs[it.k])+'">':'')+'</div>';
@@ -8451,6 +8472,11 @@
     var el=t.closest(".fd-post"), it=el && box._fdMap[el.dataset.k]; if(!it) return;
     if(a==="vid"){ var i=vidVisible().indexOf(it.v); if(i>=0){ closeOverlay(); openFeed(i); } return; }
     if(a==="vshare"){ shareVideo(it.v); return; }
+    if(a==="vlike"){ if(!fdGate() || !backend.likeVideo) return; var v=it.v, von=!vidLiked(v); v.likes=v.likes||{}; if(von) v.likes[me.uid]=true; else delete v.likes[me.uid];
+      t.classList.toggle("on", von); var vs=el.querySelector(".fd-nl"); if(vs) vs.textContent="♥ "+fdNum(vidLikes(v),"j\'aime","j\'aime");
+      box._fdSig=fdSig(box._fdK==="*"?null:box._fdK, fdItems(box._fdK==="*"?null:box._fdK));
+      if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, von?"1":"0"); }catch(e){} } else backend.likeVideo(v.id, von).catch(function(){});
+      return; }
     var p=it.p; if(!p) return;
     if(a==="share"){ shareProfile(p.uid); return; }
     if(a==="more"){ if(p.uid===me.uid || isOfficial(me.uid)){ if(!confirm("Supprimer définitivement cette publication ?")) return;
