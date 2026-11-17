@@ -378,9 +378,14 @@ var TTS_OK=("speechSynthesis" in window) && (typeof SpeechSynthesisUtterance!=="
 function sndUnlock(){ try{ if(!sndEl){ sndEl=new Audio(); sndEl.preload="auto"; } sndEl.muted=true; sndEl.src="ulm/snd/fr-next.mp3"; var p=sndEl.play(); if(p && p.then) p.then(function(){ sndEl.pause(); sndEl.muted=false; }).catch(function(){ sndEl.muted=false; }); }catch(e){}
   try{ var C=window.AudioContext||window.webkitAudioContext; if(C && !sndCtx) sndCtx=new C(); if(sndCtx && sndCtx.state==="suspended") sndCtx.resume(); }catch(e){} }
 function alarm(n){ try{ if(!sndCtx) return; var t=sndCtx.currentTime; for(var i=0;i<(n||3);i++){ var o=sndCtx.createOscillator(), g=sndCtx.createGain(); o.type="square"; o.frequency.value=i%2?1250:950; g.gain.setValueAtTime(0.0001,t+i*0.22); g.gain.exponentialRampToValueAtTime(0.35,t+i*0.22+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.22+0.19); o.connect(g); g.connect(sndCtx.destination); o.start(t+i*0.22); o.stop(t+i*0.22+0.2); } }catch(e){} }
+// file d'attente : une annonce attend la fin de la précédente ; une alerte urgente passe devant tout
+var sndQ=[];
+function sndPlay(src, urgent){ try{ if(!sndEl){ sndEl=new Audio(); sndEl.preload="auto"; } if(!sndEl._q){ sndEl._q=true; sndEl.addEventListener("ended", function(){ var n=sndQ.shift(); if(n) sndPlay(n, true); }); }
+    var busy=!sndEl.paused && !sndEl.ended && !sndEl.muted; if(busy && !urgent){ if(sndQ.length<3 && sndQ.indexOf(src)<0) sndQ.push(src); return; } if(urgent===true && busy) sndQ.length=0;
+    sndEl.muted=false; sndEl.src=src; var p=sndEl.play(); if(p && p.catch) p.catch(function(){}); }catch(e){} }
 function say(txt, key, urgent){ if(!FLY || !FLY.voice) return; if(urgent) alarm(3);
   var go=function(){ if(TTS_OK){ try{ var u2=new SpeechSynthesisUtterance(txt), i=A.lang(); u2.lang=i===1?"en-GB":i===2?"es-ES":"fr-FR"; u2.rate=1.02; speechSynthesis.cancel(); speechSynthesis.speak(u2); return; }catch(e){} }
-    if(key){ try{ if(!sndEl) sndEl=new Audio(); sndEl.muted=false; sndEl.src="ulm/snd/"+(A.lang()===0?"fr":"en")+"-"+key+".mp3?v=1"; var p=sndEl.play(); if(p && p.catch) p.catch(function(){}); }catch(e){} } else if(!urgent) alarm(1); };
+    if(key){ sndPlay("ulm/snd/"+(A.lang()===0?"fr":"en")+"-"+key+".mp3?v=1", urgent); } else if(!urgent) alarm(1); };
   if(urgent) setTimeout(go, 750); else go(); }
 // Android donne une hauteur GPS brute (au-dessus de l'ellipsoïde) : on retire l'ondulation du géoïde (EGM96, grille 1°) pour avoir
 // l'altitude au-dessus de la mer, comme sur iPhone. Écart corrigé : environ 50 m (160 ft) en France.
