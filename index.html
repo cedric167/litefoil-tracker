@@ -2743,6 +2743,8 @@
 .gw-sect{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:12px 2px 8px}
 .gw-strip{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .gw-h,.gw-d{flex:0 0 auto;min-width:64px;text-align:center;padding:9px 6px;border-radius:14px;background:var(--mist)}
+button.gw-d{border:1.5px solid transparent;font:inherit;color:inherit;min-height:0;box-shadow:none;cursor:pointer;font-weight:400}
+button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f4fdfc)}
 .gw-h>span,.gw-d>span{display:block;font-size:12px;color:var(--muted);font-weight:600}
 .gw-h .i,.gw-d .i{font-size:26px;margin:5px 0}
 .gw-h b,.gw-d b{font-size:16px;font-weight:700}
@@ -9816,11 +9818,25 @@
       var cur=d.current||{}, H=d.hourly||{}, D=d.daily||{};
       var wc=wcode(cur.weather_code,cur.is_day);
       var curHtml='<div class="gw-cur"><div class="big">'+(cur.temperature_2m!=null?Math.round(cur.temperature_2m):"—")+'<small>°</small></div><div class="ic">'+wc[0]+'</div><div class="tx"><b>'+wc[1]+'</b><span>'+(cur.apparent_temperature!=null?("ressenti "+Math.round(cur.apparent_temperature)+"°"):"")+'</span></div></div>';
-      var hours=""; if(H.time){ var now=Date.now(), cnt=0;
-        for(var i=0;i<H.time.length;i++){ var dt=new Date(H.time[i]); if(dt.getTime()<now-3600000) continue; var dh=dt.getHours(); var hw=wcode(H.weather_code[i],(dh>=7&&dh<=20)?1:0); var lbl=(cnt===0)?"Maint.":(dh+"h"); hours+='<div class="gw-h"><span>'+lbl+'</span><span class="i">'+hw[0]+'</span><b>'+Math.round(H.temperature_2m[i])+'°</b></div>'; cnt++; if(cnt>=9) break; } }
+      nowData=d; if(!D.time || nowDay>=D.time.length) nowDay=0;
       var dn=["dim.","lun.","mar.","mer.","jeu.","ven.","sam."], dd="";
-      if(D.time){ for(var k=0;k<D.time.length;k++){ var dt2=new Date(D.time[k]+"T12:00"); var dw=wcode(D.weather_code[k],1); var lbl2=(k===0)?"Auj.":dn[dt2.getDay()]; dd+='<div class="gw-d"><span>'+lbl2+'</span><span class="i">'+dw[0]+'</span><b>'+Math.round(D.temperature_2m_max[k])+'°</b><small>'+Math.round(D.temperature_2m_min[k])+'°</small></div>'; } }
-      box.innerHTML=curHtml+(stale?'<div class="gx-stale">⏳ <span>Dernière météo reçue à</span> <b data-no-i18n>'+stale+'</b>. <span>Nouvel essai dans une minute.</span></div>':"")+'<div class="gw-sect">Par heure</div><div class="gw-strip">'+hours+'</div><div class="gw-sect">Prochains jours</div><div class="gw-strip">'+dd+'</div>'; }
+      if(D.time){ for(var k=0;k<D.time.length;k++){ var dt2=new Date(D.time[k]+"T12:00"); var dw=wcode(D.weather_code[k],1); var lbl2=(k===0)?"Auj.":dn[dt2.getDay()]; dd+='<button type="button" class="gw-d'+(k===nowDay?" on":"")+'" data-gwd="'+k+'"><span>'+lbl2+'</span><span class="i">'+dw[0]+'</span><b>'+Math.round(D.temperature_2m_max[k])+'°</b><small>'+Math.round(D.temperature_2m_min[k])+'°</small></button>'; } }
+      box.innerHTML=curHtml+(stale?'<div class="gx-stale">⏳ <span>Dernière météo reçue à</span> <b data-no-i18n>'+stale+'</b>. <span>Nouvel essai dans une minute.</span></div>':"")+'<div class="gw-sect" id="gwHT"></div><div class="gw-strip" id="gwHS"></div><div class="gw-sect">Prochains jours · touche un jour</div><div class="gw-strip" id="gwDS">'+dd+'</div>';
+      nowHours(box);
+      if(!box._gwB){ box._gwB=true; box.addEventListener("click", function(e){ var bt=e.target.closest ? e.target.closest("[data-gwd]") : null; if(!bt) return; nowDay=+bt.dataset.gwd;
+        Array.prototype.forEach.call(box.querySelectorAll("[data-gwd]"), function(x){ x.classList.toggle("on", x===bt); }); nowHours(box); var hs=box.querySelector("#gwHS"); if(hs) hs.scrollLeft=0; }); } }
+    // heure par heure du jour choisi : aujourd'hui à partir de maintenant, les autres jours de 0 h à 23 h
+    var nowData=null, nowDay=0;
+    function nowDayKey(t){ t=String(t); if(!/Z$|[+-]\d\d:\d\d$/.test(t)) return t.slice(0,10); var x=new Date(t); return x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2); }
+    function nowHours(box){ var d=nowData||{}, H=d.hourly||{}, D=d.daily||{}, ht=box.querySelector("#gwHT"), hs=box.querySelector("#gwHS"); if(!ht || !hs) return;
+      var hours="", cnt=0, now=Date.now(), key=D.time && D.time[nowDay], dl=["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+      if(H.time){ for(var i=0;i<H.time.length;i++){ var dt=new Date(H.time[i]), dh=dt.getHours();
+          if(nowDay===0){ if(dt.getTime()<now-3600000) continue; if(cnt>=24) break; } else if(nowDayKey(H.time[i])!==key) continue;
+          var hw=wcode(H.weather_code[i],(dh>=7&&dh<=20)?1:0), lbl=(nowDay===0 && cnt===0)?"Maint.":(dh+"h");
+          hours+='<div class="gw-h"><span>'+lbl+'</span><span class="i">'+hw[0]+'</span><b>'+Math.round(H.temperature_2m[i])+'°</b></div>'; cnt++; } }
+      var dk=key ? new Date(key+"T12:00") : new Date();
+      ht.textContent = nowDay===0 ? "Par heure" : "Par heure · "+dl[dk.getDay()]+" "+dk.getDate();
+      hs.innerHTML = hours || '<div class="comm-empty" style="padding:10px 4px">Détail heure par heure indisponible pour ce jour.</div>'; }
     // conversion des prévisions MET Norway vers le format utilisé par l'affichage
     function metnoToOm(j){ var ts=j && j.properties && j.properties.timeseries; if(!ts || !ts.length) return null;
       var code=function(sy){ sy=String(sy||""); if(/thunder/.test(sy)) return 95; if(/snow/.test(sy)) return /heavy/.test(sy)?75:/light/.test(sy)?71:73; if(/sleet/.test(sy)) return 63; if(/rainshowers/.test(sy)) return /heavy/.test(sy)?82:80; if(/rain/.test(sy)) return /heavy/.test(sy)?65:/light/.test(sy)?61:63; if(/fog/.test(sy)) return 45; if(/partlycloudy/.test(sy)) return 2; if(/cloudy/.test(sy)) return 3; if(/fair/.test(sy)) return 1; return 0; };
