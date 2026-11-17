@@ -2181,6 +2181,19 @@
 .tk-sport .phseg button[aria-selected="true"]{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(16,24,32,.12),0 4px 10px rgba(16,24,32,.06)}
 .tk-chips{display:flex;gap:8px;overflow-x:auto;margin:12px -14px 0;padding:2px 14px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
 .tk-chips::-webkit-scrollbar{display:none}
+.tk-cur{display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:9px 14px 9px 10px;border-radius:16px;border:1.5px solid #14b8ab;background:linear-gradient(160deg,#e3faf7,#f4fdfc);color:#0b5f5a;font:inherit;font-weight:700;font-size:15.5px;min-height:0;text-align:left;box-shadow:none;cursor:pointer}
+.tk-cur i{font-style:normal;font-size:30px;line-height:1;flex:none;display:flex}
+.tk-cur b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tk-cur span{flex:none;font-size:13px;font-weight:700;color:#148a90}
+.tk-sheet{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9000;background:rgba(8,20,26,.5);display:flex;align-items:flex-end;justify-content:center}
+.tk-sheet[hidden]{display:none}
+.tk-sheet-c{background:var(--card);width:100%;max-width:560px;max-height:80vh;border-radius:24px 24px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.25)}
+.tk-sheet-h{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 12px}
+.tk-sheet-h b{font-size:20px;font-weight:700}
+.tk-sheet-h button{width:36px;height:36px;padding:0;border:0;border-radius:50%;background:var(--tile);color:var(--text);font-size:15px;min-height:0;box-shadow:none}
+.tk-sheet .tk-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;overflow-x:hidden;overflow-y:auto;margin:0;padding:3px 2px 6px;scroll-snap-type:none}
+.tk-sheet .tk-chips button{min-width:0;max-width:none;width:100%}
+.tk-sheet .tk-chips button.on{transform:none}
 .tk-sport .sps-btn,.tk-sport select.phsel{display:none !important}
 .tk-chips button{flex:0 0 auto;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:84px;max-width:104px;padding:11px 10px 9px;border-radius:18px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;line-height:1.15;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,background .15s,color .15s}
 .tk-chips button i{font-style:normal;font-size:30px;line-height:1}
@@ -2829,7 +2842,13 @@
       <button type="button" data-m="terre" aria-selected="false">⛰️ Terre</button>
       <button type="button" data-m="air" aria-selected="false">✈️ Air</button>
     </div>
-    <div class="tk-chips" id="tkChips" role="listbox" aria-label="Choix de l'activité"></div>
+    <button type="button" class="tk-cur" id="tkCur" aria-label="Changer d'activité"><i id="tkCurIc"></i><b id="tkCurTx"></b><span>Changer ›</span></button>
+    <div class="tk-sheet" id="tkSheet" hidden>
+      <div class="tk-sheet-c">
+        <div class="tk-sheet-h"><b id="tkSheetT">Mer</b><button type="button" id="tkSheetX" aria-label="Fermer">✕</button></div>
+        <div class="tk-chips" id="tkChips" role="listbox" aria-label="Choix de l'activité"></div>
+      </div>
+    </div>
     <select class="phsel" id="phAct" aria-label="Choix de l'activité" hidden></select>
   </div>
 
@@ -3884,6 +3903,7 @@
   // met à jour la pastille choisie, le sport affiché dans le tableau de bord et les barres du signal GPS
   function tkPaint(){ var sel=$("phAct"), box=$("tkChips");
     if(sel && box) Array.prototype.forEach.call(box.children, function(b){ var on=b.dataset.v===sel.value; if(b.classList.contains("on")!==on){ b.classList.toggle("on", on); b.setAttribute("aria-selected", on?"true":"false"); } });
+    var cur=$("tkCurTx"), cic=$("tkCurIc"); if(cur && sel){ var oc=sel.options[sel.selectedIndex]; if(oc && cur.dataset.v!==oc.value+"|"+oc.text){ cur.dataset.v=oc.value+"|"+oc.text; cur.textContent=oc.text; if(cic){ if(typeof spIco==="function") cic.innerHTML=spIco(oc.value); else cic.textContent=TK_EMO[oc.value]||"✨"; } } }
     var now=$("tkNow"); if(now && sel){ var o=sel.options[sel.selectedIndex], tx=o ? (TK_EMO[o.value]||"")+" "+o.text : ""; if(now.dataset.tx!==tx){ now.dataset.tx=tx; if(o && typeof spIco==="function"){ now.innerHTML=spIco(o.value)+" "; now.appendChild(document.createTextNode(o.text)); } else now.textContent=tx; } }
     var g=$("tkGps"), a=$("phAcc"); if(g && a){ var m=parseFloat(a.textContent), q=isFinite(m) ? (m<=10?3:(m<=30?2:1)) : 0; if(g.dataset.q!==String(q)) g.dataset.q=String(q); } }
   function phSetMilieu(m){
@@ -4218,9 +4238,14 @@
   function phBind(){
     phStlBind();
     var a=$("phStart"), b=$("phStop"); if(a) a.addEventListener("click", phStart); if(b) b.addEventListener("click", phStop);
-    var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(btn) phSetMilieu(btn.dataset.m); });
+    var sheet=$("tkSheet"); if(sheet) document.body.appendChild(sheet); // hors de la page : la fenêtre couvre aussi le menu du bas
+    var tkOpen=function(){ if(!sheet || phTimer) return; var bt=document.querySelector('#phSeg [aria-selected="true"]'), tt=$("tkSheetT"); if(tt && bt) tt.textContent=bt.textContent; sheet.hidden=false; };
+    var tkClose=function(){ if(sheet) sheet.hidden=true; };
+    if(sheet){ sheet.addEventListener("click", function(e){ if(e.target===sheet) tkClose(); }); var sx=$("tkSheetX"); if(sx) sx.addEventListener("click", tkClose); }
+    var tcur=$("tkCur"); if(tcur) tcur.addEventListener("click", tkOpen);
+    var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(!btn) return; if(btn.dataset.m!==phMilieu) phSetMilieu(btn.dataset.m); tkOpen(); });
     var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; tkPaint(); });
-    var chips=$("tkChips"); if(chips && sel) chips.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"); if(!b || phTimer) return; sel.value=b.dataset.v; sel.dispatchEvent(new Event("change")); try{ b.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"}); }catch(x){} });
+    var chips=$("tkChips"); if(chips && sel) chips.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"); if(!b || phTimer) return; sel.value=b.dataset.v; sel.dispatchEvent(new Event("change")); tkClose(); });
     phSetMilieu("mer");
     phNatBoot();
   }
