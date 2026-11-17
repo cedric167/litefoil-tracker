@@ -176,7 +176,7 @@ exports.chatPush = onValueCreated({ ref: "/chat/{id}", instance: DB_INSTANCE }, 
   await sendToUids(uids, {
     type: "chat",
     channel: topic,
-    title: (m.pseudo || "Rider") + " · " + ch,
+    title: (m.pseudo || "Membre") + " · " + ch,
     body: String(m.text).slice(0, 140)
   }, { webOnly: true });
 });
@@ -191,8 +191,8 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
     const admins = adminUids();
     if (admins.length) {
       await sendToUids(admins, {
-        type: "team-reply", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
-        title: "💬 Réponse à l'équipe · " + (m.pseudo || "Rider"),
+        type: "team-reply", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Membre"),
+        title: "💬 Réponse à l'équipe · " + (m.pseudo || "Membre"),
         body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
       });
     }
@@ -203,9 +203,9 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
   // 14/11 : appel audio ou vidéo → notification d'appel (l'appli sonne dès qu'on l'ouvre, pendant 60 s)
   if (m.call) {
     await sendToUids(uids, {
-      type: "call", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
+      type: "call", channel: "dm:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Membre"),
       mid: String(event.params.id), k: m.call.k === "v" ? "v" : "a",
-      title: (m.call.k === "v" ? "📹 " : "📞 ") + (m.pseudo || "Rider") + " t'appelle",
+      title: (m.call.k === "v" ? "📹 " : "📞 ") + (m.pseudo || "Membre") + " t'appelle",
       body: (m.call.k === "v" ? "Appel vidéo" : "Appel audio") + " Lite Foil · appuie pour répondre"
     }, { badges, ring: "call" });
     return;
@@ -213,8 +213,8 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
   // 14/11 : SOS envoyé à un proche → notification d'alerte bien visible
   if (m.text && String(m.text).trim().indexOf("🆘") === 0) {
     await sendToUids(uids, {
-      type: "sos", channel: "sos:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Rider"),
-      title: "🆘 SOS de " + (m.pseudo || "Rider"),
+      type: "sos", channel: "sos:" + m.uid, peer: String(m.uid || ""), pseudo: String(m.pseudo || "Membre"),
+      title: "🆘 SOS de " + (m.pseudo || "Membre"),
       body: String(m.text).split(" ").filter((w) => w.indexOf("http") !== 0).join(" ").slice(0, 160)
     }, { badges, ring: "sos" });
     return;
@@ -223,8 +223,8 @@ exports.dmPush = onValueCreated({ ref: "/dm/{pair}/{id}", instance: DB_INSTANCE 
     type: "dm",
     channel: "dm:" + m.uid,
     peer: String(m.uid || ""),
-    pseudo: String(m.pseudo || "Rider"),
-    title: (m.pseudo || "Rider") + " · Message privé",
+    pseudo: String(m.pseudo || "Membre"),
+    title: (m.pseudo || "Membre") + " · Message privé",
     body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
   }, { badges });
 });
@@ -256,7 +256,7 @@ exports.groupPush = onValueCreated({ ref: "/groupMessages/{gid}/{id}", instance:
     type: "group",
     channel: "group:" + gid,
     gid: String(gid),
-    title: (g.name || "Groupe") + " · " + (m.pseudo || "Rider"),
+    title: (g.name || "Groupe") + " · " + (m.pseudo || "Membre"),
     body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
   }, { badges });
 });
@@ -277,7 +277,7 @@ exports.eventChatPush = onValueCreated({ ref: "/eventMessages/{eid}/{id}", insta
     type: "event",
     channel: "ev:" + eid,
     eid: String(eid),
-    title: "📅 " + (e.title || "Événement") + " · " + (m.pseudo || "Rider"),
+    title: "📅 " + (e.title || "Événement") + " · " + (m.pseudo || "Membre"),
     body: m.text ? String(m.text).slice(0, 140) : "📷 Photo"
   }, { badges });
 });
@@ -301,7 +301,7 @@ exports.followPush = onValueCreated({ ref: "/follows/{uid}/{target}", instance: 
   const last = +((await ref.get()).val() || 0);
   if (Date.now() - last < 86400000) return;
   await ref.set(Date.now());
-  const ps = (await db.ref("profiles/" + uid + "/pseudo").get()).val() || "Un rider";
+  const ps = (await db.ref("profiles/" + uid + "/pseudo").get()).val() || "Un membre";
   await sendToUids([target], {
     type: "follow",
     channel: "follow:" + uid,
@@ -316,20 +316,20 @@ exports.reportAlert = onValueCreated({ ref: "/reports/{id}", instance: DB_INSTAN
   const r = event.data.val() || {};
   const admins = REPORT_ADMIN_UIDS.value().split(",").map((s) => s.trim()).filter(Boolean);
   if (!admins.length) { console.warn("reportAlert : REPORT_ADMIN_UIDS vide, personne n'est prévenu"); return; }
-  const what = r.type === "message" ? "Message" : "Rider";
+  const what = r.type === "message" ? "Message" : "Membre";
   const target = r.targetPseudo || r.targetUid || "inconnu";
   await sendToUids(admins, {
     type: "report",
     channel: "report",
     title: "⚠️ Signalement · " + what + " de " + target,
-    body: (r.text ? "« " + String(r.text).slice(0, 100) + " » · " : "") + "signalé par " + (r.byPseudo || r.by || "un rider")
+    body: (r.text ? "« " + String(r.text).slice(0, 100) + " » · " : "") + "signalé par " + (r.byPseudo || r.by || "un membre")
   });
   await event.data.ref.child("alertSentTo").set(admins);
 });
 
 
 /* ===================== Compte officiel « Équipe Lite Foil » =====================
- * uid réservé TEAM_UID : seul le serveur peut écrire sous ce nom (les riders ont des uid
+ * uid réservé TEAM_UID : seul le serveur peut écrire sous ce nom (les membres ont des uid
  * anonymes aléatoires et les règles imposent uid === auth.uid). L'appli affiche le badge
  * « ✓ Équipe Lite Foil » pour ce uid et pour les comptes listés dans /official.
  *   - welcomeMember : message privé d'accueil à chaque nouveau membre
@@ -362,7 +362,7 @@ exports.welcomeMember = onValueCreated({ ref: "/profiles/{uid}", instance: DB_IN
   await ensureTeamProfile();
   const p = event.data.val() || {};
   const text = "Bienvenue dans la communauté Lite Foil" + (p.pseudo ? ", " + p.pseudo : "") + " 👋\n" +
-    "Ici tu trouves les riders près de chez toi, un salon par sport et les événements (sorties, sessions d'essai). " +
+    "Ici tu trouves les membres près de chez toi, un salon par sport et les événements (sorties, sessions d'essai). " +
     "Présente-toi dans le salon de ton sport et n'hésite pas à organiser une sortie ! Bonne glisse 🤙";
   const pair = [uid, TEAM_UID].sort().join("__");
   await db.ref("dm/" + pair).push({ uid: TEAM_UID, pseudo: TEAM_NAME, av: TEAM_AV, text, t: ServerValue.TIMESTAMP });
@@ -383,7 +383,7 @@ function verdict(salon, days) {
     return "👉 Ça bouge pas mal : prudence, et privilégie les zones abritées.";
   }
   if (["wing", "kite", "windsurf"].includes(salon)) {
-    if (wind >= 30) return "👉 Ça souffle fort : réservé aux riders confirmés, petite voile/aile !";
+    if (wind >= 30) return "👉 Ça souffle fort : réservé aux pratiquants confirmés, petite voile/aile !";
     if (wind >= 14) return "👉 Du vent ridable au programme, prépare ton matos 💨";
     if (wind >= 10) return "👉 Petit temps : sors la grande aile / la grande voile.";
     return "👉 Peu de vent prévu : plutôt un week-end eFoil ou paddle 😉";
@@ -474,7 +474,7 @@ const TIPS = {
   ]
 };
 
-// ---------- 14/11 : alerte vent sur les spots favoris (chaque matin, une notification au plus par rider) ----------
+// ---------- 14/11 : alerte vent sur les spots favoris (chaque matin, une notification au plus par membre) ----------
 exports.windAlert = onSchedule({ schedule: "30 7 * * *", timeZone: "Europe/Paris", region: "europe-west1" }, async () => {
   const db = getDatabase();
   const all = (await db.ref("pushTokens").get()).val() || {};
@@ -528,7 +528,7 @@ exports.weeklyTip = onSchedule({ schedule: "0 18 * * 2", timeZone: "Europe/Paris
 });
 
 
-/* ===================== Vidéos des riders =====================
+/* ===================== Vidéos des membres =====================
  * Quand une vidéo est supprimée (par son auteur ou par un modérateur), on efface aussi
  * le fichier dans Firebase Storage pour ne pas payer son stockage. */
 const VIDEO_BUCKET = "litefoil-communaute-222fd.firebasestorage.app";
@@ -720,7 +720,7 @@ ${o.video ? `<meta property="og:type" content="video.other"><meta property="og:v
 <meta name="twitter:card" content="summary_large_image"><link rel="icon" href="${SHARE_ICON}"><link rel="apple-touch-icon" href="${SHARE_ICON}"><meta name="theme-color" content="#000000"><style>${SHARE_CSS}</style></head><body>
 <div class="top"><a class="brand" href="${escH(o.app)}">LITE <i>FOIL</i></a><a class="open" href="${escH(o.app)}">Ouvrir l'appli</a></div>
 ${o.body}
-<div class="cta"><img class="ic" src="${SHARE_ICON}" alt="Lite Foil"><div class="t"><b>Rejoins les riders Lite Foil</b><small>Vidéos, chat, météo, suivi GPS, défis… gratuit</small>${store}</div><a class="go" href="/get?to=${encodeURIComponent(o.app)}">Rejoindre</a></div>
+<div class="cta"><img class="ic" src="${SHARE_ICON}" alt="Lite Foil"><div class="t"><b>Rejoins les membres Lite Foil</b><small>Vidéos, chat, météo, suivi GPS, défis… gratuit</small>${store}</div><a class="go" href="/get?to=${encodeURIComponent(o.app)}">Rejoindre</a></div>
 </body></html>`;
 }
 exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxInstances: 10 }, async (req, res) => {
@@ -748,12 +748,12 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
       const v = (await db.ref("videos/" + key).get()).val();
       if (!v || !v.url) {
         return res.status(404).send(sharePageHtml({ title: "Vidéo introuvable · Lite Foil", desc: "Cette vidéo n'existe plus.", url: base + "/v/" + key, app: SHARE_APP,
-          body: `<div class="pf"><div class="empty">Cette vidéo a été supprimée.<br>Découvre les autres sessions des riders dans l'appli Lite Foil.</div></div>` }));
+          body: `<div class="pf"><div class="empty">Cette vidéo a été supprimée.<br>Découvre les autres sessions des membres dans l'appli Lite Foil.</div></div>` }));
       }
       const pr = (await db.ref("profiles/" + v.uid).get()).val() || {};
-      const ps = pr.pseudo || v.pseudo || "Rider", nk = pr.nk || "";
+      const ps = pr.pseudo || v.pseudo || "Membre", nk = pr.nk || "";
       const title = "Vidéo de @" + ps + " sur Lite Foil";
-      const desc = (v.caption ? v.caption + " · " : "") + fmtN(likesN(v)) + " J'aime · L'appli des riders eFoil, wing, surf…";
+      const desc = (v.caption ? v.caption + " · " : "") + fmtN(likesN(v)) + " J'aime · L'appli des sportifs eFoil, wing, surf…";
       const body = `<div class="vid"><video id="v" src="${escH(v.url)}" poster="${escH(base + "/t/" + key)}" autoplay muted loop playsinline webkit-playsinline preload="auto"></video><div class="shade"></div>
 <button class="snd" id="snd">🔊 Touche pour le son</button>
 <div class="info">${nk ? `<a href="/u/${escH(nk)}"><b>@${escH(ps)}</b></a>` : `<b>@${escH(ps)}</b>`}${v.caption ? `<p>${escH(v.caption)}</p>` : ""}<span class="likes">❤️ ${fmtN(likesN(v))} J'aime</span></div></div>
@@ -767,8 +767,8 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
       if (typeof uid !== "string") uid = null;
       const pr = uid ? ((await db.ref("profiles/" + uid).get()).val() || {}) : null;
       if (!pr) {
-        return res.status(404).send(sharePageHtml({ title: "Rider introuvable · Lite Foil", desc: "Ce profil n'existe pas.", url: base + "/u/" + nk, app: SHARE_APP,
-          body: `<div class="pf"><div class="empty">Ce rider n'existe pas ou a supprimé son profil.</div></div>` }));
+        return res.status(404).send(sharePageHtml({ title: "Membre introuvable · Lite Foil", desc: "Ce profil n'existe pas.", url: base + "/u/" + nk, app: SHARE_APP,
+          body: `<div class="pf"><div class="empty">Ce membre n'existe pas ou a supprimé son profil.</div></div>` }));
       }
       const all = (await db.ref("videos").get()).val() || {};
       const vids = Object.keys(all).map((k) => Object.assign({ id: k }, all[k])).filter((x) => x && x.uid === uid && x.url).sort((a, b) => (+b.t || 0) - (+a.t || 0));
@@ -776,12 +776,12 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
       let followers = 0; for (const f in fol) { if (f !== uid && fol[f] && fol[f][uid]) followers++; }
       const following = Object.keys(fol[uid] || {}).length;
       const likes = vids.reduce((n, x) => n + likesN(x), 0);
-      const ps = pr.pseudo || "Rider";
+      const ps = pr.pseudo || "Membre";
       const av = pr.av ? `<img class="pf-av" src="${escH(base + "/a/" + uid)}" alt="">` : `<div class="pf-av">${escH((ps.trim()[0] || "R").toUpperCase())}</div>`;
       const body = `<div class="pf"><div class="pf-h">${av}<h1>${escH(ps)}</h1><div class="nk">@${escH(nk)}</div>${pr.bio ? `<div class="bio">${escH(pr.bio)}</div>` : ""}</div>
 <div class="nums"><div><b>${fmtN(following)}</b><span>Abonnements</span></div><div><b>${fmtN(followers)}</b><span>Abonnés</span></div><div><b>${fmtN(likes)}</b><span>J'aime</span></div></div>
 ${vids.length ? `<div class="grid">${vids.slice(0, 30).map((x) => `<a href="/v/${escH(x.id)}" style="background-image:url('${escH(base + "/t/" + x.id)}')"><span>❤️ ${fmtN(likesN(x))}</span></a>`).join("")}</div>` : `<div class="empty">Pas encore de vidéo.</div>`}</div>`;
-      return res.send(sharePageHtml({ title: ps + " (@" + nk + ") sur Lite Foil", desc: fmtN(followers) + " abonnés · " + fmtN(likes) + " J'aime · " + (pr.bio || "Rider sur l'appli Lite Foil"),
+      return res.send(sharePageHtml({ title: ps + " (@" + nk + ") sur Lite Foil", desc: fmtN(followers) + " abonnés · " + fmtN(likes) + " J'aime · " + (pr.bio || "Membre sur l'appli Lite Foil"),
         url: base + "/u/" + nk, img: pr.av ? base + "/a/" + uid : (vids[0] ? base + "/t/" + vids[0].id : ""), app: SHARE_APP + "?u=" + encodeURIComponent(uid), body }));
     }
     return res.redirect(302, SHARE_APP);
@@ -796,7 +796,7 @@ ${vids.length ? `<div class="grid">${vids.slice(0, 30).map((x) => `<a href="/v/$
  *   POST /api/live/{sid}  {k, pts:[{lat,lng,t,spd}], soc?, status?}   (k = clé secrète de la sortie)
  * Un proche suit la sortie sur /l/{sid} (carte, vitesse, trace, alerte), sans compte.
  * status : active | alert (immobile, pas de réponse) | sos | ok (fausse alerte) | ended.
- * En cas d'alerte ou de SOS, les contacts de sécurité (riders Lite Foil choisis) reçoivent une notification. */
+ * En cas d'alerte ou de SOS, les contacts de sécurité (membres Lite Foil choisis) reçoivent une notification. */
 function hav(a, b) { const R = 6371000, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
   const x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); }
 async function liveApi(req, res, sid) {
@@ -831,7 +831,7 @@ async function liveApi(req, res, sid) {
   if ((st === "alert" || st === "sos") && L.status !== st) {
     const uids = Object.keys(L.contacts || {}).filter((u) => u && u !== L.uid);
     if (uids.length) {
-      const ps = L.ps || "Un rider";
+      const ps = L.ps || "Un membre";
       await sendToUids(uids, { type: "safety", channel: "live:" + sid, live: String(sid),
         title: st === "sos" ? "🆘 SOS de " + ps : "⚠️ " + ps + " ne bouge plus",
         body: st === "sos" ? ps + (String(L.em || "") === "196" || /^SOS · En mer/.test(String(L.cat || "")) ? " a déclenché un SOS en mer." : " a déclenché un SOS.") + " Ouvre sa position." : ps + " est immobile depuis un moment et ne répond pas. Vérifie sa position." }).catch(() => {});
@@ -847,12 +847,12 @@ async function livePage(req, res, sid, asJson, base) {
     if (!L) return res.status(404).json({ ok: false });
     const trk = Object.values((await db.ref("liveTrk/" + sid).get()).val() || {});
     const step = Math.max(1, Math.ceil(trk.length / 600));
-    return res.json({ ok: true, ps: L.ps || "Rider", cat: L.cat || "", status: L.status || "active", t0: +L.t0 || 0, upd: +L.upd || 0, now: Date.now(), last: L.last || null,
+    return res.json({ ok: true, ps: L.ps || "Membre", cat: L.cat || "", status: L.status || "active", t0: +L.t0 || 0, upd: +L.upd || 0, now: Date.now(), last: L.last || null,
       dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, trk: trk.filter((x, i) => i % step === 0 || i === trk.length - 1) });
   }
   if (!L) return res.status(404).send(sharePageHtml({ title: "Suivi introuvable · Lite Foil", desc: "Ce suivi n'existe plus.", url: base + "/l/" + sid, app: SHARE_APP,
     body: `<div class="pf"><div class="empty">Ce suivi de sortie n'existe pas ou a expiré.</div></div>` }));
-  const ps = escH(L.ps || "Rider");
+  const ps = escH(L.ps || "Membre");
   // numéro de secours selon la sortie ; les versions de l'appli qui ne l'envoient pas encore sont devinées d'après l'activité
   const emG = (c) => /^SOS · Blessure/.test(c) ? "15" : /^SOS · Agression/.test(c) ? "17" : /^SOS · Autre/.test(c) ? "112" : /^SOS · En mer/.test(c) ? "196"
     : /skate|snow|roller/i.test(c) ? "112" : /foil|surf|kite|wing|paddle|sup\b|nage|voile|jet|kayak|cano|bodyboard|d[ée]riveur|bateau/i.test(c) ? "196" : "112";

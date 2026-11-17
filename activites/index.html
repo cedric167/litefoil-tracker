@@ -702,7 +702,7 @@ function render(){
   const items = ALL.filter(a=> filter==="tout" ? true : filter==="air" ? isAir(a) : filter==="terre" ? (a.milieu==="terre" && !isAir(a)) : a.milieu===filter)
                    .sort((a,b)=> (b.startedAt||0)-(a.startedAt||0));
   const km = items.reduce((s,a)=>s+a.distanceM,0)/1000;
-  // mes vrais chiffres (sorties de plus de 100 m), partagés avec la Communauté (total des riders)
+  // mes vrais chiffres (sorties de plus de 100 m), partagés avec la Communauté (total des membres)
   try{ const real=ALL.filter(a=>(a.distanceM||0)>=100); localStorage.setItem("lf_my_stats", JSON.stringify({n:real.length, km:Math.round(real.reduce((s,a)=>s+a.distanceM,0)/100)/10, sec:real.reduce((s,a)=>s+(a.durationSec||0),0), t:Date.now(),
     // défi eFoil du mois : km d'eFoil du mois en cours (moyenne < 55 km/h, < 150 km par sortie)
     month:(()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");})(),
@@ -1030,7 +1030,7 @@ function runFly(a,pts){
   try{ flyDraw(false); }catch(e){}
   flyRAF=requestAnimationFrame(frame);
 }
-let flyGuest=false; // parcours d'un autre rider ouvert depuis le fil ou un profil : à la fermeture on retourne au fil
+let flyGuest=false; // parcours d'un autre membre ouvert depuis le fil ou un profil : à la fermeture on retourne au fil
 function stopFly(){ if(flyGuest){ flyGuest=false; cancelAnimationFrame(flyRAF); location.replace("../index.html?tab=fil"); return; } cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
@@ -1158,7 +1158,7 @@ function parseGPX(xml){
 function haversine(la1,lo1,la2,lo2){const R=6371000,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180,a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(a));}
 function bearingTo(la1,lo1,la2,lo2){const y=Math.sin((lo2-lo1)*Math.PI/180)*Math.cos(la2*Math.PI/180);const x=Math.cos(la1*Math.PI/180)*Math.sin(la2*Math.PI/180)-Math.sin(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.cos((lo2-lo1)*Math.PI/180);return (Math.atan2(y,x)*180/Math.PI+360)%360;}
 
-// 17/11 : parcours d'un autre rider (publication du fil ou session partagée), rejoué en 3D à partir du tracé partagé.
+// 17/11 : parcours d'un autre membre (publication du fil ou session partagée), rejoué en 3D à partir du tracé partagé.
 // Le tracé ne contient que des positions : la vitesse affichée est la vitesse moyenne, l'altitude vient du relief.
 (function(){ let g=null; try{ g=JSON.parse(sessionStorage.getItem("lf.fly")||"null"); sessionStorage.removeItem("lf.fly"); }catch(e){}
   if(!g || !g.trk || !/[?&]fly=1/.test(location.search)) return;

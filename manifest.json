@@ -1,7 +1,7 @@
 {
   "name": "Lite Foil",
   "short_name": "Lite Foil",
-  "description": "Lite Foil, l'appli des riders : suivi GPS, replay 3D, SOS entre amis, météo et webcams des spots, vidéos Swip.",
+  "description": "Lite Foil, l'appli des sportifs : suivi GPS, replay 3D, SOS entre amis, météo et webcams des spots, vidéos Swip.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
