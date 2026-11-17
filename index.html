@@ -10337,6 +10337,19 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     sosIv=setInterval(function(){ if(!SOS){ sosUntrack(); return; } if(!S.running && S.live && S.buf.length) post(); }, 20000); }
   function sosUntrack(){ if(sosIv) clearInterval(sosIv); sosIv=null; try{ if(sosWatch!=null) navigator.geolocation.clearWatch(sosWatch); }catch(e){} sosWatch=null; }
   function mapUrl(p){ return "https://www.google.com/maps/search/?api=1&query="+p.lat.toFixed(5)+","+p.lon.toFixed(5); }
+  // Apple Watch : une sortie SOS « en attente » (identifiant, clé secrète, proches à prévenir) est créée pour la montre.
+  // L'appui long sur SOS de la montre l'active directement sur le serveur, sans que l'iPhone soit ouvert.
+  // Si le compte ou la liste des proches change, une nouvelle sortie est créée (l'ancienne n'est jamais écrasée).
+  function watchSync(){ var W=null; try{ W=window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LfWatch; }catch(e){}
+    if(!W || !W.setSos) return; var A=api(), m=A&&A.me(); if(!A || !m || !m.ready || !m.uid) return;
+    var g=guardians(), ct={}; g.forEach(function(u){ ct[u]=true; });
+    var w=null; try{ w=JSON.parse(ls("lf.watch.sos")||"null"); }catch(e){}
+    var sig=m.uid+"|"+m.pseudo+"|"+g.slice().sort().join(",");
+    var send=function(o){ try{ var p=W.setSos({ api:BASE+"/api/live/"+o.sid, k:o.k, ps:String(m.pseudo||""), em:"112", n:g.length }); if(p && p.catch) p.catch(function(){}); }catch(e){} };
+    if(w && w.sig===sig && w.sid && w.k){ send(w); return; }
+    var nw={ sid:rnd(12), k:rnd(24), sig:sig };
+    A.liveCreate(nw.sid,{ k:nw.k, ps:m.pseudo, cat:"SOS · Montre", em:"112", status:"wait", contacts:ct }).then(function(){ ls("lf.watch.sos", JSON.stringify(nw)); send(nw); }).catch(function(){}); }
+  setTimeout(watchSync, 9000); setInterval(watchSync, 120000);
   function sosFire(kind, pos){ var A=api(), K=KINDS[kind]||KINDS.autre, g=guardians(), me=A&&A.me();
     if(!K.quiet){ vib([300,100,300,100,600]); beep(1200); }
     var started=false;

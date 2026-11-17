@@ -61,6 +61,66 @@ workflows:
         submit_to_testflight: true
 
   # ----------------------------------------------------------------------------
+  # iOS + APPLE WATCH (bouton SOS sur la montre). Même recette que ci-dessus, avec en plus :
+  #   - la cible « LiteFoilWatch » ajoutée au projet (scripts/ios-watch.sh, sources dans native/watch),
+  #   - l'identifiant fr.litefoil.tracker.watchkitapp et son profil App Store (scripts/ios-watch-signing.py),
+  #   - la même version et le même numéro de build pour l'iPhone et la montre (exigé par Apple).
+  # La recette « ios-appstore » ci-dessus reste intacte tant que celle-ci n'a pas été validée sur une vraie montre.
+  ios-watch:
+    name: Lite Foil - iOS + Apple Watch (TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: litefoil_appstore
+    environment:
+      xcode: latest
+      cocoapods: default
+      node: 20
+      vars:
+        BUNDLE_ID: "fr.litefoil.tracker"
+        WATCH_BUNDLE_ID: "fr.litefoil.tracker.watchkitapp"
+        APP_NAME: "Lite Foil"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: fr.litefoil.tracker
+    scripts:
+      - name: Installer les dependances
+        script: npm install
+      - name: Assembler le dossier www (site + pont Bluetooth)
+        script: npm run build:www
+      - name: Generer / synchroniser le projet iOS
+        script: |
+          if [ -f ios-assets/GoogleService-Info.plist ]; then npm install @capacitor-firebase/messaging@6.3.1 @capacitor-firebase/authentication@6.3.1 firebase@10.12.5; fi
+          if [ ! -d "ios" ]; then npx cap add ios; fi
+          bash scripts/ios-setup.sh
+          npx cap sync ios
+          bash scripts/ios-post-sync.sh
+      - name: Ajouter l'appli Apple Watch (bouton SOS)
+        script: bash scripts/ios-watch.sh
+      - name: Sign in with Apple (identifiant et profil Apple)
+        script: python3 scripts/ios-signin-apple.py
+      - name: Identifiant et profil Apple de l'appli montre
+        script: python3 scripts/ios-watch-signing.py
+      - name: Signature automatique
+        script: |
+          xcode-project use-profiles
+      - name: Numero de build (identique iPhone et montre)
+        script: |
+          bash scripts/ios-watch.sh version 1.6.0 $(($(date +%s) / 60))
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "ios/App/App.xcworkspace" \
+            --scheme "App" || { echo "===== ERREURS XCODE ====="; grep -h -B2 -A8 -E "error:|ARCHIVE FAILED|provisioning profile" /tmp/xcodebuild_logs/*.log | head -200; exit 1; }
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+
+  # ----------------------------------------------------------------------------
   # ANDROID NATIF (Capacitor -> Bluetooth natif du telephone), paquet .aab signe.
   # A FAIRE DANS L'INTERFACE CODEMAGIC (une seule fois) :
   #   - connecter ce depot GitHub,
