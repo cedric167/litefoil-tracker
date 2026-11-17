@@ -4535,7 +4535,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var el=document.getElementById("mtoUlm"); if(el) el.hidden=!on; };
   window.ulmOnShow = function(){ var p=document.getElementById("tab-ulm"); if(!p) return; if(window.LFUlm){ window.LFUlm.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=32"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
+    var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=33"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
@@ -10224,7 +10224,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function paintContacts(){ var t=$("secContactsTxt"); if(!t) return; var ns=MILS.map(function(x){ return contacts(x[0]).length; });
     t.textContent = (ns[0]||ns[1]||ns[2]) ? MILS.map(function(x,i){ return x[1]+" "+(ns[i]||"tous"); }).join("  ·  ")+" : prévenus de tes départs en direct, alertes et SOS" : "Membres Lite Foil prévenus en cas d'alerte ou de SOS."; }
   paintContacts();
-  $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), mil=curMil(), sets={}; MILS.forEach(function(x){ sets[x[0]]=contacts(x[0]); }); var sel=sets[mil];
+  // ouverture depuis un autre espace (ULM / Avion) : la fenêtre « Mes gardiens » s'ouvre directement sur le bon milieu
+  window.__secPick=function(m){ var A=api(); if(!A || !A.me || !A.me().ready){ alert("Connecte-toi à ton compte pour choisir tes proches."); return; } window.__secMil=m||null; $("secContactsBtn").click(); };
+  $("secContactsBtn").addEventListener("click", function(){ var A=api(); if(!A){ return; } var list=A.contacts(), mil=window.__secMil||curMil(), sets={}; window.__secMil=null; MILS.forEach(function(x){ sets[x[0]]=contacts(x[0]); }); var sel=sets[mil];
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.style.zIndex="12600"; ov.innerHTML='<div class="mm-card sec-pick"><div class="at-grab"></div><b class="cs-h">Mes gardiens</b><p class="sec-p">Ils reçoivent une notification si tu déclenches un SOS ou si tu ne réponds pas à l\'alerte d\'immobilité. Choisis parmi tes amis et les membres que tu suis. Sans choix, tous tes amis sont prévenus.</p>'
       +'<div class="sec-mil" style="display:flex;gap:6px;margin:4px 0 10px;padding:4px;border-radius:999px;background:#eef3f4">'+MILS.map(function(x){ return '<button type="button" data-mil="'+x[0]+'" style="flex:1;min-height:0;border:0;border-radius:999px;padding:9px 4px;font:inherit;font-size:13px;font-weight:800;box-shadow:none;cursor:pointer;white-space:nowrap">'+x[1]+" "+x[2]+'</button>'; }).join("")+'</div>'
       +'<p class="sec-p" id="secMilTxt" style="margin-top:-2px"></p>'
