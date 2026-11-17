@@ -914,6 +914,25 @@ load();setInterval(load,5000);
 // ---------- 14/11 : espace ULM / Avion. Relais des METAR et TAF publics (aviationweather.gov n'autorise pas l'appel direct depuis l'appli) ----------
 exports.aeroWx = onRequest({ region: "europe-west1", memory: "256MiB", maxInstances: 5, cors: true }, async (req, res) => {
   try {
+    // trafic autour d'un point : ?traffic=lat,lon (Open Glider Network, données ouvertes ODbL ; les appareils qui refusent le suivi n'y figurent pas)
+    if (req.query.traffic) {
+      const c = String(req.query.traffic).split(",").map(Number);
+      if (c.length !== 2 || !c.every(isFinite) || Math.abs(c[0]) > 85 || Math.abs(c[1]) > 180) return res.status(400).json({ error: "parametres" });
+      const dLa = 0.5, dLo = Math.min(1.5, 0.5 / Math.max(0.2, Math.cos(c[0] * Math.PI / 180)));
+      const r0 = await fetch("https://live.glidernet.org/lxml.php?a=0&b=" + (c[0] + dLa).toFixed(3) + "&c=" + (c[0] - dLa).toFixed(3) + "&d=" + (c[1] + dLo).toFixed(3) + "&e=" + (c[1] - dLo).toFixed(3) + "&z=2",
+        { headers: { "User-Agent": "aero-weather-relay" } });
+      if (r0.status !== 200) return res.status(502).json({ error: "source" });
+      const xml = await r0.text(), out = [];
+      for (const m of xml.matchAll(/<m a="([^"]*)"/g)) {
+        const a = m[1].split(","); if (a.length < 12) continue;
+        const age = +a[6]; if (!(age >= 0 && age <= 45)) continue;
+        const la = +a[0], lo = +a[1]; if (!isFinite(la) || !isFinite(lo)) continue;
+        out.push({ lat: la, lon: lo, id: String(a[13] || a[12] || a[2]).slice(0, 12), cs: /^_/.test(a[2]) ? "" : String(a[3] || a[2]).slice(0, 9), alt: +a[4] || 0, age: age, trk: +a[7] || 0, spd: +a[8] || 0, vz: +a[9] || 0, ty: +a[10] || 0 });
+        if (out.length >= 150) break;
+      }
+      res.set("Cache-Control", "public, max-age=4, s-maxage=4");
+      return res.json({ t: Date.now(), ac: out });
+    }
     const ids = String(req.query.ids || "").toUpperCase(), bbox = String(req.query.bbox || "");
     const hours = Math.min(36, Math.max(0, parseInt(req.query.hours, 10) || 0));
     let q = "";
