@@ -296,8 +296,11 @@ function flyTraffic(F){ if(!F || FLY!==F) return; var on=lget("lf.ulm.ftraf","1"
       var html='<div class="nv-tf" style="color:'+col+'"><svg viewBox="0 0 24 24" style="transform:rotate('+(a.trk+(F.brg||0))+'deg)"><path d="M12 2l7 19-7-4.500L5 21z" fill="currentColor" stroke="#0a1220" stroke-width="1.4" stroke-linejoin="round"/></svg><span>'+esc(tag)+(a.cs?'<br>'+esc(a.cs):'')+'</span></div>';
       var ic=L.divIcon({ className:"", html:html, iconSize:[26,26], iconAnchor:[13,13] }), mk=F.trM[a.id];
       if(mk){ mk.setLatLng([a.lat,a.lon]); mk.setIcon(ic); } else { F.trM[a.id]=L.marker([a.lat,a.lon],{ icon:ic, interactive:false, zIndexOffset:700 }).addTo(F.trG); }
+      if(F.gl && F.glOk && window.maplibregl){ try{ F.trGM=F.trGM||{}; var gb=0; try{ gb=F.gl.getBearing(); }catch(e){} var h3=html.replace(/rotate\([^)]*\)/, "rotate("+(a.trk-gb)+"deg)"), gm=F.trGM[a.id];
+          if(gm){ gm.setLngLat([a.lon,a.lat]); gm.getElement().innerHTML=h3; } else { var ge=document.createElement("div"); ge.innerHTML=h3; F.trGM[a.id]=new window.maplibregl.Marker({ element:ge }).setLngLat([a.lon,a.lat]).addTo(F.gl); } }catch(e){} }
       if(lvl===2 && (!worst || d<worst.d)) worst={ d:d, a:a, dAlt:dAlt }; });
     Object.keys(F.trM).forEach(function(k){ if(!seen[k]){ try{ F.trG.removeLayer(F.trM[k]); }catch(e){} delete F.trM[k]; } });
+    if(F.trGM) Object.keys(F.trGM).forEach(function(k){ if(!seen[k] || !F.gl){ try{ F.trGM[k].remove(); }catch(e){} delete F.trGM[k]; } });
     if(lb){ lb.hidden=false; lb.textContent="✈ "+n+" "+T("trafic"); }
     // alerte : trafic à moins de 2 NM et 1 000 ft ; annonce « à X heures » par rapport à la route de l'avion
     if(worst && (!F.said.tf || Date.now()-F.said.tf>20000)){ F.said.tf=Date.now(); var rel=((brg(me,worst.a)-(F.trk||0))%360+360)%360, hr=Math.round(rel/30)||12;
@@ -384,7 +387,7 @@ function glLoad(cb){ if(window.maplibregl) return cb(true); var done=false, fin=
 function fly3dData(F){ if(!F.gl || !F.glOk) return; try{ var ln=function(a){ return { type:"Feature", properties:{}, geometry:{ type:"LineString", coordinates:a } }; };
     F.gl.getSource("rt").setData(ln(F.pts.map(function(q){ return [q.lon,q.lat]; }))); var to=F.pts[F.i], p=F.pos; F.gl.getSource("act").setData(ln(p && to ? [[p.lon,p.lat],[to.lon,to.lat]] : [])); F.gl.getSource("tr").setData(ln(F.trail.map(function(q){ return [q[1],q[0]]; }))); }catch(e){} }
 function fly3d(F, on){ var bt=F.el.querySelector('[data-f="v3d"]');
-  if(!on){ F.v3=false; F.glOk=false; if(F.gl){ try{ F.gl.remove(); }catch(e){} F.gl=null; F.glMe=null; } var o=F.el.querySelector("#nvGl"); if(o) o.remove(); if(bt) bt.classList.remove("on"); lset("lf.ulm.f3d","0"); F.el.classList.remove("v3"); return; }
+  if(!on){ F.v3=false; F.glOk=false; if(F.trGM){ Object.keys(F.trGM).forEach(function(k){ try{ F.trGM[k].remove(); }catch(e){} }); F.trGM={}; } if(F.gl){ try{ F.gl.remove(); }catch(e){} F.gl=null; F.glMe=null; } var o=F.el.querySelector("#nvGl"); if(o) o.remove(); if(bt) bt.classList.remove("on"); lset("lf.ulm.f3d","0"); F.el.classList.remove("v3"); return; }
   F.v3=true; if(bt) bt.classList.add("on"); lset("lf.ulm.f3d","1"); toast(T("Chargement de la vue 3D…"));
   glLoad(function(ok){ if(FLY!==F || !F.v3 || F.gl) return; if(!ok){ fly3d(F,false); toast(T("Vue 3D indisponible sans connexion.")); return; }
     var G=window.maplibregl, host=F.el.querySelector("#nvFMap"), d=document.createElement("div"); d.id="nvGl"; d.className="nv-gl"; host.appendChild(d); F.el.classList.add("v3");
@@ -406,7 +409,7 @@ function fly3d(F, on){ var bt=F.el.querySelector('[data-f="v3d"]');
       gl.addLayer({ id:"act", type:"line", source:"act", paint:{ "line-color":"#ffffff", "line-width":2.5, "line-dasharray":[2,2.4] } });
       F.pts.forEach(function(q,i){ var e=document.createElement("div"); e.innerHTML=mkIcon(i,F.pts.length).options.html; new G.Marker({ element:e.firstChild||e }).setLngLat([q.lon,q.lat]).addTo(gl); });
       var pe=document.createElement("div"); pe.className="nv-plane g3"; pe.innerHTML=PLANE; F.glMe=new G.Marker({ element:pe, rotationAlignment:"map", pitchAlignment:"map" }).setLngLat([c.lon,c.lat]).setRotation(b0).addTo(gl);
-      F.glOk=true; fly3dData(F); });
+      F.glOk=true; fly3dData(F); try{ flyTraffic(F); }catch(e){} });
     gl.on("dragstart", function(){ if(FLY!==F) return; F.follow=false; var cb=F.el.querySelector('[data-f="center"]'); if(cb) cb.classList.remove("on"); }); }); }
 var ROT_SRC="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js", rotSt=0, vpOld=null;
 function rotLoad(cb){ if(rotSt===2 || rotSt===3) return cb(); var done=false, fin=function(ok){ if(done) return; done=true; rotSt=ok?2:3; cb(); };
