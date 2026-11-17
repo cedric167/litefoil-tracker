@@ -19,7 +19,27 @@
   <script src="ble-bridge.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<style>html,body{touch-action:pan-x pan-y}</style>
+<style>html,body{touch-action:pan-x pan-y}
+#bnav .bn-uni{display:none}
+body.uni-pilote #bnav .bn-uni{display:flex}
+body.uni-pilote #bnav [data-nav="dash"],body.uni-pilote #bnav [data-nav="tracking"],body.uni-pilote #bnav [data-nav="videos"]{display:none}
+.uni-ov{position:fixed;inset:0;z-index:13500;background:linear-gradient(170deg,#04121a,#0b2a3a 55%,#04121a);color:#fff;display:flex;flex-direction:column;align-items:center;overflow:auto;padding:calc(26px + env(safe-area-inset-top,0px)) 18px calc(22px + env(safe-area-inset-bottom,0px));animation:uniIn .35s ease}
+@keyframes uniIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.uni-ov h2{font-size:27px;font-weight:800;text-align:center;margin:6px 0 4px;color:#fff}.uni-ov>p{font-size:14.5px;opacity:.8;text-align:center;margin:0 0 18px;max-width:340px}
+.uni-card{position:relative;width:100%;max-width:420px;border:0;border-radius:26px;padding:20px 18px 18px;margin:0 0 14px;text-align:left;color:#fff;font:inherit;cursor:pointer;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.4);min-height:0;transition:transform .18s,box-shadow .18s}
+.uni-card:active{transform:scale(.97)}.uni-card.sp{background:linear-gradient(135deg,#0fb5a8,#0b6d8c 60%,#0b3a55)}.uni-card.pi{background:linear-gradient(135deg,#3b5bdb,#1c2f7a 55%,#0a1220)}
+.uni-card.hot{box-shadow:0 0 0 3px #ffd166,0 14px 34px rgba(0,0,0,.45)}
+.uni-card .ic{position:absolute;right:14px;top:10px;font-size:62px;line-height:1;animation:uniFl 3.2s ease-in-out infinite;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.uni-card.pi .ic{animation-name:uniFly}@keyframes uniFl{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-9px) rotate(5deg)}}@keyframes uniFly{0%,100%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(-12px,-8px) rotate(4deg)}}
+.uni-card b{display:block;font-size:22px;font-weight:800;margin-bottom:6px;padding-right:76px}.uni-card ul{list-style:none;margin:0;padding:0}.uni-card li{font-size:14px;line-height:1.5;opacity:.95;padding-left:20px;position:relative}.uni-card li:before{content:"✓";position:absolute;left:0;font-weight:800;color:#b9fff4}
+.uni-card.pi li:before{color:#c9d6ff}.uni-card em{display:inline-block;margin-top:12px;font-style:normal;font-weight:800;font-size:14px;background:rgba(255,255,255,.18);border-radius:999px;padding:7px 14px}
+.uni-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#ffd166;color:#3a2a00;border-radius:999px;padding:3px 9px;margin-bottom:8px}
+.uni-both{border:1.5px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:inherit;font-weight:800;font-size:15px;border-radius:999px;padding:13px 22px;margin-top:4px;cursor:pointer;box-shadow:none;min-height:0}
+.uni-note{font-size:12.5px;opacity:.6;text-align:center;margin-top:14px}.uni-x{position:absolute;right:14px;top:calc(12px + env(safe-area-inset-top,0px));width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:16px;cursor:pointer;box-shadow:none;min-height:0}
+.uni-hi{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:13600;text-align:center;color:#fff;pointer-events:none;animation:uniHi 2.2s ease forwards}.uni-hi span{display:block;font-size:76px}.uni-hi b{display:block;font-size:24px;font-weight:800;text-shadow:0 2px 14px rgba(0,0,0,.6);margin-top:6px}
+@keyframes uniHi{0%{opacity:0;transform:translate(-50%,-30%) scale(.7)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-64%) scale(1)}}
+.uni-dim{position:fixed;inset:0;z-index:13550;background:rgba(4,18,26,.72);animation:uniHi 2.2s ease forwards;pointer-events:none}
+</style>
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <script src="i18n/i18n.js"></script>
@@ -2325,12 +2345,14 @@
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
   <nav class="bnav" id="bnav" aria-label="Menu">
+    <button data-nav="ulm" class="bn-uni"><svg viewBox="0 0 24 24"><path d="M12 3c.9 0 1.500 1.100 1.500 2.500V10l7 4.200v2l-7-2.100V18l2.200 1.700V21L12 20l-3.700 1v-1.300L10.500 18v-3.900l-7 2.100v-2l7-4.200V5.500C10.500 4.100 11.100 3 12 3z"/></svg>Vol</button>
     <button data-nav="dash" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Accueil</button>
     <button data-nav="meteo"><svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/></svg>Météo</button>
     <button data-nav="communaute" class="bn-comm"><span class="bn-big"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg></span>SwipChat<i class="bn-badge" id="bnCommBadge" hidden></i></button>
     <button data-nav="tracking"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Tracking</button>
     <button data-nav="fil"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M8 8.5h8M8 12.5h8M8 16.5h5"/></svg>Fil d'actu<i class="bn-badge" id="bnProfBadge" hidden></i></button>
     <button data-nav="videos"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg>Swip</button>
+    <button data-nav="profil" class="bn-uni"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.600"/><path d="M4.500 20a7.500 7.500 0 0 1 15 0"/></svg>Profil</button>
   </nav>
 
   <section id="tab-dash" class="tabpane">
@@ -2635,6 +2657,7 @@
         <select id="commDmPref"><option value="all">Tout le monde</option><option value="none">Personne</option></select>
         <button class="primary" id="profEditSave">Enregistrer</button>
         <div class="comm-myid" id="commMyId"></div>
+        <button type="button" id="profUni" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:14px;padding:13px 14px;border-radius:14px;border:1.5px solid #d5dde1;background:#fff;color:#0e1417;font:inherit;font-weight:800;box-shadow:none;cursor:pointer"><span>🌍 Mon univers</span><span id="profUniTx" style="font-weight:600;color:#5b6b71">À choisir</span></button>
         <button type="button" id="profLogout" style="display:block;width:100%;margin-top:14px;padding:13px;border-radius:14px;border:1.5px solid #d5dde1;background:#fff;color:#0e1417;font:inherit;font-weight:800;box-shadow:none;cursor:pointer">Se déconnecter</button>
         <button type="button" class="prof-del" id="profDelete">Supprimer mon profil</button>
       </div>
@@ -4480,7 +4503,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // Sous-écrans regroupés dans l'onglet « Lite Foil Ultra »
   const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote"];
   // barre du bas : met en avant l'onglet ouvert (les sous-écrans Ultra n'en ont pas)
-  function syncBottomNav(name){ var key = (name==="dash"||name==="meteo"||name==="communaute"||name==="videos"||name==="tracking"||name==="fil") ? name : (name==="profil" ? "fil" : "");
+  function syncBottomNav(name){ var pil=document.body.classList.contains("uni-pilote"), key = pil ? ((name==="ulm"||name==="meteo"||name==="communaute"||name==="fil"||name==="profil") ? name : "") : ((name==="dash"||name==="meteo"||name==="communaute"||name==="videos"||name==="tracking"||name==="fil") ? name : (name==="profil" ? "fil" : ""));
     document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.toggle("on", b.dataset.nav===key); }); }
   function showTab(name) {
     try{ document.body.classList.toggle("br-wide", name==="bonride"); }catch(e){} // 15/11 : Le Bon Ride en pleine largeur sur ordinateur
@@ -9270,6 +9293,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(!v){ setVerifNote("Choisis un pseudo."); return; }
     claimProfile(v,false).then(function(ok){ if(ok && s) s.hidden=true; }); });
   var _smu=$("sheetMute"); if(_smu) _smu.addEventListener("click", function(){ if(sheetTarget&&sheetTarget.uid){ toggleMute(sheetTarget.uid); _smu.textContent = isMuted(sheetTarget.uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; } });
+  var _puni=$("profUni"); if(_puni) _puni.addEventListener("click", function(){ var sh=$("profEditSheet"); if(sh) sh.hidden=true; uniChoose(false); });
   // se déconnecter : le profil reste sur le serveur, ce téléphone revient à l'écran de connexion
   var _pout=$("profLogout"); if(_pout) _pout.addEventListener("click", function(){
     if(!backend || !backend.signOutAccount){ alert("Déconnexion impossible hors ligne."); return; }
@@ -9616,7 +9640,29 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(st.email && !st.verified) return "verify";
     if(st.verified) return "profile";
     return "home"; }
-  function lfoFinish(){ lfoDone=true; try{ localStorage.setItem("lf.onb.ok","1"); }catch(e){} lfoHide(); try{ var t=document.querySelector('[data-tab="dash"]'); if(t) t.click(); }catch(e){} }
+  function lfoFinish(){ lfoDone=true; try{ localStorage.setItem("lf.onb.ok","1"); }catch(e){} lfoHide(); try{ var t=document.querySelector('[data-tab="dash"]'); if(t) t.click(); }catch(e){} setTimeout(function(){ if(!uniGet()) uniChoose(true); }, 350); }
+  // ---------- univers : "sport" (multisport), "pilote" (ULM / Avion) ou "both" ----------
+  function uniGet(){ try{ var v=localStorage.getItem("lf.univers"); return (v==="sport"||v==="pilote"||v==="both") ? v : ""; }catch(e){ return ""; } }
+  function uniApply(go){ var u=uniGet(); document.body.classList.toggle("uni-pilote", u==="pilote"); try{ var cur=document.body.dataset.tab||"dash"; document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.remove("on"); }); var k=(u==="pilote") ? cur : (cur==="profil"?"fil":cur); var ob=document.querySelector('#bnav [data-nav="'+k+'"]'); if(ob) ob.classList.add("on"); }catch(e){}
+    var lb=$("profUniTx"); if(lb) lb.textContent = u==="pilote" ? "Pilote ULM / Avion" : u==="both" ? "Multisport + Pilote" : u==="sport" ? "Multisport" : "À choisir";
+    if(go){ if(u==="pilote") lfGoTab("ulm"); else if(document.body.dataset.tab==="ulm" && u==="sport") lfGoTab("dash"); } }
+  function uniSet(v){ try{ localStorage.setItem("lf.univers", v); }catch(e){}
+    if(v==="pilote" || v==="both"){ if(mySports.indexOf("ulm")<0 && LF_SP.ulm){ mySports.push("ulm"); saveMySports(); try{ if(profileReady() && me.pseudo) claimProfile(me.pseudo,true).catch(function(){}); }catch(e){} } }
+    try{ if(window.ulmSync) window.ulmSync(); }catch(e){} uniApply(true);
+    var d=document.createElement("div"); d.className="uni-dim"; var h=document.createElement("div"); h.className="uni-hi"; h.innerHTML='<span>'+(v==="pilote"?"✈️":v==="both"?"🤝":"🤙")+'</span><b>'+(v==="pilote"?"Bienvenue à bord":v==="both"?"Tout Lite Foil est à toi":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
+    document.body.appendChild(d); document.body.appendChild(h); setTimeout(function(){ d.remove(); h.remove(); }, 2300); }
+  function uniChoose(first){ if(document.querySelector(".uni-ov")) return; var cur=uniGet(), hot=cur || (mySports.indexOf("ulm")>=0 && mySports.length<=2 ? "pilote" : "");
+    var ov=document.createElement("div"); ov.className="uni-ov";
+    ov.innerHTML=(first?'':'<button type="button" class="uni-x" aria-label="Fermer">✕</button>')+'<h2>Choisis ton univers</h2><p>L\'appli s\'adapte à ce que tu pratiques. Tu pourras changer quand tu veux dans ton profil.</p>'
+      +'<button type="button" class="uni-card sp'+(hot==="sport"?" hot":"")+'" data-uni="sport"><span class="ic">🏄</span>'+(hot==="sport"?'<span class="uni-tag">Ton choix actuel</span>':'')+'<b>Multisport</b><ul><li>eFoil, wing, surf, kite, running, vélo…</li><li>Tracking GPS de tes sorties</li><li>Météo des spots, webcams, Swip</li><li>SOS et suivi par tes proches</li></ul><em>Je ride ›</em></button>'
+      +'<button type="button" class="uni-card pi'+(hot==="pilote"?" hot":"")+'" data-uni="pilote"><span class="ic">✈️</span>'+(hot==="pilote"?'<span class="uni-tag">'+(cur==="pilote"?"Ton choix actuel":"Conseillé pour toi")+'</span>':'')+'<b>Pilote ULM / Avion</b><ul><li>GPS avion, carte 3D avec relief</li><li>Alertes relief, trafic, nuit</li><li>Météo des terrains, plan de vol</li><li>Carnet de vol, vol suivi en direct</li></ul><em>Je vole ›</em></button>'
+      +'<button type="button" class="uni-both" data-uni="both">🤝 Les deux : tout Lite Foil</button><div class="uni-note">SOS, SwipChat et fil d\'actualité restent disponibles dans les deux univers.</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(e){ if(e.target.closest(".uni-x")){ ov.remove(); return; } var b=e.target.closest("[data-uni]"); if(!b) return; ov.remove(); uniSet(b.dataset.uni); }); }
+  window.__uniChoose=function(){ uniChoose(false); };
+  // au démarrage : menu adapté ; un pilote arrive directement sur son espace ; les membres déjà inscrits voient le choix une seule fois
+  setTimeout(function(){ uniApply(false); if(uniGet()==="pilote" && (document.body.dataset.tab||"dash")==="dash" && !/[?&](tab|u|v|sessShare)=/.test(location.search) && !document.querySelector(".nv-fly")) lfGoTab("ulm"); }, 60);
+  setTimeout(function(){ try{ if(!uniGet() && lfoDone && profileReady() && !document.querySelector(".nv-fly, .uni-ov, .mm-ov") && $("lfOnb") && $("lfOnb").hidden!==false) uniChoose(true); }catch(e){} }, 4500);
   function lfoStartPoll(){ if(lfoVerifT) clearInterval(lfoVerifT); lfoVerifT=setInterval(function(){ lfoCheckVerified(true); },4000); }
   function lfoCheckVerified(quiet){ if(!backend || !backend.refreshVerification) return;
     var b=$("lfoVfCheck"); if(!quiet && b) b.disabled=true;
