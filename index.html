@@ -7713,7 +7713,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
               sky:{ "atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,4,1,6.5,0] } } });
           gl.on("click", function(e){ setPt(e.lngLat.lat, e.lngLat.lng); });
           var dived=false, dive=function(){ if(dived || !gl) return; dived=true; goTo(c0.lat, c0.lon, c0.z); if(start) setPt(start.lat, start.lon, start.name); };
-          gl.on("load", function(){ setTimeout(dive, 600); }); setTimeout(dive, 3000); return; }catch(e){ gl=null; } }
+          gl.on("load", function(){ setTimeout(dive, 600); }); setTimeout(dive, 3000); return; }catch(e){ gl=null; try{ el.innerHTML=""; el.className="evp-map"; }catch(x){} } } // sphère impossible sur ce téléphone : carte à plat
       if(window.L){ lf=L.map(el,{ zoomControl:false, attributionControl:false }).setView([c0.lat,c0.lon], Math.round(c0.z)+1); L.tileLayer(SAT,{ maxZoom:18, maxNativeZoom:17 }).addTo(lf); L.tileLayer(LAB,{ maxZoom:18, maxNativeZoom:15 }).addTo(lf);
         lf.on("click", function(e){ setPt(e.latlng.lat, e.latlng.lng); }); if(start) setPt(start.lat, start.lon, start.name); }
       else nameEl.textContent="Carte indisponible pour le moment. Écris le lieu à la main."; };
@@ -7753,8 +7753,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     +'</div>';
     $("evClose").addEventListener("click", closeOverlay); $("evCancel").addEventListener("click", closeOverlay);
     var photo=evPhotoPicker($("evPhotoHost")), evLL=null;
-    $("evPick").addEventListener("click", function(){ evPickPlace(evLL, function(p){ evLL=p; var pl=$("evPlace"), tx=$("evPickTx"); if(pl && p.name) pl.value=p.name.slice(0,80);
-      if(tx){ tx.hidden=false; tx.textContent="✓ Point de rendez-vous placé sur la carte"; } var b=$("evPick"); if(b) b.textContent="🌍 Modifier le lieu sur la carte"; }); });
+    var evOpenPick=function(){ try{ evPickPlace(evLL, function(p){ evLL=p; var pl=$("evPlace"), tx=$("evPickTx"); if(pl && p.name) pl.value=p.name.slice(0,80);
+      if(tx){ tx.hidden=false; tx.textContent="✓ Point de rendez-vous placé sur la carte"; } var b=$("evPick"); if(b) b.textContent="🌍 Modifier le lieu sur la carte"; }); }catch(e){ alert("Carte indisponible : "+((e&&e.message)||e)); } };
+    $("evPick").addEventListener("click", evOpenPick);
+    // toucher le champ Lieu ouvre aussi la carte la première fois (on peut ensuite écrire le lieu à la main en fermant la carte)
+    (function(){ var pi=$("evPlace"), asked=false; if(pi) pi.addEventListener("focus", function(){ if(asked || evLL || pi.value) return; asked=true; try{ pi.blur(); }catch(e){} evOpenPick(); }); })();
     var err=function(s){ var e=$("evErr"); e.textContent=s; e.hidden=!s; };
     $("evCreate").addEventListener("click", function(){
       var title=$("evTitle").value.trim(), topic=$("evTopic").value, ds=$("evDate").value, ts=$("evTime").value||"10:00";
