@@ -2635,6 +2635,7 @@
         <select id="commDmPref"><option value="all">Tout le monde</option><option value="none">Personne</option></select>
         <button class="primary" id="profEditSave">Enregistrer</button>
         <div class="comm-myid" id="commMyId"></div>
+        <button type="button" id="profLogout" style="display:block;width:100%;margin-top:14px;padding:13px;border-radius:14px;border:1.5px solid #d5dde1;background:#fff;color:#0e1417;font:inherit;font-weight:800;box-shadow:none;cursor:pointer">Se déconnecter</button>
         <button type="button" class="prof-del" id="profDelete">Supprimer mon profil</button>
       </div>
     </div>
@@ -5349,6 +5350,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // ---------- backend Firebase (temps réel) ----------
   async function makeFirebaseBackend(){
     const appMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+    let lfPushKey="";
     const authMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
     const db = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js");
     const app = appMod.initializeApp(cfg);
@@ -5375,7 +5377,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     return {
       uid, app,
       saveWindSpots(o){ return o ? db.set(db.ref(d,"pushTokens/"+uid+"/_wind"), o) : db.remove(db.ref(d,"pushTokens/"+uid+"/_wind")); },
-      savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_");
+      // se déconnecter : ce téléphone ne reçoit plus les notifications du compte, puis fermeture de la session (le profil reste intact)
+      signOutAccount(){ var ups=[]; try{ if(lfPushKey) ups.push(db.remove(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey)).catch(function(){})); ups.push(db.remove(db.ref(d,"presence/"+uid)).catch(function(){})); }catch(e){}
+        return Promise.all(ups).then(function(){ return authMod.signOut(auth); }); },
+      savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_"); lfPushKey=key;
         return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
       // compteurs de non-lus tenus par le serveur (chiffre sur l'icône) : on remet à zéro en lisant
       clearUnread(key){ if(!key) return Promise.resolve(); return db.remove(db.ref(d,"unread/"+uid+"/"+key)).catch(function(){}); },
@@ -9265,6 +9270,17 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(!v){ setVerifNote("Choisis un pseudo."); return; }
     claimProfile(v,false).then(function(ok){ if(ok && s) s.hidden=true; }); });
   var _smu=$("sheetMute"); if(_smu) _smu.addEventListener("click", function(){ if(sheetTarget&&sheetTarget.uid){ toggleMute(sheetTarget.uid); _smu.textContent = isMuted(sheetTarget.uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; } });
+  // se déconnecter : le profil reste sur le serveur, ce téléphone revient à l'écran de connexion
+  var _pout=$("profLogout"); if(_pout) _pout.addEventListener("click", function(){
+    if(!backend || !backend.signOutAccount){ alert("Déconnexion impossible hors ligne."); return; }
+    if(!confirm("Te déconnecter de ce téléphone ?\n\nTon profil, tes amis et tes messages sont conservés. Pour revenir, il te faudra ton e-mail et ton mot de passe (ou Google / Apple).")) return;
+    _pout.disabled=true; _pout.textContent="Déconnexion…";
+    backend.signOutAccount().then(function(){
+      ["lf.comm.pseudo","lf.comm.claimed","lf.comm.email","lf.comm.verifsent","lf.comm.avatar","lf.comm.bio","lf.comm.k","lf.comm.cardimg","lf.comm.brand","lf.watch.sos"].forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+      try{ localStorage.setItem("lf.comm.relogin","out"); }catch(e){}
+      location.reload();
+    }).catch(function(){ _pout.disabled=false; _pout.textContent="Se déconnecter"; alert("Déconnexion impossible pour le moment, réessaie."); });
+  });
   // supprimer mon profil : tout est effacé (profil, pseudo, photo, carte, stats, compte), on peut en recréer un avec une nouvelle validation e-mail
   var _pdel=$("profDelete"); if(_pdel) _pdel.addEventListener("click", function(){
     if(!backend || !backend.deleteAccount) return;
@@ -9788,8 +9804,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var _vw=$("vidWatch"); if(_vw) _vw.addEventListener("click", function(){ openFeed(); });
     var _vp=$("vidPost"); if(_vp) _vp.addEventListener("click", openVideoUpload);
     // session expirée (mot de passe changé…) : on propose de se reconnecter
-    var _rl=false; try{ _rl=localStorage.getItem("lf.comm.relogin")==="1"; }catch(e){}
-    if(_rl){ try{ localStorage.removeItem("lf.comm.relogin"); }catch(e){} setTimeout(function(){ openProfileSheet(); showLogin(true); setLoginNote("Ta session a expiré : reconnecte-toi avec ton e-mail et ton mot de passe."); },800); }
+    var _rl=false, _rlOut=false; try{ var _rv=localStorage.getItem("lf.comm.relogin"); _rl=(_rv==="1"||_rv==="out"); _rlOut=(_rv==="out"); }catch(e){}
+    if(_rl){ try{ localStorage.removeItem("lf.comm.relogin"); }catch(e){} setTimeout(function(){ openProfileSheet(); showLogin(true); setLoginNote(_rlOut ? "Tu es déconnecté. Pour revenir, entre ton e-mail et ton mot de passe." : "Ta session a expiré : reconnecte-toi avec ton e-mail et ton mot de passe."); },800); }
     // état de la validation e-mail, puis (si validé) réservation du pseudo actuel
     if(backend.emailState){ var _st=backend.emailState(); me.verified=_st.verified; me.email=_st.email||""; renderVerif(); updateChatGate();
       if(me.verified && me.pseudo) claimProfile(me.pseudo,true); else if(!me.verified){ me.claimed=false; updateChatGate(); var _pd=false; try{ _pd=localStorage.getItem("lf.comm.verifsent")==="1"; }catch(e){} if(_pd) refreshVerif(); } }
