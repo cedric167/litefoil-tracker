@@ -586,6 +586,24 @@
   .up-wrap .pf-tabs{ border-top:0; margin:4px 0 12px; padding:4px; gap:4px; background:#e9eff2; border-radius:16px; }
   .up-wrap .pf-tabs button{ border-top:0; margin-top:0; padding:10px 0; border-radius:12px !important; font-size:13px; white-space:nowrap; min-height:0; box-shadow:none; }
   .up-wrap .pf-tabs button.on{ background:#fff; color:#0b3d47; box-shadow:0 2px 8px rgba(8,40,48,.12); }
+  /* 17/11 : événements : choix du lieu sur la sphère, itinéraire, carte événement du fil */
+  .evp{ position:fixed; top:0; right:0; bottom:0; left:0; z-index:12500; background:#061a22; display:flex; flex-direction:column; }
+  .evp-top{ display:flex; gap:8px; align-items:center; padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px; background:#061a22; }
+  .evp-x{ flex:none; width:40px; height:40px; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; font-size:16px; min-height:0; box-shadow:none; }
+  .evp-in{ flex:1; min-width:0; border:0; border-radius:999px; padding:11px 16px; font:inherit; font-size:15px; background:#fff; color:#0b0d10; }
+  .evp-res{ position:absolute; left:12px; right:12px; top:calc(64px + env(safe-area-inset-top,0px)); z-index:3; background:#fff; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,.35); overflow:hidden; max-height:50vh; overflow-y:auto; }
+  .evp-res button{ display:block; width:100%; text-align:left; border:0; border-top:1px solid var(--line-soft); border-radius:0; background:#fff; padding:11px 14px; min-height:0; box-shadow:none; font-size:15px; color:var(--text); }
+  .evp-res button:first-child{ border-top:0; } .evp-res small{ display:block; color:var(--muted); font-size:12px; font-weight:400; }
+  .evp-map{ flex:1; min-height:0; position:relative; }
+  .evp-bot{ background:#fff; border-radius:20px 20px 0 0; padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:10px; }
+  .evp-name{ font-size:15px; font-weight:700; text-align:center; } .evp-ok{ width:100%; } .evp-ok:disabled{ opacity:.45; }
+  .ev-nav{ display:flex; align-items:center; gap:8px; background:var(--tile); border-radius:14px; padding:10px 12px; font-size:14px; font-weight:700; }
+  .ev-nav span{ flex:1; } .ev-nav button{ border:0; border-radius:999px; padding:9px 14px; font-size:13.5px; font-weight:700; background:#0b0d10; color:#fff; min-height:0; box-shadow:none; }
+  .ev-nav #evdWaze{ background:#33ccff; color:#06181d; }
+  .fd-ev{ display:flex; align-items:center; gap:12px; margin:0 12px 10px; padding:10px 12px; border:1px solid var(--line); border-radius:16px; cursor:pointer; background:linear-gradient(160deg,#f4fdfc,#fff); }
+  .fd-ev-d{ flex:none; width:52px; text-align:center; background:#0b3d47; color:#fff; border-radius:12px; padding:6px 0; line-height:1.1; } .fd-ev-d b{ display:block; font-size:20px; } .fd-ev-d small{ font-size:11px; text-transform:uppercase; opacity:.85; }
+  .fd-ev-t{ flex:1; min-width:0; } .fd-ev-t b{ display:block; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .fd-ev-t small{ display:block; color:var(--muted); font-size:12.5px; }
+  .fd-ev-go{ flex:none; font-size:13px; font-weight:700; color:var(--accent-ink); }
   /* 17/11 : fil d'actualité */
   .pf-grid.fd{ display:block; margin:0; }
   .up-wrap .pf-grid.fd{ margin:0; }
@@ -5586,7 +5604,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // ---------- événements (agenda) : /events/{id} = {title,topic,when,place,desc,max,by,byPseudo,t,cancelled,att:{uid:{pseudo,t}}} ----------
       createEvent(o){ const eref=db.push(db.ref(d,"events")); const att={}; att[uid]={pseudo:me.pseudo||"Rider",t:db.serverTimestamp()};
         const e={title:o.title,topic:o.topic||"efoil",when:o.when,place:o.place||"",desc:o.desc||"",by:uid,byPseudo:me.pseudo||"Rider",t:db.serverTimestamp(),att:att};
-        if(o.max) e.max=o.max; if(o.img) e.img=o.img;
+        if(o.max) e.max=o.max; if(o.img) e.img=o.img; if(isFinite(o.lat) && isFinite(o.lon) && o.lat!=null && o.lon!=null){ e.lat=+o.lat; e.lon=+o.lon; }
         return db.set(eref,e).then(function(){ return eref.key; }); },
       watchEvents(cb){ // événements à venir (et ceux du jour), triés par date
         const q=db.query(db.ref(d,"events"), db.orderByChild("when"), db.startAt(Date.now()-EV_KEEP));
@@ -7668,6 +7686,46 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     updateChatFilterVis(); updateChanUI(); renderEventsList(); updateChatGate(); recomputeBadges();
   }
 
+  // publie l'événement sur le fil d'actualité (publication publique avec une carte « événement » cliquable)
+  function evToFeed(e){ if(!backend || !backend.addPost) return Promise.reject(new Error("fil"));
+    var v={ id:e.id, title:String(e.title||"").slice(0,60), when:+e.when||0, place:String(e.place||"").slice(0,80), topic:e.topic||"" };
+    return backend.addPost({ vis:"pub", text:"📅 "+v.title, ev:v }, "").then(function(){ Object.keys(fdCache).forEach(function(k){ if(fdCache[k]) fdCache[k].at=0; }); }); }
+  // choix du lieu : la Terre en sphère, image satellite et noms des villes ; on cherche ou on zoome, puis on touche la carte pour poser le point
+  function evPickPlace(start, done){ var ov=document.createElement("div"); ov.className="evp";
+    ov.innerHTML='<div class="evp-top"><button type="button" class="evp-x" aria-label="Fermer">✕</button><input type="search" class="evp-in" placeholder="Rechercher une ville, un spot…" autocomplete="off" enterkeyhint="search"></div>'
+      +'<div class="evp-res" hidden></div><div class="evp-map"></div>'
+      +'<div class="evp-bot"><div class="evp-name">Zoome puis touche la carte pour placer le point de rendez-vous.</div><button type="button" class="btn-main evp-ok" disabled>Valider ce lieu</button></div>';
+    document.body.appendChild(ov);
+    var el=ov.querySelector(".evp-map"), nameEl=ov.querySelector(".evp-name"), ok=ov.querySelector(".evp-ok"), inp=ov.querySelector(".evp-in"), res=ov.querySelector(".evp-res"), sel=null, gl=null, mk=null, lf=null, lmk=null, started=false, tmr=null;
+    var close=function(){ try{ if(gl) gl.remove(); if(lf) lf.remove(); }catch(e){} ov.remove(); };
+    var rev=function(lat,lon){ return fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+lat+"&longitude="+lon+"&localityLanguage=fr").then(function(r){ return r.json(); }).then(function(j){ return (j && (j.locality || j.city || j.principalSubdivision)) || ""; }).catch(function(){ return ""; }); };
+    var setPt=function(lat,lon,name){ lat=+(+lat).toFixed(5); lon=+(+lon).toFixed(5); var me2=sel={ lat:lat, lon:lon, name:name||"" }; ok.disabled=false; nameEl.textContent = name ? "📍 "+name : "📍 Recherche du nom du lieu…";
+      if(gl){ if(!mk) mk=new window.maplibregl.Marker({ color:"#ff4d5e" }); mk.setLngLat([lon,lat]).addTo(gl); }
+      else if(lf){ if(!lmk) lmk=L.circleMarker([lat,lon],{ radius:10, color:"#fff", weight:3, fillColor:"#ff4d5e", fillOpacity:1 }).addTo(lf); else lmk.setLatLng([lat,lon]); }
+      if(!name) rev(lat,lon).then(function(n){ if(sel!==me2) return; sel.name=n; nameEl.textContent="📍 "+(n || (lat.toFixed(4)+", "+lon.toFixed(4))); }); };
+    var goTo=function(lat,lon,z){ if(gl) gl.flyTo({ center:[lon,lat], zoom:z, duration:2400, essential:true }); else if(lf) lf.setView([lat,lon], z+1); };
+    var c0 = start ? { lat:start.lat, lon:start.lon, z:12 } : (me.pos && isFinite(me.pos.lat) ? { lat:+me.pos.lat, lon:+me.pos.lng, z:9 } : { lat:46.5, lon:2.5, z:4.6 });
+    var SAT="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", LAB="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+    var go=function(){ if(started || !document.body.contains(ov)) return; started=true;
+      if(window.maplibregl){ try{ gl=new window.maplibregl.Map({ container:el, attributionControl:{ compact:true }, center:[c0.lon, Math.max(-25,Math.min(35,c0.lat))], zoom:1.3, minZoom:1.1, maxZoom:17, dragRotate:false, fadeDuration:150,
+            style:{ version:8, projection:{ type:"globe" }, sources:{ sat:{ type:"raster", tiles:[SAT], tileSize:256, maxzoom:17, attribution:"© Esri, Maxar" }, lab:{ type:"raster", tiles:[LAB], tileSize:256, maxzoom:15 } },
+              layers:[{ id:"bg", type:"background", paint:{ "background-color":"#061a22" } }, { id:"sat", type:"raster", source:"sat" }, { id:"lab", type:"raster", source:"lab" }],
+              sky:{ "atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,4,1,6.5,0] } } });
+          gl.on("click", function(e){ setPt(e.lngLat.lat, e.lngLat.lng); });
+          var dived=false, dive=function(){ if(dived || !gl) return; dived=true; goTo(c0.lat, c0.lon, c0.z); if(start) setPt(start.lat, start.lon, start.name); };
+          gl.on("load", function(){ setTimeout(dive, 600); }); setTimeout(dive, 3000); return; }catch(e){ gl=null; } }
+      if(window.L){ lf=L.map(el,{ zoomControl:false, attributionControl:false }).setView([c0.lat,c0.lon], Math.round(c0.z)+1); L.tileLayer(SAT,{ maxZoom:18, maxNativeZoom:17 }).addTo(lf); L.tileLayer(LAB,{ maxZoom:18, maxNativeZoom:15 }).addTo(lf);
+        lf.on("click", function(e){ setPt(e.latlng.lat, e.latlng.lng); }); if(start) setPt(start.lat, start.lon, start.name); }
+      else nameEl.textContent="Carte indisponible pour le moment. Écris le lieu à la main."; };
+    try{ commGlLoad(go); }catch(e){} var n=0, iv=setInterval(function(){ if(window.maplibregl || ++n>16){ clearInterval(iv); go(); } }, 500);
+    ov.querySelector(".evp-x").addEventListener("click", close);
+    ok.addEventListener("click", function(){ if(!sel) return; var p=sel; close(); done(p); });
+    var search=function(){ var q=inp.value.trim(); if(q.length<2){ res.hidden=true; return; }
+      fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(q)+"&count=6&language=fr").then(function(r){ return r.json(); }).then(function(j){ var l=(j && j.results)||[]; res.hidden=false;
+        res.innerHTML = l.length ? l.map(function(x,i){ return '<button type="button" data-i="'+i+'"><b>'+esc(x.name)+'</b><small>'+esc([x.admin1, x.country].filter(Boolean).join(", "))+'</small></button>'; }).join("") : '<div class="comm-empty">Aucun lieu trouvé.</div>';
+        res.querySelectorAll("button").forEach(function(b){ b.addEventListener("click", function(){ var x=l[+b.dataset.i]; res.hidden=true; inp.blur(); goTo(x.latitude, x.longitude, 11); setPt(x.latitude, x.longitude, x.name); }); }); }).catch(function(){ res.hidden=true; }); };
+    inp.addEventListener("input", function(){ clearTimeout(tmr); tmr=setTimeout(search, 350); }); inp.addEventListener("keydown", function(e){ if(e.key==="Enter"){ clearTimeout(tmr); search(); } }); }
+
   /* ---- création d'un événement (depuis l'agenda ou le bouton + du tchat) ---- */
   function openNewEventModal(announceCh){
     if(!charterOk){ showCharter(); return; }
@@ -7675,7 +7733,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     evDetailId=null;
     var pad=function(n){ return String(n).padStart(2,"0"); };
     var tm=new Date(Date.now()+86400000), dflt=tm.getFullYear()+"-"+pad(tm.getMonth()+1)+"-"+pad(tm.getDate()), today=new Date(), minD=today.getFullYear()+"-"+pad(today.getMonth()+1)+"-"+pad(today.getDate());
-    var where = !announceCh||announceCh==="salon" ? "le salon de l'activité choisie" : (announceCh.indexOf("group:")===0 ? "ce groupe" : "cette conversation");
+    var where = !announceCh||announceCh==="salon" ? "le fil d'actualité" : (announceCh.indexOf("group:")===0 ? "ce groupe" : "cette conversation");
     var o=gOverlay(); o.hidden=false;
     o.innerHTML='<div class="gcard">'
       +'<div class="gc-head"><button class="gc-x" id="evClose">✕</button><b>Nouvel événement</b><span></span></div>'
@@ -7685,6 +7743,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +'<label>Activité<select id="evTopic">'+Object.keys(CHANS).map(function(k){ return '<option value="'+k+'"'+(k===chatTopic?" selected":"")+'>'+CHANS[k]+'</option>'; }).join("")+'</select></label>'
         +'<div class="ev-2"><label>Date<input id="evDate" type="date" min="'+minD+'" value="'+dflt+'"></label><label>Heure<input id="evTime" type="time" value="10:00"></label></div>'
         +'<label>Lieu / spot<input id="evPlace" maxlength="80" placeholder="Ex. : Plage sud, Port-Barcarès"></label>'
+        +'<button type="button" class="gi-act" id="evPick" style="margin-top:-4px">🌍 Choisir le lieu sur la carte</button><div class="gc-count" id="evPickTx" style="color:#1a9c55;font-weight:700" hidden></div>'
         +'<label>Places (optionnel)<input id="evMax" type="number" min="2" max="500" inputmode="numeric" placeholder="Illimité"></label>'
         +'<label>Description (optionnel)<textarea id="evDesc" maxlength="400" spellcheck="true" autocorrect="on" autocapitalize="sentences" placeholder="Niveau, matériel, point de rendez-vous…"></textarea></label>'
         +'<div class="gc-count">L\'événement sera annoncé dans '+where+' et tu seras inscrit automatiquement.</div>'
@@ -7693,7 +7752,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +'<div class="gc-foot"><button class="btn-ghost2" id="evCancel">Annuler</button><button class="btn-main" id="evCreate">Créer l\'événement</button></div>'
     +'</div>';
     $("evClose").addEventListener("click", closeOverlay); $("evCancel").addEventListener("click", closeOverlay);
-    var photo=evPhotoPicker($("evPhotoHost"));
+    var photo=evPhotoPicker($("evPhotoHost")), evLL=null;
+    $("evPick").addEventListener("click", function(){ evPickPlace(evLL, function(p){ evLL=p; var pl=$("evPlace"), tx=$("evPickTx"); if(pl && p.name) pl.value=p.name.slice(0,80);
+      if(tx){ tx.hidden=false; tx.textContent="✓ Point de rendez-vous placé sur la carte"; } var b=$("evPick"); if(b) b.textContent="🌍 Modifier le lieu sur la carte"; }); });
     var err=function(s){ var e=$("evErr"); e.textContent=s; e.hidden=!s; };
     $("evCreate").addEventListener("click", function(){
       var title=$("evTitle").value.trim(), topic=$("evTopic").value, ds=$("evDate").value, ts=$("evTime").value||"10:00";
@@ -7705,13 +7766,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(!(max>=2)) max=0; if(max>500) max=500;
       if(!backend){ err("SwipChat hors ligne, réessaie dans un instant."); return; }
       var btn=$("evCreate"); btn.disabled=true; btn.textContent="Création…"; err("");
-      var o2={title:title,topic:CHANS[topic]?topic:"efoil",when:when,place:place,desc:desc}; if(max) o2.max=max;
+      var o2={title:title,topic:CHANS[topic]?topic:"efoil",when:when,place:place,desc:desc}; if(max) o2.max=max; if(evLL){ o2.lat=evLL.lat; o2.lon=evLL.lon; }
       photo.get().catch(function(){ return null; }).then(function(img){ if(img) o2.img=img; return backend.createEvent(o2); }).then(function(eid){
         bumpEvCount("eo");
         var ev={id:eid,title:title,when:when,place:place,topic:o2.topic};
-        var ch=announceCh||"salon";
         var txt="📅 "+title+" · "+fmtEvWhen(when)+(place?" · "+place:"")+" — inscris-toi dans Événements (SwipChat)";
-        backend.sendMessage(ch, txt.slice(0,400), null, null, {ev:ev, topic:o2.topic}).catch(function(){});
+        if(announceCh && announceCh!=="salon") backend.sendMessage(announceCh, txt.slice(0,400), null, null, {ev:ev, topic:o2.topic}).catch(function(){});
+        else evToFeed(Object.assign({id:eid}, o2)).catch(function(){});
         closeOverlay(); openEventDetail(eid, Object.assign({by:me.uid,byPseudo:me.pseudo,att:(function(){ var a={}; a[me.uid]={pseudo:me.pseudo}; return a; })()}, o2, {id:eid}));
       }).catch(function(e){ btn.disabled=false; btn.textContent="Créer l'événement"; err("Impossible de créer l'événement : "+((e&&(e.code||e.message))||"erreur")+(String(e&&e.code).indexOf("PERMISSION")>=0?" (les règles Firebase doivent autoriser /events)":"")); });
     });
@@ -7752,10 +7813,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           +(e.topic&&CHANS[e.topic]?'<div><span>'+spIco(e.topic)+'</span><span>'+esc(CHANS[e.topic])+'</span></div>':'')
           +'<div><span>👥</span><span>'+n+' inscrit'+(n>1?"s":"")+(e.max?' sur '+e.max+' places':'')+'</span></div></div>'
         +(e.desc?'<div class="ev-desc">'+esc(e.desc)+'</div>':'')
+        +(!e.cancelled && (e.lat!=null || e.place) ? (evMember(e) ? '<div class="ev-nav"><span>🧭 Itinéraire</span><button type="button" id="evdWaze">Waze</button><button type="button" id="evdGmaps">Google Maps</button></div>' : '<div class="gc-count">🧭 Inscris-toi pour obtenir l\'itinéraire (Waze, Google Maps).</div>') : '')
         +(!e.cancelled ? (evMember(e) ? '<button class="btn-main ev-chat-btn" id="evdChat">💬 Discussion des participants'+(evMsgUnread(e.id)>0?' <span class="gbadge" style="display:inline-flex;background:#fff;color:#5b33c4">'+evMsgUnread(e.id)+'</span>':'')+'</button>' : '<div class="gc-count">💬 Inscris-toi pour accéder à la discussion des participants.</div>') : '')
         +(inn&&!owner&&!e.cancelled&&!past?'<div class="gc-count" style="color:#1a9c55;font-weight:700">✓ Tu es inscrit à cet événement.</div>':'')
         +'<div class="gi-mlabel">Participants ('+n+')</div><div class="mem-list">'+(rows||'<div class="comm-empty">Personne pour l\'instant.</div>')+'</div>'
-        +(!e.cancelled&&!past?'<button class="gi-act" id="evdShare">💬 Partager dans le salon '+esc(CHANS[e.topic]||"")+'</button>':'')
+        +(!e.cancelled&&!past?'<button class="gi-act" id="evdShare">📰 Partager sur le fil d\'actualité</button>':'')
         +(!owner?'<button class="gi-act" id="evdReport" style="color:#b3263a">⚑ Signaler cet événement</button>':'')
       +'</div>'
       +(foot?'<div class="gc-foot">'+foot+'</div>':'')
@@ -7768,9 +7830,12 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var l=$("evdLeave"); if(l) l.addEventListener("click", function(){ if(!confirm("Te désinscrire de « "+e.title+" » ?")) return; l.disabled=true; backend.leaveEvent(e.id).then(refetch).catch(fail); });
     var c=$("evdCancelEv"); if(c) c.addEventListener("click", function(){ if(!confirm("Annuler « "+e.title+" » ? Les inscrits le verront comme annulé.")) return; c.disabled=true;
       backend.cancelEvent(e.id).then(function(){ backend.sendMessage("salon", ("❌ Annulé : "+e.title+" · "+fmtEvWhen(e.when)).slice(0,400), null, null, {topic:e.topic}).catch(function(){}); refetch(); }).catch(fail); });
-    var s=$("evdShare"); if(s) s.addEventListener("click", function(){ s.disabled=true;
-      backend.sendMessage("salon", ("📅 "+e.title+" · "+fmtEvWhen(e.when)+(e.place?" · "+e.place:"")+" — inscris-toi dans Événements (SwipChat)").slice(0,400), null, null, {ev:{id:e.id,title:e.title,when:e.when,place:e.place||"",topic:e.topic}, topic:e.topic})
-        .then(function(){ s.textContent="✓ Partagé dans le salon"; }).catch(function(){ s.disabled=false; }); });
+    var s=$("evdShare"); if(s) s.addEventListener("click", function(){ if(!charterOk){ showCharter(); return; } if(!profileReady()){ closeOverlay(); askProfile(); return; } s.disabled=true;
+      evToFeed(e).then(function(){ s.textContent="✓ Partagé sur le fil d'actualité"; }).catch(function(){ s.disabled=false; alert("Partage impossible pour le moment, réessaie."); }); });
+    var navTo=function(app){ var has=e.lat!=null && e.lon!=null, q=has ? (e.lat+"%2C"+e.lon) : encodeURIComponent(e.place||"");
+      var u = app==="waze" ? ("https://waze.com/ul?"+(has?"ll=":"q=")+q+"&navigate=yes") : ("https://www.google.com/maps/dir/?api=1&destination="+q);
+      try{ window.open(u, "_blank", "noopener"); }catch(x){ location.href=u; } };
+    var wz=$("evdWaze"); if(wz) wz.addEventListener("click", function(){ navTo("waze"); }); var gm=$("evdGmaps"); if(gm) gm.addEventListener("click", function(){ navTo("gmaps"); });
     var dc=$("evdChat"); if(dc) dc.addEventListener("click", function(){ openEventChat(e.id); });
     var ph=$("evdPhoto"), phf=$("evdPhotoFile"); if(ph&&phf){ ph.addEventListener("click", function(){ phf.click(); });
       phf.addEventListener("change", function(ev){ var f=ev.target.files&&ev.target.files[0]; if(!f) return; ph.disabled=true; ph.textContent="Envoi de la photo…";
@@ -8462,7 +8527,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function fdSessHtml(o){ var mp=sessMapHtml(o.trk, 600, 320); return '<div class="fd-sess" data-fa="sess" role="button" aria-label="Voir la session">'+(mp ? mp : o.shape?'<div class="fd-map"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(String(o.shape).replace(/[^0-9., -]/g,""))+'"/></svg></div>':'')
       +'<div class="fd-st"><div><b>'+((+o.d||0)/1000).toFixed(1).replace(".",",")+' km</b><span>Distance</span></div><div><b>'+pfDur(o.dur)+'</b><span>Durée</span></div><div><b>'+String(+o.vmax||0).replace(".",",")+' km/h</b><span>Vitesse max</span></div></div></div>'; }
   function fdPostHtml(it){ var p=it.p, v=it.v, u=p?p.uid:v.uid, h='<div class="fd-card fd-post" data-k="'+esc(it.k)+'">';
-    var what = v ? " a publié une vidéo" : (p.sess ? " a partagé une session" : "");
+    var what = v ? " a publié une vidéo" : (p.ev ? " a partagé un événement" : (p.sess ? " a partagé une session" : ""));
     var tags = p && p.tag ? Object.keys(p.tag).slice(0,5).filter(function(x){ return !blocked.has(x); }) : [];
     var sub = pvAgo(it.t) + (p ? " · "+(FD_VIS[p.vis]||"") : "") + (p && p.spot ? " · 📍 "+esc(p.spot) : "");
     h+='<div class="fd-h"><span class="fd-av" data-fa="up" data-u="'+esc(u)+'">'+avHtml(u)+'</span><span class="fd-who"><b data-fa="up" data-u="'+esc(u)+'">'+esc(u===me.uid?(me.pseudo||"Moi"):((profileMap[u]&&profileMap[u].pseudo)||(p?p.pseudo:v.pseudo)||"Rider"))+'</b>'+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+what
@@ -8473,9 +8538,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +'<div class="fd-cnt"><span class="fd-nl">♥ '+fdNum(vidLikes(v),"j\'aime","j\'aime")+'</span><span>▶ '+fmtCount(vidViews(v))+'</span></div>'
         +'<div class="fd-bar"><button type="button" data-fa="vlike" class="'+(vidLiked(v)?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="vid">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="vshare">'+FD_IC.sh+'Partager</button></div></div>';
       return h; }
-    if(p.text) h+='<div class="fd-tx">'+esc(p.text)+'</div>';
+    if(p.text && !p.ev) h+='<div class="fd-tx">'+esc(p.text)+'</div>';
     if(p.im) h+='<div class="fd-img" data-im="1">'+(fdImgs[it.k]?'<img alt="" src="'+esc(fdImgs[it.k])+'">':'')+'</div>';
     if(p.sess) h+=fdSessHtml(p.sess);
+    if(p.ev && p.ev.id){ var ed=new Date(+p.ev.when||Date.now()); h+='<div class="fd-ev" data-fa="ev" role="button"><span class="fd-ev-d"><b>'+ed.getDate()+'</b><small>'+esc(ed.toLocaleDateString("fr-FR",{month:"short"}))+'</small></span>'
+      +'<span class="fd-ev-t"><b>'+esc(p.ev.title||"Événement")+'</b><small>'+esc(fmtEvWhen(p.ev.when))+(p.ev.place?" · 📍 "+esc(p.ev.place):"")+'</small></span><span class="fd-ev-go">Voir ›</span></div>'; }
     var nl=Object.keys(p.likes||{}).length, on=!!(p.likes&&p.likes[me.uid]), nc=fdCms[it.k];
     h+='<div class="fd-cnt"><span class="fd-nl">'+(nl?'♥ '+fdNum(nl,"j\'aime","j\'aime"):'')+'</span><span class="fd-nc">'+(nc&&nc.length?fdNum(nc.length,"commentaire","commentaires"):'')+'</span></div>'
       +'<div class="fd-bar"><button type="button" data-fa="like" class="'+(on?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="cm">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="share">'+FD_IC.sh+'Partager</button></div>'
@@ -8527,6 +8594,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(v.seed){ try{ localStorage.setItem("lf.vid.like."+v.id, von?"1":"0"); }catch(e){} } else backend.likeVideo(v.id, von).catch(function(){});
       return; }
     var p=it.p; if(!p) return;
+    if(a==="ev"){ if(p.ev && p.ev.id) openEventDetail(p.ev.id); return; }
     if(a==="sess"){ if(p.sess) openSessDetail(p.sess, false, null, p.uid===me.uid?(me.pseudo||""):pName(p.uid)); return; }
     if(a==="share"){ shareProfile(p.uid); return; }
     if(a==="more"){ if(p.uid===me.uid || isOfficial(me.uid)){ if(!confirm("Supprimer définitivement cette publication ?")) return;
