@@ -1,5 +1,5 @@
 // Lite Foil : « Second Lite » (14/11/2026)
-// Matériel neuf et d'occasion, location et prêt entre riders : annonces avec photos, filtres par discipline,
+// Matériel d'occasion, location et prêt entre riders : annonces avec photos, filtres par discipline,
 // état précis, historique des réparations, profil vendeur (quiver, badges, avis), carte des annonces.
 // Données : /market (annonces), /marketMedia (photos), /marketReviews (avis vendeur), /quiver (profil vendeur).
 (function(){
@@ -60,7 +60,7 @@ var PER={ j:"jour", we:"week-end", sem:"semaine" };
 
 // ---------- langue ----------
 var TR={
- "Second Lite":["Second Lite","Second Lite"],"Matériel neuf et d'occasion, location et prêt entre riders":["New and used gear, rental and lending between riders","Material nuevo y de segunda mano, alquiler y préstamo entre riders"],
+ "Second Lite":["Second Lite","Second Lite"],"Matériel d'occasion, location et prêt entre riders":["Used gear, rental and lending between riders","Material de segunda mano, alquiler y préstamo entre riders"],
  "Déposer une annonce":["Post a listing","Publicar un anuncio"],"Favoris":["Favourites","Favoritos"],"favoris":["favourites","favoritos"],"favori":["favourite","favorito"],"Aucun favori pour le moment.":["No favourites yet.","Aún no tienes favoritos."],"Ouvre une annonce et touche « Ajouter à mes favoris » pour la retrouver ici.":["Open a listing and tap “Add to my favourites” to find it here.","Abre un anuncio y toca «Añadir a mis favoritos» para encontrarlo aquí."],"Ajouter à mes favoris":["Add to my favourites","Añadir a mis favoritos"],"Dans mes favoris":["In my favourites","En mis favoritos"],"Ajoutée à tes favoris.":["Added to your favourites.","Añadido a tus favoritos."],"Retirée de tes favoris.":["Removed from your favourites.","Quitado de tus favoritos."],"Acheter":["Buy","Comprar"],"Louer":["Rent","Alquilar"],"Carte":["Map","Mapa"],"Mon espace":["My space","Mi espacio"],
  "Rechercher (planche, marque, ville…)":["Search (board, brand, town…)","Buscar (tabla, marca, ciudad…)"],"Toutes les disciplines":["All sports","Todas las disciplinas"],"Toutes les catégories":["All categories","Todas las categorías"],
  "Toutes les marques":["All brands","Todas las marcas"],"Tous les états":["Any condition","Cualquier estado"],"Prix max":["Max price","Precio máx"],"Neuf et occasion":["New and used","Nuevo y usado"],"Neuf":["New","Nuevo"],"Occasion":["Used","Segunda mano"],
@@ -225,7 +225,7 @@ function itemCard(a){ var km=a._km!=null ? " · "+(a._km<1.5?"1":Math.round(a._k
   return '<button class="br-it" data-open="'+esc(a.id)+'"><span class="br-ph">'+(a.thumb?'<img loading="lazy" src="'+esc(a.thumb)+'" alt="">':"")+(a.sold?'<i class="br-tag s">'+esc(T("Vendu"))+'</i>':a.type!=="v"?'<i class="br-tag '+a.type+'">'+esc(T(TYPES[a.type][0]))+'</i>':"")+(isFav(a.id)?'<i class="br-hrt">♥</i>':"")+'</span>'
     +'<span class="br-bd"><span class="br-pr">'+priceText(a)+'</span><span class="br-ti">'+esc(a.title)+'</span>'+stateBadge(a.state)+'<span class="br-pl">📍 '+esc(a.place||"")+km+'</span></span></button>'; }
 function opt(v,l,sel){ return '<option value="'+esc(v)+'"'+(String(sel)===String(v)?" selected":"")+'>'+esc(l)+'</option>'; }
-function hero(){ return '<div class="br-hero"><small>Lite Foil</small><h2>'+esc(T("Second Lite"))+'</h2><p>'+esc(T("Matériel neuf et d'occasion, location et prêt entre riders"))+'</p><button class="br-cta" data-act="new">＋ '+esc(T("Déposer une annonce"))+'</button></div>'
+function hero(){ return '<div class="br-hero"><small>Lite Foil</small><h2>'+esc(T("Second Lite"))+'</h2><p>'+esc(T("Matériel d'occasion, location et prêt entre riders"))+'</p><button class="br-cta" data-act="new">＋ '+esc(T("Déposer une annonce"))+'</button></div>'
   +'<div class="br-tabs">'+[["vente","Acheter"],["loc","Louer"],["carte","Carte"],["fav","Favoris"],["moi","Mon espace"]].map(function(x){ return '<button data-view="'+x[0]+'" class="'+(view===x[0]?"on":"")+'">'+esc(T(x[1]))+'</button>'; }).join("")+'</div>'; }
 function filtersHtml(){ var cats=F.sport && SP[F.sport] ? SP[F.sport].cats : [], on=function(v){ return v?' class="on"':""; }, any=F.sport||F.cat||F.brand||F.state||F.max||F.neuf||F.q;
   return '<div class="br-search">'+IC_SEARCH+'<input id="brQ" type="search" autocomplete="off" placeholder="'+esc(T("Rechercher (planche, marque, ville…)"))+'" value="'+esc(F.q)+'"></div><div class="br-filters">'

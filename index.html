@@ -32,13 +32,15 @@ body.uni-pilote .bnav button.on::after{background:#1f4fc4}body.uni-efoil .bnav b
 body.uni-pilote .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#3d8bff,#10276b);box-shadow:0 10px 22px rgba(29,79,184,.4)}body.uni-efoil .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#ff5fd2,#7a1a8c);box-shadow:0 10px 22px rgba(194,55,159,.4)}
 /* accueil par univers */
 body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-bonride #tab-dash>.uh-sport{display:none !important}
-.uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#8a5a00;border:1.5px solid #ecd9a6;box-shadow:0 6px 16px rgba(138,90,0,.1)}#tab-dash>#homeBr{display:none!important}#mtoUlm{display:none!important}
+.uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#3b444e;border:1.5px solid #d5dbe2;box-shadow:0 6px 16px rgba(59,68,78,.1)}
+#tab-dash{position:relative}.home-me{position:absolute;top:14px;right:14px;z-index:6;width:42px;height:42px;box-shadow:0 0 0 2px rgba(255,255,255,.95),0 6px 14px rgba(0,0,0,.3)}body:not(.uni-on) .home-me{display:none}body.uni-on #tab-dash>.home-me.home-me{display:flex!important}
+body.uni-sport #bnav [data-nav="tracking"]{display:none}#tab-dash>#homeBr{display:none!important}#mtoUlm{display:none!important}
 body.uni-nautique #phSeg [data-m]:not([data-m="mer"]),body.uni-efoil #phSeg [data-m]:not([data-m="mer"]),body.uni-terre #phSeg [data-m]:not([data-m="terre"]),body.uni-pilote #phSeg [data-m]:not([data-m="air"]){display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
 #bnav .bn-br{display:none}body.uni-bonride #bnav [data-nav="bonride"]{display:flex}
 body.uni-bonride #bnav [data-nav="meteo"],body.uni-bonride #bnav [data-nav="tracking"],body.uni-bonride #bnav [data-nav="videos"],body.uni-bonride #bnav [data-nav="fil"]{display:none}
 body.uni-bonride #bnav [data-nav="dash"]{order:1}body.uni-bonride #bnav [data-nav="communaute"]{order:2}body.uni-bonride #bnav [data-nav="bonride"]{order:3}
-body.uni-bonride .bnav .bn-comm,body.uni-bonride .bnav button.on{color:#a86a00}body.uni-bonride .bnav button.on::after{background:#a86a00}body.uni-bonride .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#f5c04a,#8a5a00);box-shadow:0 10px 22px rgba(168,106,0,.4)}
-body.uni-bonride{--sb1:#d99a1e;--sb2:#5c3d07;--sb3:#150e02;--sl:#ffe9b0;--sc:#8a5a00;--sg:rgba(245,192,74,.25)}
+body.uni-bonride .bnav .bn-comm,body.uni-bonride .bnav button.on{color:#4a5562}body.uni-bonride .bnav button.on::after{background:#4a5562}body.uni-bonride .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#eef1f5,#6b7683);box-shadow:0 10px 22px rgba(74,85,98,.4)}
+body.uni-bonride{--sb1:#a9b3bf;--sb2:#3b444e;--sb3:#0e1114;--sl:#f2f5f8;--sc:#4a5562;--sg:rgba(220,228,236,.25)}
 .uh-pane{display:none}body.uni-pilote #uhPilot,body.uni-efoil #uhEfoil{display:block}
 .uh-hero{position:relative;height:262px;border-radius:28px;overflow:hidden;margin:0 0 14px;background:#03060f;color:#fff;touch-action:pan-y;user-select:none;-webkit-user-select:none;box-shadow:0 14px 34px rgba(6,14,34,.28)}
 .uh-hero[hidden]{display:none}.uh-sky,.uh-stars{position:absolute;inset:0;opacity:0;pointer-events:none}
@@ -2441,9 +2443,10 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
   </nav>
 
   <section id="tab-dash" class="tabpane">
+    <button type="button" class="ab-me home-me" id="homeMe" aria-label="Mon profil"><span id="homeMeAv">👤</span></button>
     <!-- Accueil (refonte 06/11) : bonjour, conditions du moment, mes sorties, appareils, liens Lite Foil -->
     <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
-      <div class="hc-top"><span class="hc-lbl">Conditions maintenant</span><span class="hc-spot" id="hcSpot">—</span></div>
+      <div class="hc-top"><span class="hc-lbl">Météo en direct</span><span class="hc-spot" id="hcSpot">—</span></div>
       <div class="hc-main">
         <div class="hc-wind"><span class="hc-arrow" id="hcArrow">↑</span><b id="hcWind">—</b><small id="hcUnit">nds</small></div>
         <div class="hc-side"><span id="hcDir">Vent —</span><span id="hcGust">Rafales —</span></div>
@@ -2462,7 +2465,7 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
       <button type="button" data-goto="ultra"><i><svg viewBox="0 0 24 24"><defs><linearGradient id="qg8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3a0ff"/><stop offset="1" stop-color="#5a2be0"/></linearGradient></defs><path d="M13.90 1.90c.5-.7 1.55-.25 1.40.6l-1.20 6.90h5c.8 0 1.25.9.8 1.55l-9.80 11.20c-.55.65-1.60.150-1.40-.7l1.35-6.65H5.10c-.8 0-1.25-.9-.75-1.55z" fill="url(#qg8)"/><path d="M13.30 3.60l-6.90 9h4.40z" fill="#fff" opacity=".25"/></svg></i>Ultra</button>
     </div>
 
-    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Second Lite</b><small>Matériel neuf, occasion et location entre membres</small></span><span class="hb-go">›</span></button>
+    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Second Lite</b><small>Matériel d’occasion et location entre membres</small></span><span class="hb-go">›</span></button>
     <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm"><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
     <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
       <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
@@ -4667,7 +4670,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="market/market.js?v=4"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
+    var sc=document.createElement("script"); sc.src="market/market.js?v=5"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   // la carte d'accueil n'apparaît que lorsque la place de marché répond (règles de la base en service), ou en démonstration
   (function(){ var n=0; function probe(){ var el=document.getElementById("homeBr"); if(!el || !el.hidden) return; if(/[?&]demo=1/.test(location.search)){ el.hidden=false; return; }
@@ -9774,9 +9777,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     efoil:{ sh:"Lite Foil", n:"Lite Foil", t:"Lite Foil", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
       li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] },
-    bonride:{ sh:"Second Lite", n:"Second Lite", t:"Second Lite", s:"Matériel neuf, occasion et location", a:"#f5c04a", b:"#8a5a00", sky:"radial-gradient(110% 80% at 50% 62%,#a87412 0%,#3d2a06 48%,#120c02 100%)",
+    bonride:{ sh:"Second Lite", n:"Second Lite", t:"Second Lite", s:"Matériel d'occasion et location", a:"#e3e8ee", b:"#5f6b78", sky:"radial-gradient(110% 80% at 50% 62%,#8a95a1 0%,#2f363f 48%,#0c0f13 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
-      li:["Annonces de matériel neuf et d'occasion","Location entre membres","Dépose ton annonce en quelques minutes"] } };
+      li:["Annonces de matériel d'occasion","Location entre membres","Dépose ton annonce en quelques minutes"] } };
   function uniList(){ var a=[]; try{ a=JSON.parse(localStorage.getItem("lf.unis")||"[]")||[]; }catch(e){ a=[]; }
     if(!Array.isArray(a) || !a.length){ var v=""; try{ v=localStorage.getItem("lf.univers")||""; }catch(e){} a = v==="sport" ? ["sport"] : v==="pilote" ? ["pilote"] : v==="both" ? ["sport","pilote"] : []; }
     if(a.indexOf("sport")>=0){ var m=uniMil(); if(!m.length) m=["nautique","terre"]; a=a.filter(function(x){ return x!=="sport"; }).concat(m); try{ localStorage.setItem("lf.unis", JSON.stringify(UNI_K.filter(function(k){ return a.indexOf(k)>=0; }))); }catch(e){} }
@@ -9852,7 +9855,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var up=function(e){ var d=UH.drag; if(!d || (e && e.pointerId!==d.id)) return; UH.drag=null; hero.classList.remove("drag"); var l=uniList();
       if(d.mv){ var v=(performance.now()-d.lt>90) ? 0 : d.v, b0=Math.round(d.p), dl=UH.pos-b0, tg=Math.round(UH.pos+Math.max(-1.2, Math.min(1.2, v*220)));
         if(tg===b0 && Math.abs(dl)>0.3) tg=b0+(dl>0?1:-1); uhGo(tg, v*1000); }
-      else if(d.pl){ var i=l.indexOf(d.pl.dataset.pl); if(i>=0) uhGo(uhNear(i)); else uhGo(Math.round(UH.pos)); }
+      else if(d.pl){ var kk=d.pl.dataset.pl, i=l.indexOf(kk); if(i>=0) uhGo(uhNear(i)); else uhGo(Math.round(UH.pos));
+        // nautique et terrestre : droit au Tracking ; Lite Foil : droit à la configuration
+        if(i>=0 && (kk==="nautique" || kk==="terre" || kk==="efoil")) setTimeout(function(){ try{ if(uniCur()!==kk) uhSwitch(kk); if(kk==="efoil"){ if(window.__efCfg) window.__efCfg.open(); } else { lfGoTab("tracking"); window.scrollTo(0,0); } }catch(x){} }, uniCur()===kk ? 80 : 560); }
       else uhGo(Math.round(UH.pos)); };
     window.addEventListener("pointerup", up);
     window.addEventListener("pointercancel", function(e){ var d=UH.drag; if(d && e.pointerId===d.id){ UH.drag=null; hero.classList.remove("drag"); uhGo(Math.round(UH.pos)); } }); }
@@ -9924,7 +9929,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit"); uhBt(); }
     else ef.innerHTML="";
     var br=$("uhBr"); if(!br){ br=document.createElement("div"); br.id="uhBr"; br.className="uh-pane"; ef.parentNode.insertBefore(br, ef.nextSibling); }
-    if(c==="bonride"){ br.innerHTML='<button type="button" class="uh-cta" data-uh="go" data-to="bonride" style="background:linear-gradient(135deg,#f5c04a,#a86a00);box-shadow:0 14px 28px rgba(168,106,0,.34)">'+uhIc('<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>')+'Voir les annonces</button>'
+    if(c==="bonride"){ br.innerHTML='<button type="button" class="uh-cta" data-uh="go" data-to="bonride" style="background:linear-gradient(135deg,#c9d1da,#4a5562);box-shadow:0 14px 28px rgba(74,85,98,.34)">'+uhIc('<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>')+'Voir les annonces</button>'
         +'<button type="button" class="uh-cta uh-cta2" data-uh="br" data-to="new">'+uhIc('<path d="M12 5v14M5 12h14"/>')+'Déposer une annonce</button>'
         +'<button type="button" class="uh-cta uh-cta2" data-uh="br" data-to="fav">'+uhIc('<path d="M12 20s-7-4.400-7-9.500A4 4 0 0 1 12 8a4 4 0 0 1 7 2.500C19 15.600 12 20 12 20z"/>')+'Mes favoris</button>'
         +'<div class="uh-brnote">Les coordonnées des vendeurs sont visibles uniquement par les membres connectés.</div>'; }
@@ -10943,7 +10948,7 @@ body.uni-nautique{--sb1:#1fb5a8;--sb2:#0b4f55;--sb3:#04161a;--sl:#c9fff6;--sc:#0
 body.uni-terre{--sb1:#e08a2c;--sb2:#6b2f0c;--sb3:#1a0a04;--sl:#ffe3c2;--sc:#b4541a;--sg:rgba(255,179,71,.25)}
 body.uni-pilote{--sb1:#3d7df0;--sb2:#142f7a;--sb3:#050b1e;--sl:#cfe0ff;--sc:#1f4fc4;--sg:rgba(61,139,255,.25)}
 body.uni-terre #tab-dash .home-cond{background:radial-gradient(120% 140% at 100% 0%,#f0a03c 0%,#b4541a 45%,#4a230b 100%);box-shadow:0 10px 30px rgba(120,60,15,.3)}#tab-dash{position:relative}#tab-dash>.hero-lang{position:absolute;left:12px;top:24px;right:auto;bottom:auto;z-index:3}body.uni-on #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:flex-end;align-items:flex-start;aspect-ratio:16/9;margin:12px 0 14px;padding:18px;border-radius:var(--radius);gap:0;text-align:left;background:radial-gradient(120% 95% at 78% 30%,var(--sb1) 0%,var(--sb2) 46%,var(--sb3) 100%);box-shadow:0 14px 30px rgba(10,20,40,.22)}
-body.uni-on #tab-dash>.home-shop.uh-sport::before{content:"";position:absolute;right:3%;top:6%;width:50%;height:64%;background:linear-gradient(160deg,#fff,var(--sl));-webkit-mask:url(onb-logo.png) center/contain no-repeat;mask:url(onb-logo.png) center/contain no-repeat;pointer-events:none;animation:hsLogo3d 7s ease-in-out infinite alternate;will-change:transform;backface-visibility:hidden}@keyframes hsLogo3d{0%{transform:perspective(520px) rotateY(-38deg) rotateX(5deg)}100%{transform:perspective(520px) rotateY(38deg) rotateX(5deg)}}@media (prefers-reduced-motion:reduce){body.uni-on #tab-dash>.home-shop.uh-sport::before{animation:none}}
+body.uni-on #tab-dash>.home-shop.uh-sport::before{content:"";position:absolute;right:11%;top:8%;width:50%;height:64%;background:linear-gradient(160deg,#fff,var(--sl));-webkit-mask:url(onb-logo.png) center/contain no-repeat;mask:url(onb-logo.png) center/contain no-repeat;pointer-events:none;animation:hsLogo3d 7s ease-in-out infinite alternate;will-change:transform;backface-visibility:hidden}@keyframes hsLogo3d{0%{transform:perspective(520px) rotateY(-38deg) rotateX(5deg)}100%{transform:perspective(520px) rotateY(38deg) rotateX(5deg)}}@media (prefers-reduced-motion:reduce){body.uni-on #tab-dash>.home-shop.uh-sport::before{animation:none}}
 body.uni-on #tab-dash>.home-shop.uh-sport::after{right:auto;left:-50px;top:-70px;background:radial-gradient(circle,var(--sg),transparent 65%)}
 body.uni-on #tab-dash>.home-shop.uh-sport .hs-logo{display:none}body.uni-on #tab-dash>.home-shop.uh-sport .hs-tx{flex:none;border-left:0;padding-left:0;align-items:flex-start;gap:3px;max-width:58%;position:relative;z-index:1}
 body.uni-on #tab-dash>.home-shop.uh-sport .hs-tx b{font-size:24px;line-height:1.1}body.uni-on #tab-dash>.home-shop.uh-sport .hs-tx small{font-size:13px;white-space:normal;line-height:1.3;color:rgba(255,255,255,.84)}
@@ -11037,6 +11042,10 @@ body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body
     ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close" || x==="save") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
+  // bulle profil de l'accueil : même photo que celle de la barre du haut
+  (function(){ var hm=document.getElementById("homeMe"), dst=document.getElementById("homeMeAv"), src=document.getElementById("abMeAv"); if(!hm || !dst) return;
+    hm.addEventListener("click", function(){ var t=document.querySelector('.tab[data-tab="profil"]'); if(t) t.click(); window.scrollTo(0,0); });
+    var cp=function(){ if(src && dst.innerHTML!==src.innerHTML) dst.innerHTML=src.innerHTML; }; cp(); if(src){ try{ new MutationObserver(cp).observe(src, { childList:true, subtree:true, characterData:true }); }catch(e){} } })();
   // ULM / Avion : « Météo » = météo aéronautique de l'espace ULM, « Vol » = plan de vol (deux modes du même onglet)
   (function(){ var pil=function(){ return document.body.classList.contains("uni-pilote"); };
     var cur=function(){ var b=document.querySelector("#tab-ulm .ul-mode button.on"); return b ? b.dataset.mode : ""; };
@@ -11059,7 +11068,7 @@ body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body
       terre:{ s:7.4, c:[[0.824,0.478,0.173],[1.000,0.702,0.278],[1.000,0.867,0.675]] },
       pilote:{ s:1.7, c:[[0.133,0.310,0.651],[0.239,0.545,1.000],[0.659,0.796,1.000]] },
       efoil:{ s:5.3, c:[[0.686,0.212,0.659],[1.000,0.373,0.824],[1.000,0.718,0.922]] },
-      bonride:{ s:9.2, c:[[0.710,0.514,0.118],[0.961,0.753,0.290],[0.984,0.890,0.682]] } };
+      bonride:{ s:9.2, c:[[0.400,0.435,0.480],[0.800,0.830,0.870],[0.970,0.980,1.000]] } };
     function gl(){ if(G || dead) return G; try{ var c=document.createElement("canvas"); c.width=c.height=S; var g=c.getContext("webgl",{ alpha:true, antialias:false, premultipliedAlpha:false, preserveDrawingBuffer:true }); if(!g){ dead=true; return null; }
         var sh=function(t,s){ var o=g.createShader(t); g.shaderSource(o,s); g.compileShader(o); if(!g.getShaderParameter(o,g.COMPILE_STATUS)) throw new Error(g.getShaderInfoLog(o)||"shader"); return o; };
         var p=g.createProgram(); g.attachShader(p, sh(g.VERTEX_SHADER,"attribute vec2 a;varying vec2 v;void main(){v=a;gl_Position=vec4(a,0.,1.);}"));
