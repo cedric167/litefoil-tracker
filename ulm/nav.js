@@ -600,12 +600,13 @@ function bookOpen(){ var o=document.getElementById("nvBook"); if(o) o.remove(); 
 // ---------- vol partagé en direct (même suivi que les sorties des autres sports : page de suivi, proches prévenus en cas de SOS) ----------
 var LIVE_BASE="https://litefoil-communaute-222fd.web.app";
 function rndId(n){ var a="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789", o="", r=new Uint32Array(n); try{ crypto.getRandomValues(r); }catch(e){ for(var i=0;i<n;i++) r[i]=Math.floor(Math.random()*4294967296); } for(var j=0;j<n;j++) o+=a[r[j]%a.length]; return o; }
-function liveSend(F, status){ var V=F.live; if(!V || !V.ok) return; var body={ k:V.k, pts:V.buf.splice(0,60) }; if(status) body.status=status; if(!body.pts.length && !status) return;
+function liveFp(F){ return { pts:F.pts.slice(0,40).map(function(q){ return { n:String(q.name||"").slice(0,40), c:String(q.code||"").slice(0,8), lat:+(+q.lat).toFixed(5), lon:+(+q.lon).toFixed(5) }; }) }; }
+function liveSend(F, status){ var V=F.live; if(!V || !V.ok) return; var body={ k:V.k, pts:V.buf.splice(0,60) }; if(status) body.status=status; if(V.rem!=null) body.rem=V.rem; try{ var fk=F.pts.length+":"+F.pts[F.pts.length-1].lat; if(V.fk!==fk){ V.fk=fk; body.fp=liveFp(F); } }catch(e){} if(!body.pts.length && !status) return;
   try{ fetch(V.api,{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body), keepalive:true }).catch(function(){}); }catch(e){} }
 function liveStart(F){ var S=window.__secApi, bt=F.el.querySelector('[data-f="live"]'); if(F.live || F.sim) return; var m=S && S.me && S.me(); if(!S || !m || !m.ready || !S.liveCreate){ toast(T("Connecte-toi à ton compte pour partager ton vol.")); return; }
   var sel=[], ok={}; try{ sel=JSON.parse(localStorage.getItem("lf.sec.contacts.air")||localStorage.getItem("lf.sec.contacts")||"[]")||[]; }catch(e){} var all=S.contacts().map(function(c){ return c.uid; }); all.forEach(function(x){ ok[x]=1; }); sel=sel.filter(function(x){ return ok[x]; }); var chosen=sel.slice(); if(!sel.length && S.friends) sel=S.friends();
   var ct={}; sel.forEach(function(x){ ct[x]=true; }); var sid=rndId(12), k=rndId(24), V={ sid:sid, k:k, api:LIVE_BASE+"/api/live/"+sid, url:LIVE_BASE+"/l/"+sid, buf:[], ok:false }; F.live=V; if(bt) bt.classList.add("on"); lset("lf.ulm.flive","1");
-  S.liveCreate(sid,{ k:k, ps:m.pseudo, cat:"ULM / Avion", em:"112", contacts:ct }).then(function(){ if(FLY!==F || F.live!==V) return; V.ok=true; if(S.livePublish) S.livePublish(sid,"ULM / Avion"); V.iv=setInterval(function(){ liveSend(F); }, 8000);
+  V.fk=F.pts.length+":"+F.pts[F.pts.length-1].lat; S.liveCreate(sid,{ k:k, ps:m.pseudo, cat:"ULM / Avion", em:"112", contacts:ct, air:true, fp:liveFp(F) }).then(function(){ if(FLY!==F || F.live!==V) return; V.ok=true; if(S.livePublish) S.livePublish(sid,"ULM / Avion"); V.iv=setInterval(function(){ liveSend(F); }, 8000);
     // message privé à chaque gardien choisi, avec le lien de suivi (il déclenche aussi la notification sur leur téléphone)
     V.to=chosen; V.sent=0; V.fail=0; var lb=F.el.querySelector("#nvLiveL"), paintL=function(){ if(!lb || F.live!==V) return; lb.hidden=false;
         lb.textContent = !chosen.length ? "📡 "+T("En direct")+" · "+T("aucun gardien choisi") : (V.sent+V.fail<chosen.length) ? "📡 "+T("En direct")+" · "+T("envoi aux gardiens…") : V.sent ? "📡 "+T("En direct")+" · "+V.sent+" "+T(V.sent>1?"gardiens prévenus":"gardien prévenu")+(V.fail?" ("+V.fail+" "+T("non joint")+")":"") : "📡 "+T("En direct")+" · "+T("gardiens non joints"); lb.className="nv-gli "+(chosen.length && V.sent ? "lv" : "lw"); };
@@ -704,7 +705,7 @@ function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon
   try{ flyAsp(g); }catch(e){}
   F.altM=(g.alt!=null && isFinite(g.alt)) ? g.alt : null; if(F.alts && F.alts.length>1){ var q0=F.alts[0]; F.vzM=(g.t-q0[0]>=4000) ? (g.alt-q0[1])/((g.t-q0[0])/1000) : 0; }
   try{ flyGlideRing(F); flyTerr(g); flyNight(F, rem, kt); }catch(e){}
-  try{ flyLog(F, p, g, gs); if(F.live && !F.sim){ F.live.buf.push({ lat:p.lat, lng:p.lon, t:g.t||Date.now(), spd:Math.round(gs*36)/10 }); if(F.live.buf.length>120) F.live.buf.splice(0,60); } }catch(e){} }
+  try{ flyLog(F, p, g, gs); if(F.live && !F.sim){ var lp={ lat:p.lat, lng:p.lon, t:g.t||Date.now(), spd:Math.round(gs*36)/10 }; if(F.altM!=null) lp.alt=Math.round(F.altM); if(F.trk!=null) lp.hdg=Math.round(F.trk); if(F.vzM!=null && isFinite(F.vzM)) lp.vz=Math.round(F.vzM*10)/10; F.live.buf.push(lp); F.live.rem=Math.round(rem); if(F.live.buf.length>120) F.live.buf.splice(0,60); } }catch(e){} }
 function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY) return; var F=FLY, d=b.dataset;
   if(d.f==="lay"){ var ly=F.el.querySelector("#nvLay"); ly.hidden=!ly.hidden; b.classList.toggle("on", !ly.hidden); return; }
   if(d.f==="ltraf"){ lset("lf.ulm.ftraf", lget("lf.ulm.ftraf","1")==="1"?"0":"1"); flyLayers(F); return flyTraffic(F); }

@@ -799,6 +799,16 @@ ${vids.length ? `<div class="grid">${vids.slice(0, 30).map((x) => `<a href="/v/$
  * En cas d'alerte ou de SOS, les contacts de sécurité (membres Lite Foil choisis) reçoivent une notification. */
 function hav(a, b) { const R = 6371000, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
   const x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); }
+function liveFpClean(fp) {
+  const pts = (Array.isArray(fp && fp.pts) ? fp.pts : []).filter((p) => p && isFinite(+p.lat) && isFinite(+p.lon) && Math.abs(+p.lat) <= 90 && Math.abs(+p.lon) <= 180).slice(0, 40)
+    .map((p) => ({ n: String(p.n || "").slice(0, 40), c: String(p.c || "").replace(/[^A-Za-z0-9-]/g, "").slice(0, 8), lat: +(+p.lat).toFixed(5), lon: +(+p.lon).toFixed(5) }));
+  return pts.length ? { pts } : null;
+}
+let LIVE_AIR_HTML = null;
+function liveAirHtml(sid, ps) {
+  if (LIVE_AIR_HTML == null) { try { LIVE_AIR_HTML = fs.readFileSync(require("path").join(__dirname, "live-air.html"), "utf8"); } catch (e) { LIVE_AIR_HTML = ""; } }
+  return LIVE_AIR_HTML ? LIVE_AIR_HTML.split("__SID__").join(sid).split("__PS__").join(ps).split("__ICON__").join(escH(SHARE_ICON)) : "";
+}
 async function liveApi(req, res, sid) {
   res.set("Access-Control-Allow-Origin", "*"); res.set("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(204).send("");
@@ -813,13 +823,19 @@ async function liveApi(req, res, sid) {
   let lt = +L.lt || 0, dist = +L.dist || 0, prev = L.last || null, kept = L.kp || null; const add = {};
   for (const q of pts) {
     const pt = { lat: +(+q.lat).toFixed(6), lng: +(+q.lng).toFixed(6), t: +q.t || Date.now(), spd: isFinite(+q.spd) ? Math.round(+q.spd * 10) / 10 : 0 };
+    if (q.alt != null && isFinite(+q.alt) && Math.abs(+q.alt) < 20000) pt.alt = Math.round(+q.alt);
+    if (q.hdg != null && isFinite(+q.hdg)) pt.hdg = ((Math.round(+q.hdg) % 360) + 360) % 360;
+    if (q.vz != null && isFinite(+q.vz) && Math.abs(+q.vz) < 100) pt.vz = Math.round(+q.vz * 10) / 10;
     if (prev && pt.t <= (+prev.t || 0)) continue;
     if (prev) { const d = hav(prev, pt); if (d < 5000) dist += d; }
     prev = pt;
-    if (pt.t - lt >= 3000 && (!kept || hav(kept, pt) >= 3 || pt.t - lt >= 30000)) { lt = pt.t; kept = { lat: pt.lat, lng: pt.lng }; add[db.ref("liveTrk/" + sid).push().key] = [pt.lat, pt.lng]; }
+    if (pt.t - lt >= 3000 && (!kept || hav(kept, pt) >= 3 || pt.t - lt >= 30000)) { lt = pt.t; kept = { lat: pt.lat, lng: pt.lng }; add[db.ref("liveTrk/" + sid).push().key] = pt.alt != null ? [pt.lat, pt.lng, pt.alt] : [pt.lat, pt.lng]; }
   }
   if (Object.keys(add).length) await db.ref("liveTrk/" + sid).update(add);
   if (prev && prev !== L.last) { up.last = prev; up.lt = lt; up.dist = Math.round(dist); if (kept) up.kp = kept; }
+  if (b.rem != null && isFinite(+b.rem) && +b.rem >= 0) up.rem = Math.round(+b.rem);
+  // plan de vol (route prévue), renvoyé par l'appli quand le pilote change de route en vol
+  if (L.air && b.fp && Array.isArray(b.fp.pts)) { const fp = liveFpClean(b.fp); if (fp) up.fp = fp; }
   if (b.soc != null && isFinite(+b.soc)) up.soc = Math.max(0, Math.min(100, Math.round(+b.soc)));
   const st = String(b.status || "");
   if (["alert", "sos", "ok", "ended"].indexOf(st) >= 0) {
@@ -848,11 +864,13 @@ async function livePage(req, res, sid, asJson, base) {
     const trk = Object.values((await db.ref("liveTrk/" + sid).get()).val() || {});
     const step = Math.max(1, Math.ceil(trk.length / 600));
     return res.json({ ok: true, ps: L.ps || "Membre", cat: L.cat || "", status: L.status || "active", t0: +L.t0 || 0, upd: +L.upd || 0, now: Date.now(), last: L.last || null,
-      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, trk: trk.filter((x, i) => i % step === 0 || i === trk.length - 1) });
+      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, air: !!L.air, fp: L.air ? liveFpClean(L.fp) : null, rem: L.rem == null ? null : +L.rem, trk: trk.filter((x, i) => i % step === 0 || i === trk.length - 1) });
   }
   if (!L) return res.status(404).send(sharePageHtml({ title: "Suivi introuvable · Lite Foil", desc: "Ce suivi n'existe plus.", url: base + "/l/" + sid, app: SHARE_APP,
     body: `<div class="pf"><div class="empty">Ce suivi de sortie n'existe pas ou a expiré.</div></div>` }));
   const ps = escH(L.ps || "Membre");
+  // vol ULM / avion : page de suivi en 3D (relief, route, altitude) ; « ?2d=1 » garde la page simple (appareil sans 3D)
+  if (L.air && String(req.query["2d"] || "") !== "1") { const page = liveAirHtml(sid, ps); if (page) return res.send(page); }
   // numéro de secours selon la sortie ; les versions de l'appli qui ne l'envoient pas encore sont devinées d'après l'activité
   const emG = (c) => /^SOS · Blessure/.test(c) ? "15" : /^SOS · Agression/.test(c) ? "17" : /^SOS · Autre/.test(c) ? "112" : /^SOS · En mer/.test(c) ? "196"
     : /skate|snow|roller/i.test(c) ? "112" : /foil|surf|kite|wing|paddle|sup\b|nage|voile|jet|kayak|cano|bodyboard|d[ée]riveur|bateau/i.test(c) ? "196" : "112";
