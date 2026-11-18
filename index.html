@@ -31,7 +31,13 @@ body.uni-pilote .bnav .bn-comm,body.uni-pilote .bnav button.on{color:#1f4fc4}bod
 body.uni-pilote .bnav button.on::after{background:#1f4fc4}body.uni-efoil .bnav button.on::after{background:#a02bb0}
 body.uni-pilote .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#3d8bff,#10276b);box-shadow:0 10px 22px rgba(29,79,184,.4)}body.uni-efoil .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#ff5fd2,#7a1a8c);box-shadow:0 10px 22px rgba(194,55,159,.4)}
 /* accueil par univers */
-body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport{display:none !important}
+body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-bonride #tab-dash>.uh-sport{display:none !important}
+#tab-dash>#homeBr{display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
+#bnav .bn-br{display:none}body.uni-bonride #bnav [data-nav="bonride"]{display:flex}
+body.uni-bonride #bnav [data-nav="meteo"],body.uni-bonride #bnav [data-nav="tracking"],body.uni-bonride #bnav [data-nav="videos"],body.uni-bonride #bnav [data-nav="fil"]{display:none}
+body.uni-bonride #bnav [data-nav="dash"]{order:1}body.uni-bonride #bnav [data-nav="communaute"]{order:2}body.uni-bonride #bnav [data-nav="bonride"]{order:3}
+body.uni-bonride .bnav .bn-comm,body.uni-bonride .bnav button.on{color:#a86a00}body.uni-bonride .bnav button.on::after{background:#a86a00}body.uni-bonride .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#f5c04a,#8a5a00);box-shadow:0 10px 22px rgba(168,106,0,.4)}
+body.uni-bonride{--sb1:#d99a1e;--sb2:#5c3d07;--sb3:#150e02;--sl:#ffe9b0;--sc:#8a5a00;--sg:rgba(245,192,74,.25)}
 .uh-pane{display:none}body.uni-pilote #uhPilot,body.uni-efoil #uhEfoil{display:block}
 .uh-hero{position:relative;height:262px;border-radius:28px;overflow:hidden;margin:0 0 14px;background:#03060f;color:#fff;touch-action:pan-y;user-select:none;-webkit-user-select:none;box-shadow:0 14px 34px rgba(6,14,34,.28)}
 .uh-hero[hidden]{display:none}.uh-sky,.uh-stars{position:absolute;inset:0;opacity:0;pointer-events:none}
@@ -2397,6 +2403,7 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   <nav class="bnav" id="bnav" aria-label="Menu">
     <button data-nav="ulm" class="bn-uni"><svg viewBox="0 0 24 24"><path d="M12 3c.9 0 1.500 1.100 1.500 2.500V10l7 4.200v2l-7-2.100V18l2.200 1.700V21L12 20l-3.700 1v-1.300L10.500 18v-3.900l-7 2.100v-2l7-4.200V5.500C10.500 4.100 11.100 3 12 3z"/></svg>Vol</button>
     <button data-nav="ultra" class="bn-ef"><svg viewBox="0 0 24 24"><path d="M3 9c5-2.500 13-2.500 18 0-4 2-14 2-18 0z"/><path d="M12 10.500V18M7.500 18.500h9"/></svg>Ma planche</button>
+    <button data-nav="bonride" class="bn-br"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>Annonces</button>
     <button data-nav="dash" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Accueil</button>
     <button data-nav="meteo"><svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h8"/></svg>Météo</button>
     <button data-nav="communaute" class="bn-comm"><span class="bn-big"><svg viewBox="0 0 24 24"><path d="M17 20v-2a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2"/><circle cx="10.5" cy="8" r="3.2"/><path d="M20 20v-2a3 3 0 0 0-2.3-2.9M15.5 5a3.2 3.2 0 0 1 0 6"/></svg></span>SwipChat<i class="bn-badge" id="bnCommBadge" hidden></i></button>
@@ -9710,7 +9717,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function lfoFinish(){ lfoDone=true; try{ localStorage.setItem("lf.onb.ok","1"); }catch(e){} lfoHide(); try{ var t=document.querySelector('[data-tab="dash"]'); if(t) t.click(); }catch(e){} setTimeout(function(){ if(!uniGet()) uniChoose(true); }, 350); }
   // ---------- univers (18/11) : « sport » (multisport), « pilote » (ULM / Avion), « efoil » (Lite Foil Ultra). Plusieurs possibles, un seul actif à la fois.
   // Avec deux univers ou plus, l'accueil porte une sphère qui tourne : l'univers placé devant commande l'accueil, le fil et le menu du bas.
-  var UNI_K=["nautique","terre","pilote","efoil"];
+  var UNI_K=["nautique","terre","pilote","efoil","bonride"];
   var UNI={
     nautique:{ n:"Sport nautique", t:"Sport nautique", s:"Wing, kite, surf, voile, paddle…", a:"#2bd4c4", b:"#0b6d72", sky:"radial-gradient(110% 80% at 50% 62%,#12706b 0%,#0a3540 48%,#041318 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
@@ -9723,10 +9730,14 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       li:["GPS avion, carte 3D avec relief","Alertes relief, trafic, zones, nuit","Carnet de vol, vol suivi en direct"] },
     efoil:{ n:"Lite Foil", t:"Lite Foil", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
-      li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] } };
+      li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] },
+    bonride:{ n:"Le Bon Ride", t:"Le Bon Ride", s:"Matériel neuf, occasion et location", a:"#f5c04a", b:"#8a5a00", sky:"radial-gradient(110% 80% at 50% 62%,#a87412 0%,#3d2a06 48%,#120c02 100%)",
+      ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
+      li:["Annonces de matériel neuf et d'occasion","Location entre membres","Dépose ton annonce en quelques minutes"] } };
   function uniList(){ var a=[]; try{ a=JSON.parse(localStorage.getItem("lf.unis")||"[]")||[]; }catch(e){ a=[]; }
     if(!Array.isArray(a) || !a.length){ var v=""; try{ v=localStorage.getItem("lf.univers")||""; }catch(e){} a = v==="sport" ? ["sport"] : v==="pilote" ? ["pilote"] : v==="both" ? ["sport","pilote"] : []; }
     if(a.indexOf("sport")>=0){ var m=uniMil(); if(!m.length) m=["nautique","terre"]; a=a.filter(function(x){ return x!=="sport"; }).concat(m); try{ localStorage.setItem("lf.unis", JSON.stringify(UNI_K.filter(function(k){ return a.indexOf(k)>=0; }))); }catch(e){} }
+    if(a.length && a.indexOf("bonride")<0){ var bf=""; try{ bf=localStorage.getItem("lf.unis.br")||""; }catch(e){} if(!bf){ a=a.concat(["bonride"]); try{ localStorage.setItem("lf.unis.br","1"); localStorage.setItem("lf.unis", JSON.stringify(UNI_K.filter(function(k){ return a.indexOf(k)>=0; }))); }catch(e){} } }
     return UNI_K.filter(function(k){ return a.indexOf(k)>=0; }); }
   // univers sportifs qui correspondent aux sports choisis par le membre
   function uniMil(){ var m=[]; try{ mySports.forEach(function(k){ var s=LF_SP[k]; if(!s || k==="efoil" || k==="ulm") return; var x = s.mil==="terre" ? "terre" : s.mil==="mer" ? "nautique" : ""; if(x && m.indexOf(x)<0) m.push(x); }); }catch(e){} return m; }
@@ -9736,7 +9747,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // valeur attendue par le reste de l'appli : "" tant que rien n'est choisi
   function uniGet(){ var l=uniList(); if(!l.length) return ""; return uniCur()==="pilote" ? "pilote" : (l.indexOf("pilote")>=0 ? "both" : "sport"); }
   function uniSave(list, cur){ list=UNI_K.filter(function(k){ return list.indexOf(k)>=0; }); if(list.indexOf(cur)<0) cur=list[0]||"";
-    try{ localStorage.setItem("lf.unis", JSON.stringify(list)); localStorage.setItem("lf.uni.cur", cur); localStorage.setItem("lf.univers", cur==="pilote" ? "pilote" : (list.indexOf("pilote")>=0 ? "both" : "sport")); }catch(e){} }
+    try{ localStorage.setItem("lf.unis", JSON.stringify(list)); localStorage.setItem("lf.unis.br","1"); localStorage.setItem("lf.uni.cur", cur); localStorage.setItem("lf.univers", cur==="pilote" ? "pilote" : (list.indexOf("pilote")>=0 ? "both" : "sport")); }catch(e){} }
   function uniApply(go){ var c=uniCur(), l=uniList(), B=document.body;
     uniCls(c); B.classList.toggle("uni-multi", l.length>1);
     try{ if(window.ulmSync) window.ulmSync(); }catch(e){}
@@ -9749,11 +9760,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(add.length){ add.forEach(function(k){ mySports.push(k); }); saveMySports(); try{ if(profileReady() && me.pseudo) claimProfile(me.pseudo,true).catch(function(){}); }catch(e){} }
     uniApply(true); var c=uniCur();
     var d=document.createElement("div"); d.className="uni-dim"; var h=document.createElement("div"); h.className="uni-hi";
-    h.innerHTML='<span class="uni-hi-ic" style="background:linear-gradient(145deg,'+UNI[c].a+','+UNI[c].b+')"><svg viewBox="0 0 24 24">'+UNI[c].ic+'</svg></span><b>'+(list.length>1?"Tes univers sont prêts":c==="pilote"?"Bienvenue à bord":c==="efoil"?"Bienvenue chez Lite Foil":c==="terre"?"Bonne sortie":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
+    h.innerHTML='<span class="uni-hi-ic" style="background:linear-gradient(145deg,'+UNI[c].a+','+UNI[c].b+')"><svg viewBox="0 0 24 24">'+UNI[c].ic+'</svg></span><b>'+(list.length>1?"Tes univers sont prêts":c==="pilote"?"Bienvenue à bord":c==="efoil"?"Bienvenue chez Lite Foil":c==="bonride"?"Bienvenue sur Le Bon Ride":c==="terre"?"Bonne sortie":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
     document.body.appendChild(d); document.body.appendChild(h); setTimeout(function(){ d.remove(); h.remove(); }, 2300); }
   // choix des univers : un ou plusieurs
   function uniChoose(first){ if(document.querySelector(".uni-ov")) return; var sel={}, l0=uniList(); l0.forEach(function(k){ sel[k]=1; });
-    if(!l0.length){ if(mySports.indexOf("ulm")>=0) sel.pilote=1; if(mySports.indexOf("efoil")>=0) sel.efoil=1; uniMil().forEach(function(k){ sel[k]=1; }); }
+    if(!l0.length){ if(mySports.indexOf("ulm")>=0) sel.pilote=1; if(mySports.indexOf("efoil")>=0) sel.efoil=1; uniMil().forEach(function(k){ sel[k]=1; }); sel.bonride=1; }
     var ov=document.createElement("div"); ov.className="uni-ov un2";
     var paint=function(){ var n=Object.keys(sel).length;
       ov.innerHTML=(first?'':'<button type="button" class="uni-x" aria-label="Fermer">✕</button>')+'<h2>Choisis tes univers</h2><p>Un seul ou plusieurs : l\'accueil s\'adapte à ce que tu pratiques. Tu pourras changer quand tu veux dans ton profil.</p>'
@@ -9826,6 +9837,12 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Mon Lite Foil · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
         +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit"); uhBt(); }
     else ef.innerHTML="";
+    var br=$("uhBr"); if(!br){ br=document.createElement("div"); br.id="uhBr"; br.className="uh-pane"; ef.parentNode.insertBefore(br, ef.nextSibling); }
+    if(c==="bonride"){ br.innerHTML='<button type="button" class="uh-cta" data-uh="go" data-to="bonride" style="background:linear-gradient(135deg,#f5c04a,#a86a00);box-shadow:0 14px 28px rgba(168,106,0,.34)">'+uhIc('<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>')+'Voir les annonces</button>'
+        +uhRow("go","bonride","#8a5a00","#fbf0d6",'<path d="M12 5v14M5 12h14"/>',"Vendre ou louer mon matériel","Dépose ton annonce en quelques minutes")
+        +uhRow("go","bonride","#8a5a00","#fbf0d6",'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',"Trouver du matériel","Neuf, occasion et location entre membres")
+        +'<div class="uh-brnote">Les coordonnées des vendeurs sont visibles uniquement par les membres connectés.</div>'; }
+    else br.innerHTML="";
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
   function uhBt(){ var el=$("uhBt"); if(!el) return; var D=window.__lfDash||{}, cn=D.conn||{}, soc=(D.soc!=null && isFinite(+D.soc)) ? Math.round(+D.soc)+" %" : "";
     var it=[["batterie","Batterie",cn.bat,soc,'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3M10.500 11v3M14 11v3"/>'],["moteur","Moteur VESC",cn.vesc,"",'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M5.600 18.400l2.100-2.100M16.300 7.700l2.100-2.100"/>'],
