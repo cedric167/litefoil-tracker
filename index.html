@@ -9809,6 +9809,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(k==="pilotes"){ if(window.__nearOpen) window.__nearOpen("ulm"); return; }
       if(k==="shop"){ window.open("https://litefoil.fr/","_blank","noopener"); return; }
       if(k==="uni"){ uniChoose(false); return; }
+      if(k==="ext"){ try{ window.open(b.dataset.to, "_blank", "noopener"); }catch(x){ location.href=b.dataset.to; } return; }
       if(k==="br"){ var w=b.dataset.to, n=0; lfGoTab("bonride"); (function tryGo(){ if(window.LFBonRide && window.LFBonRide.go && document.querySelector("#tab-bonride .br-hero, #tab-bonride .br-back")){ window.LFBonRide.go(w); return; } if(++n<40) setTimeout(tryGo, 200); })(); return; }
       if(k==="cfg"){ if(window.__efCfg) window.__efCfg.open(); return; }
       if(k==="go"){ var t=document.querySelector('[data-goto="'+b.dataset.to+'"]'); if(t) t.click(); else lfGoTab(b.dataset.to); return; } });
@@ -9887,7 +9888,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       pil.innerHTML='<button type="button" class="uh-cta" data-uh="plan" style="background:linear-gradient(135deg,#3d8bff,#10276b);box-shadow:0 14px 28px rgba(29,79,184,.34)">'+uhIc('<circle cx="12" cy="12" r="9"/><path d="M15.500 8.500l-2 5-5 2 2-5z"/>')+'Préparer mon plan de vol</button>'
         +'<div class="uh-g2"><button type="button" class="uh-tile" data-uh="wx"><span class="uh-k">Météo terrain</span><b>METAR · TAF</b><small>Vent sur la piste, prévisions</small></button><button type="button" class="uh-tile" data-uh="plan"><span class="uh-k">Carnet de vol</span><b>'+(lb.length ? (mn>=60?Math.floor(mn/60)+" h "+(mn%60<10?"0":"")+(mn%60):mn+" min") : "0 h")+'</b><small>'+lb.length+' vol'+(lb.length>1?"s":"")+' enregistré'+(lb.length>1?"s":"")+'</small></button></div>'
         +uhRow("vols","","#1f4fc4","#e6efff",'<path d="M3 20l6.500-11 4 6.500 2-3L21 20z"/>',"Revoir mes vols en 3D", last ? "Dernier : "+esc(String(last.from||"").split(" ")[0])+" → "+esc(String(last.to||"").split(" ")[0]) : "Après ta première navigation")
-        +uhRow("pilotes","","#0b6d8c","#e3f6fb",'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',"Pilotes autour de moi","La communauté ULM / Avion sur la sphère"); }
+        +uhRow("pilotes","","#0b6d8c","#e3f6fb",'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',"Pilotes autour de moi","La communauté ULM / Avion sur la sphère")
+        +'<div class="uh-k" style="margin:14px 6px 8px">Cartes officielles</div>'
+        +'<button type="button" class="uh-row" data-uh="ext" data-to="https://aviation.meteo.fr/"><span class="uh-ri" style="background:#e6efff;color:#1f4fc4">'+uhIc('<path d="M7 18a4 4 0 0 1-.500-7.970A5.500 5.500 0 0 1 17.200 9 4.500 4.500 0 0 1 17 18z"/>')+'</span><span class="uh-rt"><b>Carte TEMSI</b><small>Météo-France Aéroweb · compte gratuit demandé</small></span><span class="uh-ch">↗</span></button>'
+        +'<button type="button" class="uh-row" data-uh="ext" data-to="https://www.sia.aviation-civile.gouv.fr/schedules"><span class="uh-ri" style="background:#fdeaea;color:#c0392b">'+uhIc('<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 16.500v.500"/>')+'</span><span class="uh-rt"><b>Carte AZBA</b><small>SIA · activation des zones très basse altitude (RTBA)</small></span><span class="uh-ch">↗</span></button>'
+        +'<div class="uh-brnote">Ces cartes s’ouvrent sur les sites officiels. Elles ne remplacent pas les NOTAM ni le SUP AIP.</div>'; }
     else pil.innerHTML="";
     if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Mon Lite Foil · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
         +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit"); uhBt(); }
@@ -10929,6 +10934,7 @@ body.lf-defi #defiTop{display:flex}
 #defiTop b{font-size:18px;font-weight:900}
 #sosFab{display:none;position:fixed;right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:850;width:54px;height:54px;min-height:0;padding:0;border:2px solid #fff;border-radius:50%;background:#e8384f;color:#fff;font:inherit;font-weight:900;font-size:13.5px;letter-spacing:.06em;cursor:pointer;box-shadow:0 8px 20px rgba(232,56,79,.45)}
 body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.uni-efoil #sosFab{bottom:calc(18px + env(safe-area-inset-bottom,0px))}body.lf-defi #sosFab{display:none}
+#sosFab{touch-action:none;-webkit-user-select:none;user-select:none}#sosFab.mv{transform:scale(1.12);box-shadow:0 14px 30px rgba(232,56,79,.55);cursor:grabbing}
 #sosFab.on,.sos-in.on{animation:sosP 1.1s infinite}@keyframes sosP{50%{box-shadow:0 0 0 9px rgba(232,56,79,.25)}}
 .sos-in{margin-left:auto;flex:none;min-height:0;height:32px!important;width:auto!important;padding:0 13px!important;border:0!important;border-radius:999px!important;background:#e8384f!important;color:#fff;font:inherit;font-weight:900;font-size:12.5px!important;letter-spacing:.08em;cursor:pointer}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
@@ -11084,7 +11090,16 @@ body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.un
   // SOS partout : même action que le bouton de la barre du haut
   var sosGo=function(){ var b=document.getElementById("abSos"); if(b) b.click(); };
   var fab=document.createElement("button"); fab.type="button"; fab.id="sosFab"; fab.setAttribute("aria-label","SOS"); fab.setAttribute("data-no-i18n",""); fab.textContent="SOS"; document.body.appendChild(fab);
-  fab.addEventListener("click", sosGo);
+  // déplaçable : on le fait glisser où l'on veut, un simple appui ouvre le SOS
+  var fd=null, fmv=false, fpos=function(x,y,save){ var w=fab.offsetWidth||54, h=fab.offsetHeight||54, W=window.innerWidth, H=window.innerHeight; x=Math.max(6, Math.min(W-w-6, x)); y=Math.max(6, Math.min(H-h-6, y));
+    fab.style.left=x+"px"; fab.style.top=y+"px"; fab.style.right="auto"; fab.style.bottom="auto"; if(save){ try{ localStorage.setItem("lf.sos.pos", JSON.stringify({ x:x/W, y:y/H })); }catch(e){} } };
+  var frest=function(){ try{ var p=JSON.parse(localStorage.getItem("lf.sos.pos")||"null"); if(p && isFinite(p.x) && isFinite(p.y)) fpos(p.x*window.innerWidth, p.y*window.innerHeight, false); }catch(e){} };
+  frest(); window.addEventListener("resize", frest);
+  fab.addEventListener("pointerdown", function(e){ var r=fab.getBoundingClientRect(); fd={ id:e.pointerId, x:e.clientX, y:e.clientY, l:r.left, t:r.top }; fmv=false; try{ fab.setPointerCapture(e.pointerId); }catch(x){} });
+  fab.addEventListener("pointermove", function(e){ if(!fd || e.pointerId!==fd.id) return; var dx=e.clientX-fd.x, dy=e.clientY-fd.y; if(!fmv && Math.abs(dx)+Math.abs(dy)<9) return; fmv=true; fab.classList.add("mv"); e.preventDefault(); fpos(fd.l+dx, fd.t+dy, false); });
+  var fend=function(e){ if(!fd || e.pointerId!==fd.id) return; if(fmv){ var r=fab.getBoundingClientRect(); fpos(r.left, r.top, true); } fd=null; fab.classList.remove("mv"); };
+  fab.addEventListener("pointerup", fend); fab.addEventListener("pointercancel", fend);
+  fab.addEventListener("click", function(e){ if(fmv){ fmv=false; e.preventDefault(); e.stopPropagation(); return; } sosGo(); });
   document.addEventListener("click", function(e){ var s=e.target.closest && e.target.closest("[data-sos]"); if(!s) return; e.stopPropagation(); defiClose(); var ov=document.querySelector(".efc-ov"); if(ov) ov.remove(); sosGo(); }, true);
   setInterval(function(){ var b=document.getElementById("abSos"); if(b) fab.classList.toggle("on", b.classList.contains("on")); }, 2000);
   try{ new MutationObserver(function(){ if((document.body.dataset.tab||"dash")!=="dash") defiClose(); }).observe(document.body, { attributes:true, attributeFilter:["data-tab"] }); }catch(e){}
