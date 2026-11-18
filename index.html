@@ -32,7 +32,8 @@ body.uni-pilote .bnav button.on::after{background:#1f4fc4}body.uni-efoil .bnav b
 body.uni-pilote .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#3d8bff,#10276b);box-shadow:0 10px 22px rgba(29,79,184,.4)}body.uni-efoil .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#ff5fd2,#7a1a8c);box-shadow:0 10px 22px rgba(194,55,159,.4)}
 /* accueil par univers */
 body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-bonride #tab-dash>.uh-sport{display:none !important}
-.uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#8a5a00;border:1.5px solid #ecd9a6;box-shadow:0 6px 16px rgba(138,90,0,.1)}#tab-dash>#homeBr{display:none!important}#mtoUlm{display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
+.uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#8a5a00;border:1.5px solid #ecd9a6;box-shadow:0 6px 16px rgba(138,90,0,.1)}#tab-dash>#homeBr{display:none!important}#mtoUlm{display:none!important}
+body.uni-nautique #phSeg [data-m]:not([data-m="mer"]),body.uni-efoil #phSeg [data-m]:not([data-m="mer"]),body.uni-terre #phSeg [data-m]:not([data-m="terre"]),body.uni-pilote #phSeg [data-m]:not([data-m="air"]){display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
 #bnav .bn-br{display:none}body.uni-bonride #bnav [data-nav="bonride"]{display:flex}
 body.uni-bonride #bnav [data-nav="meteo"],body.uni-bonride #bnav [data-nav="tracking"],body.uni-bonride #bnav [data-nav="videos"],body.uni-bonride #bnav [data-nav="fil"]{display:none}
 body.uni-bonride #bnav [data-nav="dash"]{order:1}body.uni-bonride #bnav [data-nav="communaute"]{order:2}body.uni-bonride #bnav [data-nav="bonride"]{order:3}
@@ -4369,6 +4370,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var tkClose=function(){ if(sheet) sheet.hidden=true; };
     if(sheet){ sheet.addEventListener("click", function(e){ if(e.target===sheet) tkClose(); }); var sx=$("tkSheetX"); if(sx) sx.addEventListener("click", tkClose); }
     var tcur=$("tkCur"); if(tcur) tcur.addEventListener("click", tkOpen);
+    window.__phSet=function(m){ try{ if(!phTimer && m!==phMilieu) phSetMilieu(m); }catch(e){} };
     var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(!btn) return; if(btn.dataset.m!==phMilieu) phSetMilieu(btn.dataset.m); tkOpen(); });
     var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; tkPaint(); });
     var chips=$("tkChips"); if(chips && sel) chips.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"); if(!b || phTimer) return; sel.value=b.dataset.v; sel.dispatchEvent(new Event("change")); tkClose(); });
@@ -11001,6 +11003,10 @@ body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.un
       if(b && b.dataset.nav==="ulm"){ go("nav"); return; }
       if(e.target.closest("#tab-ulm .ul-mode")) setTimeout(mark, 120); }, true);
     setInterval(mark, 800); })();
+  // Tracking : le milieu (mer / terre / air) est celui de l'univers en cours
+  (function(){ var want=function(){ var B=document.body.classList; return B.contains("uni-terre") ? "terre" : B.contains("uni-pilote") ? "air" : (B.contains("uni-nautique") || B.contains("uni-efoil")) ? "mer" : ""; };
+    var last="", ap=function(){ var m=want(); if(!m || !window.__phSet) return; var b=document.querySelector('#phSeg [aria-selected="true"]'); if(b && b.dataset.m===m && last===m) return; last=m; window.__phSet(m); };
+    try{ new MutationObserver(ap).observe(document.body, { attributes:true, attributeFilter:["class","data-tab"] }); }catch(e){} setTimeout(ap, 1500); setTimeout(ap, 5000); })();
   // liens « Activités » de l'accueil : ouverts sur le milieu de l'univers en cours
   document.addEventListener("click", function(e){ var l=e.target.closest && e.target.closest('#tab-dash a[href="activites/index.html"]'); if(!l) return; var B=document.body.classList, f=B.contains("uni-terre") ? "terre" : B.contains("uni-pilote") ? "air" : B.contains("uni-nautique") ? "mer" : ""; if(!f) return; e.preventDefault(); location.href="activites/index.html?f="+f; }, true);
   // planètes des univers : chaque image est calculée une fois (sphère éclairée, relief procédural), puis réutilisée
