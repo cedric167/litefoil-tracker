@@ -61,7 +61,8 @@ body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport{display:n
 .uh-bt button{position:relative;background:#fff;border:1px solid var(--line-soft,#eef2f5);border-radius:18px;padding:13px 3px 10px;text-align:center;font:inherit;color:#8a1f9c;cursor:pointer;box-shadow:0 6px 18px rgba(13,40,45,.06);min-height:0}
 .uh-bt svg{display:block;margin:0 auto 6px;width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.uh-bt b{display:block;font-size:11.5px;font-weight:900;color:#0e1417;line-height:1.2}.uh-bt small{display:block;font-size:10px;color:#66727d;font-weight:700;margin-top:2px}
 .uh-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#c7d0d7}.uh-dot.on{background:#2bd47a;box-shadow:0 0 0 3px rgba(43,212,122,.2)}
-body.uni-sport #tab-dash .home-mat{display:none!important}.st-bar.fl-st{margin:6px 0 10px;padding:4px 2px 6px}.uh-feed{margin-top:6px}.uh-feed[hidden]{display:none}.uh-more{display:block;width:100%;margin:4px 0 8px;border:1.5px solid #d7e0e6;background:#fff;color:#0e1417;border-radius:16px;padding:13px;font:inherit;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:none;min-height:0}
+body.uni-sport #tab-dash .home-mat{display:none!important}.hs-ter{display:none}body.uni-terre .hs-eau{display:none}body.uni-terre .hs-ter{display:inline}body.uni-terre #tab-dash .hc-wv,body.uni-terre #tab-dash>.home-shop,body.uni-terre #tab-dash .quick [data-goto="ultra"]{display:none!important}
+body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.uni-terre .bnav button.on::after{background:#c2611a}body.uni-terre .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#ffb347,#b4541a);box-shadow:0 10px 22px rgba(180,84,26,.4)}.st-bar.fl-st{margin:6px 0 10px;padding:4px 2px 6px}.uh-feed{margin-top:6px}.uh-feed[hidden]{display:none}.uh-more{display:block;width:100%;margin:4px 0 8px;border:1.5px solid #d7e0e6;background:#fff;color:#0e1417;border-radius:16px;padding:13px;font:inherit;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:none;min-height:0}
 /* choix des univers */
 .un2-card{display:flex;align-items:center;gap:14px;width:100%;max-width:440px;margin-top:12px;padding:14px;border-radius:22px;border:1.5px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font:inherit;text-align:left;cursor:pointer;min-height:0;box-shadow:none;transition:border-color .15s,background .15s}
 .un2-card.on{border-color:var(--ua);background:rgba(255,255,255,.12);box-shadow:0 0 0 1px var(--ua),0 12px 30px rgba(0,0,0,.35)}
@@ -2410,10 +2411,10 @@ body.uni-sport #tab-dash .home-mat{display:none!important}.st-bar.fl-st{margin:6
     <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
       <div class="hc-top"><span class="hc-lbl">Conditions maintenant</span><span class="hc-spot" id="hcSpot">—</span></div>
       <div class="hc-main">
-        <div class="hc-wind"><span class="hc-arrow" id="hcArrow">↑</span><b id="hcWind">—</b><small>nds</small></div>
+        <div class="hc-wind"><span class="hc-arrow" id="hcArrow">↑</span><b id="hcWind">—</b><small id="hcUnit">nds</small></div>
         <div class="hc-side"><span id="hcDir">Vent —</span><span id="hcGust">Rafales —</span></div>
       </div>
-      <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
+      <div class="hc-row"><span class="hc-wv">🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
     </button>
     <div class="home-wind" id="homeWind" hidden></div>
     <div class="qk-head"><span class="qk-badge"><svg viewBox="0 0 24 24"><defs><linearGradient id="qg0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f8cff"/><stop offset="1" stop-color="#0a2fb8"/></linearGradient></defs><path d="M13.9 1.9c.5-.7 1.55-.25 1.4.6l-1.2 6.9h5c.8 0 1.25.9.8 1.55l-9.8 11.2c-.55.65-1.6.15-1.4-.7l1.35-6.65H5.1c-.8 0-1.25-.9-.75-1.55z" fill="url(#qg0)"/></svg></span><b>Raccourcis</b><i></i></div>
@@ -2440,7 +2441,7 @@ body.uni-sport #tab-dash .home-mat{display:none!important}.st-bar.fl-st{margin:6
       <div class="home-stats">
         <div><b id="hsN">0</b><span>sorties</span></div>
         <div><b id="hsKm">0</b><span>km</span></div>
-        <div><b id="hsH">0 h</b><span>sur l'eau</span></div>
+        <div><b id="hsH">0 h</b><span><span class="hs-eau">sur l'eau</span><span class="hs-ter">d'activité</span></span></div>
       </div>
     </div>
 
@@ -8609,11 +8610,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // à quel univers appartient une publication : le sport de la session d'abord, sinon l'univers noté à la publication, sinon les sports de l'auteur
   function fdUniOk(it, uni){ if(!uni) return true; var p=it.p, u=p?p.uid:(it.v?it.v.uid:""), au=String((profileMap[u]||{}).sports||"").split(",").filter(Boolean);
     var sp=(p && p.sess) ? String(p.sess.sport||"").toLowerCase() : "", tag=(p && p.uni) ? String(p.uni) : "";
-    if(sp==="ulm") return uni==="pilote"; if(sp==="efoil") return uni==="efoil" || uni==="sport"; if(sp) return uni==="sport";
-    if(tag) return tag===uni || (uni==="sport" && tag==="efoil");
+    var spt=(uni==="nautique" || uni==="terre"), ml=function(k){ var s=LF_SP[k]; return !s ? "" : s.mil==="terre" ? "terre" : s.mil==="mer" ? "nautique" : ""; };
+    if(sp==="ulm") return uni==="pilote"; if(sp==="efoil") return uni==="efoil" || uni==="nautique"; if(sp){ var mm=ml(sp); return mm ? mm===uni : spt; }
+    if(tag && tag!=="sport") return tag===uni || (uni==="nautique" && tag==="efoil");
+    if(spt){ var ms=au.map(ml).filter(Boolean); if(ms.length) return ms.indexOf(uni)>=0; }
     if(uni==="pilote") return au.indexOf("ulm")>=0; if(uni==="efoil") return au.indexOf("efoil")>=0;
     return !(au.length===1 && au[0]==="ulm"); }
-  function fdItems(uid, uni){ var o=fdItems0(uid); return uni ? o.filter(function(it){ return fdUniOk(it, uni); }).slice(0,8) : o; }
+  function fdItems(uid, uni){ var o=fdItems0(uid); return uni ? o.filter(function(it){ return fdUniOk(it, uni); }) : o; }
   function fdItems0(uid){ var c=fdCache[uid||"*"], seen={}, out=[];
     ((c&&c.posts)||[]).forEach(function(p){ var k=fdKey(p); if(seen[k] || blocked.has(p.uid)) return; seen[k]=1; out.push({t:+p.t||0, k:k, p:p}); });
     vidVisible().forEach(function(v){ if(v && v.id && (!uid || v.uid===uid)) out.push({t:+v.t||0, k:"v/"+v.id, v:v}); });
@@ -9196,10 +9199,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var mk=defiKm(myStats(),sp,prev); if(mk>0 && me.pseudo) out.push({uid:me.uid, km:mk});
     out.sort(function(a,b){ return b.km-a.km; }); return out; }
   function defiRank(uid, sp, prev){ var b=defiBoard(sp,prev); for(var i=0;i<b.length;i++){ if(b[i].uid===uid) return i+1; } return 0; }
-  function defiSports(prev){ var ks=["efoil"], add=function(k){ if(LF_SP[k] && ks.indexOf(k)<0) ks.push(k); }; if(LF_SP[defiSp]) add(defiSp); mySports.forEach(add);
+  function defiMil(){ var c=""; try{ c=uniCur(); }catch(e){} return c==="terre" ? "terre" : c==="nautique" ? "mer" : ""; }
+  function defiSports(prev){ var dm=defiMil(), ks=dm==="terre"?[]:["efoil"], add=function(k){ if(LF_SP[k] && ks.indexOf(k)<0 && (!dm || LF_SP[k].mil===dm)) ks.push(k); }; if(dm==="terre") setTimeout(function(){},0); if(LF_SP[defiSp]) add(defiSp); mySports.forEach(add);
     var cnt={}; for(var u in commStats){ var v=commStats[u]||{}, o=(v.week===(prev?prevWeekKey():weekKey()))?v.wS:(prev?v.pS:null); Object.keys(o||{}).forEach(function(k){ cnt[k]=(cnt[k]||0)+1; }); }
     Object.keys(((myStats()||{})[prev?"pS":"wS"])||{}).forEach(function(k){ cnt[k]=(cnt[k]||0)+1; });
-    Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; }).forEach(add); return ks; }
+    Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; }).forEach(add); if(dm==="terre"){ ["running","velo","rando"].forEach(add); } return ks; }
   function defiChips(prev){ return defiSports(prev).map(function(k){ return '<button type="button" data-dsp="'+k+'" class="'+(k===defiSp?"on":"")+'">'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</button>'; }).join(""); }
   function setDefiSp(k){ if(!LF_SP[k]) return; defiSp=k; try{ localStorage.setItem("lf.defi.sp",k); }catch(e){} }
   function goTrackSp(k){ if(k==="efoil") return goTrackEfoil(); try{ closeOverlay(); }catch(e){} var t=document.querySelector('.tab[data-tab="tracking"]'); if(t) t.click();
@@ -9235,7 +9239,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function spSvgBolt(){ return '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>'; }
   function renderDefi(){ var el=$("defiBox"); if(!el) return;
     var d=new Date(), mois=d.toLocaleDateString("fr-FR",{month:"long"}), end=new Date(weekStart(d).getTime()+7*86400000), left=Math.ceil((end-d)/86400000);
-    if(!LF_SP[defiSp]) defiSp="efoil"; var spn=LF_SP[defiSp].name;
+    if(!LF_SP[defiSp]) defiSp="efoil"; var dm0=defiMil(); if(dm0 && LF_SP[defiSp].mil!==dm0){ var dl=defiSports(false); if(dl[0]) defiSp=dl[0]; } var spn=LF_SP[defiSp].name;
     var b=defiBoard(defiSp), r=defiRank(me.uid,defiSp), mk=defiKm(myStats(),defiSp);
     var hl=Math.max(0,Math.floor((end-d)/3600000)), tl=left<=1?(hl+" h restantes"):("Fin dans "+Math.floor(hl/24)+" j "+(hl%24)+" h");
     var fk=function(km){ return (Math.round(km*10)/10).toLocaleString("fr-FR")+" km"; };
@@ -9705,11 +9709,14 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function lfoFinish(){ lfoDone=true; try{ localStorage.setItem("lf.onb.ok","1"); }catch(e){} lfoHide(); try{ var t=document.querySelector('[data-tab="dash"]'); if(t) t.click(); }catch(e){} setTimeout(function(){ if(!uniGet()) uniChoose(true); }, 350); }
   // ---------- univers (18/11) : « sport » (multisport), « pilote » (ULM / Avion), « efoil » (Lite Foil Ultra). Plusieurs possibles, un seul actif à la fois.
   // Avec deux univers ou plus, l'accueil porte une sphère qui tourne : l'univers placé devant commande l'accueil, le fil et le menu du bas.
-  var UNI_K=["sport","pilote","efoil"];
+  var UNI_K=["nautique","terre","pilote","efoil"];
   var UNI={
-    sport:{ n:"Multisport", t:"Multisport", s:"Wing, kite, surf, running, vélo…", a:"#2bd4c4", b:"#0b6d72", sky:"radial-gradient(110% 80% at 50% 62%,#12706b 0%,#0a3540 48%,#041318 100%)",
+    nautique:{ n:"Sport nautique", t:"Sport nautique", s:"Wing, kite, surf, voile, paddle…", a:"#2bd4c4", b:"#0b6d72", sky:"radial-gradient(110% 80% at 50% 62%,#12706b 0%,#0a3540 48%,#041318 100%)",
       ic:'<path d="M3 17c2 0 2-1.500 4-1.500S9 17 11 17s2-1.500 4-1.500 2 1.500 4 1.500 2-1.500 2-1.500"/><path d="M5 12l9-7 1 6z"/><path d="M4 21c2 0 2-1.500 4-1.500s2 1.500 4 1.500 2-1.500 4-1.500 2 1.500 4 1.500"/>',
-      li:["Tracking GPS de toutes tes sorties","Météo des spots, webcams, Swip","SOS et suivi par tes proches"] },
+      li:["Tracking GPS de tes sessions sur l'eau","Vent, vagues, webcams des spots","SOS et suivi par tes proches"] },
+    terre:{ n:"Sport terrestre", t:"Sport terrestre", s:"Running, vélo, rando, ski, skate…", a:"#ffb347", b:"#b4541a", sky:"radial-gradient(110% 80% at 50% 62%,#b8651d 0%,#4a230b 48%,#170a04 100%)",
+      ic:'<path d="M2.500 19.500l6.500-11 4 6.500 2.300-3.500 6.200 8z"/><circle cx="17.500" cy="5.500" r="2"/>',
+      li:["Tracking GPS : distance, allure, dénivelé","Météo du jour, vent et température","Défis de la semaine, SOS et suivi"] },
     pilote:{ n:"ULM / Avion", t:"ULM / Avion", s:"Plan de vol, GPS 3D, carnet", a:"#3d8bff", b:"#10276b", sky:"radial-gradient(110% 80% at 50% 62%,#1d4fb8 0%,#0b1d4c 48%,#040a1c 100%)",
       ic:'<path d="M12 3c.9 0 1.500 1.100 1.500 2.500V10l7 4.200v2l-7-2.100V18l2.200 1.700V21L12 20l-3.700 1v-1.300L10.500 18v-3.900l-7 2.100v-2l7-4.200V5.500C10.500 4.100 11.100 3 12 3z" fill="currentColor" stroke="none"/>',
       li:["GPS avion, carte 3D avec relief","Alertes relief, trafic, zones, nuit","Carnet de vol, vol suivi en direct"] },
@@ -9718,14 +9725,19 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] } };
   function uniList(){ var a=[]; try{ a=JSON.parse(localStorage.getItem("lf.unis")||"[]")||[]; }catch(e){ a=[]; }
     if(!Array.isArray(a) || !a.length){ var v=""; try{ v=localStorage.getItem("lf.univers")||""; }catch(e){} a = v==="sport" ? ["sport"] : v==="pilote" ? ["pilote"] : v==="both" ? ["sport","pilote"] : []; }
+    if(a.indexOf("sport")>=0){ var m=uniMil(); if(!m.length) m=["nautique","terre"]; a=a.filter(function(x){ return x!=="sport"; }).concat(m); try{ localStorage.setItem("lf.unis", JSON.stringify(UNI_K.filter(function(k){ return a.indexOf(k)>=0; }))); }catch(e){} }
     return UNI_K.filter(function(k){ return a.indexOf(k)>=0; }); }
+  // univers sportifs qui correspondent aux sports choisis par le membre
+  function uniMil(){ var m=[]; try{ mySports.forEach(function(k){ var s=LF_SP[k]; if(!s || k==="efoil" || k==="ulm") return; var x = s.mil==="terre" ? "terre" : s.mil==="mer" ? "nautique" : ""; if(x && m.indexOf(x)<0) m.push(x); }); }catch(e){} return m; }
+  function uniCls(c){ var B=document.body; UNI_K.forEach(function(k){ B.classList.toggle("uni-"+k, c===k); }); B.classList.toggle("uni-sport", c==="nautique" || c==="terre");
+    try{ if(window.__hcPaint) window.__hcPaint(); }catch(e){} try{ renderDefi(); }catch(e){} }
   function uniCur(){ var l=uniList(), c=""; if(!l.length) return ""; try{ c=localStorage.getItem("lf.uni.cur")||""; }catch(e){} return l.indexOf(c)>=0 ? c : l[0]; }
   // valeur attendue par le reste de l'appli : "" tant que rien n'est choisi
   function uniGet(){ var l=uniList(); if(!l.length) return ""; return uniCur()==="pilote" ? "pilote" : (l.indexOf("pilote")>=0 ? "both" : "sport"); }
   function uniSave(list, cur){ list=UNI_K.filter(function(k){ return list.indexOf(k)>=0; }); if(list.indexOf(cur)<0) cur=list[0]||"";
     try{ localStorage.setItem("lf.unis", JSON.stringify(list)); localStorage.setItem("lf.uni.cur", cur); localStorage.setItem("lf.univers", cur==="pilote" ? "pilote" : (list.indexOf("pilote")>=0 ? "both" : "sport")); }catch(e){} }
   function uniApply(go){ var c=uniCur(), l=uniList(), B=document.body;
-    UNI_K.forEach(function(k){ B.classList.toggle("uni-"+k, c===k); }); B.classList.toggle("uni-multi", l.length>1);
+    uniCls(c); B.classList.toggle("uni-multi", l.length>1);
     try{ if(window.ulmSync) window.ulmSync(); }catch(e){}
     var lb=$("profUniTx"); if(lb) lb.textContent = l.length ? l.map(function(k){ return UNI[k].n; }).join(" + ") : "À choisir";
     try{ uhRender(); }catch(e){}
@@ -9736,11 +9748,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(add.length){ add.forEach(function(k){ mySports.push(k); }); saveMySports(); try{ if(profileReady() && me.pseudo) claimProfile(me.pseudo,true).catch(function(){}); }catch(e){} }
     uniApply(true); var c=uniCur();
     var d=document.createElement("div"); d.className="uni-dim"; var h=document.createElement("div"); h.className="uni-hi";
-    h.innerHTML='<span class="uni-hi-ic" style="background:linear-gradient(145deg,'+UNI[c].a+','+UNI[c].b+')"><svg viewBox="0 0 24 24">'+UNI[c].ic+'</svg></span><b>'+(list.length>1?"Tes univers sont prêts":c==="pilote"?"Bienvenue à bord":c==="efoil"?"Bienvenue chez Lite Foil":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
+    h.innerHTML='<span class="uni-hi-ic" style="background:linear-gradient(145deg,'+UNI[c].a+','+UNI[c].b+')"><svg viewBox="0 0 24 24">'+UNI[c].ic+'</svg></span><b>'+(list.length>1?"Tes univers sont prêts":c==="pilote"?"Bienvenue à bord":c==="efoil"?"Bienvenue chez Lite Foil":c==="terre"?"Bonne sortie":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
     document.body.appendChild(d); document.body.appendChild(h); setTimeout(function(){ d.remove(); h.remove(); }, 2300); }
   // choix des univers : un ou plusieurs
   function uniChoose(first){ if(document.querySelector(".uni-ov")) return; var sel={}, l0=uniList(); l0.forEach(function(k){ sel[k]=1; });
-    if(!l0.length){ if(mySports.indexOf("ulm")>=0) sel.pilote=1; if(mySports.indexOf("efoil")>=0) sel.efoil=1; if(mySports.filter(function(k){ return k!=="ulm" && k!=="efoil"; }).length) sel.sport=1; }
+    if(!l0.length){ if(mySports.indexOf("ulm")>=0) sel.pilote=1; if(mySports.indexOf("efoil")>=0) sel.efoil=1; uniMil().forEach(function(k){ sel[k]=1; }); }
     var ov=document.createElement("div"); ov.className="uni-ov un2";
     var paint=function(){ var n=Object.keys(sel).length;
       ov.innerHTML=(first?'':'<button type="button" class="uni-x" aria-label="Fermer">✕</button>')+'<h2>Choisis tes univers</h2><p>Un seul ou plusieurs : l\'accueil s\'adapte à ce que tu pratiques. Tu pourras changer quand tu veux dans ton profil.</p>'
@@ -9775,17 +9787,17 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var up=function(){ var d=UH.drag; if(!d) return; UH.drag=null; var l=uniList(); if(d.mv){ uhGo(Math.round(UH.pos)); } else if(d.pl){ var i=l.indexOf(d.pl.dataset.pl); if(i>=0) uhGo(uhNear(i)); } };
     window.addEventListener("pointerup", up); window.addEventListener("pointercancel", function(){ if(UH.drag){ UH.drag=null; uhGo(Math.round(UH.pos)); } }); }
   function uhClamp(p){ var n=uniList().length; return n===2 ? Math.max(-0.25, Math.min(1.25, p)) : p; }
-  function uhNear(i){ var n=uniList().length; if(n<3) return i; var b=Math.round(UH.pos), c=((b%3)+3)%3, d=i-c; if(d>1) d-=3; if(d<-1) d+=3; return b+d; }
+  function uhNear(i){ var n=uniList().length; if(n<3) return i; var b=Math.round(UH.pos), c=((b%n)+n)%n, d=i-c; if(d>n/2) d-=n; if(d<-n/2) d+=n; return b+d; }
   function uhGo(to){ var n=uniList().length; if(n===2) to=Math.max(0, Math.min(1, to)); UH.to=to; cancelAnimationFrame(UH.raf); var t0=performance.now(), p0=UH.pos, dur=Math.max(260, Math.min(700, Math.abs(to-p0)*620));
     var l=uniList(), k=l[((to%n)+n)%n]; if(k && k!==uniCur()) uhSwitch(k);
     var step=function(now){ var x=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-x,3); UH.pos=p0+(to-p0)*e; uhPaint(); if(x<1) UH.raf=requestAnimationFrame(step); };
     if(document.hidden || !window.requestAnimationFrame){ UH.pos=to; uhPaint(); } else UH.raf=requestAnimationFrame(step); }
-  function uhSwitch(k){ var l=uniList(); uniSave(l, k); var B=document.body; UNI_K.forEach(function(x){ B.classList.toggle("uni-"+x, k===x); });
+  function uhSwitch(k){ var l=uniList(); uniSave(l, k); uniCls(k);
     try{ if(window.ulmSync) window.ulmSync(); }catch(e){} uhPanes(); try{ if(window.__syncNav) window.__syncNav(); }catch(e){} try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){} }
   function uhPaint(){ var hero=$("uhHero"); if(!hero || hero.hidden) return; var l=uniList(), n=l.length, W=hero.clientWidth||340, R=Math.min(150, W*0.37);
-    l.forEach(function(k,i){ var a=(i-UH.pos)*2*Math.PI/3, x=Math.sin(a)*R, z=Math.cos(a), sc=0.56+0.44*(z+1)/2, el=hero.querySelector('[data-pl="'+k+'"]'); if(!el) return;
+    l.forEach(function(k,i){ var a=(i-UH.pos)*2*Math.PI/Math.max(3,n), x=Math.sin(a)*R, z=Math.cos(a), sc=0.56+0.44*(z+1)/2, el=hero.querySelector('[data-pl="'+k+'"]'); if(!el) return;
       el.style.transform="translate("+x.toFixed(1)+"px,"+(z*30).toFixed(1)+"px) scale("+sc.toFixed(3)+")"; el.style.zIndex=z>0?3:1; el.style.opacity=(0.5+0.5*(z+1)/2).toFixed(2);
-      var d=(i-UH.pos)%3; if(n===3){ d=((d%3)+4.5)%3-1.5; } var w=Math.max(0,1-Math.abs(d)*1.6);
+      var d=(i-UH.pos); if(n>=3){ d=((d%n)+n*1.5)%n-n/2; } var w=Math.max(0,1-Math.abs(d)*1.6);
       var sk=hero.querySelector('[data-sky="'+k+'"]'); if(sk) sk.style.opacity=w.toFixed(3); var tt=hero.querySelector('[data-tt="'+k+'"]'); if(tt) tt.style.opacity=w.toFixed(3); var dt=hero.querySelector('[data-dt="'+k+'"]'); if(dt) dt.classList.toggle("on", w>.5); });
     var g=hero.querySelector(".uh-gl u"); if(g) g.style.transform="translateX("+(-(((UH.pos*44)%132)+132)%132)+"px)"; }
   function uhRender(){ uhBuild(); var hero=$("uhHero"); if(!hero) return; var l=uniList(), c=uniCur();
@@ -9796,7 +9808,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           +'<div class="uh-orb"><div class="uh-ell"></div><div class="uh-gl"><u></u></div>'+l.map(function(k){ return '<div class="uh-pl" data-pl="'+k+'"><div class="b" style="background:linear-gradient(145deg,'+UNI[k].a+','+UNI[k].b+');box-shadow:0 0 30px '+UNI[k].a+'">'+uhIc(UNI[k].ic)+'</div></div>'; }).join("")+'</div>'
           +'<div class="uh-dots">'+l.map(function(k){ return '<i data-dt="'+k+'"></i>'; }).join("")+'</div>'
           +'<div class="uh-tt">'+l.map(function(k){ return '<div data-tt="'+k+'"><b>'+UNI[k].t+'</b><small>'+UNI[k].s+'</small></div>'; }).join("")+'</div>'; }
-      var i=l.indexOf(c); if(i<0) i=0; if(l.length===3){ var b=Math.round(UH.pos), cc=((b%3)+3)%3; if(cc!==i){ UH.pos=UH.to=i; } } else { UH.pos=UH.to=i; } uhPaint(); }
+      var i=l.indexOf(c); if(i<0) i=0; if(l.length>=3){ var nn=l.length, b=Math.round(UH.pos), cc=((b%nn)+nn)%nn; if(cc!==i){ UH.pos=UH.to=i; } } else { UH.pos=UH.to=i; } uhPaint(); }
     uhPanes(); }
   function uhRow(uh, to, col, bg, ic, t, s){ return '<button type="button" class="uh-row" data-uh="'+uh+'"'+(to?' data-to="'+to+'"':'')+'><span class="uh-ri" style="background:'+bg+';color:'+col+'">'+uhIc(ic)+'</span><span class="uh-rt"><b>'+t+'</b><small>'+s+'</small></span><span class="uh-ch">›</span></button>'; }
   function uhPanes(){ var c=uniCur(), pil=$("uhPilot"), ef=$("uhEfoil"), fd=$("uhFeed"); if(!pil) return;
@@ -10353,15 +10365,17 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if($h("hsKm")) $h("hsKm").textContent=(km>=100?Math.round(km):Math.round(km*10)/10).toLocaleString("fr-FR");
       if($h("hsH")) $h("hsH").textContent=sec>=3600 ? Math.round(sec/3600)+" h" : Math.round(sec/60)+" min"; }
     var DIRS=["N","NE","E","SE","S","SO","O","NO"];
+    window.__hcPaint=function(){ var k=window.__hcKn; if(!k || !$h("hcWind")) return; var kmh=document.body.classList.contains("uni-terre"), f=kmh?1.852:1, un=kmh?"km/h":"nds";
+      $h("hcWind").textContent=Math.round(k.w*f); if($h("hcUnit")) $h("hcUnit").textContent=un; $h("hcGust").textContent="Rafales "+Math.round(k.g*f)+" "+un; };
     function cond(){ var pos={lat:43.014,lng:3.055,name:"Port-la-Nouvelle"}; /* même spot par défaut que l'onglet Météo */
       try{ var p=JSON.parse(localStorage.getItem("lf.meteo.pos")||"null"); if(p&&p.lat!=null) pos=p; else { var fv=(JSON.parse(localStorage.getItem("lf.meteo.favs")||"[]")||[])[0]; if(fv&&fv.lat!=null) pos={lat:fv.lat,lng:fv.lon,name:fv.name}; } }catch(e){}
       var lng=pos.lng!=null?pos.lng:pos.lon; if($h("hcSpot")) $h("hcSpot").textContent="📍 "+(pos.name||"Ma position");
       fetch("https://api.open-meteo.com/v1/forecast?latitude="+pos.lat+"&longitude="+lng+"&current=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m&wind_speed_unit=kn&timezone=auto")
         .then(function(r){ return r.json(); }).then(function(j){ var c=j.current||{};
-          $h("hcWind").textContent=Math.round(c.wind_speed_10m||0);
+          window.__hcKn={ w:+c.wind_speed_10m||0, g:+c.wind_gusts_10m||0 };
           var dir=+c.wind_direction_10m||0; $h("hcDir").textContent="Vent de "+DIRS[Math.round(dir/45)%8];
           $h("hcArrow").style.transform="rotate("+((dir+180)%360)+"deg)";
-          $h("hcGust").textContent="Rafales "+Math.round(c.wind_gusts_10m||0)+" nds";
+          window.__hcPaint();
           $h("hcTemp").textContent=Math.round(c.temperature_2m||0)+"°C"; }).catch(function(){});
       fetch("https://marine-api.open-meteo.com/v1/marine?latitude="+pos.lat+"&longitude="+lng+"&current=wave_height&timezone=auto")
         .then(function(r){ return r.json(); }).then(function(j){ var w=j.current&&j.current.wave_height; $h("hcWave").textContent=(w!=null?String(Math.round(w*10)/10).replace(".",",")+" m":"—"); }).catch(function(){ $h("hcWave").textContent="—"; }); }
