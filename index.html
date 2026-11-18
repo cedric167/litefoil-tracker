@@ -8724,7 +8724,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(c) c.at=Date.now(); else c=fdCache[k]={posts:null, at:Date.now()};
     fdLoad(uid).then(function(l){ fdCache[k]={posts:l, at:(backend&&me.uid)?Date.now():0}; }, function(){ fdCache[k]={posts:(c&&c.posts)||[], at:0}; })
       .then(function(){ if(document.body.contains(box) && box._fdK===k && box.querySelector(".fd-wrap")) fdDraw(box, uid); }); }
-  function fdRefresh(){ Object.keys(fdCache).forEach(function(k){ if(fdCache[k]) fdCache[k].at=0; }); var f=$("tab-fil"); if(f && !f.hidden) fdMount($("filFeed"), null); renderProfil(); }
+  function fdRefresh(){ Object.keys(fdCache).forEach(function(k){ if(fdCache[k]) fdCache[k].at=0; }); var f=$("tab-fil"); if(f && !f.hidden){ var fb=$("filFeed"); if(fb) fb._fdUni=(window.__uniCur ? window.__uniCur() : "")||""; fdMount(fb, null); } renderProfil(); }
   // rédaction d'une publication
   function fdCompose(o){ if(!fdGate()) return; o=o||{}; var g=gOverlay(); g.hidden=false;
     var img="", sess=o.sess||null, tags={}, vis="pub"; try{ var sv=localStorage.getItem("lf.fd.vis"); if(FD_VIS[sv]) vis=sv; }catch(e){}
@@ -8774,7 +8774,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(h<GO){ set(0, true); return; }
       busy=true; set(44, true); tx.textContent="Actualisation…"; fdPullRefresh(function(){ busy=false; set(0, true); }); };
     pane.addEventListener("touchend", end, {passive:true}); pane.addEventListener("touchcancel", function(){ y0=null; if(!busy) set(0, true); }, {passive:true}); })();
-  window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent=me.pseudo||"Mon profil"; fdMount($("filFeed"), null); };
+  window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent=me.pseudo||"Mon profil"; var fb=$("filFeed"); if(fb) fb._fdUni=(window.__uniCur ? window.__uniCur() : "")||""; fdMount(fb, null); };
   (function(){ var m=$("flMe"); if(m) m.addEventListener("click", function(){ lfGoTab("profil"); window.scrollTo(0,0); });
     var sb=$("flSearch"); if(sb) sb.addEventListener("click", function(){ openFriendSearch(); });
     var bk=$("pfBackFil"); if(bk) bk.addEventListener("click", function(){ lfGoTab("fil"); window.scrollTo(0,0); }); })();
@@ -9813,7 +9813,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +uhRow("go","ultra","#8a1f9c","#f6e6fa",'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/>',"Ma planche","Réglages, diagnostic et mises à jour")
         +uhRow("shop","","#0b3d47","#e3f6f4",'<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',"La boutique Lite Foil","litefoil.fr · eFoils, foils et accessoires"); uhBt(); }
     else ef.innerHTML="";
-    if(fd){ fd.hidden=!c; if(c){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
+    if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
   function uhBt(){ var el=$("uhBt"); if(!el) return; var D=window.__lfDash||{}, cn=D.conn||{}, soc=(D.soc!=null && isFinite(+D.soc)) ? Math.round(+D.soc)+" %" : "";
     var it=[["batterie","Batterie",cn.bat,soc,'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3M10.500 11v3M14 11v3"/>'],["moteur","Moteur VESC",cn.vesc,"",'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M5.600 18.400l2.100-2.100M16.300 7.700l2.100-2.100"/>'],
       ["remote","Télécommande",cn.remote,"",'<rect x="8" y="3" width="8" height="18" rx="4"/><circle cx="12" cy="8.500" r="1.800"/><path d="M12 14v3"/>'],["tracker","Tracker GPS",cn.tracker,"",'<path d="M12 21s7-6.200 7-11a7 7 0 1 0-14 0c0 4.800 7 11 7 11z"/><circle cx="12" cy="10" r="2.500"/>']];
