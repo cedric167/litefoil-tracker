@@ -128,6 +128,52 @@ workflows:
         submit_to_testflight: true
 
   # ----------------------------------------------------------------------------
+  # MONTRE ANDROID (Wear OS) : appli autonome dans native/wear (SOS + ecrans d'infos). Paquet .aab signe avec la cle Lite Foil.
+  # Se lance quand une etiquette Git « wear-… » est poussee. Le paquet est a televerser dans la Play Console (format Wear OS).
+  wear-play:
+    name: Lite Foil - Montre Android Wear OS (AAB)
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "wear-*"
+          include: true
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    environment:
+      android_signing:
+        - litefoil_keystore
+      node: 20
+    scripts:
+      - name: Outil de build (meme Gradle que l'appli telephone)
+        script: |
+          npm install
+          npm run build:www
+          if [ ! -d "android" ]; then npx cap add android; fi
+          cp android/gradlew native/wear/gradlew && chmod +x native/wear/gradlew
+          mkdir -p native/wear/gradle && cp -R android/gradle/wrapper native/wear/gradle/
+      - name: Numero de version
+        script: |
+          VC=$(date +%s)
+          sed -i.bak "s/versionCode 1$/versionCode $VC/" native/wear/app/build.gradle
+          echo "versionCode applique : $VC"
+      - name: Build de l'appli montre (AAB release)
+        script: |
+          cd native/wear
+          ./gradlew bundleRelease
+      - name: Signer l'AAB avec la cle Lite Foil
+        script: |
+          AAB=native/wear/app/build/outputs/bundle/release/app-release.aab
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore "$CM_KEYSTORE_PATH" \
+            -storepass "$CM_KEYSTORE_PASSWORD" \
+            -keypass "$CM_KEY_PASSWORD" \
+            "$AAB" "$CM_KEY_ALIAS"
+          cp "$AAB" "$CM_BUILD_DIR/Lite-Foil-montre.aab"
+    artifacts:
+      - Lite-Foil-montre.aab
+
+  # ----------------------------------------------------------------------------
   # ANDROID NATIF (Capacitor -> Bluetooth natif du telephone), paquet .aab signe.
   # A FAIRE DANS L'INTERFACE CODEMAGIC (une seule fois) :
   #   - connecter ce depot GitHub,

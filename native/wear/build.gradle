@@ -1,0 +1,2 @@
+// Lite Foil : appli montre Android (Wear OS). Aucune bibliothèque externe : uniquement les API Android.
+plugins { id 'com.android.application' version '8.2.1' apply false }

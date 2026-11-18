@@ -744,6 +744,7 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
   const db = getDatabase();
   try {
     if (kind === "api" && parts[1] === "live") return liveApi(req, res, String(parts[2] || "").replace(/[^A-Za-z0-9_-]/g, ""));
+    if (kind === "api" && parts[1] === "watch") return watchApi(req, res, String(parts[2] || "").replace(/[^A-Za-z0-9]/g, ""));
     if (kind === "l") { const raw = String(parts[1] || ""); return livePage(req, res, raw.replace(/\.json$/, "").replace(/[^A-Za-z0-9_-]/g, ""), /\.json$/.test(raw), base); }
     // « Rejoindre » : Google Play sur Android, App Store sur iPhone, sinon l'appli web
     if (kind === "get") {
@@ -821,6 +822,30 @@ let LIVE_AIR_HTML = null;
 function liveAirHtml(sid, ps) {
   if (LIVE_AIR_HTML == null) { try { LIVE_AIR_HTML = fs.readFileSync(require("path").join(__dirname, "live-air.html"), "utf8"); } catch (e) { LIVE_AIR_HTML = ""; } }
   return LIVE_AIR_HTML ? LIVE_AIR_HTML.split("__SID__").join(sid).split("__PS__").join(ps).split("__ICON__").join(escH(SHARE_ICON)) : "";
+}
+// 18/11 : montre Android (Wear OS). La montre affiche un code à 6 caractères ; le téléphone y dépose les réglages
+// (écrans d'infos, sortie SOS en attente, canal privé). La montre les lit une fois (le code est alors effacé),
+// puis se met à jour par son canal privé (identifiant long, connu du téléphone et de la montre seulement).
+async function watchApi(req, res, id) {
+  res.set("Access-Control-Allow-Origin", "*"); res.set("Access-Control-Allow-Headers", "Content-Type"); res.set("Cache-Control", "no-store");
+  if (req.method === "OPTIONS") return res.status(204).send("");
+  const pair = /^[A-Z2-9]{6}$/.test(id), chan = /^[A-Za-z0-9]{20,40}$/.test(id);
+  if (!pair && !chan) return res.status(400).send("identifiant invalide");
+  const ref = getDatabase().ref("watch/" + id);
+  if (req.method === "POST") {
+    let b = req.body; if (!b || typeof b !== "object") { try { b = JSON.parse(String(req.rawBody || "{}")); } catch (e) { b = {}; } }
+    const cfg = b && b.cfg; if (!cfg || typeof cfg !== "object" || Array.isArray(cfg)) return res.status(400).send("réglages manquants");
+    const s = JSON.stringify(cfg); if (s.length > 6000) return res.status(413).send("trop long");
+    await ref.set({ cfg: s, t: Date.now() });
+    return res.json({ ok: true });
+  }
+  if (req.method !== "GET") return res.status(405).send("GET ou POST");
+  const v = (await ref.get()).val();
+  const old = pair && v && Date.now() - (+v.t || 0) > 15 * 60000;   // un code de liaison vaut 15 minutes
+  if (pair && v) await ref.remove();
+  if (!v || !v.cfg || old) return res.json({ ok: false });
+  let cfg = null; try { cfg = JSON.parse(v.cfg); } catch (e) { cfg = null; }
+  return res.json({ ok: !!cfg, cfg: cfg, t: +v.t || 0 });
 }
 async function liveApi(req, res, sid) {
   res.set("Access-Control-Allow-Origin", "*"); res.set("Access-Control-Allow-Headers", "Content-Type");

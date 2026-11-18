@@ -73,6 +73,13 @@
           "functionId": "sharePage",
           "region": "europe-west1"
         }
+      },
+      {
+        "source": "/api/watch/**",
+        "function": {
+          "functionId": "sharePage",
+          "region": "europe-west1"
+        }
       }
     ]
   },
