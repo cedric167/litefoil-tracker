@@ -8874,11 +8874,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function openFriendSearch(){
     var ov=document.createElement("div"); ov.className="ts-ov";
     ov.innerHTML='<div class="ts-top"><button type="button" class="ts-back" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'
-      +'<label class="ts-in"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" placeholder="Rechercher un membre ou une vidéo" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" class="ts-clear" hidden aria-label="Effacer">✕</button></label></div>'
-      +'<div class="ts-tabs"><button type="button" data-tt="top" class="on">Top</button><button type="button" data-tt="riders">Membres</button><button type="button" data-tt="vid">Vidéos</button></div>'
+      +'<label class="ts-in"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" placeholder="Rechercher un membre" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" class="ts-clear" hidden aria-label="Effacer">✕</button></label></div>'
+      +'<div class="ts-tabs"><button type="button" data-tt="riders" class="on">Membres</button><button type="button" data-tt="top">Top</button><button type="button" data-tt="vid">Vidéos</button></div>'
       +'<div class="ts-body"></div>';
     document.body.appendChild(ov); document.body.style.overflow="hidden";
-    var inp=ov.querySelector("input"), body=ov.querySelector(".ts-body"), clr=ov.querySelector(".ts-clear"), tab="top", tmr=null, lastIds=[], mutual={};
+    var inp=ov.querySelector("input"), body=ov.querySelector(".ts-body"), clr=ov.querySelector(".ts-clear"), tab="riders", tmr=null, lastIds=[], mutual={};
     var close=function(){ ov.remove(); document.body.style.overflow=""; };
     ov.querySelector(".ts-back").addEventListener("click", close);
     clr.addEventListener("click", function(){ inp.value=""; clr.hidden=true; run(); inp.focus(); });
@@ -8889,7 +8889,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var sp=String(p.sports||"").split(",").filter(function(k){ return LF_SP[k]; }).slice(0,4).map(function(k){ return LF_SP[k].ic; }).join(" ");
       if(sp) bits.push(sp); return bits.join(" · "); };
     var rowHtml=function(u){ var p=profileMap[u]||{}, ring=(onlineIds.indexOf(u)>=0||videos.some(function(v){ return v && v.uid===u; }));
-      return '<div class="ts-row" data-tsu="'+esc(u)+'"><span class="ts-av'+(ring?" ring":"")+'"><span>'+avHtml(u)+'</span></span><span class="ts-txt"><b>'+esc(pseudoKey(pName(u))||"membre")+(isOfficial(u)?' <i class="ts-off">✓</i>':'')+'</b><span>'+esc(pName(u))+'</span><small>'+sub(u)+'</small></span>'+followBtnHtml(u)+'<button type="button" class="ts-msg" data-tsm="'+esc(u)+'" aria-label="Message"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></button></div>'; };
+      return '<div class="ts-row" data-tsu="'+esc(u)+'"><span class="ts-av'+(ring?" ring":"")+'"><span>'+avHtml(u)+'</span></span><span class="ts-txt"><b>'+esc(pName(u)||"Membre")+(isOfficial(u)?' <i class="ts-off">✓</i>':'')+'</b><span>@'+esc(pseudoKey(pName(u))||"membre")+'</span><small>'+sub(u)+'</small></span>'+followBtnHtml(u)+'<button type="button" class="ts-msg" data-tsm="'+esc(u)+'" aria-label="Message"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></button></div>'; };
     var vidsFor=function(q){ var vis=vidVisible(); if(!q) return vis.slice(0,12);
       return vis.filter(function(v){ var t=pseudoKey(v.pseudo||"")+" "+String(v.caption||"").toLowerCase(); return t.indexOf(q)>=0 || lastIds.indexOf(v.uid)>=0; }); };
     var vidHtml=function(list){ var vis=vidVisible(); return '<div class="ts-grid">'+list.map(function(v){ return '<button type="button" class="ts-vid" data-gi="'+vis.indexOf(v)+'" style="background-image:url('+esc(v.thumb||"")+')"><span class="ts-vc">'+esc(v.caption||"")+'</span><span class="ts-vu">'+esc(v.pseudo||"Membre")+' · ▶ '+fmtCount(vidViews(v))+' · ♥ '+fmtCount(vidLikes(v))+'</span></button>'; }).join("")+'</div>'; };
@@ -8897,7 +8897,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(tab==="top"){ if(ids.length){ h+='<div class="ts-sec"><b>'+(q?"Membres":"Suggestions")+'</b>'+(ids.length>3?'<button type="button" class="ts-all">Tout voir ›</button>':'')+'</div>'+ids.slice(0,3).map(rowHtml).join(""); }
         var vl=vidsFor(q); if(vl.length) h+='<div class="ts-sep"></div>'+vidHtml(vl);
         if(!h) h='<div class="comm-empty">Aucun résultat pour « '+esc(inp.value.trim())+' ».</div>'; }
-      else if(tab==="riders"){ h = ids.length ? ids.map(rowHtml).join("") : '<div class="comm-empty">Aucun membre trouvé.</div>'; }
+      else if(tab==="riders"){ h = ids.length ? '<div class="ts-count">'+ids.length+(ids.length>1?" membres":" membre")+(q?" trouvé"+(ids.length>1?"s":""):"")+'</div>'+ids.map(rowHtml).join("") : '<div class="comm-empty">Aucun membre trouvé.</div>'; }
       else { var vl2=vidsFor(q); h = vl2.length ? vidHtml(vl2) : '<div class="comm-empty">Aucune vidéo trouvée.</div>'; }
       body.innerHTML=h;
       var all=body.querySelector(".ts-all"); if(all) all.addEventListener("click", function(){ ov.querySelector('[data-tt="riders"]').click(); });
@@ -10937,6 +10937,16 @@ body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.un
 #sosFab{touch-action:none;-webkit-user-select:none;user-select:none}#sosFab.mv{transform:scale(1.12);box-shadow:0 14px 30px rgba(232,56,79,.55);cursor:grabbing}
 #sosFab.on,.sos-in.on{animation:sosP 1.1s infinite}@keyframes sosP{50%{box-shadow:0 0 0 9px rgba(232,56,79,.25)}}
 .sos-in{margin-left:auto;flex:none;min-height:0;height:32px!important;width:auto!important;padding:0 13px!important;border:0!important;border-radius:999px!important;background:#e8384f!important;color:#fff;font:inherit;font-weight:900;font-size:12.5px!important;letter-spacing:.08em;cursor:pointer}
+.ts-ov{background:#f4f7f9}.ts-ov .ts-top,.ts-ov .ts-tabs{background:#fff}.ts-ov .ts-in{background:#eef2f5;border-radius:14px}
+.ts-ov .ts-count{padding:14px 18px 2px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#66757c}
+.ts-ov .ts-row{margin:8px 12px 0;padding:12px;gap:12px;background:#fff;border:1px solid #e6ecf0;border-radius:18px;box-shadow:0 2px 8px rgba(10,30,40,.04)}
+.ts-ov .ts-av,.ts-ov .ts-av.ring{width:54px;height:54px}.ts-ov .ts-av>span{font-size:19px}
+.ts-ov .ts-txt{gap:2px}.ts-ov .ts-txt b{font-size:16px;font-weight:800;color:#0e1417}.ts-ov .ts-txt span{font-size:13px;color:#66757c}.ts-ov .ts-txt small{font-size:12.5px;color:#66757c}
+.ts-ov .ts-btn{min-width:0;height:36px;padding:0 14px 0 11px;border-radius:999px;background:linear-gradient(135deg,#12a39b,#0b6d72);color:#fff;font-size:13.5px;font-weight:800;box-shadow:0 4px 10px rgba(11,109,114,.25);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.ts-ov .ts-btn::before{content:"+";font-size:17px;font-weight:700;line-height:1;margin-top:-1px}
+.ts-ov .ts-btn.ghost{background:#fff;color:#0b3d47;border:1.5px solid #d7e0e6;box-shadow:none;padding:0 13px 0 10px}.ts-ov .ts-btn.ghost::before{content:"✓";font-size:13px;color:#12a39b;margin-top:0}
+.ts-ov .ts-msg{width:36px;height:36px;margin-left:0;background:#eef6f6;color:#0b6d72}.ts-ov .ts-msg svg{width:18px;height:18px}
+.ts-ov .ts-tabs button.on{color:#0b6d72;border-bottom-color:#0b6d72}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
 @keyframes efcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .efc-top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(135deg,#a02bb0,#3a0b4a);color:#fff}
