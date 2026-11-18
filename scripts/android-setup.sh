@@ -18,6 +18,8 @@ cp "$ROOT/native/android/LfTrackStore.java" "$ROOT/native/android/LfTrackService
    "$ROOT/native/android/LfTrackPlugin.java" "$ROOT/native/android/MainActivity.java" "$PKG_DIR/"
 # 1 ter) Écran d'appel entrant façon téléphone (15/11) : plein écran, sonnerie en boucle, Décrocher / Refuser
 cp "$ROOT/native/android/LfCall.java" "$ROOT/native/android/LfCallActivity.java" "$ROOT/native/android/LfCallReceiver.java"    "$ROOT/native/android/LfCallMessagingService.java" "$ROOT/native/android/LfCallPlugin.java" "$PKG_DIR/"
+# 1 quater) Écran d'alerte SOS (18/11) : plein écran, sonnerie en boucle sur le volume alarme (s'entend en silencieux)
+cp "$ROOT/native/android/LfSos.java" "$ROOT/native/android/LfSosActivity.java" "$PKG_DIR/"
 
 # 1 bis) Sonneries (appel, SOS) jouées par les notifications, même appli fermée
 mkdir -p "$MAIN/res/raw"
@@ -58,6 +60,13 @@ if ! grep -q 'LfCallActivity' "$MANIFEST"; then
         </service>
         <service android:name="io.capawesome.capacitorjs.plugins.firebase.messaging.MessagingService" tools:node="remove" />$1#' "$MANIFEST"
 fi
+# 3 ter) Écran d'alerte SOS : activité plein écran par-dessus l'écran verrouillé
+if ! grep -q 'LfSosActivity' "$MANIFEST"; then
+  perl -0pi -e 's#(\s*</application>)#
+        <!-- Lite Foil : alerte SOS d un proche -->
+        <activity android:name=".LfSosActivity" android:exported="false" android:showWhenLocked="true" android:turnScreenOn="true" android:excludeFromRecents="true" android:taskAffinity="fr.litefoil.tracker.sos" android:launchMode="singleInstance" android:screenOrientation="portrait" android:theme="\@android:style/Theme.DeviceDefault.NoActionBar" />$1#' "$MANIFEST"
+fi
+grep -q 'LfSosActivity' "$MANIFEST" || { echo "Écran SOS non déclaré dans le manifeste" >&2; exit 1; }
 # LfCallMessagingService utilise la bibliothèque de messagerie Firebase (même version que le module de notifications)
 APPGRADLE="$ROOT/android/app/build.gradle"
 grep -q 'firebase-messaging' "$APPGRADLE" || \

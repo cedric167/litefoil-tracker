@@ -145,6 +145,12 @@ async function sendToUids(uids, data, opts) {
       }
       messages.push(msg);
       paths.push("pushTokens/" + uid + "/" + key);
+      // 18/11 : applis Android avec écran d'alerte SOS (jeton marqué ss) → second message, « données » seul : l'appli affiche
+      // l'écran rouge et fait sonner en boucle sur le volume alarme. La notification habituelle ci-dessus part toujours.
+      if (opts.ring === "sos" && plat === "android" && v[key] && v[key].ss) {
+        messages.push({ token: tok, data: Object.assign({}, data, { native: "1", t: String(Date.now()) }), android: { priority: "high", ttl: 600000 } });
+        paths.push("pushTokens/" + uid + "/" + key);
+      }
     }
   }
   if (!messages.length) return;

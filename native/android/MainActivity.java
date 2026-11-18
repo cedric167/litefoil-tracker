@@ -37,6 +37,7 @@ public class MainActivity extends BridgeActivity {
         LfCall.appVisible = true;
         // appli ouverte à la main pendant que ça sonne : la page prend le relais
         if ("".equals(LfCall.prefs(this).getString("act", "x"))) LfCall.stop(this, null);
+        LfSos.stop(this);
     }
 
     @Override

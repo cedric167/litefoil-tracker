@@ -5482,7 +5482,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       signOutAccount(){ var ups=[]; try{ if(lfPushKey) ups.push(db.remove(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey)).catch(function(){})); ups.push(db.remove(db.ref(d,"presence/"+uid)).catch(function(){})); }catch(e){}
         return Promise.all(ups).then(function(){ return authMod.signOut(auth); }); },
       savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_"); lfPushKey=key;
-        return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
+        return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,ss:(plat==="android" && /LiteFoilSosScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
       // compteurs de non-lus tenus par le serveur (chiffre sur l'icône) : on remet à zéro en lisant
       clearUnread(key){ if(!key) return Promise.resolve(); return db.remove(db.ref(d,"unread/"+uid+"/"+key)).catch(function(){}); },
       watchEventMsgs(eid,cb){ const q=db.query(db.ref(d,"eventMessages/"+eid), db.limitToLast(50));
