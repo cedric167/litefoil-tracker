@@ -61,7 +61,7 @@ var PER={ j:"jour", we:"week-end", sem:"semaine" };
 // ---------- langue ----------
 var TR={
  "Le Bon Ride":["Le Bon Ride","Le Bon Ride"],"Matériel neuf et d'occasion, location et prêt entre riders":["New and used gear, rental and lending between riders","Material nuevo y de segunda mano, alquiler y préstamo entre riders"],
- "Déposer une annonce":["Post a listing","Publicar un anuncio"],"Acheter":["Buy","Comprar"],"Louer":["Rent","Alquilar"],"Carte":["Map","Mapa"],"Mon espace":["My space","Mi espacio"],
+ "Déposer une annonce":["Post a listing","Publicar un anuncio"],"Favoris":["Favourites","Favoritos"],"favoris":["favourites","favoritos"],"favori":["favourite","favorito"],"Aucun favori pour le moment.":["No favourites yet.","Aún no tienes favoritos."],"Ouvre une annonce et touche « Ajouter à mes favoris » pour la retrouver ici.":["Open a listing and tap “Add to my favourites” to find it here.","Abre un anuncio y toca «Añadir a mis favoritos» para encontrarlo aquí."],"Ajouter à mes favoris":["Add to my favourites","Añadir a mis favoritos"],"Dans mes favoris":["In my favourites","En mis favoritos"],"Ajoutée à tes favoris.":["Added to your favourites.","Añadido a tus favoritos."],"Retirée de tes favoris.":["Removed from your favourites.","Quitado de tus favoritos."],"Acheter":["Buy","Comprar"],"Louer":["Rent","Alquilar"],"Carte":["Map","Mapa"],"Mon espace":["My space","Mi espacio"],
  "Rechercher (planche, marque, ville…)":["Search (board, brand, town…)","Buscar (tabla, marca, ciudad…)"],"Toutes les disciplines":["All sports","Todas las disciplinas"],"Toutes les catégories":["All categories","Todas las categorías"],
  "Toutes les marques":["All brands","Todas las marcas"],"Tous les états":["Any condition","Cualquier estado"],"Prix max":["Max price","Precio máx"],"Neuf et occasion":["New and used","Nuevo y usado"],"Neuf":["New","Nuevo"],"Occasion":["Used","Segunda mano"],
  "Plus récentes":["Newest","Más recientes"],"Prix croissant":["Price low to high","Precio ascendente"],"Prix décroissant":["Price high to low","Precio descendente"],"Plus proches":["Nearest","Más cercanos"],
@@ -166,7 +166,7 @@ var CSS=""
 +".br-hero:after{content:'';position:absolute;right:-40px;top:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(255,196,84,.5),rgba(255,196,84,0) 70%)}"
 +".br-hero small{display:block;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#ffcf73}.br-hero h2{margin:3px 0 4px;font-size:27px;font-weight:900;letter-spacing:-.5px}.br-hero p{margin:0;font-size:13.5px;line-height:1.4;opacity:.85;max-width:290px;position:relative;z-index:1}"
 +".br-cta{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;margin-top:13px;border:0;border-radius:100px;padding:11px 17px;font:inherit;font-size:14.5px;font-weight:800;color:#2a1b04;background:linear-gradient(135deg,#ffd77a,#f5a623);box-shadow:0 6px 16px rgba(245,166,35,.4);cursor:pointer}.br-cta:active{transform:scale(.97)}"
-+".br-tabs{display:flex;gap:4px;margin-top:12px;background:var(--tile,#f7f9fb);border-radius:15px;padding:4px}.br-tabs button{flex:1;border:0;background:transparent;border-radius:12px;padding:10px 2px;font:inherit;font-size:13px;white-space:nowrap;letter-spacing:-.2px;font-weight:700;color:var(--muted,#66727d);cursor:pointer}"
++".br-hrt{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.94);color:#e8384f;font-style:normal;font-size:15px;line-height:26px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}.br-favb{display:block;width:100%;margin-top:12px;border:1.5px solid #e3e9ee;background:#fff;color:#0b0d10;border-radius:14px;padding:12px;font:inherit;font-size:14.5px;font-weight:800;cursor:pointer;min-height:0;box-shadow:none}.br-favb.on{border-color:#e8384f;color:#e8384f;background:#fff3f5}.br-tabs button{font-size:12px!important;padding:10px 1px!important}.br-tabs{display:flex;gap:4px;margin-top:12px;background:var(--tile,#f7f9fb);border-radius:15px;padding:4px}.br-tabs button{flex:1;border:0;background:transparent;border-radius:12px;padding:10px 2px;font:inherit;font-size:13px;white-space:nowrap;letter-spacing:-.2px;font-weight:700;color:var(--muted,#66727d);cursor:pointer}"
 +".br-tabs button.on{background:#fff;color:var(--text,#0b0d10);box-shadow:0 2px 8px rgba(13,40,45,.12)}"
 +".br-search{position:relative;margin-top:12px}.br-search input{width:100%;box-sizing:border-box;border:1.5px solid var(--line,#e7ebef);border-radius:15px;padding:12px 14px 12px 40px;font:inherit;font-size:15px;background:#fff}.br-search svg{position:absolute;left:13px;top:50%;width:18px;height:18px;margin-top:-9px;color:var(--muted,#66727d)}"
 +".br-filters{display:flex;gap:7px;overflow-x:auto;margin-top:9px;padding-bottom:3px;-webkit-overflow-scrolling:touch}.br-filters::-webkit-scrollbar{display:none}"
@@ -215,12 +215,18 @@ var IC_SEARCH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 function stars(r){ r=Math.round(r); var s=""; for(var i=1;i<=5;i++) s+=i<=r?"★":"☆"; return '<span class="br-stars">'+s+'</span>'; }
 function stateBadge(st){ var s=STATES[(+st||3)-1]||STATES[2]; return '<span class="br-st"><i style="background:'+s[1]+'"></i>'+esc(T(s[0]))+'</span>'; }
 function avatar(w, ps){ return w.av ? '<img class="br-av" src="'+esc(w.av)+'" alt="">' : '<span class="br-av">'+esc(String(ps||"R").charAt(0).toUpperCase())+'</span>'; }
+function favs(){ try{ var f=JSON.parse(localStorage.getItem("lf.br.favs")||"[]"); return Array.isArray(f) ? f : []; }catch(e){ return []; } }
+function isFav(id){ return favs().indexOf(id)>=0; }
+function favToggle(id){ var f=favs(), i=f.indexOf(id); if(i>=0) f.splice(i,1); else f.unshift(id); try{ localStorage.setItem("lf.br.favs", JSON.stringify(f.slice(0,200))); }catch(e){} return i<0; }
+function favHtml(){ var f=favs(), l=(LIST||[]).filter(function(a){ return f.indexOf(a.id)>=0; }).sort(function(a,b){ return f.indexOf(a.id)-f.indexOf(b.id); });
+  if(!l.length) return '<div class="br-empty"><b>♡</b>'+esc(T("Aucun favori pour le moment."))+'<br>'+esc(T("Ouvre une annonce et touche « Ajouter à mes favoris » pour la retrouver ici."))+'</div>';
+  return '<div class="br-count">'+l.length+" "+esc(T(l.length>1?"favoris":"favori"))+'</div><div class="br-grid">'+l.map(itemCard).join("")+'</div>'; }
 function itemCard(a){ var km=a._km!=null ? " · "+(a._km<1.5?"1":Math.round(a._km))+" km" : "";
-  return '<button class="br-it" data-open="'+esc(a.id)+'"><span class="br-ph">'+(a.thumb?'<img loading="lazy" src="'+esc(a.thumb)+'" alt="">':"")+(a.sold?'<i class="br-tag s">'+esc(T("Vendu"))+'</i>':a.type!=="v"?'<i class="br-tag '+a.type+'">'+esc(T(TYPES[a.type][0]))+'</i>':"")+'</span>'
+  return '<button class="br-it" data-open="'+esc(a.id)+'"><span class="br-ph">'+(a.thumb?'<img loading="lazy" src="'+esc(a.thumb)+'" alt="">':"")+(a.sold?'<i class="br-tag s">'+esc(T("Vendu"))+'</i>':a.type!=="v"?'<i class="br-tag '+a.type+'">'+esc(T(TYPES[a.type][0]))+'</i>':"")+(isFav(a.id)?'<i class="br-hrt">♥</i>':"")+'</span>'
     +'<span class="br-bd"><span class="br-pr">'+priceText(a)+'</span><span class="br-ti">'+esc(a.title)+'</span>'+stateBadge(a.state)+'<span class="br-pl">📍 '+esc(a.place||"")+km+'</span></span></button>'; }
 function opt(v,l,sel){ return '<option value="'+esc(v)+'"'+(String(sel)===String(v)?" selected":"")+'>'+esc(l)+'</option>'; }
 function hero(){ return '<div class="br-hero"><small>Lite Foil</small><h2>'+esc(T("Le Bon Ride"))+'</h2><p>'+esc(T("Matériel neuf et d'occasion, location et prêt entre riders"))+'</p><button class="br-cta" data-act="new">＋ '+esc(T("Déposer une annonce"))+'</button></div>'
-  +'<div class="br-tabs">'+[["vente","Acheter"],["loc","Louer"],["carte","Carte"],["moi","Mon espace"]].map(function(x){ return '<button data-view="'+x[0]+'" class="'+(view===x[0]?"on":"")+'">'+esc(T(x[1]))+'</button>'; }).join("")+'</div>'; }
+  +'<div class="br-tabs">'+[["vente","Acheter"],["loc","Louer"],["carte","Carte"],["fav","Favoris"],["moi","Mon espace"]].map(function(x){ return '<button data-view="'+x[0]+'" class="'+(view===x[0]?"on":"")+'">'+esc(T(x[1]))+'</button>'; }).join("")+'</div>'; }
 function filtersHtml(){ var cats=F.sport && SP[F.sport] ? SP[F.sport].cats : [], on=function(v){ return v?' class="on"':""; }, any=F.sport||F.cat||F.brand||F.state||F.max||F.neuf||F.q;
   return '<div class="br-search">'+IC_SEARCH+'<input id="brQ" type="search" autocomplete="off" placeholder="'+esc(T("Rechercher (planche, marque, ville…)"))+'" value="'+esc(F.q)+'"></div><div class="br-filters">'
    +'<select data-f="sport"'+on(F.sport)+'>'+opt("",T("Toutes les disciplines"),F.sport)+SPORTS.map(function(s){ return opt(s[0],s[2]+" "+T(s[1]),F.sport); }).join("")+'</select>'
@@ -242,6 +248,7 @@ function draw(){ if(!root) return; killMap();
   var h=hero();
   if(view==="vente"||view==="loc"){ h+=filtersHtml()+'<div id="brList">'+(LIST?listHtml(view):'<div class="br-empty">'+esc(T("Chargement…"))+'</div>')+'</div>'; }
   else if(view==="carte"){ h+='<div class="br-count">'+esc(T("Trouve du matériel sur ton spot ou sur ta route"))+'</div>'+filtersHtml()+'<div class="br-map" id="brMap"></div>'; }
+  else if(view==="fav"){ h+='<div id="brList">'+(LIST?favHtml():'<div class="br-empty">'+esc(T("Chargement…"))+'</div>')+'</div>'; }
   else h+=mineHtml();
   root.innerHTML=h; bindQ();
   if(!LIST) loadList().then(function(){ if(!page) draw(); }).catch(function(){ var b=root.querySelector("#brList")||root; if(root.querySelector("#brList")) b.innerHTML='<div class="br-empty"><b>⏳</b>'+esc(T(S.demo()?"Connexion impossible. Vérifie le réseau puis réessaie.":"Le Bon Ride ouvre très bientôt."))+'<button class="br-b2" data-act="reload" style="flex:none;padding:10px 18px">'+esc(T("Réessayer"))+'</button></div>'; });
@@ -277,6 +284,7 @@ function drawDetail(a){ var me=S.me(), mine=a.uid===me.uid, st=STATES[(+a.state|
   var h='<button class="br-back" data-act="back">‹ '+esc(T("Retour"))+'</button><div class="br-gal" id="brGal">'+(a.thumb?'<img src="'+esc(a.thumb)+'" alt="">':"")+'</div><div class="br-dots" id="brDots"></div>';
   h+='<div class="br-card"><div class="br-dpr">'+priceText(a)+(a.sold?' <span class="br-tag s" style="position:static;vertical-align:middle">'+esc(T("Vendu"))+'</span>':"")+'</div><div class="br-dti">'+esc(a.title)+'</div><div class="br-meta">'+esc(T(TYPES[a.type||"v"][1]))+" · 📍 "+esc(a.place||"")+" · "+esc(ago(a.t))+'</div>'
     +'<div class="br-chips"><span>'+sp.e+" "+esc(T(sp.n))+'</span>'+(a.cat?'<span>'+esc(a.cat)+'</span>':"")+(a.brand?'<span>'+esc(a.brand)+'</span>':"")+'</div>'
+    +'<button class="br-favb'+(isFav(a.id)?" on":"")+'" data-fav="'+esc(a.id)+'">'+(isFav(a.id)?"♥ "+esc(T("Dans mes favoris")):"♡ "+esc(T("Ajouter à mes favoris")))+'</button>'
     +(a.type!=="v" && a.caution?'<div class="br-note">🔒 '+esc(T("Caution"))+" : <b>"+money(a.caution)+"</b>. "+esc(T("Entre riders : la caution et l'assurance se règlent directement entre vous à la remise du matériel. Faites un état des lieux en photos."))+'</div>':"")+'</div>';
   h+='<div class="br-card"><div class="br-h">'+esc(T("État"))+'</div><div class="br-state"><b style="color:'+st[1]+'">'+esc(T(st[0]))+'</b><div class="br-bar">'+[0,1,2,3,4].map(function(i){ return '<i style="'+(i<6-(+a.state||3)?"background:"+st[1]:"")+'"></i>'; }).join("")+'</div></div></div>';
   h+='<div class="br-card"><div class="br-h">'+esc(T("Description"))+'</div><div class="br-txt">'+esc(a.desc||"")+'</div></div>';
@@ -378,6 +386,7 @@ function saveForm(){ if(busy) return; readForm(); var f=formS, err=function(m){ 
 function onClick(e){ var b=e.target.closest("button, a"); if(!b || !root.contains(b)) return; var d=b.dataset, a=page && page.a, me=S.me();
   if(d.view){ view=d.view; page=null; return draw(); }
   if(d.open) return openById(d.open);
+  if(d.fav){ var on=favToggle(d.fav); toast(T(on?"Ajoutée à tes favoris.":"Retirée de tes favoris.")); return draw(); }
   if(d.seller){ page={ k:"seller", uid:d.seller, ps:d.ps||"", tab:"ann", from:page }; draw(); try{ window.scrollTo({top:0}); }catch(x){} return; }
   if(d.stab){ page.tab=d.stab; return draw(); }
   if(d.star){ var box=root.querySelector("#brRate"); box.dataset.r=d.star; Array.prototype.forEach.call(box.children, function(x){ x.classList.toggle("on", +x.dataset.star<=+d.star); }); return; }
@@ -413,5 +422,6 @@ function onChange(e){ var s=e.target; if(!s.dataset || !s.dataset.f) return; F[s
 
 window.LFBonRide={ show:function(pane){ if(root!==pane){ root=pane; root.setAttribute("data-no-i18n",""); if(!document.getElementById("brCss")){ var st=document.createElement("style"); st.id="brCss"; st.textContent=CSS; document.head.appendChild(st); } root.addEventListener("click", onClick); root.addEventListener("change", onChange); }
     if(!page) draw(); if(LIST && Date.now()-listAt>120000) loadList(true).then(function(){ if(!page) draw(); }).catch(function(){}); },
+  go:function(w){ if(!root) return; if(w==="fav"){ view="fav"; page=null; formS=null; draw(); } else if(w==="new"){ if(gate()) newForm(null); } try{ window.scrollTo({top:0}); }catch(e){} },
   _t:{ SPORTS:SPORTS, brandsOf:brandsOf } };
 })();

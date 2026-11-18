@@ -32,7 +32,7 @@ body.uni-pilote .bnav button.on::after{background:#1f4fc4}body.uni-efoil .bnav b
 body.uni-pilote .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#3d8bff,#10276b);box-shadow:0 10px 22px rgba(29,79,184,.4)}body.uni-efoil .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#ff5fd2,#7a1a8c);box-shadow:0 10px 22px rgba(194,55,159,.4)}
 /* accueil par univers */
 body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-bonride #tab-dash>.uh-sport{display:none !important}
-#tab-dash>#homeBr{display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
+.uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#8a5a00;border:1.5px solid #ecd9a6;box-shadow:0 6px 16px rgba(138,90,0,.1)}#tab-dash>#homeBr{display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
 #bnav .bn-br{display:none}body.uni-bonride #bnav [data-nav="bonride"]{display:flex}
 body.uni-bonride #bnav [data-nav="meteo"],body.uni-bonride #bnav [data-nav="tracking"],body.uni-bonride #bnav [data-nav="videos"],body.uni-bonride #bnav [data-nav="fil"]{display:none}
 body.uni-bonride #bnav [data-nav="dash"]{order:1}body.uni-bonride #bnav [data-nav="communaute"]{order:2}body.uni-bonride #bnav [data-nav="bonride"]{order:3}
@@ -4639,7 +4639,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="market/market.js?v=2"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
+    var sc=document.createElement("script"); sc.src="market/market.js?v=3"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   // la carte d'accueil n'apparaît que lorsque la place de marché répond (règles de la base en service), ou en démonstration
   (function(){ var n=0; function probe(){ var el=document.getElementById("homeBr"); if(!el || !el.hidden) return; if(/[?&]demo=1/.test(location.search)){ el.hidden=false; return; }
@@ -9807,6 +9807,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(k==="pilotes"){ if(window.__nearOpen) window.__nearOpen("ulm"); return; }
       if(k==="shop"){ window.open("https://litefoil.fr/","_blank","noopener"); return; }
       if(k==="uni"){ uniChoose(false); return; }
+      if(k==="br"){ var w=b.dataset.to, n=0; lfGoTab("bonride"); (function tryGo(){ if(window.LFBonRide && window.LFBonRide.go && document.querySelector("#tab-bonride .br-hero, #tab-bonride .br-back")){ window.LFBonRide.go(w); return; } if(++n<40) setTimeout(tryGo, 200); })(); return; }
       if(k==="cfg"){ if(window.__efCfg) window.__efCfg.open(); return; }
       if(k==="go"){ var t=document.querySelector('[data-goto="'+b.dataset.to+'"]'); if(t) t.click(); else lfGoTab(b.dataset.to); return; } });
     // la sphère : glisser pour tourner (avec élan), toucher une planète, un point ou une flèche pour choisir
@@ -9891,8 +9892,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     else ef.innerHTML="";
     var br=$("uhBr"); if(!br){ br=document.createElement("div"); br.id="uhBr"; br.className="uh-pane"; ef.parentNode.insertBefore(br, ef.nextSibling); }
     if(c==="bonride"){ br.innerHTML='<button type="button" class="uh-cta" data-uh="go" data-to="bonride" style="background:linear-gradient(135deg,#f5c04a,#a86a00);box-shadow:0 14px 28px rgba(168,106,0,.34)">'+uhIc('<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>')+'Voir les annonces</button>'
-        +uhRow("go","bonride","#8a5a00","#fbf0d6",'<path d="M12 5v14M5 12h14"/>',"Vendre ou louer mon matériel","Dépose ton annonce en quelques minutes")
-        +uhRow("go","bonride","#8a5a00","#fbf0d6",'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',"Trouver du matériel","Neuf, occasion et location entre membres")
+        +'<button type="button" class="uh-cta uh-cta2" data-uh="br" data-to="new">'+uhIc('<path d="M12 5v14M5 12h14"/>')+'Déposer une annonce</button>'
+        +'<button type="button" class="uh-cta uh-cta2" data-uh="br" data-to="fav">'+uhIc('<path d="M12 20s-7-4.400-7-9.500A4 4 0 0 1 12 8a4 4 0 0 1 7 2.500C19 15.600 12 20 12 20z"/>')+'Mes favoris</button>'
         +'<div class="uh-brnote">Les coordonnées des vendeurs sont visibles uniquement par les membres connectés.</div>'; }
     else br.innerHTML="";
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
