@@ -10833,6 +10833,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <!-- 18/11 : page « Ma configuration » de l'univers Lite Foil Ultra : matériel utilisé (d'après le catalogue litefoil.fr) et gabarit du pilote -->
 <style>
+body.uni-efoil #bnav{display:none!important}
+#efBack{display:none;position:fixed;left:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;align-items:center;gap:6px;min-height:0;padding:12px 18px 12px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);color:#fff;font:inherit;font-size:15px;font-weight:800;box-shadow:0 10px 24px rgba(138,31,156,.4);cursor:pointer}
+body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
 @keyframes efcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .efc-top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(135deg,#a02bb0,#3a0b4a);color:#fff}
@@ -10891,6 +10894,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
+  var bk=document.createElement("button"); bk.type="button"; bk.id="efBack"; bk.setAttribute("data-no-i18n",""); bk.innerHTML='<span style="font-size:19px;line-height:1">‹</span> Accueil'; document.body.appendChild(bk);
+  bk.addEventListener("click", function(){ var t=document.querySelector('.tab[data-tab="dash"]'); if(t) t.click(); window.scrollTo(0,0); });
   document.addEventListener("click", function(e){ if(e.target.closest && e.target.closest("[data-efcfg]")) open(); });
   setTimeout(function(){ var s=summary(), e2=document.getElementById("efcSub"); if(e2 && s) e2.textContent=s; }, 800);
 })();
