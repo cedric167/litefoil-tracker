@@ -2407,11 +2407,15 @@ body.uni-sport #tab-dash .home-mat{display:none!important}.st-bar.fl-st{margin:6
 
   <section id="tab-dash" class="tabpane">
     <!-- Accueil (refonte 06/11) : bonjour, conditions du moment, mes sorties, appareils, liens Lite Foil -->
-    <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
-      <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
-      <span class="hs-tx"><b>La boutique</b><small>litefoil.fr · eFoils, foils et accessoires</small></span>
-      <span class="hs-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
-    </a>
+    <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
+      <div class="hc-top"><span class="hc-lbl">Conditions maintenant</span><span class="hc-spot" id="hcSpot">—</span></div>
+      <div class="hc-main">
+        <div class="hc-wind"><span class="hc-arrow" id="hcArrow">↑</span><b id="hcWind">—</b><small>nds</small></div>
+        <div class="hc-side"><span id="hcDir">Vent —</span><span id="hcGust">Rafales —</span></div>
+      </div>
+      <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
+    </button>
+    <div class="home-wind" id="homeWind" hidden></div>
     <div class="qk-head"><span class="qk-badge"><svg viewBox="0 0 24 24"><defs><linearGradient id="qg0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f8cff"/><stop offset="1" stop-color="#0a2fb8"/></linearGradient></defs><path d="M13.9 1.9c.5-.7 1.55-.25 1.4.6l-1.2 6.9h5c.8 0 1.25.9.8 1.55l-9.8 11.2c-.55.65-1.6.15-1.4-.7l1.35-6.65H5.1c-.8 0-1.25-.9-.75-1.55z" fill="url(#qg0)"/></svg></span><b>Raccourcis</b><i></i></div>
     <div class="quick">
       <button type="button" data-qk="cards"><i><svg viewBox="0 0 24 24"><defs><linearGradient id="qg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#c8891a"/></linearGradient><linearGradient id="qg2b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2c33"/><stop offset="1" stop-color="#0b0c0f"/></linearGradient></defs><rect x="3" y="6" width="11.5" height="15.2" rx="2.3" fill="url(#qg2b)" stroke="url(#qg2)" stroke-width="1.3" transform="rotate(-11 8.7 13.6)"/><rect x="9" y="3.2" width="11.8" height="15.8" rx="2.4" fill="url(#qg2b)" stroke="url(#qg2)" stroke-width="1.4" transform="rotate(7 14.9 11.1)"/><path d="M12.20 7.40l4.80 1.20-3.40 2.90 4.20 1.30-5.90 3.60" fill="none" stroke="url(#qg2)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round" opacity=".85" transform="rotate(7 14.9 11.1)"/></svg></i>Mes cartes</button>
@@ -2423,17 +2427,13 @@ body.uni-sport #tab-dash .home-mat{display:none!important}.st-bar.fl-st{margin:6
       <button type="button" data-goto="ultra"><i><svg viewBox="0 0 24 24"><defs><linearGradient id="qg8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3a0ff"/><stop offset="1" stop-color="#5a2be0"/></linearGradient></defs><path d="M13.90 1.90c.5-.7 1.55-.25 1.40.6l-1.20 6.90h5c.8 0 1.25.9.8 1.55l-9.80 11.20c-.55.65-1.60.150-1.40-.7l1.35-6.65H5.10c-.8 0-1.25-.9-.75-1.55z" fill="url(#qg8)"/><path d="M13.30 3.60l-6.90 9h4.40z" fill="#fff" opacity=".25"/></svg></i>Ultra</button>
     </div>
 
-    <button class="home-cond" type="button" data-goto="meteo" id="homeCond">
-      <div class="hc-top"><span class="hc-lbl">Conditions maintenant</span><span class="hc-spot" id="hcSpot">—</span></div>
-      <div class="hc-main">
-        <div class="hc-wind"><span class="hc-arrow" id="hcArrow">↑</span><b id="hcWind">—</b><small>nds</small></div>
-        <div class="hc-side"><span id="hcDir">Vent —</span><span id="hcGust">Rafales —</span></div>
-      </div>
-      <div class="hc-row"><span>🌊 <b id="hcWave">—</b></span><span>🌡️ <b id="hcTemp">—</b></span><span class="hc-more">Prévisions <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
-    </button>
-    <div class="home-wind" id="homeWind" hidden></div>
     <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Le Bon Ride</b><small>Matériel neuf, occasion et location entre membres</small></span><span class="hb-go">›</span></button>
     <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm"><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
+    <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
+      <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
+      <span class="hs-tx"><b>La boutique</b><small>litefoil.fr · eFoils, foils et accessoires</small></span>
+      <span class="hs-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
 
     <div class="home-card">
       <div class="hcard-head"><span class="m-label">Mes sorties</span><a class="hcard-link" href="activites/index.html">Tout voir <svg class="ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></div>
