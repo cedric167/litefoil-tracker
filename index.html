@@ -10833,7 +10833,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <!-- 18/11 : page « Ma configuration » de l'univers Lite Foil Ultra : matériel utilisé (d'après le catalogue litefoil.fr) et gabarit du pilote -->
 <style>
-body.uni-efoil #bnav{display:none!important}body.uni-efoil #hero{display:none!important}body.uni-efoil #tab-dash>.home-shop.uh-sport{display:flex!important;margin:calc(26px + env(safe-area-inset-top,0px)) 0 14px}
+body.uni-efoil #bnav{display:none!important}body.uni-efoil #hero{display:none!important}body.uni-efoil #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:center;align-items:center;aspect-ratio:16/9;margin:12px 0 14px;padding:16px;border-radius:var(--radius);text-align:center;gap:4px;background:radial-gradient(120% 90% at 50% 40%,#12706b 0%,#0b3138 52%,#04121a 100%)}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-logo{width:250px;height:120px}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-logo img{left:-15px;top:-24px;width:280px}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx{flex:none;border-left:0;padding-left:0;align-items:center;gap:2px}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx b{font-size:21px}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx small{font-size:13.5px;white-space:normal}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go{position:absolute;right:14px;bottom:14px;width:38px;height:38px}
 #efBack{display:none;position:fixed;left:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;align-items:center;gap:6px;min-height:0;padding:12px 18px 12px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);color:#fff;font:inherit;font-size:15px;font-weight:800;box-shadow:0 10px 24px rgba(138,31,156,.4);cursor:pointer}
 body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
