@@ -33,6 +33,8 @@ body.uni-pilote .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#3d8bff
 /* accueil par univers */
 body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-bonride #tab-dash>.uh-sport{display:none !important}
 .uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#3b444e;border:1.5px solid #d5dbe2;box-shadow:0 6px 16px rgba(59,68,78,.1)}
+body.uni-terre #tab-meteo .ms{background:linear-gradient(135deg,#1a0a04 0%,#5a280b 52%,#c9721f 100%);box-shadow:0 12px 28px rgba(90,40,11,.26)}body.uni-terre #tab-meteo .ms-k,body.uni-terre #tab-meteo .ms-wave{color:#ffd9a8}
+body.uni-terre #tab-meteo button.gw-d.on{border-color:#e08a2c;background:linear-gradient(160deg,#fff1df,#fffaf3)}body.uni-terre #tab-meteo .mto-loc .mto-btn{color:#b4541a}
 .uh-one{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 12px;padding:13px 14px;border:0;border-radius:20px;background:radial-gradient(120% 150% at 100% 0%,var(--sb1,#1fb5a8) 0%,var(--sb2,#0b4f55) 55%,var(--sb3,#04161a) 100%);color:#fff;font:inherit;text-align:left;cursor:pointer;min-height:0;box-shadow:0 10px 24px var(--sg,rgba(0,0,0,.2))}
 .uh-one[hidden]{display:none}.uh-one svg{flex:none;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.800;stroke-linecap:round}.uh-one span{flex:1;min-width:0}.uh-one b{display:block;font-size:16px;font-weight:800}.uh-one small{display:block;font-size:12px;opacity:.8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.uh-one i{font-style:normal;font-size:22px;opacity:.8}
 body.uni-on #tab-dash .home-card:has(.home-stats){background:radial-gradient(120% 150% at 100% 0%,var(--sb1,#1fb5a8) 0%,var(--sb2,#0b4f55) 48%,var(--sb3,#04161a) 100%);border:0;box-shadow:0 10px 30px var(--sg,rgba(0,0,0,.2)),0 8px 22px rgba(0,0,0,.14)}
@@ -10224,6 +10226,20 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     function tile(lbl,icon,val,unit,sub){ return '<div class="mto-tile"><div class="lbl">'+icon+' '+lbl+'</div><div class="val">'+val+(unit?'<small> '+unit+'</small>':'')+'</div>'+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>'; }
     async function load(p){
       $m("mtoGrid").innerHTML='<div class="comm-empty">Chargement des conditions…</div>';
+      if(mtoTerre()){ try{
+          const tu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=precipitation_probability&forecast_hours=3&wind_speed_unit=kmh&timezone=auto";
+          const tr=await fetch(tu).then(r=>r.json()), w=(tr&&tr.current)||{}, pp=(tr&&tr.hourly&&tr.hourly.precipitation_probability)||[], pmax=pp.length?Math.max.apply(null, pp.filter(x=>x!=null).concat([0])):null;
+          const num=(v,d)=>v==null?"—":(d!=null?v.toFixed(d):Math.round(v));
+          if(!mtoTerre()) return load(p);
+          $m("mtoGrid").innerHTML=[
+            tile("Température","🌡️",num(w.temperature_2m),"°C",(w.apparent_temperature!=null?("ressenti "+Math.round(w.apparent_temperature)+"°C"):"")),
+            tile("Vent","💨",num(w.wind_speed_10m),"km/h",(w.wind_gusts_10m!=null?("rafales "+Math.round(w.wind_gusts_10m)+" km/h"):"")+(w.wind_direction_10m!=null?" · "+arrow(w.wind_direction_10m)+" "+cardinal(w.wind_direction_10m):"")),
+            tile("Pluie","🌧️",num(w.precipitation,1),"mm",(pmax!=null?("risque "+Math.round(pmax)+" % sur 3 h"):"sur la dernière heure")),
+            tile("Ciel","☁️",num(w.cloud_cover),"%",(w.relative_humidity_2m!=null?("humidité "+Math.round(w.relative_humidity_2m)+" %"):"couverture nuageuse"))
+          ].join("");
+          const u2=$m("mtoUpdated"); if(u2){ u2.hidden=false; u2.innerHTML="Mis à jour "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+" · données <b>Lite Foil météo</b>"; }
+        }catch(e){ $m("mtoGrid").innerHTML='<div class="comm-empty">Conditions indisponibles pour le moment. Vérifie ta connexion et réessaie.</div>'; }
+        return; }
       try{
         const mu="https://marine-api.open-meteo.com/v1/marine?latitude="+p.lat+"&longitude="+p.lng+"&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,sea_surface_temperature&timezone=auto";
         const wu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&wind_speed_unit=kn&timezone=auto";
@@ -10241,7 +10257,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       }catch(e){ $m("mtoGrid").innerHTML='<div class="comm-empty">Conditions indisponibles pour le moment. Vérifie ta connexion et réessaie.</div>'; }
     }
     function setWindy(p){ const f=$m("mtoWindy"); if(!f) return;
-      f.src="https://embed.windy.com/embed2.html?lat="+p.lat+"&lon="+p.lng+"&detailLat="+p.lat+"&detailLon="+p.lng+"&zoom=8&level=surface&overlay=waves&menu=&message=&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"; }
+      f.src="https://embed.windy.com/embed2.html?lat="+p.lat+"&lon="+p.lng+"&detailLat="+p.lat+"&detailLon="+p.lng+"&zoom=8&level=surface&overlay="+(mtoTerre()?"wind":"waves")+"&menu=&message=&marker=true&calendar=now&type=map&location=coordinates&metricWind="+(mtoTerre()?"km%2Fh":"kt")+"&metricTemp=%C2%B0C&radarRange=-1"; }
     function colW(kt){ if(kt==null) return ["transparent","inherit"];
       if(kt<6) return ["#eef3f6","#5b6b73"]; if(kt<10) return ["#d7edc9","#2f6b2a"];
       if(kt<14) return ["#b7e394","#2f6b2a"]; if(kt<18) return ["#ffe79a","#7a5a10"];
@@ -10251,10 +10267,12 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var box=$m("mtoFcst"); if(!box) return;
       box.innerHTML='<div class="comm-empty">Chargement des prévisions…</div>';
       try{
-        var fu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m&wind_speed_unit=kn&timezone=auto&forecast_days=3";
+        var ter=mtoTerre();
+        var fu="https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lng+"&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m"+(ter?",precipitation_probability":"")+"&wind_speed_unit="+(ter?"kmh":"kn")+"&timezone=auto&forecast_days=3";
         var mu="https://marine-api.open-meteo.com/v1/marine?latitude="+p.lat+"&longitude="+p.lng+"&hourly=wave_height&timezone=auto&forecast_days=3";
         var fr=await fetch(fu).then(function(r){return r.json();});
-        var mr=await fetch(mu).then(function(r){return r.json();}).catch(function(){return null;});
+        var mr=ter ? null : await fetch(mu).then(function(r){return r.json();}).catch(function(){return null;});
+        if(ter!==mtoTerre()) return loadForecast(p);
         var H=fr&&fr.hourly; if(!H||!H.time){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles.</div>'; return; }
         var waveMap={}; if(mr&&mr.hourly&&mr.hourly.time){ for(var k=0;k<mr.hourly.time.length;k++){ waveMap[mr.hourly.time[k]]=mr.hourly.wave_height[k]; } }
         var now=Date.now()-3600000; var slots=[];
@@ -10267,20 +10285,21 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           dayRow+='<td'+sh+'>'+days[dt.getDay()]+' '+dt.getDate()+'</td>';
           hrRow+='<td'+sh+'>'+dt.getHours()+'h</td>';
           var ws=H.wind_speed_10m[i],gu=H.wind_gusts_10m[i],di=H.wind_direction_10m[i],tp=H.temperature_2m[i];
-          var cw=colW(ws); windRow+='<td style="background:'+cw[0]+';color:'+cw[1]+'">'+(ws==null?"—":Math.round(ws))+'</td>';
-          var cg=colW(gu); gustRow+='<td style="background:'+cg[0]+';color:'+cg[1]+'">'+(gu==null?"—":Math.round(gu))+'</td>';
+          var kf=ter?1.852:1; var cw=colW(ws==null?null:ws/kf); windRow+='<td style="background:'+cw[0]+';color:'+cw[1]+'">'+(ws==null?"—":Math.round(ws))+'</td>';
+          var cg=colW(gu==null?null:gu/kf); gustRow+='<td style="background:'+cg[0]+';color:'+cg[1]+'">'+(gu==null?"—":Math.round(gu))+'</td>';
           dirRow+='<td'+sh+'>'+(di==null?"—":arrow(di))+'</td>';
           tmpRow+='<td'+sh+'>'+(tp==null?"—":Math.round(tp)+"°")+'</td>';
-          var wv=waveMap[H.time[i]]; waveRow+='<td'+sh+'>'+(wv==null?"—":Number(wv).toFixed(1))+'</td>';
+          if(ter){ var pr=H.precipitation_probability ? H.precipitation_probability[i] : null; waveRow+='<td'+sh+(pr!=null && pr>=50 ? ' style="background:#d6e8ff;color:#12408f;font-weight:700"' : '')+'>'+(pr==null?"—":Math.round(pr))+'</td>'; }
+          else { var wv=waveMap[H.time[i]]; waveRow+='<td'+sh+'>'+(wv==null?"—":Number(wv).toFixed(1))+'</td>'; }
         });
         box.innerHTML='<div class="mto-fc"><table class="mto-fc-t">'
           +'<tr class="day"><th class="rl"></th>'+dayRow+'</tr>'
           +'<tr class="hr"><th class="rl">Heure</th>'+hrRow+'</tr>'
-          +'<tr class="wind"><th class="rl">Vent (kt)</th>'+windRow+'</tr>'
+          +'<tr class="wind"><th class="rl">'+(ter?"Vent (km/h)":"Vent (kt)")+'</th>'+windRow+'</tr>'
           +'<tr class="hr"><th class="rl">Rafales</th>'+gustRow+'</tr>'
           +'<tr><th class="rl">Direction</th>'+dirRow+'</tr>'
           +'<tr class="hr"><th class="rl">Temp.</th>'+tmpRow+'</tr>'
-          +'<tr class="hr"><th class="rl">Vagues (m)</th>'+waveRow+'</tr>'
+          +'<tr class="hr"><th class="rl">'+(ter?"Pluie (%)":"Vagues (m)")+'</th>'+waveRow+'</tr>'
           +'</table></div>';
       }catch(e){ box.innerHTML='<div class="comm-empty">Prévisions indisponibles pour ce spot.</div>'; }
     }
@@ -10339,6 +10358,21 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         nowRetry=setTimeout(function(){ nowRetry=null; if(pos && (+pos.lat).toFixed(2)+","+(+pos.lng).toFixed(2)===key) loadNow(pos); }, 65000);
       }
     }
+    function mtoTerre(){ return document.body.classList.contains("uni-terre"); }
+    var mtoUniK=null, mtoTx=null;
+    function mtoUni(){ var ter=mtoTerre(), card=$m("mtoSearchCard"); if(!card) return;
+      var k=card.querySelector(".ms-k"), h=card.querySelector(".ms-top h3"), nt=card.querySelector(".ms-note"), inp=$m("mtoSearch"), ic=card.querySelector(".ms-wave"), wy=$m("mtoWindy"), wc=wy && wy.closest(".card"), wl=wc && wc.previousElementSibling, wn=wc && wc.querySelector(".note"), ifr=$m("mtoIfremer");
+      if(!mtoTx) mtoTx={ k:k&&k.textContent, h:h&&h.textContent, nt:nt&&nt.textContent, ph:inp&&inp.placeholder, ic:ic&&ic.innerHTML, wl:wl&&wl.textContent, wn:wn&&wn.innerHTML };
+      if(k) k.textContent = ter ? "Météo du lieu" : mtoTx.k; if(h) h.textContent = ter ? "Trouve ton lieu" : mtoTx.h;
+      if(nt) nt.textContent = ter ? "Vent, température, pluie et prévisions du lieu, avec sa webcam en direct quand il en a une." : mtoTx.nt;
+      if(inp) inp.placeholder = ter ? "Chamonix, Font-Romeu, Lyon…" : mtoTx.ph;
+      if(ic) ic.innerHTML = ter ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.500 19l6.500-11 4 6.500 2.500-4L21.500 19z"/></svg>' : mtoTx.ic;
+      if(wl) wl.textContent = ter ? "Carte du vent" : mtoTx.wl;
+      if(wn) wn.innerHTML = ter ? "Carte interactive <b>Windy</b> : glisse pour explorer, touche la légende pour changer la couche (vent, pluie, température)." : mtoTx.wn;
+      if(ifr) ifr.style.display = ter ? "none" : "";
+      var fb=$m("mtoFcst"), fn=fb && fb.parentNode.querySelector(".note"); if(fn){ if(mtoTx.fn==null) mtoTx.fn=fn.innerHTML; fn.innerHTML = ter ? "Vent, rafales, direction, température et risque de pluie : <b>Lite Foil météo</b>, pour le lieu choisi (fais glisser le tableau)." : mtoTx.fn; } }
+    try{ new MutationObserver(function(){ var c=mtoTerre(); if(c===mtoUniK) return; var first=mtoUniK===null; mtoUniK=c; mtoUni(); if(!first && pos){ load(pos); setWindy(pos); loadForecast(pos); } }).observe(document.body, { attributes:true, attributeFilter:["class"] }); }catch(e){}
+    setTimeout(function(){ if(mtoUniK===null){ mtoUniK=mtoTerre(); mtoUni(); } }, 0);
     function apply(p,label){ if(label && p && !p.name) p.name=label; pos=p; try{ if(window.lfWc && window.lfWc.spot) window.lfWc.spot(p.lat, p.lng, label||p.name||""); }catch(e){} try{ localStorage.setItem("lf.meteo.pos",JSON.stringify(p)); }catch(e){} $m("mtoSpot").textContent="📍 "+(label||p.name||"Ma position"); loadNow(p); load(p); setWindy(p); loadForecast(p); }
     async function reverseName(lat,lon){
       try{
