@@ -48,6 +48,8 @@ body.uni-bonride{--sb1:#d99a1e;--sb2:#5c3d07;--sb3:#150e02;--sl:#ffe9b0;--sc:#8a
 .uh-gl{position:absolute;left:50%;top:14px;width:118px;height:118px;margin-left:-59px;z-index:2;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.75) 0%,rgba(255,255,255,.22) 26%,rgba(255,255,255,.07) 60%,rgba(0,0,0,.25) 100%);box-shadow:0 0 54px rgba(255,255,255,.26),inset -14px -18px 32px rgba(0,0,0,.5)}
 .uh-gl u{position:absolute;top:0;bottom:0;left:0;width:300%;background:repeating-linear-gradient(90deg,transparent 0 21px,rgba(255,255,255,.2) 21px 22px)}
 .uh-gl:after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(ellipse 100% 34% at 50% 50%,transparent 0 14px,rgba(255,255,255,.14) 14px 15px)}
+.uh-hero .uh-gl{left:50%;top:6px;width:136px;height:136px;margin-left:-68px;background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.3) 22%,rgba(255,255,255,.08) 55%,rgba(0,0,0,.42) 100%),var(--sb2,#243040);box-shadow:0 0 60px rgba(255,255,255,.22),inset -16px -20px 36px rgba(0,0,0,.55);transition:background-color .4s}
+.uh-hero .uh-ell{top:44px;height:64px}
 .uh-hero{cursor:grab}.uh-hero.drag{cursor:grabbing}
 .uh-pl .b{transition:box-shadow .3s}.uh-pl.front .b{box-shadow:0 0 0 7px rgba(255,255,255,.14),0 0 42px var(--pc)!important}
 .uh-lb{position:absolute;left:50%;top:78px;width:0;height:0;z-index:4;pointer-events:none;will-change:transform,opacity;opacity:0}
@@ -9839,10 +9841,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function uhMeasure(){ var hero=$("uhHero"); if(!hero) return; var W=hero.clientWidth||340; UH.Rx=Math.min(158, W*0.385); var el=hero.querySelector(".uh-ell"); if(el) el.style.width=(UH.Rx*2).toFixed(0)+"px"; }
   function uhPaint(){ var hero=$("uhHero"), E=UH.els; if(!hero || hero.hidden || !E) return; var n=E.length, st=2*Math.PI/Math.max(3,n), Rx=UH.Rx||140, fr=-1, fw=-1;
     for(var i=0;i<n;i++){ var e=E[i], d=i-UH.pos; if(n>=3){ d=((d%n)+n*1.5)%n-n/2; }
-      var a=d*st, z=Math.cos(a), x=Math.sin(a)*Rx, t=(z+1)/2, sc=0.5+0.5*Math.pow(t,1.1), y=z*30-(1-t)*10, ad=Math.abs(d);
+      var a=d*st, z=Math.cos(a), x=Math.sin(a)*Rx, t=(z+1)/2, sc=0.56+0.44*Math.pow(t,1.1), y=z*26+2, ad=Math.abs(d);
       e.pl.style.transform="translate3d("+x.toFixed(1)+"px,"+y.toFixed(1)+"px,0) scale("+sc.toFixed(3)+")";
-      var zi=z>0.12?3:1; if(e.zi!==zi){ e.zi=zi; e.pl.style.zIndex=zi; }
-      e.pl.style.opacity=(0.4+0.6*Math.pow(t,0.8)).toFixed(2);
+      var zi=z>=0?3:1; if(e.zi!==zi){ e.zi=zi; e.pl.style.zIndex=zi; }
+      e.pl.style.filter="brightness("+(0.62+0.38*t).toFixed(2)+")";
       var w=Math.max(0,1-ad*1.6); if(w>fw){ fw=w; fr=i; }
       e.sky.style.opacity=w.toFixed(3); e.tt.style.opacity=w.toFixed(3); e.tt.style.transform="translate3d("+(d*28).toFixed(1)+"px,0,0)";
       var lo=Math.max(0, Math.min(1,(ad-0.45)*3))*Math.max(0, Math.min(1,(1.5-ad)*3));
