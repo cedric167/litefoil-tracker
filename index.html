@@ -9814,6 +9814,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     uhPanes(); }
   function uhRow(uh, to, col, bg, ic, t, s){ return '<button type="button" class="uh-row" data-uh="'+uh+'"'+(to?' data-to="'+to+'"':'')+'><span class="uh-ri" style="background:'+bg+';color:'+col+'">'+uhIc(ic)+'</span><span class="uh-rt"><b>'+t+'</b><small>'+s+'</small></span><span class="uh-ch">›</span></button>'; }
   function uhPanes(){ var c=uniCur(), pil=$("uhPilot"), ef=$("uhEfoil"), fd=$("uhFeed"); if(!pil) return;
+    try{ var tb=$("tab-dash"), sh=tb.querySelector(":scope>.home-shop"), ph=$("uhShopPh"); if(sh && !ph){ ph=document.createElement("i"); ph.id="uhShopPh"; ph.hidden=true; sh.parentNode.insertBefore(ph, sh.nextSibling); }
+      if(sh && ph){ if(c==="efoil"){ if(tb.firstElementChild!==sh) tb.insertBefore(sh, tb.firstChild); } else if(ph.previousElementSibling!==sh) tb.insertBefore(sh, ph); } }catch(e){}
     if(c==="pilote"){ var lb=[], tot=0; try{ lb=JSON.parse(localStorage.getItem("lf.ulm.logbook")||"[]")||[]; }catch(e){} lb.forEach(function(x){ tot+=Math.max(0,(+x.t1||0)-(+x.t0||0)); }); var mn=Math.round(tot/60000), last=lb[0];
       pil.innerHTML='<button type="button" class="uh-cta" data-uh="plan" style="background:linear-gradient(135deg,#3d8bff,#10276b);box-shadow:0 14px 28px rgba(29,79,184,.34)">'+uhIc('<circle cx="12" cy="12" r="9"/><path d="M15.500 8.500l-2 5-5 2 2-5z"/>')+'Préparer mon plan de vol</button>'
         +'<div class="uh-g2"><button type="button" class="uh-tile" data-uh="wx"><span class="uh-k">Météo terrain</span><b>METAR · TAF</b><small>Vent sur la piste, prévisions</small></button><button type="button" class="uh-tile" data-uh="plan"><span class="uh-k">Carnet de vol</span><b>'+(lb.length ? (mn>=60?Math.floor(mn/60)+" h "+(mn%60<10?"0":"")+(mn%60):mn+" min") : "0 h")+'</b><small>'+lb.length+' vol'+(lb.length>1?"s":"")+' enregistré'+(lb.length>1?"s":"")+'</small></button></div>'
@@ -9822,8 +9824,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     else pil.innerHTML="";
     if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Ma Lite Foil Ultra · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
         +uhRow("cfg","","#8a1f9c","#f6e6fa",'<path d="M3 9c5-2.500 13-2.500 18 0-4 2-14 2-18 0z"/><path d="M12 10.500V18M7.500 18.500h9"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit")
-        +uhRow("go","ultra","#8a1f9c","#f6e6fa",'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/>',"Mes appareils","Réglages, diagnostic et mises à jour")
-        +uhRow("shop","","#0b3d47","#e3f6f4",'<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',"La boutique Lite Foil","litefoil.fr · eFoils, foils et accessoires"); uhBt(); }
+        +uhRow("go","ultra","#8a1f9c","#f6e6fa",'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/>',"Mes appareils","Réglages, diagnostic et mises à jour"); uhBt(); }
     else ef.innerHTML="";
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
   function uhBt(){ var el=$("uhBt"); if(!el) return; var D=window.__lfDash||{}, cn=D.conn||{}, soc=(D.soc!=null && isFinite(+D.soc)) ? Math.round(+D.soc)+" %" : "";
@@ -10833,7 +10834,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <!-- 18/11 : page « Ma configuration » de l'univers Lite Foil Ultra : matériel utilisé (d'après le catalogue litefoil.fr) et gabarit du pilote -->
 <style>
-body.uni-efoil #bnav{display:none!important}
+body.uni-efoil #bnav{display:none!important}body.uni-efoil #hero{display:none!important}body.uni-efoil #tab-dash>.home-shop.uh-sport{display:flex!important;margin:calc(26px + env(safe-area-inset-top,0px)) 0 14px}
 #efBack{display:none;position:fixed;left:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;align-items:center;gap:6px;min-height:0;padding:12px 18px 12px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);color:#fff;font:inherit;font-size:15px;font-weight:800;box-shadow:0 10px 24px rgba(138,31,156,.4);cursor:pointer}
 body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
