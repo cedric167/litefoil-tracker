@@ -53,7 +53,7 @@ body.uni-bonride{--sb1:#d99a1e;--sb2:#5c3d07;--sb3:#150e02;--sl:#ffe9b0;--sc:#8a
 .uh-hero .uh-ell{top:44px;height:64px}
 .uh-pl .b.p3d{background:none!important;border:0;overflow:visible}
 .uh-pl .b .pimg{position:absolute;left:50%;top:50%;width:170%;height:170%;max-width:none;transform:translate(-50%,-50%);pointer-events:none;-webkit-user-drag:none;user-select:none}
-.uh-pl .b.p3d svg{position:relative;z-index:1;width:31px;height:31px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.65))}
+.uh-pl .b canvas.pimg{width:100%;height:100%}.uh-pl .b.live svg{display:none}.uh-pl .b.p3d svg{position:relative;z-index:1;width:31px;height:31px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.65))}
 .uh-pl .b.p3d{box-shadow:0 0 22px var(--pc)!important}.uh-pl.front .b.p3d{box-shadow:0 0 0 6px rgba(255,255,255,.12),0 0 44px var(--pc)!important}
 .uh-gl canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
 .uh-hero .uh-gl.earth{background:#02060f;box-shadow:0 0 34px rgba(110,170,255,.55),0 0 90px rgba(90,150,255,.22)}.uh-gl.earth canvas{opacity:1}.uh-gl.earth u{display:none}.uh-gl.earth:after{display:none}
@@ -9737,13 +9737,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   var UNI_K=["nautique","terre","pilote","efoil","bonride"];
   var UNI={
     nautique:{ sh:"Nautique", n:"Sport nautique", t:"Sport nautique", s:"Wing, kite, surf, voile, paddle…", a:"#2bd4c4", b:"#0b6d72", sky:"radial-gradient(110% 80% at 50% 62%,#12706b 0%,#0a3540 48%,#041318 100%)",
-      ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
+      ic:'<path d="M2.5 13.5c1-6 6.500-9 11-6.800 3.200 1.600 3.600 5.800.800 6.600-1.900.500-3.300-1.100-2.500-2.800"/><path d="M2 18c1.700 0 1.700-1.500 3.300-1.500S7 18 8.700 18s1.700-1.500 3.300-1.500 1.700 1.500 3.300 1.500 1.700-1.500 3.400-1.500S20.300 18 22 18"/>',
       li:["Tracking GPS de tes sessions sur l'eau","Vent, vagues, webcams des spots","SOS et suivi par tes proches"] },
     terre:{ sh:"Terrestre", n:"Sport terrestre", t:"Sport terrestre", s:"Running, vélo, rando, ski, skate…", a:"#ffb347", b:"#b4541a", sky:"radial-gradient(110% 80% at 50% 62%,#b8651d 0%,#4a230b 48%,#170a04 100%)",
-      ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
+      ic:'<circle cx="12" cy="12" r="9.300"/><path d="M5.200 16.200l4.300-7 2.900 4.600 2-3.100 4.400 5.500z"/><path d="M8.300 11.200l1.200.900 1.100-.900"/>',
       li:["Tracking GPS : distance, allure, dénivelé","Météo du jour, vent et température","Défis de la semaine, SOS et suivi"] },
     pilote:{ sh:"ULM / Avion", n:"ULM / Avion", t:"ULM / Avion", s:"Plan de vol, GPS 3D, carnet", a:"#3d8bff", b:"#10276b", sky:"radial-gradient(110% 80% at 50% 62%,#1d4fb8 0%,#0b1d4c 48%,#040a1c 100%)",
-      ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
+      ic:'<path d="M3 8.500h9.500a2.800 2.800 0 1 0-2.800-2.800"/><path d="M3 12.500h14.500a3 3 0 1 1-3 3"/><path d="M3 16.500h6.500a2.300 2.300 0 1 1-2.300 2.300"/>',
       li:["GPS avion, carte 3D avec relief","Alertes relief, trafic, zones, nuit","Carnet de vol, vol suivi en direct"] },
     efoil:{ sh:"Lite Foil", n:"Lite Foil", t:"Lite Foil", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
@@ -11028,40 +11028,58 @@ body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body
   // liens « Activités » de l'accueil : ouverts sur le milieu de l'univers en cours
   document.addEventListener("click", function(e){ var l=e.target.closest && e.target.closest('#tab-dash a[href="activites/index.html"]'); if(!l) return; var B=document.body.classList, f=B.contains("uni-terre") ? "terre" : B.contains("uni-pilote") ? "air" : B.contains("uni-nautique") ? "mer" : ""; if(!f) return; e.preventDefault(); location.href="activites/index.html?f="+f; }, true);
   // planètes des univers : chaque image est calculée une fois (sphère éclairée, relief procédural), puis réutilisée
-  window.__uhPlanets=(function(){ var cache={}, G=null, dead=false;
-    var P={ nautique:{ k:3, s:3.1, r:0, c:[[0.094,0.588,0.576],[0.169,0.831,0.769],[0.627,0.925,0.894]] },
-      terre:{ k:3, s:7.4, r:0, c:[[0.824,0.478,0.173],[1.000,0.702,0.278],[1.000,0.867,0.675]] },
-      pilote:{ k:3, s:1.7, r:0, c:[[0.133,0.310,0.651],[0.239,0.545,1.000],[0.659,0.796,1.000]] },
-      efoil:{ k:3, s:5.3, r:0, c:[[0.686,0.212,0.659],[1.000,0.373,0.824],[1.000,0.718,0.922]] },
-      bonride:{ k:3, s:9.2, r:0, c:[[0.710,0.514,0.118],[0.961,0.753,0.290],[0.984,0.890,0.682]] } };
-    function gl(){ if(G || dead) return G; try{ var c=document.createElement("canvas"); c.width=c.height=384; var g=c.getContext("webgl",{ alpha:true, antialias:false, premultipliedAlpha:false, preserveDrawingBuffer:true }); if(!g){ dead=true; return null; }
+  window.__uhPlanets=(function(){ var G=null, dead=false, items=[], tick=0, seen=true, io=null, lt=0, rot=0, S=Math.min(288, Math.round(96*Math.min(3, window.devicePixelRatio||1)));
+    var P={ nautique:{ s:3.1, c:[[0.094,0.588,0.576],[0.169,0.831,0.769],[0.627,0.925,0.894]] },
+      terre:{ s:7.4, c:[[0.824,0.478,0.173],[1.000,0.702,0.278],[1.000,0.867,0.675]] },
+      pilote:{ s:1.7, c:[[0.133,0.310,0.651],[0.239,0.545,1.000],[0.659,0.796,1.000]] },
+      efoil:{ s:5.3, c:[[0.686,0.212,0.659],[1.000,0.373,0.824],[1.000,0.718,0.922]] },
+      bonride:{ s:9.2, c:[[0.710,0.514,0.118],[0.961,0.753,0.290],[0.984,0.890,0.682]] } };
+    function gl(){ if(G || dead) return G; try{ var c=document.createElement("canvas"); c.width=c.height=S; var g=c.getContext("webgl",{ alpha:true, antialias:false, premultipliedAlpha:false, preserveDrawingBuffer:true }); if(!g){ dead=true; return null; }
         var sh=function(t,s){ var o=g.createShader(t); g.shaderSource(o,s); g.compileShader(o); if(!g.getShaderParameter(o,g.COMPILE_STATUS)) throw new Error(g.getShaderInfoLog(o)||"shader"); return o; };
         var p=g.createProgram(); g.attachShader(p, sh(g.VERTEX_SHADER,"attribute vec2 a;varying vec2 v;void main(){v=a;gl_Position=vec4(a,0.,1.);}"));
         g.attachShader(p, sh(g.FRAGMENT_SHADER,[
-          "precision highp float;varying vec2 v;uniform vec3 c1;uniform vec3 c2;uniform vec3 c3;uniform float kind;uniform float seed;uniform float ring;",
+          "precision highp float;varying vec2 v;uniform vec3 c1;uniform vec3 c2;uniform vec3 c3;uniform float seed;uniform float rot;uniform sampler2D lg;",
           "float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}",
           "float n(vec3 p){vec3 i=floor(p);vec3 f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(h(i),h(i+vec3(1.,0.,0.)),f.x),mix(h(i+vec3(0.,1.,0.)),h(i+vec3(1.,1.,0.)),f.x),f.y),mix(mix(h(i+vec3(0.,0.,1.)),h(i+vec3(1.,0.,1.)),f.x),mix(h(i+vec3(0.,1.,1.)),h(i+vec3(1.,1.,1.)),f.x),f.y),f.z);}",
-          "float fbm(vec3 p){float a=.5;float s=0.;for(int i=0;i<6;i++){s+=a*n(p);p=p*2.03+vec3(1.7);a*=.5;}return s;}",
-          "void main(){vec2 q=v/.59;float r2=dot(q,q);vec3 L=normalize(vec3(-.45,.5,.75));vec3 col=vec3(0.);float al=0.;",
-          "float ra=0.;vec3 rc=vec3(0.);float fr=0.;",
-          "if(ring>.5){float an=.34;vec2 e=vec2(q.x*cos(an)+q.y*sin(an),-q.x*sin(an)+q.y*cos(an));fr=step(e.y,0.);float d=length(vec2(e.x,e.y/.3));float band=smoothstep(1.22,1.27,d)*(1.-smoothstep(1.62,1.67,d));float gp=.5+.5*sin(d*46.);float cs=1.-smoothstep(1.4,1.42,d)*(1.-smoothstep(1.45,1.47,d));ra=band*(.5+.4*gp)*cs;rc=mix(c2,vec3(1.),.4)*(.72+.28*gp);if(fr<.5&&abs(e.x)<.9&&d<1.7){rc*=.45;}}",
-          "if(r2<1.){float z=sqrt(1.-r2);vec3 nn=vec3(q,z);float ca=cos(seed);float sa=sin(seed);vec3 p=vec3(nn.x*ca+nn.z*sa,nn.y*.94+nn.z*.34,-nn.x*sa+nn.z*ca);",
-          "if(kind<.5){float f=fbm(p*2.1+seed);float land=smoothstep(.5,.56,f);col=mix(mix(c1*.75,c1*1.25,smoothstep(.3,.5,f)),mix(c2,c2*.55+vec3(.25,.2,.05),smoothstep(.6,.78,f)),land);float cl=smoothstep(.52,.74,fbm(p*3.2+vec3(seed*2.,4.,1.)));col=mix(col,vec3(1.),cl*.78);}",
-          "else if(kind<1.5){float f=fbm(p*2.6+seed);col=mix(c1,c2,smoothstep(.3,.7,f));col*=.78+.44*fbm(p*9.+3.);col=mix(col,c3,smoothstep(.56,.72,fbm(p*1.4+vec3(9.,seed,2.)))*.75);float cr=smoothstep(.71,.74,n(p*6.+seed));col*=1.-cr*.28;}",
-          "else if(kind>2.5){float f=fbm(p*2.3+seed);col=mix(c1,c2,smoothstep(.28,.74,f));col*=.9+.2*fbm(p*7.+2.);}",
-          "else{float y=p.y+.1*fbm(p*3.+seed);float b=.5+.5*sin(y*13.+fbm(p*2.+seed)*4.);col=mix(c1,c2,b);col=mix(col,c3,smoothstep(.72,1.,.5+.5*sin(y*29.+2.))*.45);float st=smoothstep(.62,.8,fbm(vec3(p.x*2.,p.y*7.,p.z*2.)+seed));col=mix(col,c3,st*.28);}",
-          "float d=max(dot(nn,L),0.);col*=.16+1.02*d;col+=pow(max(dot(reflect(-L,nn),vec3(0.,0.,1.)),0.),22.)*.2;col=mix(col,c3,pow(1.-z,3.)*.55*(.35+d));al=smoothstep(1.,.955,sqrt(r2));",
-          "if(ra>0.&&fr>.5){col=mix(col,rc,ra);} }",
-          "else if(ra>0.){col=rc;al=ra;}",
-          "gl_FragColor=vec4(col,al);}"].join("\n")));
+          "float fbm(vec3 p){float a=.5;float s=0.;for(int i=0;i<4;i++){s+=a*n(p);p=p*2.03+vec3(1.7);a*=.5;}return s;}",
+          "void main(){float r2=dot(v,v);if(r2>1.){gl_FragColor=vec4(0.);return;}float z=sqrt(1.-r2);vec3 nn=vec3(v,z);float ca=cos(rot);float sa=sin(rot);",
+          // la surface défile de gauche à droite : sens inverse de la Terre
+          "vec3 p=vec3(nn.x*ca-nn.z*sa,nn.y,nn.x*sa+nn.z*ca);float f=fbm(p*2.3+seed);vec3 col=mix(c1,c2,smoothstep(.28,.78,f));col*=.92+.16*n(p*7.+2.);",
+          // le symbole, plaqué trois fois sur l'équateur : il y en a toujours un face à nous
+          "float lon=atan(p.x,p.z);float sg=2.0943951;float l=mod(lon+sg*.5,sg)-sg*.5;float lat=asin(clamp(p.y,-1.,1.));vec2 uv=vec2(l,lat)/1.36+.5;",
+          "if(uv.x>0.&&uv.x<1.&&uv.y>0.&&uv.y<1.){vec4 t=texture2D(lg,vec2(uv.x,1.-uv.y));col=mix(col,t.rgb,t.a);}",
+          "vec3 L=normalize(vec3(-.45,.5,.75));float d=max(dot(nn,L),0.);col*=.2+1.*d;col+=pow(max(dot(reflect(-L,nn),vec3(0.,0.,1.)),0.),22.)*.22;col=mix(col,c3,pow(1.-z,3.)*.55*(.35+d));",
+          "gl_FragColor=vec4(col,smoothstep(1.,.955,sqrt(r2)));}"].join("\n")));
         g.linkProgram(p); if(!g.getProgramParameter(p,g.LINK_STATUS)) throw new Error("link"); g.useProgram(p);
         var b=g.createBuffer(); g.bindBuffer(g.ARRAY_BUFFER,b); g.bufferData(g.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),g.STATIC_DRAW);
-        var la=g.getAttribLocation(p,"a"); g.enableVertexAttribArray(la); g.vertexAttribPointer(la,2,g.FLOAT,false,0,0); g.viewport(0,0,384,384); g.clearColor(0,0,0,0);
-        var U=function(n){ return g.getUniformLocation(p,n); }; G={ g:g, c:c, c1:U("c1"), c2:U("c2"), c3:U("c3"), kind:U("kind"), seed:U("seed"), ring:U("ring") };
+        var la=g.getAttribLocation(p,"a"); g.enableVertexAttribArray(la); g.vertexAttribPointer(la,2,g.FLOAT,false,0,0); g.viewport(0,0,S,S); g.clearColor(0,0,0,0);
+        var U=function(n){ return g.getUniformLocation(p,n); }; G={ g:g, c:c, c1:U("c1"), c2:U("c2"), c3:U("c3"), seed:U("seed"), rot:U("rot") }; g.uniform1i(U("lg"),0);
       }catch(e){ dead=true; G=null; } return G; }
-    function make(k){ if(cache[k]) return cache[k]; var d=P[k], x=gl(); if(!d || !x) return ""; try{ var g=x.g; g.clear(g.COLOR_BUFFER_BIT); g.uniform3fv(x.c1,d.c[0]); g.uniform3fv(x.c2,d.c[1]); g.uniform3fv(x.c3,d.c[2]); g.uniform1f(x.kind,d.k); g.uniform1f(x.seed,d.s); g.uniform1f(x.ring,d.r); g.drawArrays(g.TRIANGLE_STRIP,0,4); cache[k]=x.c.toDataURL("image/png"); }catch(e){ return ""; } return cache[k]; }
-    return function(hero){ if(!hero) return; [].slice.call(hero.querySelectorAll(".uh-pl[data-pl]")).forEach(function(pl){ var b=pl.querySelector(".b"), url=make(pl.dataset.pl); if(!b || !url || b.querySelector(".pimg")) return;
-        var im=new Image(); im.className="pimg"; im.alt=""; im.draggable=false; im.onload=function(){ b.classList.add("p3d"); }; im.src=url; b.insertBefore(im, b.firstChild); }); }; })();
+    function tex(src){ var g=G.g, t=g.createTexture(); g.bindTexture(g.TEXTURE_2D,t);
+      if(src) g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,src); else g.texImage2D(g.TEXTURE_2D,0,g.RGBA,1,1,0,g.RGBA,g.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
+      g.texParameteri(g.TEXTURE_2D,g.TEXTURE_MIN_FILTER,g.LINEAR); g.texParameteri(g.TEXTURE_2D,g.TEXTURE_MAG_FILTER,g.LINEAR); g.texParameteri(g.TEXTURE_2D,g.TEXTURE_WRAP_S,g.CLAMP_TO_EDGE); g.texParameteri(g.TEXTURE_2D,g.TEXTURE_WRAP_T,g.CLAMP_TO_EDGE); return t; }
+    // le symbole de l'univers en blanc, avec une ombre douce : repris de l'icône de la planète (ailes Lite Foil ou tracé)
+    function logo(inner, cb){ var wing=/<image/i.test(inner), im=new Image();
+      im.onload=function(){ try{ var t=document.createElement("canvas"); t.width=t.height=256; var y=t.getContext("2d");
+          if(wing){ var w=206, hh=w*im.naturalHeight/im.naturalWidth; y.drawImage(im,(256-w)/2,(256-hh)/2,w,hh); y.globalCompositeOperation="source-in"; y.fillStyle="#fff"; y.fillRect(0,0,256,256); }
+          else y.drawImage(im,26,26,204,204);
+          var c=document.createElement("canvas"); c.width=c.height=256; var x=c.getContext("2d"); x.shadowColor="rgba(0,0,0,.6)"; x.shadowBlur=11; x.shadowOffsetY=3; x.drawImage(t,0,0); x.shadowColor="transparent"; x.shadowBlur=0; x.shadowOffsetY=0; x.drawImage(t,0,0); cb(c); }catch(e){ cb(null); } };
+      im.onerror=function(){ cb(null); };
+      im.src= wing ? "onb-logo.png" : "data:image/svg+xml;charset=utf-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="256" height="256"><g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+inner+'</g></svg>'); }
+    function paint(){ if(!G) return; var g=G.g; try{ if(g.isContextLost()) return; items=items.filter(function(it){ return it.cv.isConnected; });
+        items.forEach(function(it){ g.clear(g.COLOR_BUFFER_BIT); g.uniform3fv(G.c1,it.d.c[0]); g.uniform3fv(G.c2,it.d.c[1]); g.uniform3fv(G.c3,it.d.c[2]); g.uniform1f(G.seed,it.d.s); g.uniform1f(G.rot,rot+it.d.s); g.bindTexture(g.TEXTURE_2D,it.t); g.drawArrays(g.TRIANGLE_STRIP,0,4);
+          it.cx.clearRect(0,0,S,S); it.cx.drawImage(G.c,0,0); }); }catch(e){} }
+    function live(){ return items.length>0 && seen && !document.hidden && items[0].cv.isConnected && items[0].cv.offsetParent!==null; }
+    // même vitesse que la Terre (0,125 rad/s), seulement quand la sphère est à l'écran
+    function loop(){ if(tick || !live()) return; lt=performance.now(); tick=requestAnimationFrame(function f(now){ tick=0; if(!live()) return; rot=(rot+Math.min(0.05,(now-lt)/1000)*0.125)%6.2831853; lt=now; paint(); tick=requestAnimationFrame(f); }); }
+    function watch(el){ try{ if(io) io.disconnect(); io=new IntersectionObserver(function(en){ seen=en[en.length-1].isIntersecting; loop(); }); io.observe(el); }catch(e){ seen=true; } }
+    document.addEventListener("visibilitychange", loop); setInterval(loop, 1500);
+    return function(hero){ if(!hero) return; var added=0; [].slice.call(hero.querySelectorAll(".uh-pl[data-pl]")).forEach(function(pl){ var b=pl.querySelector(".b"), d=P[pl.dataset.pl]; if(!b || !d || b.querySelector("canvas.pimg") || !gl()) return;
+        var cv=document.createElement("canvas"); cv.className="pimg"; cv.width=cv.height=S; var cx=cv.getContext("2d"); if(!cx) return;
+        var it={ d:d, cv:cv, cx:cx, t:tex(null) }, sv=b.querySelector("svg");
+        logo(sv ? sv.innerHTML : "", function(c){ if(!c || !G) return; try{ var o=it.t; it.t=tex(c); G.g.deleteTexture(o); paint(); }catch(e){} });
+        b.insertBefore(cv, b.firstChild); b.classList.add("p3d","live"); items.push(it); added++; });
+      if(added){ watch(hero); paint(); loop(); } }; })();
   // la Terre de la sphère d'accueil : 16 tuiles satellite (niveau 2) assemblées, plaquées sur une sphère éclairée
   window.__uhEarth=(function(){ var tex=null, ready=false, failed=false, wait=[], cur=null, last=0;
     function load(cb){ if(failed) return; if(ready){ cb(); return; } wait.push(cb); if(tex) return;
