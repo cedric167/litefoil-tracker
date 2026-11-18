@@ -2931,6 +2931,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     </style>
     <div class="m-label" style="margin:2px 6px 4px">Lite Foil Ultra</div>
     <p class="note" style="margin:0 6px 2px">Tout le contrôle de ton Lite Foil Ultra au même endroit.</p>
+    <button class="ultra-item" data-efcfg="1"><span class="ui-ic" style="background:linear-gradient(145deg,#ff5fd2,#8a1f9c)">🏄</span><span class="ui-tx"><b>Ma configuration</b><span id="efcSub">Planche, batterie, aile, stab, fuselage, gabarit</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="ultra-item" data-goto="tracker"><span class="ui-ic">📍</span><span class="ui-tx"><b>Tracker GPS</b><span>Sessions live, carte et suivi en temps réel</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="ultra-item" data-goto="batterie"><span class="ui-ic">🔋</span><span class="ui-tx"><b>Batterie</b><span>État des cellules, charge et protections (BMS)</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="ultra-item" data-goto="moteur"><span class="ui-ic">⚙️</span><span class="ui-tx"><b>Moteur (VESC)</b><span>Réglages moteur, puissance et diagnostic</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -9720,7 +9721,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     pilote:{ n:"ULM / Avion", t:"ULM / Avion", s:"Plan de vol, GPS 3D, carnet", a:"#3d8bff", b:"#10276b", sky:"radial-gradient(110% 80% at 50% 62%,#1d4fb8 0%,#0b1d4c 48%,#040a1c 100%)",
       ic:'<path d="M12 3c.9 0 1.500 1.100 1.500 2.500V10l7 4.200v2l-7-2.100V18l2.200 1.700V21L12 20l-3.700 1v-1.300L10.500 18v-3.900l-7 2.100v-2l7-4.200V5.500C10.500 4.100 11.100 3 12 3z" fill="currentColor" stroke="none"/>',
       li:["GPS avion, carte 3D avec relief","Alertes relief, trafic, zones, nuit","Carnet de vol, vol suivi en direct"] },
-    efoil:{ n:"eFoil", t:"eFoil · Lite Foil Ultra", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
+    efoil:{ n:"Lite Foil Ultra", t:"Lite Foil Ultra", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
       ic:'<path d="M3 9c5-2.500 13-2.500 18 0-4 2-14 2-18 0z"/><path d="M12 10.500V18M7.500 18.500h9"/>',
       li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] } };
   function uniList(){ var a=[]; try{ a=JSON.parse(localStorage.getItem("lf.unis")||"[]")||[]; }catch(e){ a=[]; }
@@ -9780,6 +9781,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(k==="pilotes"){ if(window.__nearOpen) window.__nearOpen("ulm"); return; }
       if(k==="shop"){ window.open("https://litefoil.fr/","_blank","noopener"); return; }
       if(k==="uni"){ uniChoose(false); return; }
+      if(k==="cfg"){ if(window.__efCfg) window.__efCfg.open(); return; }
       if(k==="go"){ var t=document.querySelector('[data-goto="'+b.dataset.to+'"]'); if(t) t.click(); else lfGoTab(b.dataset.to); return; } });
     // la sphère : glisser pour tourner, toucher une planète pour la choisir
     hero.addEventListener("pointerdown", function(e){ if(e.target.closest("[data-uh]")) return; UH.drag={ x:e.clientX, y:e.clientY, p:UH.pos, mv:false, pl:e.target.closest("[data-pl]") }; });
@@ -9819,8 +9821,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +uhRow("pilotes","","#0b6d8c","#e3f6fb",'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',"Pilotes autour de moi","La communauté ULM / Avion sur la sphère"); }
     else pil.innerHTML="";
     if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Ma Lite Foil Ultra · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
-        +'<button type="button" class="uh-cta" data-uh="go" data-to="tracking" style="background:linear-gradient(135deg,#ff5fd2,#8a1f9c);box-shadow:0 14px 28px rgba(194,55,159,.34)">'+uhIc('<path d="M8 5l11 7-11 7z" fill="currentColor" stroke="none"/>')+'Démarrer ma session eFoil</button>'
-        +uhRow("go","ultra","#8a1f9c","#f6e6fa",'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/>',"Ma planche","Réglages, diagnostic et mises à jour")
+        +uhRow("cfg","","#8a1f9c","#f6e6fa",'<path d="M3 9c5-2.500 13-2.500 18 0-4 2-14 2-18 0z"/><path d="M12 10.500V18M7.500 18.500h9"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit")
+        +uhRow("go","ultra","#8a1f9c","#f6e6fa",'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/>',"Mes appareils","Réglages, diagnostic et mises à jour")
         +uhRow("shop","","#0b3d47","#e3f6f4",'<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',"La boutique Lite Foil","litefoil.fr · eFoils, foils et accessoires"); uhBt(); }
     else ef.innerHTML="";
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
@@ -10827,6 +10829,70 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     try{ if(window.__secApi && window.__secApi.share){ window.__secApi.share(URL, t[0], t[1]); return; } }catch(x){}
     if(navigator.share){ navigator.share({ title:t[0], text:t[1], url:URL }).catch(function(){}); return; }
     try{ navigator.clipboard.writeText(t[1]+" "+URL); alert(lg==="en"?"Link copied.":lg==="es"?"Enlace copiado.":"Lien copié."); }catch(x){ window.open("https://wa.me/?text="+encodeURIComponent(t[1]+" "+URL), "_blank"); } });
+})();
+</script>
+<!-- 18/11 : page « Ma configuration » de l'univers Lite Foil Ultra : matériel utilisé (d'après le catalogue litefoil.fr) et gabarit du pilote -->
+<style>
+.efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
+@keyframes efcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.efc-top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(135deg,#a02bb0,#3a0b4a);color:#fff}
+.efc-top button{width:40px;height:40px;min-height:0;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;box-shadow:none;flex:none}
+.efc-top b{display:block;font-size:18px;font-weight:900;line-height:1.15}.efc-top small{display:block;font-size:12.5px;opacity:.8}
+.efc-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(26px + env(safe-area-inset-bottom,0px))}
+.efc-sum{border-radius:20px;padding:14px 16px;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);color:#fff;box-shadow:0 12px 26px rgba(194,55,159,.28);margin-bottom:14px}
+.efc-sum span{display:block;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}.efc-sum b{display:block;font-size:16.5px;font-weight:900;line-height:1.3;margin-top:3px}
+.efc-card{background:#fff;border:1px solid #e3e9ee;border-radius:20px;padding:14px;margin-bottom:12px}
+.efc-card h4{margin:0 0 2px;font-size:15.5px;font-weight:900}.efc-card p{margin:0 0 10px;font-size:12.5px;color:#66757c;line-height:1.4}
+.efc-chips{display:flex;flex-wrap:wrap;gap:8px}
+.efc-chips button{min-height:0;padding:10px 14px;border-radius:14px;border:1.5px solid #d7e0e6;background:#fff;color:#0e1417;font:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:none}
+.efc-chips button.on{border-color:#a02bb0;background:#f8e9fb;color:#7a1a8c}
+.efc-in{display:flex;gap:10px}.efc-in label{flex:1;display:block;font-size:12.5px;font-weight:700;color:#66757c}
+.efc-in input,.efc-other{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px;border-radius:14px;border:1.5px solid #d7e0e6;background:#fff;font:inherit;font-size:16px;font-weight:700;color:#0e1417}
+.efc-other{margin-top:10px;font-size:14.5px;font-weight:600}
+.efc-shop{display:block;text-align:center;text-decoration:none;border-radius:16px;padding:14px;border:1.5px solid #d7e0e6;background:#fff;color:#0e1417;font-size:14.5px;font-weight:800}
+.efc-note{font-size:12px;color:#66757c;text-align:center;margin:10px 6px 0;line-height:1.45}
+</style>
+<script>
+(function(){
+  var K="lf.efoil.cfg", BU=["Standard · 1 150 Wh","Performance · 1 450 Wh","Long Range · 1 700 Wh"];
+  // modèles, tailles et batteries : catalogue litefoil.fr
+  var MOD={ ultra:{ n:"Lite Foil Ultra", sz:["4'8","5'0"], bat:BU }, ultra59:{ n:"Lite Foil Ultra 5'9", sz:["5'9"], bat:BU }, sign:{ n:"Lite Foil Ultra Signature", sz:["5'0"], bat:BU },
+    elite:{ n:"Lite Foil Elite", sz:["4'4 · 55 L","4'7 · 63 L","5'3 · 80 L"], bat:["Race · 1 480 Wh","Explorer · 2 590 Wh"] } };
+  var MK=["ultra","ultra59","sign","elite"], PROP=["eFoil","Foil assist"], WING=["1 501 cm²","1 726 cm²","2 007 cm²","Autre"], STAB=["194,66 cm²","Autre"], FUS=["Fuselage Lite Foil","Autre"], OPT=["Kit Wing Foil","Tracker GPS 4G","Foot straps"];
+  function get(){ var c={}; try{ c=JSON.parse(localStorage.getItem(K)||"{}")||{}; }catch(e){ c={}; } if(!c.opt || !c.opt.join) c.opt=[]; return c; }
+  function save(c){ try{ localStorage.setItem(K, JSON.stringify(c)); }catch(e){} }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(x){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]; }); }
+  function val(c, k){ return c[k]==="Autre" ? (c[k+"X"]||"Autre") : (c[k]||""); }
+  function summary(){ var c=get(), a=[]; if(c.mod && MOD[c.mod]) a.push(MOD[c.mod].n.replace("Lite Foil ","")+(c.size?" "+c.size.split(" · ")[0]:"")); if(c.bat) a.push("batterie "+c.bat.split(" · ")[0]); if(c.wing) a.push("aile "+val(c,"wing")); if(c.stab) a.push("stab "+val(c,"stab")); return a.join(" · "); }
+  function chips(key, list, cur, multi){ return '<div class="efc-chips">'+list.map(function(x){ var on=multi ? cur.indexOf(x)>=0 : cur===x; return '<button type="button" data-k="'+key+'" data-v="'+esc(x)+'"'+(multi?' data-m="1"':'')+' class="'+(on?"on":"")+'">'+esc(x)+'</button>'; }).join("")+'</div>'; }
+  function other(c, key, ph){ return c[key]==="Autre" ? '<input class="efc-other" data-x="'+key+'X" maxlength="40" placeholder="'+ph+'" value="'+esc(c[key+"X"]||"")+'">' : ''; }
+  function open(){ if(document.querySelector(".efc-ov")) return; var ov=document.createElement("div"); ov.className="efc-ov"; ov.setAttribute("data-no-i18n","");
+    var paint=function(){ var c=get(), m=MOD[c.mod], sc=(ov.querySelector(".efc-body")||{}).scrollTop||0, s=summary();
+      ov.innerHTML='<div class="efc-top"><button type="button" data-x="close" aria-label="Retour">‹</button><div><b>Ma configuration</b><small>Mon eFoil Lite Foil et mon gabarit</small></div></div><div class="efc-body">'
+        +'<div class="efc-sum"><span>Mon eFoil</span><b>'+(s?esc(s):"Choisis ton matériel ci-dessous")+'</b></div>'
+        +'<div class="efc-card"><h4>Modèle</h4><p>Quel Lite Foil utilises-tu ?</p>'+chips("mod", MK.map(function(k){ return MOD[k].n; }), m?m.n:"")+'</div>'
+        +(m ? '<div class="efc-card"><h4>Taille de la planche</h4><p>La taille change le volume et la facilité au décollage.</p>'+chips("size", m.sz, c.size||"")+'</div>'
+            +'<div class="efc-card"><h4>Batterie</h4><p>Celle que tu utilises le plus souvent.</p>'+chips("bat", m.bat, c.bat||"")+'</div>' : '')
+        +'<div class="efc-card"><h4>Motorisation</h4><p>Moteur eFoil complet ou Foil assist.</p>'+chips("prop", PROP, c.prop||"")+'</div>'
+        +'<div class="efc-card"><h4>Aile avant</h4><p>Surface de l\'aile montée sur ton foil.</p>'+chips("wing", WING, c.wing||"")+other(c,"wing","Marque et surface de ton aile")+'</div>'
+        +'<div class="efc-card"><h4>Stabilisateur</h4><p>L\'aile arrière de ton foil.</p>'+chips("stab", STAB, c.stab||"")+other(c,"stab","Marque et surface de ton stab")+'</div>'
+        +'<div class="efc-card"><h4>Fuselage</h4><p>La pièce qui relie l\'aile avant et le stab.</p>'+chips("fus", FUS, c.fus||"")+other(c,"fus","Marque et longueur de ton fuselage")+'</div>'
+        +'<div class="efc-card"><h4>Options</h4><p>Ce qui équipe ta planche (plusieurs choix possibles).</p>'+chips("opt", OPT, c.opt, true)+'</div>'
+        +'<div class="efc-card"><h4>Mon gabarit</h4><p>Ton poids et ta taille, utiles pour choisir une aile et une planche adaptées.</p><div class="efc-in"><label>Poids (kg)<input type="number" inputmode="numeric" min="30" max="160" data-x="kg" value="'+esc(c.kg||"")+'" placeholder="75"></label><label>Taille (cm)<input type="number" inputmode="numeric" min="120" max="220" data-x="cm" value="'+esc(c.cm||"")+'" placeholder="178"></label></div></div>'
+        +'<a class="efc-shop" href="https://litefoil.fr/" target="_blank" rel="noopener">Voir les ailes, batteries et accessoires sur litefoil.fr</a>'
+        +'<div class="efc-note">Tes choix sont enregistrés automatiquement sur ce téléphone.</div></div>';
+      var b=ov.querySelector(".efc-body"); if(b) b.scrollTop=sc; };
+    var close=function(){ ov.remove(); var s=summary(), el=document.querySelector('[data-uh="cfg"] small'); if(el && s) el.textContent=s; var e2=document.getElementById("efcSub"); if(e2 && s) e2.textContent=s; };
+    ov.addEventListener("click", function(e){ if(e.target.closest('[data-x="close"]')){ close(); return; } var b=e.target.closest("[data-k]"); if(!b) return; var c=get(), k=b.dataset.k, v=b.dataset.v;
+      if(k==="mod"){ var nk=MK.filter(function(x){ return MOD[x].n===v; })[0]; if(c.mod!==nk){ c.mod=nk; c.size=MOD[nk].sz.length===1?MOD[nk].sz[0]:""; if(MOD[nk].bat.indexOf(c.bat)<0) c.bat=""; } }
+      else if(b.dataset.m){ var i=c.opt.indexOf(v); if(i>=0) c.opt.splice(i,1); else c.opt.push(v); }
+      else c[k] = c[k]===v ? "" : v;
+      save(c); paint(); });
+    ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
+    paint(); document.body.appendChild(ov); }
+  window.__efCfg={ open:open, get:get, summary:summary };
+  document.addEventListener("click", function(e){ if(e.target.closest && e.target.closest("[data-efcfg]")) open(); });
+  setTimeout(function(){ var s=summary(), e2=document.getElementById("efcSub"); if(e2 && s) e2.textContent=s; }, 800);
 })();
 </script>
 </body>
