@@ -9852,7 +9852,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var lo=Math.max(0, Math.min(1,(ad-0.45)*3))*Math.max(0, Math.min(1,(1.5-ad)*3));
       e.lb.style.opacity=lo.toFixed(2); e.lb.style.transform="translate3d("+x.toFixed(1)+"px,"+(y+sc*38+5).toFixed(1)+"px,0)"; }
     if(UH.fr!==fr){ UH.fr=fr; for(var j=0;j<n;j++){ E[j].pl.classList.toggle("front", j===fr); E[j].dt.classList.toggle("on", j===fr); } }
-    if(window.__uhEarth) window.__uhEarth.draw(UH.pos*st*0.75);
+    if(window.__uhEarth) window.__uhEarth.draw(0);
     if(UH.gl) UH.gl.style.transform="translate3d("+(-((((UH.pos*44)%132)+132)%132)).toFixed(1)+"px,0,0)"; }
   function uhRender(){ uhBuild(); var hero=$("uhHero"); if(!hero) return; var l=uniList(), c=uniCur();
     if(l.length<2){ hero.hidden=true; UH.els=null; hero.dataset.k=""; } else { hero.hidden=false; var key=l.join(",");
