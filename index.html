@@ -50,6 +50,8 @@ body.uni-bonride{--sb1:#d99a1e;--sb2:#5c3d07;--sb3:#150e02;--sl:#ffe9b0;--sc:#8a
 .uh-gl:after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(ellipse 100% 34% at 50% 50%,transparent 0 14px,rgba(255,255,255,.14) 14px 15px)}
 .uh-hero .uh-gl{left:50%;top:6px;width:136px;height:136px;margin-left:-68px;background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.3) 22%,rgba(255,255,255,.08) 55%,rgba(0,0,0,.42) 100%),var(--sb2,#243040);box-shadow:0 0 60px rgba(255,255,255,.22),inset -16px -20px 36px rgba(0,0,0,.55);transition:background-color .4s}
 .uh-hero .uh-ell{top:44px;height:64px}
+.uh-gl canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s}
+.uh-hero .uh-gl.earth{background:#02060f;box-shadow:0 0 34px rgba(110,170,255,.55),0 0 90px rgba(90,150,255,.22)}.uh-gl.earth canvas{opacity:1}.uh-gl.earth u{display:none}.uh-gl.earth:after{display:none}
 .uh-hero{cursor:grab}.uh-hero.drag{cursor:grabbing}
 .uh-pl .b{transition:box-shadow .3s}.uh-pl.front .b{box-shadow:0 0 0 7px rgba(255,255,255,.14),0 0 42px var(--pc)!important}
 .uh-lb{position:absolute;left:50%;top:78px;width:0;height:0;z-index:4;pointer-events:none;will-change:transform,opacity;opacity:0}
@@ -9850,6 +9852,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var lo=Math.max(0, Math.min(1,(ad-0.45)*3))*Math.max(0, Math.min(1,(1.5-ad)*3));
       e.lb.style.opacity=lo.toFixed(2); e.lb.style.transform="translate3d("+x.toFixed(1)+"px,"+(y+sc*38+5).toFixed(1)+"px,0)"; }
     if(UH.fr!==fr){ UH.fr=fr; for(var j=0;j<n;j++){ E[j].pl.classList.toggle("front", j===fr); E[j].dt.classList.toggle("on", j===fr); } }
+    if(window.__uhEarth) window.__uhEarth.draw(UH.pos*st*0.75);
     if(UH.gl) UH.gl.style.transform="translate3d("+(-((((UH.pos*44)%132)+132)%132)).toFixed(1)+"px,0,0)"; }
   function uhRender(){ uhBuild(); var hero=$("uhHero"); if(!hero) return; var l=uniList(), c=uniCur();
     if(l.length<2){ hero.hidden=true; UH.els=null; hero.dataset.k=""; } else { hero.hidden=false; var key=l.join(",");
@@ -9862,7 +9865,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           +'<div class="uh-dots"><button type="button" class="uh-ar" data-ar="-1" aria-label="Univers précédent">‹</button>'+l.map(function(k){ return '<i data-dt="'+k+'"></i>'; }).join("")+'<button type="button" class="uh-ar" data-ar="1" aria-label="Univers suivant">›</button></div>'
           +'<div class="uh-tt">'+l.map(function(k){ return '<div data-tt="'+k+'"><b>'+UNI[k].t+'</b><small>'+UNI[k].s+'</small></div>'; }).join("")+'</div>';
         UH.els=l.map(function(k){ var q=function(s){ return hero.querySelector('['+s+'="'+k+'"]'); }; return { pl:q("data-pl"), lb:q("data-lb"), sky:q("data-sky"), tt:q("data-tt"), dt:q("data-dt"), zi:0 }; });
-        UH.gl=hero.querySelector(".uh-gl u"); UH.fr=-2; uhMeasure(); }
+        UH.gl=hero.querySelector(".uh-gl u"); UH.fr=-2; uhMeasure(); try{ if(window.__uhEarth) window.__uhEarth.mount(hero.querySelector(".uh-gl")); }catch(e){} }
       var i=l.indexOf(c); if(i<0) i=0; var nn=l.length;
       if(!UH.run && !UH.drag){ if(nn>=3){ var b=Math.round(UH.pos), cc=((b%nn)+nn)%nn; if(cc!==i){ UH.pos=UH.to=i; } } else { UH.pos=UH.to=i; } }
       uhPaint(); }
@@ -10977,6 +10980,37 @@ body.lf-defi #defiTop{display:flex}
     ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close" || x==="save") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
+  // la Terre de la sphère d'accueil : 16 tuiles satellite (niveau 2) assemblées, plaquées sur une sphère éclairée
+  window.__uhEarth=(function(){ var tex=null, ready=false, failed=false, wait=[], cur=null, last=0;
+    function load(cb){ if(failed) return; if(ready){ cb(); return; } wait.push(cb); if(tex) return;
+      tex=document.createElement("canvas"); tex.width=tex.height=1024; var cx=tex.getContext("2d"), left=16, bad=0;
+      var fin=function(){ if(bad){ failed=true; wait=[]; return; } ready=true; var w=wait; wait=[]; w.forEach(function(f){ try{ f(); }catch(e){} }); };
+      for(var y=0;y<4;y++) for(var x=0;x<4;x++) (function(x,y){ var im=new Image(); im.crossOrigin="anonymous";
+        im.onload=function(){ try{ cx.drawImage(im, x*256, y*256, 256, 256); }catch(e){ bad++; } if(!--left) fin(); };
+        im.onerror=function(){ bad++; if(!--left) fin(); };
+        im.src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/2/"+y+"/"+x; })(x,y); }
+    function mount(el){ cur=null; if(!el) return; load(function(){ if(!el.isConnected) return; try{
+        var c=document.createElement("canvas"), px=Math.round((el.clientWidth||136)*Math.min(3, window.devicePixelRatio||1)); c.width=c.height=px;
+        var g=c.getContext("webgl",{ alpha:true, antialias:false, premultipliedAlpha:true }); if(!g) return;
+        var sh=function(t,s){ var o=g.createShader(t); g.shaderSource(o,s); g.compileShader(o); if(!g.getShaderParameter(o,g.COMPILE_STATUS)) throw new Error("shader"); return o; };
+        var p=g.createProgram(); g.attachShader(p, sh(g.VERTEX_SHADER,"attribute vec2 a;varying vec2 v;void main(){v=a;gl_Position=vec4(a,0.,1.);}"));
+        g.attachShader(p, sh(g.FRAGMENT_SHADER,"precision highp float;varying vec2 v;uniform sampler2D t;uniform float rot;void main(){float r2=dot(v,v);if(r2>1.){gl_FragColor=vec4(0.);return;}float z=sqrt(1.-r2);vec3 n=vec3(v.x,v.y,z);float ti=.38;vec3 m=vec3(n.x,n.y*cos(ti)+n.z*sin(ti),-n.y*sin(ti)+n.z*cos(ti));float lon=atan(m.x,m.z)+rot;float lat=asin(clamp(m.y,-1.,1.));float my=log(tan(.7853982+clamp(lat,-1.48,1.48)*.5));vec3 c=texture2D(t,vec2(lon/6.2831853+.5,clamp(.5-my/6.2831853,.002,.998))).rgb;c=mix(c,vec3(.93,.96,.99),smoothstep(1.38,1.46,abs(lat)));c=pow(c,vec3(.82))*1.18;vec3 L=normalize(vec3(-.45,.5,.75));float d=max(dot(n,L),0.);c*=.3+.9*d;c+=pow(max(dot(reflect(-L,n),vec3(0.,0.,1.)),0.),26.)*.22;c=mix(c,vec3(.42,.68,1.),pow(1.-z,2.6)*.8);float a=smoothstep(1.,.965,sqrt(r2));gl_FragColor=vec4(c*a,a);}"));
+        g.linkProgram(p); if(!g.getProgramParameter(p,g.LINK_STATUS)) return; g.useProgram(p);
+        var b=g.createBuffer(); g.bindBuffer(g.ARRAY_BUFFER,b); g.bufferData(g.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),g.STATIC_DRAW);
+        var la=g.getAttribLocation(p,"a"); g.enableVertexAttribArray(la); g.vertexAttribPointer(la,2,g.FLOAT,false,0,0);
+        var T=g.createTexture(); g.bindTexture(g.TEXTURE_2D,T); g.texImage2D(g.TEXTURE_2D,0,g.RGB,g.RGB,g.UNSIGNED_BYTE,tex);
+        g.texParameteri(g.TEXTURE_2D,g.TEXTURE_MIN_FILTER,g.LINEAR); g.texParameteri(g.TEXTURE_2D,g.TEXTURE_MAG_FILTER,g.LINEAR); g.texParameteri(g.TEXTURE_2D,g.TEXTURE_WRAP_S,g.REPEAT); g.texParameteri(g.TEXTURE_2D,g.TEXTURE_WRAP_T,g.CLAMP_TO_EDGE);
+        g.viewport(0,0,px,px); g.clearColor(0,0,0,0);
+        el.appendChild(c); cur={ g:g, u:g.getUniformLocation(p,"rot"), c:c }; watch(el); draw(last); el.classList.add("earth");
+      }catch(e){ cur=null; } }); }
+    var spin=0, tick=0, seen=true, io=null, lt=0;
+    function paint(){ if(!cur) return; try{ var g=cur.g; if(g.isContextLost()) return; g.clear(g.COLOR_BUFFER_BIT); g.uniform1f(cur.u, last+spin+0.12); g.drawArrays(g.TRIANGLE_STRIP,0,4); }catch(e){} }
+    function draw(rot){ last=rot; paint(); loop(); }
+    function live(){ return !!cur && seen && !document.hidden && cur.c.isConnected && cur.c.offsetParent!==null; }
+    function loop(){ if(tick || !live()) return; lt=performance.now(); tick=requestAnimationFrame(function f(now){ tick=0; if(!live()) return; spin=(spin+Math.min(0.05,(now-lt)/1000)*0.07)%6.2831853; lt=now; paint(); tick=requestAnimationFrame(f); }); }
+    function watch(el){ try{ if(io) io.disconnect(); io=new IntersectionObserver(function(en){ seen=en[en.length-1].isIntersecting; loop(); }); io.observe(el); }catch(e){ seen=true; } }
+    document.addEventListener("visibilitychange", loop); setInterval(loop, 1500);
+    return { mount:mount, draw:draw }; })();
   // page Défi : le bloc du défi s'affiche en plein écran, avec un bandeau et un retour
   var dTop=document.createElement("div"); dTop.id="defiTop"; dTop.setAttribute("data-no-i18n",""); dTop.innerHTML='<button type="button" aria-label="Retour">‹</button><b>Défi de la semaine</b>'; document.body.appendChild(dTop);
   var dPh=null;
