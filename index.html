@@ -10859,6 +10859,9 @@ body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
 .efc-in input,.efc-other{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px;border-radius:14px;border:1.5px solid #d7e0e6;background:#fff;font:inherit;font-size:16px;font-weight:700;color:#0e1417}
 .efc-other{margin-top:10px;font-size:14.5px;font-weight:600}
 .efc-shop{display:block;text-align:center;text-decoration:none;border-radius:16px;padding:14px;border:1.5px solid #d7e0e6;background:#fff;color:#0e1417;font-size:14.5px;font-weight:800}
+.efc-foot{flex:none;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #e3e9ee;box-shadow:0 -8px 20px rgba(10,20,40,.06)}
+.efc-foot button{display:block;width:100%;min-height:0;border:0;border-radius:18px;padding:16px;font:inherit;font-size:16.5px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);box-shadow:0 12px 26px rgba(194,55,159,.32);cursor:pointer}
+.efc-toast{position:fixed;left:50%;bottom:calc(34px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:13600;background:#0e1417;color:#fff;border-radius:999px;padding:13px 20px;font-size:15px;font-weight:800;box-shadow:0 12px 28px rgba(0,0,0,.3);white-space:nowrap}
 .efc-note{font-size:12px;color:#66757c;text-align:center;margin:10px 6px 0;line-height:1.45}
 </style>
 <script>
@@ -10889,15 +10892,16 @@ body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
         +'<div class="efc-card"><h4>Options</h4><p>Ce qui équipe ta planche (plusieurs choix possibles).</p>'+chips("opt", OPT, c.opt, true)+'</div>'
         +'<div class="efc-card"><h4>Mon gabarit</h4><p>Ton poids et ta taille, utiles pour choisir une aile et une planche adaptées.</p><div class="efc-in"><label>Poids (kg)<input type="number" inputmode="numeric" min="30" max="160" data-x="kg" value="'+esc(c.kg||"")+'" placeholder="75"></label><label>Taille (cm)<input type="number" inputmode="numeric" min="120" max="220" data-x="cm" value="'+esc(c.cm||"")+'" placeholder="178"></label></div></div>'
         +'<a class="efc-shop" href="https://litefoil.fr/" target="_blank" rel="noopener">Voir les ailes, batteries et accessoires sur litefoil.fr</a>'
-        +'<div class="efc-note">Tes choix sont enregistrés automatiquement sur ce téléphone.</div></div>';
+        +'</div><div class="efc-foot"><button type="button" data-x="save">Enregistrer ma configuration</button></div>';
       var b=ov.querySelector(".efc-body"); if(b) b.scrollTop=sc; };
     var close=function(){ ov.remove(); var s=summary(), el=document.querySelector('[data-uh="cfg"] small'); if(el && s) el.textContent=s; var e2=document.getElementById("efcSub"); if(e2 && s) e2.textContent=s; };
-    ov.addEventListener("click", function(e){ if(e.target.closest('[data-x="close"]')){ close(); return; } var b=e.target.closest("[data-k]"); if(!b) return; var c=get(), k=b.dataset.k, v=b.dataset.v;
+    ov.addEventListener("click", function(e){ if(e.target.closest('[data-x="close"]')){ close(); return; }
+      if(e.target.closest('[data-x="save"]')){ save(get()); close(); var t=document.createElement("div"); t.className="efc-toast"; t.textContent="✓ Configuration enregistrée"; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2200); return; } var b=e.target.closest("[data-k]"); if(!b) return; var c=get(), k=b.dataset.k, v=b.dataset.v;
       if(k==="mod"){ var nk=MK.filter(function(x){ return MOD[x].n===v; })[0]; if(c.mod!==nk){ c.mod=nk; c.size=MOD[nk].sz.length===1?MOD[nk].sz[0]:""; if(MOD[nk].bat.indexOf(c.bat)<0) c.bat=""; } }
       else if(b.dataset.m){ var i=c.opt.indexOf(v); if(i>=0) c.opt.splice(i,1); else c.opt.push(v); }
       else c[k] = c[k]===v ? "" : v;
       save(c); paint(); });
-    ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
+    ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close" || x==="save") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
   var bk=document.createElement("button"); bk.type="button"; bk.id="efBack"; bk.setAttribute("data-no-i18n",""); bk.innerHTML='<span style="font-size:19px;line-height:1">‹</span> Accueil'; document.body.appendChild(bk);
