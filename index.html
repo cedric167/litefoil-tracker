@@ -9721,7 +9721,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     pilote:{ n:"ULM / Avion", t:"ULM / Avion", s:"Plan de vol, GPS 3D, carnet", a:"#3d8bff", b:"#10276b", sky:"radial-gradient(110% 80% at 50% 62%,#1d4fb8 0%,#0b1d4c 48%,#040a1c 100%)",
       ic:'<path d="M12 3c.9 0 1.500 1.100 1.500 2.500V10l7 4.200v2l-7-2.100V18l2.200 1.700V21L12 20l-3.700 1v-1.300L10.500 18v-3.900l-7 2.100v-2l7-4.200V5.500C10.500 4.100 11.100 3 12 3z" fill="currentColor" stroke="none"/>',
       li:["GPS avion, carte 3D avec relief","Alertes relief, trafic, zones, nuit","Carnet de vol, vol suivi en direct"] },
-    efoil:{ n:"Lite Foil Ultra", t:"Lite Foil Ultra", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
+    efoil:{ n:"Lite Foil", t:"Lite Foil", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
       li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] } };
   function uniList(){ var a=[]; try{ a=JSON.parse(localStorage.getItem("lf.unis")||"[]")||[]; }catch(e){ a=[]; }
@@ -9822,7 +9822,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +uhRow("vols","","#1f4fc4","#e6efff",'<path d="M3 20l6.500-11 4 6.500 2-3L21 20z"/>',"Revoir mes vols en 3D", last ? "Dernier : "+esc(String(last.from||"").split(" ")[0])+" → "+esc(String(last.to||"").split(" ")[0]) : "Après ta première navigation")
         +uhRow("pilotes","","#0b6d8c","#e3f6fb",'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',"Pilotes autour de moi","La communauté ULM / Avion sur la sphère"); }
     else pil.innerHTML="";
-    if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Ma Lite Foil Ultra · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
+    if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Mon Lite Foil · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
         +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit"); uhBt(); }
     else ef.innerHTML="";
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
@@ -10833,10 +10833,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <!-- 18/11 : page « Ma configuration » de l'univers Lite Foil Ultra : matériel utilisé (d'après le catalogue litefoil.fr) et gabarit du pilote -->
 <style>
-body.uni-efoil #bnav{display:none!important}body.uni-efoil #hero{display:none!important}body.uni-efoil #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:center;align-items:center;aspect-ratio:16/9;margin:12px 0 14px;padding:16px;border-radius:var(--radius);text-align:center;gap:4px;background:radial-gradient(120% 90% at 50% 40%,#12706b 0%,#0b3138 52%,#04121a 100%)}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-logo{width:250px;height:120px}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-logo img{left:-15px;top:-24px;width:280px}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx{flex:none;border-left:0;padding-left:0;align-items:center;gap:2px}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx b{font-size:21px}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx small{font-size:13.5px;white-space:normal}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go{position:absolute;right:14px;bottom:14px;width:38px;height:38px}
+body.uni-efoil #bnav{display:none!important}body.uni-efoil #hero{display:none!important}body.uni-efoil #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:flex-end;align-items:flex-start;aspect-ratio:16/9;margin:12px 0 14px;padding:18px;border-radius:var(--radius);gap:0;text-align:left;background:radial-gradient(120% 95% at 78% 30%,#c23bd0 0%,#5a1470 46%,#16051f 100%);box-shadow:0 14px 30px rgba(90,20,112,.3)}
+body.uni-efoil #tab-dash>.home-shop.uh-sport::before{content:"";position:absolute;right:3%;top:6%;width:50%;height:64%;background:linear-gradient(160deg,#fff,#ffc9f4);-webkit-mask:url(onb-logo.png) center/contain no-repeat;mask:url(onb-logo.png) center/contain no-repeat;pointer-events:none}
+body.uni-efoil #tab-dash>.home-shop.uh-sport::after{right:auto;left:-50px;top:-70px;background:radial-gradient(circle,rgba(255,95,210,.25),transparent 65%)}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-logo{display:none}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx{flex:none;border-left:0;padding-left:0;align-items:flex-start;gap:3px;max-width:58%;position:relative;z-index:1}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx b{font-size:24px;line-height:1.1}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx small{font-size:13px;white-space:normal;line-height:1.3;color:rgba(255,255,255,.84)}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go{position:absolute;right:16px;bottom:16px;width:auto;height:auto;border-radius:999px;padding:9px 11px 9px 15px;background:#fff;color:#7a1a8c;font-size:13.5px;font-weight:800;gap:2px}
+body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go::before{content:"Découvrir"}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go svg{width:15px;height:15px}
 #efBack{display:none;position:fixed;left:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;align-items:center;gap:6px;min-height:0;padding:12px 18px 12px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);color:#fff;font:inherit;font-size:15px;font-weight:800;box-shadow:0 10px 24px rgba(138,31,156,.4);cursor:pointer}
 body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
