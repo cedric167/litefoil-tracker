@@ -2424,7 +2424,7 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
     <button class="tab" data-tab="fil">Fil d'actualité</button>
     <button class="tab" data-tab="ultra">Lite Foil Ultra</button>
     <button class="tab" data-tab="ulm" hidden>ULM / Avion</button>
-    <button class="tab" data-tab="bonride" hidden>Le Bon Ride</button>
+    <button class="tab" data-tab="bonride" hidden>Second Lite</button>
     <a class="tab" href="activites/index.html" style="text-decoration:none">Activités</a>
   </div>
   <nav class="bnav" id="bnav" aria-label="Menu">
@@ -2462,7 +2462,7 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
       <button type="button" data-goto="ultra"><i><svg viewBox="0 0 24 24"><defs><linearGradient id="qg8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3a0ff"/><stop offset="1" stop-color="#5a2be0"/></linearGradient></defs><path d="M13.90 1.90c.5-.7 1.55-.25 1.40.6l-1.20 6.90h5c.8 0 1.25.9.8 1.55l-9.80 11.20c-.55.65-1.60.150-1.40-.7l1.35-6.65H5.10c-.8 0-1.25-.9-.75-1.55z" fill="url(#qg8)"/><path d="M13.30 3.60l-6.90 9h4.40z" fill="#fff" opacity=".25"/></svg></i>Ultra</button>
     </div>
 
-    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Le Bon Ride</b><small>Matériel neuf, occasion et location entre membres</small></span><span class="hb-go">›</span></button>
+    <button class="home-br" type="button" data-goto="bonride" id="homeBr" hidden><span class="hb-ic" role="img" aria-label="Lite Foil"></span><span class="hb-tx"><b>Second Lite</b><small>Matériel neuf, occasion et location entre membres</small></span><span class="hb-go">›</span></button>
     <button class="home-ulm" type="button" data-goto="ulm" id="homeUlm"><span class="hu-ic">✈️</span><span class="hu-tx"><b>Espace ULM / Avion</b><small>METAR, TAF, vent sur la piste, prévisions</small></span><span class="hu-go">›</span></button>
     <a class="home-shop" href="https://litefoil.fr/" target="_blank" rel="noopener" aria-label="Boutique Lite Foil">
       <span class="hs-logo"><img src="litefoil-logo.png" alt="Lite Foil"></span>
@@ -4608,7 +4608,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.toggle("on", b.dataset.nav===key); }); }
   window.__syncNav=function(){ syncBottomNav(document.body.dataset.tab||"dash"); };
   function showTab(name) {
-    try{ document.body.classList.toggle("br-wide", name==="bonride"); }catch(e){} // 15/11 : Le Bon Ride en pleine largeur sur ordinateur
+    try{ document.body.classList.toggle("br-wide", name==="bonride"); }catch(e){} // 15/11 : Second Lite en pleine largeur sur ordinateur
     // Un onglet dédié dans la barre (ex. Tracking) est prioritaire sur le sous-écran Lite Foil Ultra.
     const hasOwnTab = !!document.querySelector(".tab[data-tab=\"" + name + "\"]");
     const isSub = !hasOwnTab && ULTRA_SUB.indexOf(name) >= 0;
@@ -4632,7 +4632,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     syncBottomNav(name);
     // barre du haut : titre de la page ; animation douce à l'ouverture d'un onglet
     document.body.dataset.tab = name;
-    var _t=$("abTitle"); if(_t) _t.textContent = ({meteo:"Météo", ulm:"ULM / Avion", bonride:"Le Bon Ride", communaute:"SwipChat", tracking:"Tracking", profil:"Mon profil", fil:"Fil d'actualité", videos:"Swip", ultra:"Lite Foil Ultra", tracker:"Tracker GPS", batterie:"Batterie", moteur:"Moteur", remote:"Télécommande"})[name] || "Lite Foil";
+    var _t=$("abTitle"); if(_t) _t.textContent = ({meteo:"Météo", ulm:"ULM / Avion", bonride:"Second Lite", communaute:"SwipChat", tracking:"Tracking", profil:"Mon profil", fil:"Fil d'actualité", videos:"Swip", ultra:"Lite Foil Ultra", tracker:"Tracker GPS", batterie:"Batterie", moteur:"Moteur", remote:"Télécommande"})[name] || "Lite Foil";
     var _pn=document.getElementById("tab-"+name); if(_pn){ _pn.classList.remove("pane-in"); void _pn.offsetWidth; _pn.classList.add("pane-in"); }
   }
   for (const tab of document.querySelectorAll(".tab")) {
@@ -4667,7 +4667,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   window.bonrideOnShow = function(){ var p=document.getElementById("tab-bonride"); if(!p) return; if(window.LFBonRide){ window.LFBonRide.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
-    var sc=document.createElement("script"); sc.src="market/market.js?v=3"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
+    var sc=document.createElement("script"); sc.src="market/market.js?v=4"; sc.onload=function(){ if(window.LFBonRide) window.LFBonRide.show(p); };
     sc.onerror=function(){ p.dataset.ld=""; p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Connexion nécessaire pour ouvrir cet espace.</div>'; }; document.head.appendChild(sc); };
   // la carte d'accueil n'apparaît que lorsque la place de marché répond (règles de la base en service), ou en démonstration
   (function(){ var n=0; function probe(){ var el=document.getElementById("homeBr"); if(!el || !el.hidden) return; if(/[?&]demo=1/.test(location.search)){ el.hidden=false; return; }
@@ -8515,7 +8515,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var ul=$("folList"); if(ul && ul._redraw) ul._redraw(); var up=$("upFolWrap"); if(up && up._redraw) up._redraw(); }
   // liste Abonnements / Abonnés (façon TikTok)
   // 12/11 : accès du module « sécurité en mer » (contacts = membres que je suis ou amis)
-  // 14/11 : Le Bon Ride (market/market.js) : accès limité aux annonces, photos, avis vendeur et quiver
+  // 14/11 : Second Lite (market/market.js) : accès limité aux annonces, photos, avis vendeur et quiver
    window.lfMk = function(){ if(!backend || !backend.rt || !backend.rt.get || !me.uid) return null; var rt=backend.rt, ok=function(p){ if(!/^(market|marketMedia|marketReviews|quiver)(\/[A-Za-z0-9_-]+){0,3}$/.test(p)) throw new Error("chemin"); return rt.ref(p); };
      return { uid:me.uid, pseudo:me.pseudo, av:me.av||"", ready:profileReady(), since:backend.since?backend.since():0, sessions:(function(){ try{ return localSess().length; }catch(e){ return 0; } })(), friends:Object.keys(myFriends||{}).filter(function(u){ return u!==me.uid && u!==TEAM_UID; }).length,
        get:function(p){ return rt.get(ok(p)).then(function(sn){ return sn.val(); }); }, last:function(p,n){ return rt.get(rt.query(ok(p), rt.limitToLast(n||100))).then(function(sn){ return sn.val(); }); },
@@ -9774,7 +9774,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     efoil:{ sh:"Lite Foil", n:"Lite Foil", t:"Lite Foil", s:"Ta planche connectée en Bluetooth", a:"#ff5fd2", b:"#7a1a8c", sky:"radial-gradient(110% 80% at 50% 62%,#a02bb0 0%,#3a0b4a 48%,#12041c 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
       li:["Batterie, moteur, télécommande, GPS","Autonomie et puissance en direct","Sessions eFoil et réglages de la planche"] },
-    bonride:{ sh:"Le Bon Ride", n:"Le Bon Ride", t:"Le Bon Ride", s:"Matériel neuf, occasion et location", a:"#f5c04a", b:"#8a5a00", sky:"radial-gradient(110% 80% at 50% 62%,#a87412 0%,#3d2a06 48%,#120c02 100%)",
+    bonride:{ sh:"Second Lite", n:"Second Lite", t:"Second Lite", s:"Matériel neuf, occasion et location", a:"#f5c04a", b:"#8a5a00", sky:"radial-gradient(110% 80% at 50% 62%,#a87412 0%,#3d2a06 48%,#120c02 100%)",
       ic:'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',
       li:["Annonces de matériel neuf et d'occasion","Location entre membres","Dépose ton annonce en quelques minutes"] } };
   function uniList(){ var a=[]; try{ a=JSON.parse(localStorage.getItem("lf.unis")||"[]")||[]; }catch(e){ a=[]; }
@@ -9803,7 +9803,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(add.length){ add.forEach(function(k){ mySports.push(k); }); saveMySports(); try{ if(profileReady() && me.pseudo) claimProfile(me.pseudo,true).catch(function(){}); }catch(e){} }
     uniApply(true); var c=uniCur();
     var d=document.createElement("div"); d.className="uni-dim"; var h=document.createElement("div"); h.className="uni-hi";
-    h.innerHTML='<span class="uni-hi-ic" style="background:linear-gradient(145deg,'+UNI[c].a+','+UNI[c].b+')"><svg viewBox="0 0 24 24">'+UNI[c].ic+'</svg></span><b>'+(list.length>1?"Tes univers sont prêts":c==="pilote"?"Bienvenue à bord":c==="efoil"?"Bienvenue chez Lite Foil":c==="bonride"?"Bienvenue sur Le Bon Ride":c==="terre"?"Bonne sortie":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
+    h.innerHTML='<span class="uni-hi-ic" style="background:linear-gradient(145deg,'+UNI[c].a+','+UNI[c].b+')"><svg viewBox="0 0 24 24">'+UNI[c].ic+'</svg></span><b>'+(list.length>1?"Tes univers sont prêts":c==="pilote"?"Bienvenue à bord":c==="efoil"?"Bienvenue chez Lite Foil":c==="bonride"?"Bienvenue sur Second Lite":c==="terre"?"Bonne sortie":"Bonne session")+(me.pseudo?", "+esc(me.pseudo):"")+'</b>';
     document.body.appendChild(d); document.body.appendChild(h); setTimeout(function(){ d.remove(); h.remove(); }, 2300); }
   // choix des univers : un ou plusieurs
   function uniChoose(first){ if(document.querySelector(".uni-ov")) return; var sel={}, l0=uniList(); l0.forEach(function(k){ sel[k]=1; });
