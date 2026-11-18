@@ -857,7 +857,7 @@ function flySeekTo(v){ flyProg=Math.max(0,Math.min(1,v)); if(flyDraw) flyDraw(tr
 // 13/11 : vues du survol. "all" = carte fixe sur tout le parcours ; "follow" = la carte reste centrée sur le point ;
 // "board" = caméra basse derrière le point, tournée dans le sens de la marche (comme si on y était).
 // flyFree = l'utilisateur a déplacé la carte à la main : on ne la bouge plus tant qu'il n'a pas touché « Recentrer ».
-let flyView="all", flyFree=false, flyFit=null, flyBear=null, flyBearOff=0, flyAuto=false;
+let flyAir=false, flyBackTo=""; let flyView="all", flyFree=false, flyFit=null, flyBear=null, flyBearOff=0, flyAuto=false;
 /* ---- Street View (13/11) ----
    Clé Google Maps du projet « Lite Foil Street View », limitée au site cedric167.github.io. Vide = vue masquée.
    Proposée seulement pour les sorties à terre (aucune photo de rue sur l'eau). Google compte un affichage par ouverture
@@ -901,8 +901,8 @@ function flySetView(v){ flyView=v; flyBear=null; flyBearOff=0; flySetFree(false)
   if(v==="street") svOpen(); else svClose();
   if(!flyMap) return;
   if(v==="all"){ if(flyFit) flyMap.easeTo({center:flyFit.center,zoom:flyFit.zoom,pitch:55,bearing:0,duration:600}); }
-  else if(v==="follow"){ flyCam({zoom:Math.max(flyMap.getZoom(),15.5),pitch:55}); }
-  else { flyCam({zoom:17.2,pitch:74}); }
+  else if(v==="follow"){ flyCam({zoom:flyAir?12:Math.max(flyMap.getZoom(),15.5),pitch:55}); }
+  else { flyCam({zoom:flyAir?12.6:17.2,pitch:flyAir?70:74}); }
   if(flyDraw) flyDraw(true); }
 document.querySelectorAll("#flyView button").forEach(b=>{ b.onclick=()=>flySetView(b.dataset.v); });
 document.getElementById("flyRecenter").onclick=()=>{ flySetFree(false); if(flyView==="all" && flyFit && flyMap) flyMap.easeTo({center:flyFit.center,zoom:flyFit.zoom,pitch:55,bearing:0,duration:500}); if(flyDraw) flyDraw(true); };
@@ -933,8 +933,11 @@ async function startFly(a){
   const ov=document.getElementById("flyover"); ov.classList.add("open");
   document.getElementById("flyName").textContent=a.name;
   { const sb=document.getElementById("flyViewStreet"); if(sb) sb.hidden=!svAllowed(a); if(flyView==="street" && !svAllowed(a)){ flyView="all"; document.querySelectorAll("#flyView button").forEach(x=>x.classList.toggle("on",x.dataset.v==="all")); document.getElementById("flyViewBtn").textContent="Ensemble"; } if(flyView!=="street") svClose(); else svOpen(); }
+  flyAir = a.milieu==="air";
+  // un vol se regarde caméra derrière l'appareil : c'est la vue qui montre le mieux le relief
+  if(flyAir && flyView!=="street"){ flyView="board"; document.querySelectorAll("#flyView button").forEach(x=>{ x.classList.toggle("on",x.dataset.v==="board"); if(x.dataset.v==="board") document.getElementById("flyViewBtn").textContent=x.textContent; }); }
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
-  document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : " m";
+  document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : flyAir ? " ft" : " m";
   if(!flyMap){
     flyMap=new maplibregl.Map({container:"flyMap",style:flyStyle,attributionControl:false,interactive:true,antialias:true,fadeDuration:200,maxPitch:80,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
     ["dragstart","rotatestart","pitchstart"].forEach(n=>flyMap.on(n,(e)=>{ if(!flyAuto && e && e.originalEvent) flySetFree(true); }));
@@ -967,7 +970,7 @@ async function startFly(a){
     try{ const cam=flyMap.cameraForBounds([[minx,miny],[maxx,maxy]],{padding:70,bearing:0}); if(cam) flyMap.jumpTo({center:cam.center,zoom:Math.min((cam.zoom||14),16.5),pitch:55,bearing:0}); }
     catch(e){ flyMap.jumpTo({center:[pts[0].lon,pts[0].lat],zoom:15,pitch:55,bearing:0}); }
     flyFit={center:flyMap.getCenter(),zoom:flyMap.getZoom()}; flySetFree(false); flyBear=null; flyBearOff=0;
-    if(flyView==="follow") flyCam({zoom:Math.max(flyMap.getZoom(),15.5),pitch:55}); else if(flyView==="board") flyCam({zoom:17.2,pitch:74});
+    if(flyView==="follow") flyCam({zoom:flyAir?12:Math.max(flyMap.getZoom(),15.5),pitch:55}); else if(flyView==="board") flyCam({zoom:flyAir?12.6:17.2,pitch:flyAir?70:74});
     runFly(a,pts);
   };
   flyMap.resize();
@@ -1009,10 +1012,10 @@ function runFly(a,pts){
         const ahead=pts[Math.min(N-1, i+Math.max(2,Math.round(N/80)))], here={lon,lat};
         let want=(ahead.lon!==lon || ahead.lat!==lat) ? flyBearing(here,ahead) : (flyBear==null?0:flyBear);
         flyBear=(flyBear==null || fromSeek) ? want : flyAngLerp(flyBear,want,0.06);
-        flyCam({center:[lon,lat],bearing:(flyBear+flyBearOff+360)%360,pitch:74});
+        flyCam({center:[lon,lat],bearing:(flyBear+flyBearOff+360)%360,pitch:flyAir?70:74});
       }
       spd.textContent=Math.round(speed);
-      alt.textContent= maxSpeedDisplay ? Math.round(Math.max(maxTo[i],speed)) : Math.round(altv);
+      alt.textContent= maxSpeedDisplay ? Math.round(Math.max(maxTo[i],speed)) : Math.round(flyAir ? altv*3.28084 : altv);
       dist.textContent=(distv/1000).toFixed(1);
       skT.textContent= total ? flyClock(total*flyProg) : (distv/1000).toFixed(1)+" km";
       if(!flySeeking) sk.value=Math.round(flyProg*1000);
@@ -1031,7 +1034,7 @@ function runFly(a,pts){
   flyRAF=requestAnimationFrame(frame);
 }
 let flyGuest=false; // parcours d'un autre membre ouvert depuis le fil ou un profil : à la fermeture on retourne au fil
-function stopFly(){ if(flyGuest){ flyGuest=false; cancelAnimationFrame(flyRAF); location.replace("../index.html?tab=fil"); return; } cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
+function stopFly(){ if(flyGuest){ flyGuest=false; cancelAnimationFrame(flyRAF); location.replace(flyBackTo==="ulm" ? "../index.html?tab=ulm" : "../index.html?tab=fil"); return; } cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
@@ -1161,7 +1164,13 @@ function bearingTo(la1,lo1,la2,lo2){const y=Math.sin((lo2-lo1)*Math.PI/180)*Math
 // 17/11 : parcours d'un autre membre (publication du fil ou session partagée), rejoué en 3D à partir du tracé partagé.
 // Le tracé ne contient que des positions : la vitesse affichée est la vitesse moyenne, l'altitude vient du relief.
 (function(){ let g=null; try{ g=JSON.parse(sessionStorage.getItem("lf.fly")||"null"); sessionStorage.removeItem("lf.fly"); }catch(e){}
-  if(!g || !g.trk || !/[?&]fly=1/.test(location.search)) return;
+  if(!g || !(g.trk || Array.isArray(g.pts)) || !/[?&]fly=1/.test(location.search)) return;
+  flyBackTo = g.back==="ulm" ? "ulm" : "";
+  // vol complet venu de l'espace ULM / Avion : les points portent déjà l'heure, la vitesse et l'altitude
+  if(Array.isArray(g.pts)){ const fp=g.pts.filter(p=>p && isFinite(+p.lat) && isFinite(+p.lon) && Math.abs(+p.lat)<=85).map(p=>({ lat:+p.lat, lon:+p.lon, t:+p.t||0, speed:+p.speed||0, alt:+p.alt||0, dist:+p.dist||0 }));
+    if(fp.length<2) return; if(!(fp[fp.length-1].dist>0)){ let d0=0; fp.forEach((p,i)=>{ if(i) d0+=haversine(fp[i-1].lat,fp[i-1].lon,p.lat,p.lon); p.dist=d0; }); }
+    flyGuest=true; const du=Math.max(1,+g.dur||fp[fp.length-1].t||60);
+    startFly({id:"guest",name:String(g.name||"Vol").slice(0,60),milieu:"air",points:fp,duration:du,moving:du}).catch(()=>{ flyGuest=false; }); return; }
   const pts=String(g.trk).split(";").map(x=>{ const c=x.split(","); return {lat:+c[0],lon:+c[1]}; }).filter(p=>isFinite(p.lat)&&isFinite(p.lon)&&Math.abs(p.lat)<=85);
   if(pts.length<2) return;
   let dist=0; pts.forEach((p,i)=>{ if(i) dist+=haversine(pts[i-1].lat,pts[i-1].lon,p.lat,p.lon); p.dist=dist; });
