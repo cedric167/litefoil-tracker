@@ -9823,8 +9823,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +uhRow("pilotes","","#0b6d8c","#e3f6fb",'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',"Pilotes autour de moi","La communauté ULM / Avion sur la sphère"); }
     else pil.innerHTML="";
     if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Ma Lite Foil Ultra · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
-        +uhRow("cfg","","#8a1f9c","#f6e6fa",'<path d="M3 9c5-2.500 13-2.500 18 0-4 2-14 2-18 0z"/><path d="M12 10.500V18M7.500 18.500h9"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit")
-        +uhRow("go","ultra","#8a1f9c","#f6e6fa",'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/>',"Mes appareils","Réglages, diagnostic et mises à jour"); uhBt(); }
+        +uhRow("cfg","","#8a1f9c","#f6e6fa",'<path d="M3 9c5-2.500 13-2.500 18 0-4 2-14 2-18 0z"/><path d="M12 10.500V18M7.500 18.500h9"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit"); uhBt(); }
     else ef.innerHTML="";
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
   function uhBt(){ var el=$("uhBt"); if(!el) return; var D=window.__lfDash||{}, cn=D.conn||{}, soc=(D.soc!=null && isFinite(+D.soc)) ? Math.round(+D.soc)+" %" : "";
