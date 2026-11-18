@@ -34,7 +34,7 @@ body.uni-pilote .bnav .bn-comm .bn-big{background:linear-gradient(145deg,#3d8bff
 body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-bonride #tab-dash>.uh-sport{display:none !important}
 .uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#3b444e;border:1.5px solid #d5dbe2;box-shadow:0 6px 16px rgba(59,68,78,.1)}
 body.uni-terre #tab-meteo .ms{background:linear-gradient(135deg,#1a0a04 0%,#5a280b 52%,#c9721f 100%);box-shadow:0 12px 28px rgba(90,40,11,.26)}body.uni-terre #tab-meteo .ms-k,body.uni-terre #tab-meteo .ms-wave{color:#ffd9a8}
-body.uni-terre #tab-meteo button.gw-d.on{border-color:#e08a2c;background:linear-gradient(160deg,#fff1df,#fffaf3)}body.uni-terre #tab-meteo .mto-loc .mto-btn{color:#b4541a}
+body.uni-terre #tab-meteo #mtoLive,body.uni-terre #tab-meteo #wcBox,body.uni-terre #tab-meteo .ms-favs .ms-cam{display:none!important}body.uni-terre #tab-meteo button.gw-d.on{border-color:#e08a2c;background:linear-gradient(160deg,#fff1df,#fffaf3)}body.uni-terre #tab-meteo .mto-loc .mto-btn{color:#b4541a}
 .uh-one{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 12px;padding:13px 14px;border:0;border-radius:20px;background:radial-gradient(120% 150% at 100% 0%,var(--sb1,#1fb5a8) 0%,var(--sb2,#0b4f55) 55%,var(--sb3,#04161a) 100%);color:#fff;font:inherit;text-align:left;cursor:pointer;min-height:0;box-shadow:0 10px 24px var(--sg,rgba(0,0,0,.2))}
 .uh-one[hidden]{display:none}.uh-one svg{flex:none;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.800;stroke-linecap:round}.uh-one span{flex:1;min-width:0}.uh-one b{display:block;font-size:16px;font-weight:800}.uh-one small{display:block;font-size:12px;opacity:.8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.uh-one i{font-style:normal;font-size:22px;opacity:.8}
 body.uni-on #tab-dash .home-card:has(.home-stats){background:radial-gradient(120% 150% at 100% 0%,var(--sb1,#1fb5a8) 0%,var(--sb2,#0b4f55) 48%,var(--sb3,#04161a) 100%);border:0;box-shadow:0 10px 30px var(--sg,rgba(0,0,0,.2)),0 8px 22px rgba(0,0,0,.14)}
@@ -10364,7 +10364,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var k=card.querySelector(".ms-k"), h=card.querySelector(".ms-top h3"), nt=card.querySelector(".ms-note"), inp=$m("mtoSearch"), ic=card.querySelector(".ms-wave"), wy=$m("mtoWindy"), wc=wy && wy.closest(".card"), wl=wc && wc.previousElementSibling, wn=wc && wc.querySelector(".note"), ifr=$m("mtoIfremer");
       if(!mtoTx) mtoTx={ k:k&&k.textContent, h:h&&h.textContent, nt:nt&&nt.textContent, ph:inp&&inp.placeholder, ic:ic&&ic.innerHTML, wl:wl&&wl.textContent, wn:wn&&wn.innerHTML };
       if(k) k.textContent = ter ? "Météo du lieu" : mtoTx.k; if(h) h.textContent = ter ? "Trouve ton lieu" : mtoTx.h;
-      if(nt) nt.textContent = ter ? "Vent, température, pluie et prévisions du lieu, avec sa webcam en direct quand il en a une." : mtoTx.nt;
+      if(nt) nt.textContent = ter ? "Météo, vent et prévisions du lieu." : mtoTx.nt;
       if(inp) inp.placeholder = ter ? "Chamonix, Font-Romeu, Lyon…" : mtoTx.ph;
       if(ic) ic.innerHTML = ter ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.500 19l6.500-11 4 6.500 2.500-4L21.500 19z"/></svg>' : mtoTx.ic;
       if(wl) wl.textContent = ter ? "Carte du vent" : mtoTx.wl;
