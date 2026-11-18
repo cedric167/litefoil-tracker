@@ -10934,6 +10934,8 @@ body.lf-defi #defiTop{display:flex}
 #defiTop b{font-size:18px;font-weight:900}
 #sosFab{display:none;position:fixed;right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:850;width:54px;height:54px;min-height:0;padding:0;border:2px solid #fff;border-radius:50%;background:#e8384f;color:#fff;font:inherit;font-weight:900;font-size:13.5px;letter-spacing:.06em;cursor:pointer;box-shadow:0 8px 20px rgba(232,56,79,.45)}
 body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.uni-efoil #sosFab{bottom:calc(18px + env(safe-area-inset-bottom,0px))}body.lf-defi #sosFab{display:none}
+#sosFab{display:block!important;z-index:13450}#abSos,.sos-in{display:none!important}
+body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body:has(#lfOnb:not([hidden])) #sosFab{display:none!important}
 #sosFab{touch-action:none;-webkit-user-select:none;user-select:none}#sosFab.mv{transform:scale(1.12);box-shadow:0 14px 30px rgba(232,56,79,.55);cursor:grabbing}
 #sosFab.on,.sos-in.on{animation:sosP 1.1s infinite}@keyframes sosP{50%{box-shadow:0 0 0 9px rgba(232,56,79,.25)}}
 .sos-in{margin-left:auto;flex:none;min-height:0;height:32px!important;width:auto!important;padding:0 13px!important;border:0!important;border-radius:999px!important;background:#e8384f!important;color:#fff;font:inherit;font-weight:900;font-size:12.5px!important;letter-spacing:.08em;cursor:pointer}
@@ -11102,9 +11104,13 @@ body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.un
   var fab=document.createElement("button"); fab.type="button"; fab.id="sosFab"; fab.setAttribute("aria-label","SOS"); fab.setAttribute("data-no-i18n",""); fab.textContent="SOS"; document.body.appendChild(fab);
   // déplaçable : on le fait glisser où l'on veut, un simple appui ouvre le SOS
   var fd=null, fmv=false, fpos=function(x,y,save){ var w=fab.offsetWidth||54, h=fab.offsetHeight||54, W=window.innerWidth, H=window.innerHeight; x=Math.max(6, Math.min(W-w-6, x)); y=Math.max(6, Math.min(H-h-6, y));
-    fab.style.left=x+"px"; fab.style.top=y+"px"; fab.style.right="auto"; fab.style.bottom="auto"; if(save){ try{ localStorage.setItem("lf.sos.pos", JSON.stringify({ x:x/W, y:y/H })); }catch(e){} } };
-  var frest=function(){ try{ var p=JSON.parse(localStorage.getItem("lf.sos.pos")||"null"); if(p && isFinite(p.x) && isFinite(p.y)) fpos(p.x*window.innerWidth, p.y*window.innerHeight, false); }catch(e){} };
+    fab.style.left=x+"px"; fab.style.top=y+"px"; fab.style.right="auto"; fab.style.bottom="auto"; if(save){ var all=fall(); all[fctx()]={ x:x/W, y:y/H }; try{ localStorage.setItem("lf.sos.pp", JSON.stringify(all)); }catch(e){} } };
+  // une place par page : onglet affiché, page Défi, page Ma configuration
+  var fctx=function(){ return document.querySelector(".efc-ov") ? "cfg" : document.body.classList.contains("lf-defi") ? "defi" : (document.body.dataset.tab||"dash"); };
+  var fall=function(){ try{ var o=JSON.parse(localStorage.getItem("lf.sos.pp")||"{}"); return (o && typeof o==="object") ? o : {}; }catch(e){ return {}; } };
+  var flast="", frest=function(){ if(fd) return; var c=fctx(), p=fall()[c]; flast=c; if(p && isFinite(p.x) && isFinite(p.y)) fpos(p.x*window.innerWidth, p.y*window.innerHeight, false); else { fab.style.left=fab.style.top=fab.style.right=fab.style.bottom=""; } };
   frest(); window.addEventListener("resize", frest);
+  try{ new MutationObserver(function(){ if(fctx()!==flast) frest(); }).observe(document.body, { attributes:true, attributeFilter:["class","data-tab"], childList:true }); }catch(e){}
   fab.addEventListener("pointerdown", function(e){ var r=fab.getBoundingClientRect(); fd={ id:e.pointerId, x:e.clientX, y:e.clientY, l:r.left, t:r.top }; fmv=false; try{ fab.setPointerCapture(e.pointerId); }catch(x){} });
   fab.addEventListener("pointermove", function(e){ if(!fd || e.pointerId!==fd.id) return; var dx=e.clientX-fd.x, dy=e.clientY-fd.y; if(!fmv && Math.abs(dx)+Math.abs(dy)<9) return; fmv=true; fab.classList.add("mv"); e.preventDefault(); fpos(fd.l+dx, fd.t+dy, false); });
   var fend=function(e){ if(!fd || e.pointerId!==fd.id) return; if(fmv){ var r=fab.getBoundingClientRect(); fpos(r.left, r.top, true); } fd=null; fab.classList.remove("mv"); };
