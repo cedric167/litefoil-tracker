@@ -10924,6 +10924,10 @@ body.lf-defi>#defiBox{display:block!important;position:fixed;inset:0;z-index:900
 body.lf-defi #defiTop{display:flex}
 #defiTop button{width:40px;height:40px;min-height:0;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;box-shadow:none;flex:none}
 #defiTop b{font-size:18px;font-weight:900}
+#sosFab{display:none;position:fixed;right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:850;width:54px;height:54px;min-height:0;padding:0;border:2px solid #fff;border-radius:50%;background:#e8384f;color:#fff;font:inherit;font-weight:900;font-size:13.5px;letter-spacing:.06em;cursor:pointer;box-shadow:0 8px 20px rgba(232,56,79,.45)}
+body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.uni-efoil #sosFab{bottom:calc(18px + env(safe-area-inset-bottom,0px))}body.lf-defi #sosFab{display:none}
+#sosFab.on,.sos-in.on{animation:sosP 1.1s infinite}@keyframes sosP{50%{box-shadow:0 0 0 9px rgba(232,56,79,.25)}}
+.sos-in{margin-left:auto;flex:none;min-height:0;height:32px!important;width:auto!important;padding:0 13px!important;border:0!important;border-radius:999px!important;background:#e8384f!important;color:#fff;font:inherit;font-weight:900;font-size:12.5px!important;letter-spacing:.08em;cursor:pointer}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
 @keyframes efcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .efc-top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(135deg,#a02bb0,#3a0b4a);color:#fff}
@@ -10962,7 +10966,7 @@ body.lf-defi #defiTop{display:flex}
   function other(c, key, ph){ return c[key]==="Autre" ? '<input class="efc-other" data-x="'+key+'X" maxlength="40" placeholder="'+ph+'" value="'+esc(c[key+"X"]||"")+'">' : ''; }
   function open(){ if(document.querySelector(".efc-ov")) return; var ov=document.createElement("div"); ov.className="efc-ov"; ov.setAttribute("data-no-i18n","");
     var paint=function(){ var c=get(), m=MOD[c.mod], sc=(ov.querySelector(".efc-body")||{}).scrollTop||0, s=summary();
-      ov.innerHTML='<div class="efc-top"><button type="button" data-x="close" aria-label="Retour">‹</button><div><b>Ma configuration</b><small>Mon eFoil Lite Foil et mon gabarit</small></div></div><div class="efc-body">'
+      ov.innerHTML='<div class="efc-top"><button type="button" data-x="close" aria-label="Retour">‹</button><div><b>Ma configuration</b><small>Mon eFoil Lite Foil et mon gabarit</small></div><button type="button" class="sos-in" data-sos="1" aria-label="SOS">SOS</button></div><div class="efc-body">'
         +'<div class="efc-sum"><span>Mon eFoil</span><b>'+(s?esc(s):"Choisis ton matériel ci-dessous")+'</b></div>'
         +'<div class="efc-card"><h4>Modèle</h4><p>Quel Lite Foil utilises-tu ?</p>'+chips("mod", MK.map(function(k){ return MOD[k].n; }), m?m.n:"")+'</div>'
         +(m ? '<div class="efc-card"><h4>Taille de la planche</h4><p>La taille change le volume et la facilité au décollage.</p>'+chips("size", m.sz, c.size||"")+'</div>'
@@ -11053,11 +11057,17 @@ body.lf-defi #defiTop{display:flex}
     document.addEventListener("visibilitychange", loop); setInterval(loop, 1500);
     return { mount:mount, draw:draw }; })();
   // page Défi : le bloc du défi s'affiche en plein écran, avec un bandeau et un retour
-  var dTop=document.createElement("div"); dTop.id="defiTop"; dTop.setAttribute("data-no-i18n",""); dTop.innerHTML='<button type="button" aria-label="Retour">‹</button><b>Défi de la semaine</b>'; document.body.appendChild(dTop);
+  var dTop=document.createElement("div"); dTop.id="defiTop"; dTop.setAttribute("data-no-i18n",""); dTop.innerHTML='<button type="button" aria-label="Retour">‹</button><b>Défi de la semaine</b><button type="button" class="sos-in" data-sos="1" aria-label="SOS">SOS</button>'; document.body.appendChild(dTop);
   var dPh=null;
   var defiClose=function(){ if(!document.body.classList.contains("lf-defi")) return; document.body.classList.remove("lf-defi"); var x=document.getElementById("defiBox"); if(x && dPh && dPh.parentNode){ dPh.parentNode.insertBefore(x, dPh); dPh.remove(); } dPh=null; };
   window.__defiPage=function(){ var x=document.getElementById("defiBox"); if(!x || document.body.classList.contains("lf-defi")) return; dPh=document.createElement("i"); dPh.hidden=true; x.parentNode.insertBefore(dPh, x); document.body.appendChild(x); document.body.classList.add("lf-defi"); x.scrollTop=0; };
   dTop.querySelector("button").addEventListener("click", defiClose);
+  // SOS partout : même action que le bouton de la barre du haut
+  var sosGo=function(){ var b=document.getElementById("abSos"); if(b) b.click(); };
+  var fab=document.createElement("button"); fab.type="button"; fab.id="sosFab"; fab.setAttribute("aria-label","SOS"); fab.setAttribute("data-no-i18n",""); fab.textContent="SOS"; document.body.appendChild(fab);
+  fab.addEventListener("click", sosGo);
+  document.addEventListener("click", function(e){ var s=e.target.closest && e.target.closest("[data-sos]"); if(!s) return; e.stopPropagation(); defiClose(); var ov=document.querySelector(".efc-ov"); if(ov) ov.remove(); sosGo(); }, true);
+  setInterval(function(){ var b=document.getElementById("abSos"); if(b) fab.classList.toggle("on", b.classList.contains("on")); }, 2000);
   try{ new MutationObserver(function(){ if((document.body.dataset.tab||"dash")!=="dash") defiClose(); }).observe(document.body, { attributes:true, attributeFilter:["data-tab"] }); }catch(e){}
   var bk=document.createElement("button"); bk.type="button"; bk.id="efBack"; bk.setAttribute("data-no-i18n",""); bk.innerHTML='<span style="font-size:19px;line-height:1">‹</span> Accueil'; document.body.appendChild(bk);
   bk.addEventListener("click", function(){ var t=document.querySelector('.tab[data-tab="dash"]'); if(t) t.click(); window.scrollTo(0,0); });
