@@ -1,7 +1,7 @@
 // Service worker for the Lite Foil Tracker page: makes it installable ("add to home
 // screen") and keeps it usable without network — the Bluetooth link to the tracker
 // needs none. Bump CACHE when the page changes so installed copies refresh.
-const CACHE = "lf-tracker-v374";
+const CACHE = "lf-tracker-v375";
 
 // Firebase Cloud Messaging : notifications « appli fermée ». Le worker reçoit le push
 // envoyé par la Cloud Function et affiche la notification même quand l'appli n'est pas
@@ -99,6 +99,8 @@ self.addEventListener("fetch", (event) => {
         // Repli hors-ligne. On sert d'abord la ressource exacte si elle est en cache.
         const hit = await caches.match(event.request);
         if (hit) return hit;
+        // même page avec un paramètre (activites/index.html?f=air) : on sert la page en cache sans tenir compte du paramètre
+        if (event.request.mode === "navigate") { const same = await caches.match(event.request, { ignoreSearch: true }); if (same) return same; }
         // Pour une sous-page (bms/, vesc/…) absente du cache, NE PAS servir l'accueil
         // à sa place (ça donnait l'illusion d'un « retour à l'accueil ») : on tente sa
         // propre page en cache sous ses deux clés possibles.

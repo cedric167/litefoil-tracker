@@ -9803,7 +9803,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     tab.addEventListener("click", function(e){ var b=e.target.closest("[data-uh]"); if(!b || !tab.contains(b)) return; var k=b.dataset.uh;
       if(k==="fil") return lfGoTab("fil");
       if(k==="plan" || k==="wx"){ try{ localStorage.setItem("lf.ulm.mode", k==="plan"?"nav":"wx"); }catch(x){} lfGoTab("ulm"); setTimeout(function(){ var m=document.querySelector('#tab-ulm [data-mode="'+(k==="plan"?"nav":"wx")+'"]'); if(m && !m.classList.contains("on")) m.click(); }, 350); return; }
-      if(k==="vols"){ location.href="activites/index.html"; return; }
+      if(k==="vols"){ location.href="activites/index.html?f=air"; return; }
       if(k==="pilotes"){ if(window.__nearOpen) window.__nearOpen("ulm"); return; }
       if(k==="shop"){ window.open("https://litefoil.fr/","_blank","noopener"); return; }
       if(k==="uni"){ uniChoose(false); return; }
@@ -10991,6 +10991,18 @@ body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.un
     ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close" || x==="save") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
+  // ULM / Avion : « Météo » = météo aéronautique de l'espace ULM, « Vol » = plan de vol (deux modes du même onglet)
+  (function(){ var pil=function(){ return document.body.classList.contains("uni-pilote"); };
+    var cur=function(){ var b=document.querySelector("#tab-ulm .ul-mode button.on"); return b ? b.dataset.mode : ""; };
+    var mark=function(){ if(!pil() || document.body.dataset.tab!=="ulm") return; var m=cur(); if(!m) return; var a=document.querySelector('#bnav [data-nav="ulm"]'), w=document.querySelector('#bnav [data-nav="meteo"]'); if(a) a.classList.toggle("on", m==="nav"); if(w) w.classList.toggle("on", m==="wx"); };
+    var go=function(m){ try{ localStorage.setItem("lf.ulm.mode", m); }catch(e){} var n=0; (function t(){ var b=document.querySelector('#tab-ulm .ul-mode [data-mode="'+m+'"]'); if(b){ if(!b.classList.contains("on")) b.click(); setTimeout(mark, 60); return; } if(++n<40) setTimeout(t, 150); })(); };
+    document.addEventListener("click", function(e){ if(!pil() || !e.target.closest) return; var b=e.target.closest("#bnav [data-nav]");
+      if(b && b.dataset.nav==="meteo"){ e.stopPropagation(); e.preventDefault(); var t=document.querySelector('.tab[data-tab="ulm"]'); if(t) t.click(); window.scrollTo(0,0); go("wx"); return; }
+      if(b && b.dataset.nav==="ulm"){ go("nav"); return; }
+      if(e.target.closest("#tab-ulm .ul-mode")) setTimeout(mark, 120); }, true);
+    setInterval(mark, 800); })();
+  // liens « Activités » de l'accueil : ouverts sur le milieu de l'univers en cours
+  document.addEventListener("click", function(e){ var l=e.target.closest && e.target.closest('#tab-dash a[href="activites/index.html"]'); if(!l) return; var B=document.body.classList, f=B.contains("uni-terre") ? "terre" : B.contains("uni-pilote") ? "air" : B.contains("uni-nautique") ? "mer" : ""; if(!f) return; e.preventDefault(); location.href="activites/index.html?f="+f; }, true);
   // planètes des univers : chaque image est calculée une fois (sphère éclairée, relief procédural), puis réutilisée
   window.__uhPlanets=(function(){ var cache={}, G=null, dead=false;
     var P={ nautique:{ k:3, s:3.1, r:0, c:[[0.094,0.588,0.576],[0.169,0.831,0.769],[0.627,0.925,0.894]] },

@@ -609,7 +609,7 @@ function mkDemo(id,name,type,m,catName,pts,startIso){
 }
 
 /* ====================== ÉTAT & RENDU ====================== */
-let ALL=[], filter="mer";
+let ALL=[], filter="mer"; try{ const f0=new URLSearchParams(location.search).get("f"); if(/^(mer|terre|air|tout)$/.test(f0||"")) filter=f0; }catch(e){}
 function hydrate(a){ // JSON -> modèle (startedAt en Date)
   return a.map(x=>({ ...x, startedAt: x.startedAt? new Date(x.startedAt): null }));
 }
