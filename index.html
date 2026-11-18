@@ -4630,7 +4630,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     const later = (fn) => setTimeout(fn, 250);
     if (k === "cards") { showTab("profil"); later(() => { const x = document.getElementById("pfCard"); if (x) x.click(); }); }
     else if (k === "friends") { showTab("profil"); later(() => { const x = document.querySelector('#pfTabs [data-pt="fr"]'); if (x) x.click(); }); }
-    else if (k === "defi") { showTab("dash"); later(() => { const x = document.getElementById("defiBox"); if (x) x.scrollIntoView({behavior:"smooth", block:"center"}); }); }
+    else if (k === "defi") { showTab("dash"); later(() => { if (window.__defiPage) window.__defiPage(); }); }
     else if (k === "events") { showTab("communaute"); later(() => { const x = document.getElementById("cmEvents"); if (x) x.click(); }); }
     window.scrollTo({ top: 0 }); });
   // Bouton « retour » au menu Lite Foil Ultra en haut de chaque sous-écran
@@ -9730,7 +9730,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     return UNI_K.filter(function(k){ return a.indexOf(k)>=0; }); }
   // univers sportifs qui correspondent aux sports choisis par le membre
   function uniMil(){ var m=[]; try{ mySports.forEach(function(k){ var s=LF_SP[k]; if(!s || k==="efoil" || k==="ulm") return; var x = s.mil==="terre" ? "terre" : s.mil==="mer" ? "nautique" : ""; if(x && m.indexOf(x)<0) m.push(x); }); }catch(e){} return m; }
-  function uniCls(c){ var B=document.body; UNI_K.forEach(function(k){ B.classList.toggle("uni-"+k, c===k); }); B.classList.toggle("uni-sport", c==="nautique" || c==="terre");
+  function uniCls(c){ var B=document.body; UNI_K.forEach(function(k){ B.classList.toggle("uni-"+k, c===k); }); B.classList.toggle("uni-sport", c==="nautique" || c==="terre"); B.classList.toggle("uni-on", !!c);
     try{ if(window.__hcPaint) window.__hcPaint(); }catch(e){} try{ renderDefi(); }catch(e){} }
   function uniCur(){ var l=uniList(), c=""; if(!l.length) return ""; try{ c=localStorage.getItem("lf.uni.cur")||""; }catch(e){} return l.indexOf(c)>=0 ? c : l[0]; }
   // valeur attendue par le reste de l'appli : "" tant que rien n'est choisi
@@ -9815,7 +9815,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function uhRow(uh, to, col, bg, ic, t, s){ return '<button type="button" class="uh-row" data-uh="'+uh+'"'+(to?' data-to="'+to+'"':'')+'><span class="uh-ri" style="background:'+bg+';color:'+col+'">'+uhIc(ic)+'</span><span class="uh-rt"><b>'+t+'</b><small>'+s+'</small></span><span class="uh-ch">›</span></button>'; }
   function uhPanes(){ var c=uniCur(), pil=$("uhPilot"), ef=$("uhEfoil"), fd=$("uhFeed"); if(!pil) return;
     try{ var tb=$("tab-dash"), sh=tb.querySelector(":scope>.home-shop"), ph=$("uhShopPh"); if(sh && !ph){ ph=document.createElement("i"); ph.id="uhShopPh"; ph.hidden=true; sh.parentNode.insertBefore(ph, sh.nextSibling); }
-      if(sh && ph){ if(c==="efoil"){ if(tb.firstElementChild!==sh) tb.insertBefore(sh, tb.firstChild); } else if(ph.previousElementSibling!==sh) tb.insertBefore(sh, ph); } }catch(e){}
+      if(sh && ph){ if(c){ if(sh.previousElementSibling && !sh.previousElementSibling.classList.contains("hero-lang") || !sh.previousElementSibling && tb.firstElementChild!==sh) tb.insertBefore(sh, tb.firstChild); } else if(ph.previousElementSibling!==sh) tb.insertBefore(sh, ph); }
+      var lg=document.querySelector(".hero-lang"), hr=$("hero"); if(lg && hr){ if(c){ if(lg.parentNode!==tb) tb.insertBefore(lg, tb.firstChild); } else if(lg.parentNode!==hr) hr.insertBefore(lg, hr.firstChild); } }catch(e){}
     if(c==="pilote"){ var lb=[], tot=0; try{ lb=JSON.parse(localStorage.getItem("lf.ulm.logbook")||"[]")||[]; }catch(e){} lb.forEach(function(x){ tot+=Math.max(0,(+x.t1||0)-(+x.t0||0)); }); var mn=Math.round(tot/60000), last=lb[0];
       pil.innerHTML='<button type="button" class="uh-cta" data-uh="plan" style="background:linear-gradient(135deg,#3d8bff,#10276b);box-shadow:0 14px 28px rgba(29,79,184,.34)">'+uhIc('<circle cx="12" cy="12" r="9"/><path d="M15.500 8.500l-2 5-5 2 2-5z"/>')+'Préparer mon plan de vol</button>'
         +'<div class="uh-g2"><button type="button" class="uh-tile" data-uh="wx"><span class="uh-k">Météo terrain</span><b>METAR · TAF</b><small>Vent sur la piste, prévisions</small></button><button type="button" class="uh-tile" data-uh="plan"><span class="uh-k">Carnet de vol</span><b>'+(lb.length ? (mn>=60?Math.floor(mn/60)+" h "+(mn%60<10?"0":"")+(mn%60):mn+" min") : "0 h")+'</b><small>'+lb.length+' vol'+(lb.length>1?"s":"")+' enregistré'+(lb.length>1?"s":"")+'</small></button></div>'
@@ -10833,15 +10834,26 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <!-- 18/11 : page « Ma configuration » de l'univers Lite Foil Ultra : matériel utilisé (d'après le catalogue litefoil.fr) et gabarit du pilote -->
 <style>
-body.uni-efoil #bnav{display:none!important}body.uni-efoil #hero{display:none!important}body.uni-efoil #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:flex-end;align-items:flex-start;aspect-ratio:16/9;margin:12px 0 14px;padding:18px;border-radius:var(--radius);gap:0;text-align:left;background:radial-gradient(120% 95% at 78% 30%,#c23bd0 0%,#5a1470 46%,#16051f 100%);box-shadow:0 14px 30px rgba(90,20,112,.3)}
-body.uni-efoil #tab-dash>.home-shop.uh-sport::before{content:"";position:absolute;right:3%;top:6%;width:50%;height:64%;background:linear-gradient(160deg,#fff,#ffc9f4);-webkit-mask:url(onb-logo.png) center/contain no-repeat;mask:url(onb-logo.png) center/contain no-repeat;pointer-events:none}
-body.uni-efoil #tab-dash>.home-shop.uh-sport::after{right:auto;left:-50px;top:-70px;background:radial-gradient(circle,rgba(255,95,210,.25),transparent 65%)}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-logo{display:none}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx{flex:none;border-left:0;padding-left:0;align-items:flex-start;gap:3px;max-width:58%;position:relative;z-index:1}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx b{font-size:24px;line-height:1.1}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-tx small{font-size:13px;white-space:normal;line-height:1.3;color:rgba(255,255,255,.84)}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go{position:absolute;right:16px;bottom:16px;width:auto;height:auto;border-radius:999px;padding:9px 11px 9px 15px;background:#fff;color:#7a1a8c;font-size:13.5px;font-weight:800;gap:2px}
-body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go::before{content:"Découvrir"}body.uni-efoil #tab-dash>.home-shop.uh-sport .hs-go svg{width:15px;height:15px}
+body.uni-efoil #bnav{display:none!important}body.uni-on #hero{display:none!important}
+body{--sb1:#c23bd0;--sb2:#5a1470;--sb3:#16051f;--sl:#ffc9f4;--sc:#7a1a8c;--sg:rgba(255,95,210,.25)}
+body.uni-nautique{--sb1:#1fb5a8;--sb2:#0b4f55;--sb3:#04161a;--sl:#c9fff6;--sc:#0b6d72;--sg:rgba(95,240,200,.25)}
+body.uni-terre{--sb1:#e08a2c;--sb2:#6b2f0c;--sb3:#1a0a04;--sl:#ffe3c2;--sc:#b4541a;--sg:rgba(255,179,71,.25)}
+body.uni-pilote{--sb1:#3d7df0;--sb2:#142f7a;--sb3:#050b1e;--sl:#cfe0ff;--sc:#1f4fc4;--sg:rgba(61,139,255,.25)}
+#tab-dash{position:relative}#tab-dash>.hero-lang{position:absolute;left:12px;top:24px;right:auto;bottom:auto;z-index:3}body.uni-on #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:flex-end;align-items:flex-start;aspect-ratio:16/9;margin:12px 0 14px;padding:18px;border-radius:var(--radius);gap:0;text-align:left;background:radial-gradient(120% 95% at 78% 30%,var(--sb1) 0%,var(--sb2) 46%,var(--sb3) 100%);box-shadow:0 14px 30px rgba(10,20,40,.22)}
+body.uni-on #tab-dash>.home-shop.uh-sport::before{content:"";position:absolute;right:3%;top:6%;width:50%;height:64%;background:linear-gradient(160deg,#fff,var(--sl));-webkit-mask:url(onb-logo.png) center/contain no-repeat;mask:url(onb-logo.png) center/contain no-repeat;pointer-events:none}
+body.uni-on #tab-dash>.home-shop.uh-sport::after{right:auto;left:-50px;top:-70px;background:radial-gradient(circle,var(--sg),transparent 65%)}
+body.uni-on #tab-dash>.home-shop.uh-sport .hs-logo{display:none}body.uni-on #tab-dash>.home-shop.uh-sport .hs-tx{flex:none;border-left:0;padding-left:0;align-items:flex-start;gap:3px;max-width:58%;position:relative;z-index:1}
+body.uni-on #tab-dash>.home-shop.uh-sport .hs-tx b{font-size:24px;line-height:1.1}body.uni-on #tab-dash>.home-shop.uh-sport .hs-tx small{font-size:13px;white-space:normal;line-height:1.3;color:rgba(255,255,255,.84)}
+body.uni-on #tab-dash>.home-shop.uh-sport .hs-go{position:absolute;right:16px;bottom:16px;width:auto;height:auto;border-radius:999px;padding:9px 11px 9px 15px;background:#fff;color:var(--sc);font-size:13.5px;font-weight:800;gap:2px}
+body.uni-on #tab-dash>.home-shop.uh-sport .hs-go::before{content:"Découvrir"}body.uni-on #tab-dash>.home-shop.uh-sport .hs-go svg{width:15px;height:15px}
 #efBack{display:none;position:fixed;left:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;align-items:center;gap:6px;min-height:0;padding:12px 18px 12px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#ff5fd2,#8a1f9c);color:#fff;font:inherit;font-size:15px;font-weight:800;box-shadow:0 10px 24px rgba(138,31,156,.4);cursor:pointer}
 body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
+#tab-dash>#defiBox{display:none!important}
+body.lf-defi>#defiBox{display:block!important;position:fixed;inset:0;z-index:9000;margin:0;overflow:auto;-webkit-overflow-scrolling:touch;background:#eef2f5;padding:calc(74px + env(safe-area-inset-top,0px)) 14px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+#defiTop{display:none;position:fixed;left:0;right:0;top:0;z-index:9001;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(135deg,#0b3138,#06181d);color:#fff}
+body.lf-defi #defiTop{display:flex}
+#defiTop button{width:40px;height:40px;min-height:0;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;box-shadow:none;flex:none}
+#defiTop b{font-size:18px;font-weight:900}
 .efc-ov{position:fixed;inset:0;z-index:13400;background:#f4f7f9;color:#0e1417;display:flex;flex-direction:column;animation:efcIn .25s ease}
 @keyframes efcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .efc-top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(135deg,#a02bb0,#3a0b4a);color:#fff}
@@ -10904,6 +10916,13 @@ body.uni-efoil[data-tab]:not([data-tab="dash"]) #efBack{display:inline-flex}
     ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close" || x==="save") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
+  // page Défi : le bloc du défi s'affiche en plein écran, avec un bandeau et un retour
+  var dTop=document.createElement("div"); dTop.id="defiTop"; dTop.setAttribute("data-no-i18n",""); dTop.innerHTML='<button type="button" aria-label="Retour">‹</button><b>Défi de la semaine</b>'; document.body.appendChild(dTop);
+  var dPh=null;
+  var defiClose=function(){ if(!document.body.classList.contains("lf-defi")) return; document.body.classList.remove("lf-defi"); var x=document.getElementById("defiBox"); if(x && dPh && dPh.parentNode){ dPh.parentNode.insertBefore(x, dPh); dPh.remove(); } dPh=null; };
+  window.__defiPage=function(){ var x=document.getElementById("defiBox"); if(!x || document.body.classList.contains("lf-defi")) return; dPh=document.createElement("i"); dPh.hidden=true; x.parentNode.insertBefore(dPh, x); document.body.appendChild(x); document.body.classList.add("lf-defi"); x.scrollTop=0; };
+  dTop.querySelector("button").addEventListener("click", defiClose);
+  try{ new MutationObserver(function(){ if((document.body.dataset.tab||"dash")!=="dash") defiClose(); }).observe(document.body, { attributes:true, attributeFilter:["data-tab"] }); }catch(e){}
   var bk=document.createElement("button"); bk.type="button"; bk.id="efBack"; bk.setAttribute("data-no-i18n",""); bk.innerHTML='<span style="font-size:19px;line-height:1">‹</span> Accueil'; document.body.appendChild(bk);
   bk.addEventListener("click", function(){ var t=document.querySelector('.tab[data-tab="dash"]'); if(t) t.click(); window.scrollTo(0,0); });
   document.addEventListener("click", function(e){ if(e.target.closest && e.target.closest("[data-efcfg]")) open(); });
