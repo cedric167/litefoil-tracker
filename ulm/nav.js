@@ -696,24 +696,38 @@ function sosSheet(){ var F=FLY, p=F.pos||F.pts[0], o=F.el.querySelector("#nvNear
 function simulate(){ var k=0, seg=0, spd=(+P.ac.tas||150)/3.6*14; FLY.simT=setInterval(function(){ if(!FLY) return; var a=FLY.pts[seg], b=FLY.pts[seg+1]; if(!b){ clearInterval(FLY.simT); return; } var d=distM(a,b); k+=spd/d; if(k>=1){ k=0; seg++; if(!FLY.pts[seg+1]){ onPos({ lat:b.lat, lon:b.lon, alt:(b.elev||0)/FT, spd:0, t:Date.now() }); clearInterval(FLY.simT); return; } a=FLY.pts[seg]; b=FLY.pts[seg+1]; }
     var p=mid(a,b,k), off=Math.sin(k*Math.PI)*0.004; onPos({ lat:p.lat+off, lon:p.lon+off, alt:P.alt/FT, spd:(+P.ac.tas||150)/3.6, t:Date.now() }); }, 1000); }
 // l'avion glisse en continu de sa position affichée vers le nouveau point GPS (au lieu de sauter une fois par seconde)
-function flyGlide(F, p, trk, dur){ var a=F.vis, el=F.el; if(F.raf) cancelAnimationFrame(F.raf);
+function flyGlide(F, p, trk, dur){ var el=F.el;
   var put=function(la, lo, tk){ F.vis={ lat:la, lon:lo, trk:tk }; F.me.setLatLng([la,lo]); if(F.glMe){ try{ F.glMe.setLngLat([lo,la]); if(tk!=null) F.glMe.setRotation(tk); if(F.follow && F.gl) F.gl.jumpTo(tk!=null ? { center:[lo,la], bearing:tk } : { center:[lo,la] }); }catch(e){} } if(tk!=null){ if(F.hup && Math.abs(((-tk-F.brg+540)%360)-180)>0.4) flyBearing(F, -tk); var pl=el.querySelector("#nvPl"); if(pl) pl.style.transform="rotate("+(tk+(F.brg||0))+"deg)"; } };
-  if(!a || distM(a,p)>3000 || !window.requestAnimationFrame || document.hidden){ put(p.lat, p.lon, trk); if(F.follow) F.map.setView([p.lat,p.lon], F.map.getZoom(), { animate:false }); return; }
-  var t0=performance.now(), dt=(trk==null || a.trk==null) ? 0 : (((trk-a.trk+540)%360)-180), tk0=a.trk==null ? trk : a.trk;
-  if(F.follow){ try{ F.map.panTo([p.lat,p.lon], { animate:true, duration:dur/1000, easeLinearity:1, noMoveStart:true }); }catch(e){} }
-  var step=function(now){ if(FLY!==F) return; var k=Math.min(1,(now-t0)/dur); put(a.lat+(p.lat-a.lat)*k, a.lon+(p.lon-a.lon)*k, tk0==null ? null : tk0+dt*k); if(k<1) F.raf=requestAnimationFrame(step); };
+  var pan=function(la, lo){ if(!F.follow) return; try{ F.map.panTo([la,lo], { animate:false, noMoveStart:true }); }catch(e){} };
+  var now0=(window.performance && performance.now) ? performance.now() : Date.now();
+  F.fix={ lat:p.lat, lon:p.lon, trk:trk, gs:F.gs||0, t:now0 };
+  // premier point, saut de position, écran éteint : on pose l'appareil directement
+  if(!F.vis || distM(F.vis,p)>3000 || !window.requestAnimationFrame || document.hidden){ put(p.lat, p.lon, trk); pan(p.lat, p.lon); }
+  else if(F.v3) pan(p.lat, p.lon);   // en 3D la carte à plat est cachée : la recaler à chaque point suffit
+  if(F.rafOn || !window.requestAnimationFrame) return;
+  // boucle continue : la position affichée vise l'endroit où l'appareil se trouve maintenant (dernier point + vitesse × temps écoulé, 3 s au plus),
+  // et s'en rapproche en douceur ; un point GPS en retard ou irrégulier ne fait plus sauter ni traîner l'appareil
+  F.rafOn=true; var last=now0, lastTr=0;
+  var step=function(now){ if(FLY!==F){ F.rafOn=false; return; } F.raf=requestAnimationFrame(step); var dtf=now-last; if(dtf<28) return; last=now; var fx=F.fix, v=F.vis; if(!fx || !v) return;
+    var mov=(fx.gs>3 && fx.trk!=null), age=Math.min(3, (now-fx.t)/1000+0.25), tg=mov ? destPt(fx, fx.trk, fx.gs*age) : fx, k=1-Math.exp(-Math.min(dtf,500)/260);
+    var la=v.lat+(tg.lat-v.lat)*k, lo=v.lon+(tg.lon-v.lon)*k, tk=v.trk; if(fx.trk!=null) tk = v.trk==null ? fx.trk : (v.trk+((((fx.trk-v.trk+540)%360)-180)*k)+360)%360;
+    if(Math.abs(la-v.lat)<2e-7 && Math.abs(lo-v.lon)<2e-7 && (tk==null || v.trk==null || Math.abs((((tk-v.trk+540)%360)-180))<0.05)) return;
+    put(la, lo, tk); if(!F.v3) pan(la, lo);
+    if(now-lastTr>330 && F.trail && F.trail.length){ lastTr=now; try{ F.tr.setLatLngs(F.trail.concat([[la,lo]])); }catch(e){} } };
   F.raf=requestAnimationFrame(step); }
 function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon }, mm=el.querySelector("#nvMsg"); if(mm) mm.remove();
   // précision : un point très imprécis est écarté si un bon point est arrivé dans les 8 dernières secondes
   var acc=(g.acc!=null && isFinite(g.acc)) ? g.acc : null, ga=el.querySelector("#nvAcc");
-  if(ga && acc!=null){ ga.hidden=false; ga.textContent="GPS ±"+Math.round(acc)+" m"; ga.className="nv-acc "+(acc<=15?"g":acc<=50?"o":"r"); }
+  var iv=null; if(F.rT){ F.rI=F.rI||[]; F.rI.push(Math.min(15000, Math.max(0, g.t-F.rT))); if(F.rI.length>5) F.rI.shift(); iv=F.rI.reduce(function(x,y){ return x+y; },0)/F.rI.length; } F.rT=g.t;
+  if(ga && acc!=null){ ga.hidden=false; ga.textContent="GPS ±"+Math.round(acc)+" m"+(iv!=null && !F.sim ? " · "+(iv/1000).toFixed(1).replace(".",A.lang()===1?".":",")+" s" : ""); ga.className="nv-acc "+((acc<=15 && (iv==null || iv<=2500))?"g":acc<=50?"o":"r"); }
   if(acc!=null){ if(acc>120 && F.goodT && g.t-F.goodT<8000) return; if(acc<=120) F.goodT=g.t; }
   var dtFix=F.fixT ? Math.max(250, Math.min(1500, g.t-F.fixT)) : 1000; F.fixT=g.t;
   var gs=(g.spd!=null && isFinite(g.spd) && g.spd>=0) ? g.spd : (F.last ? distM(F.last,p)/Math.max(0.5,(g.t-F.last.t)/1000) : 0);
   // cap : la route GPS (mesurée par effet Doppler, précise dès qu'on avance), sinon le cap entre deux points espacés ; lissé pour ne pas trembler
   var nt=null; if(g.hdg!=null && isFinite(g.hdg) && g.hdg>=0 && gs>5) nt=g.hdg; else if(F.last && distM(F.last,p)>25) nt=brg(F.last,p);
   if(nt!=null) F.trk = F.trk==null ? nt : ((F.trk+((((nt-F.trk+540)%360)-180)*0.6))+360)%360;
-  if(!F.last || distM(F.last,p)>25){ F.last={ lat:p.lat, lon:p.lon, t:g.t }; F.trail.push([p.lat,p.lon]); if(F.trail.length>600) F.trail.shift(); F.tr.setLatLngs(F.trail); }
+  if(!F.last || distM(F.last,p)>25) F.last={ lat:p.lat, lon:p.lon, t:g.t };
+  if(!F.trP || distM(F.trP,p)>8){ F.trP=p; F.trail.push([p.lat,p.lon]); if(F.trail.length>1500) F.trail.splice(0,2); F.tr.setLatLngs(F.trail); }
   F.pos=p; F.gs=gs; flyGlide(F, p, F.trk, F.sim ? 900 : dtFix); if(F.gl) fly3dData(F);
   // passage au point suivant
   while(!F.done){ var to=F.pts[F.i], fr=F.pts[F.i-1], dTo=distM(p,to), leg=distM(fr,to), passed=F.direct?false:(distM(fr,p)*Math.cos(rad(brg(fr,p)-brg(fr,to)))>=leg);
@@ -749,7 +763,7 @@ function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY
   if(d.f==="quit"){ if(!F.done && !confirm(T("Quitter la navigation ?"))) return; return stopFly(); }
   if(d.f==="rot"){ if(!F.rot) return; if(F.hup){ F.hup=false; b.classList.remove("on"); flyBearing(F, 0); toast(T("Nord en haut")); } else if(F.brg>2 && F.brg<358){ flyBearing(F, 0); toast(T("Nord en haut")); } else { F.hup=true; b.classList.add("on"); if(F.trk!=null) flyBearing(F, -F.trk); toast(T("Cap en haut : la carte tourne avec l'avion")); } return; }
   if(d.f==="center" && F.gl){ F.follow=true; b.classList.add("on"); try{ var cc=F.vis||F.pos||F.pts[0]; F.gl.easeTo({ center:[cc.lon,cc.lat], pitch:68, zoom:11.4, bearing:F.trk!=null?F.trk:F.gl.getBearing(), duration:600 }); }catch(e){} return; }
-  if(d.f==="center"){ F.follow=true; b.classList.add("on"); if(F.pos) F.map.setView([F.pos.lat,F.pos.lon], Math.max(F.map.getZoom(),11)); return; }
+  if(d.f==="center"){ F.follow=true; b.classList.add("on"); var c2=F.vis||F.pos; if(c2) F.map.setView([c2.lat,c2.lon], Math.max(F.map.getZoom(),11)); return; }
   if(d.f==="voice"){ F.voice=!F.voice; b.classList.toggle("on", F.voice); if(!F.voice){ try{ speechSynthesis.cancel(); }catch(x){} } return; }
   if(d.f==="next"){ if(F.i<F.pts.length-1){ F.i++; F.direct=F.pos?{ lat:F.pos.lat, lon:F.pos.lon }:null; if(F.pos) onPos({ lat:F.pos.lat, lon:F.pos.lon, spd:F.gs, t:Date.now() }); } return; }
   if(d.f==="near"){ var ref=F.pos||F.pts[0]; A.loadDB(ref.lat,ref.lon).then(function(){ if(!FLY) return; var l=A.nearest(ref.lat,ref.lon,8), h='<div class="nv-near" id="nvNear"><h3>🛬 '+esc(T("Terrains les plus proches"))+'<button class="nv-x" data-f="nclose">✕</button></h3>'
