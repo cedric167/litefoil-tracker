@@ -126,6 +126,13 @@ async function sendToUids(uids, data, opts) {
           msg.android.notification.channelId = opts.ring === "call" ? "lf_calls" : "lf_sos";
           msg.android.notification.visibility = "public";
           msg.android.notification.defaultVibrateTimings = true;
+          if (opts.ring === "sos") {
+            // alerte de sécurité : priorité maximale, passe les modes « Concentration » qui laissent passer les notifications urgentes
+            msg.android.notification.priority = "max";
+            msg.android.notification.defaultSound = false;
+            msg.apns.payload.aps["interruption-level"] = "time-sensitive";
+            msg.apns.headers = { "apns-priority": "10", "apns-push-type": "alert" };
+          }
           if (opts.ring === "call") { msg.android.ttl = 60000; msg.apns.headers = { "apns-expiration": String(Math.floor(Date.now() / 1000) + 60), "apns-priority": "10" }; }
         }
       } else {
@@ -850,7 +857,7 @@ async function liveApi(req, res, sid) {
       const ps = L.ps || "Un membre";
       await sendToUids(uids, { type: "safety", channel: "live:" + sid, live: String(sid),
         title: st === "sos" ? "🆘 SOS de " + ps : "⚠️ " + ps + " ne bouge plus",
-        body: st === "sos" ? ps + (String(L.em || "") === "196" || /^SOS · En mer/.test(String(L.cat || "")) ? " a déclenché un SOS en mer." : " a déclenché un SOS.") + " Ouvre sa position." : ps + " est immobile depuis un moment et ne répond pas. Vérifie sa position." }).catch(() => {});
+        body: st === "sos" ? ps + (String(L.em || "") === "196" || /^SOS · En mer/.test(String(L.cat || "")) ? " a déclenché un SOS en mer." : " a déclenché un SOS.") + " Ouvre sa position." : ps + " est immobile depuis un moment et ne répond pas. Vérifie sa position." }, { ring: "sos" }).catch(() => {});
     }
   }
   return res.json({ ok: true });
