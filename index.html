@@ -4555,8 +4555,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     new MutationObserver(sync).observe(src, { attributes: true, childList: true, characterData: true, subtree: true }); sync(); })();
   // 14/11 : espace ULM / Avion (chargé à la demande), proposé à ceux qui ont coché « ULM / Avion » dans leurs sports
   window.ulmSync = function(){ var on=false; try{ on=(localStorage.getItem("lf.comm.sports")||"").split(",").indexOf("ulm")>=0; }catch(e){}
-    var h=document.getElementById("homeUlm"); if(h) h.hidden=false; /* 15/11 : sur l'accueil pour tout le monde */
-    var el=document.getElementById("mtoUlm"); if(el) el.hidden=!on; };
+    var uni=""; try{ uni=localStorage.getItem("lf.univers")||""; }catch(e){}
+    /* 18/11 : celui qui a choisi l'univers Multisport ne voit plus l'espace ULM / Avion ; il le retrouve en changeant d'univers dans son profil */
+    var h=document.getElementById("homeUlm"); if(h) h.hidden=(uni==="sport");
+    var el=document.getElementById("mtoUlm"); if(el) el.hidden=(!on || uni==="sport"); };
   window.ulmOnShow = function(){ var p=document.getElementById("tab-ulm"); if(!p) return; if(window.LFUlm){ window.LFUlm.show(p); return; } if(p.dataset.ld) return; p.dataset.ld="1";
     p.innerHTML='<div class="note" style="text-align:center;padding:24px 0">Chargement…</div>';
     var sc=document.createElement("script"); sc.src="ulm/ulm.js?v=45"; sc.onload=function(){ if(window.LFUlm) window.LFUlm.show(p); };
@@ -9644,7 +9646,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function lfoFinish(){ lfoDone=true; try{ localStorage.setItem("lf.onb.ok","1"); }catch(e){} lfoHide(); try{ var t=document.querySelector('[data-tab="dash"]'); if(t) t.click(); }catch(e){} setTimeout(function(){ if(!uniGet()) uniChoose(true); }, 350); }
   // ---------- univers : "sport" (multisport), "pilote" (ULM / Avion) ou "both" ----------
   function uniGet(){ try{ var v=localStorage.getItem("lf.univers"); return (v==="sport"||v==="pilote"||v==="both") ? v : ""; }catch(e){ return ""; } }
-  function uniApply(go){ var u=uniGet(); document.body.classList.toggle("uni-pilote", u==="pilote"); try{ var cur=document.body.dataset.tab||"dash"; document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.remove("on"); }); var k=(u==="pilote") ? cur : (cur==="profil"?"fil":cur); var ob=document.querySelector('#bnav [data-nav="'+k+'"]'); if(ob) ob.classList.add("on"); }catch(e){}
+  function uniApply(go){ var u=uniGet(); document.body.classList.toggle("uni-pilote", u==="pilote"); try{ if(window.ulmSync) window.ulmSync(); }catch(e){} try{ var cur=document.body.dataset.tab||"dash"; document.querySelectorAll("#bnav button").forEach(function(b){ b.classList.remove("on"); }); var k=(u==="pilote") ? cur : (cur==="profil"?"fil":cur); var ob=document.querySelector('#bnav [data-nav="'+k+'"]'); if(ob) ob.classList.add("on"); }catch(e){}
     var lb=$("profUniTx"); if(lb) lb.textContent = u==="pilote" ? "Pilote ULM / Avion" : u==="both" ? "Multisport + Pilote" : u==="sport" ? "Multisport" : "À choisir";
     if(go){ if(u==="pilote") lfGoTab("ulm"); else if(document.body.dataset.tab==="ulm" && u==="sport") lfGoTab("dash"); } }
   function uniSet(v){ try{ localStorage.setItem("lf.univers", v); }catch(e){}
