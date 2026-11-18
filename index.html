@@ -2318,6 +2318,17 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
 .tk-chips button{flex:0 0 auto;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:84px;max-width:104px;padding:11px 10px 9px;border-radius:18px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;line-height:1.15;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s,background .15s,color .15s}
 .tk-chips button i{font-style:normal;font-size:30px;line-height:1}
 .tk-now .spi{font-size:15px;margin-right:4px}
+.tk-pick{display:flex;align-items:center;gap:10px;width:100%;margin:0;padding:13px 14px 13px 12px;border:0;border-radius:18px;background:linear-gradient(135deg,#2bd4c4,#0b6d72);color:#fff;font:inherit;font-size:17px;font-weight:800;letter-spacing:-.01em;text-align:left;cursor:pointer;min-height:0;box-shadow:0 10px 22px rgba(11,109,114,.28)}
+.tk-pick .tk-n{background:#fff;color:#0b6d72}.tk-pick b{flex:1;font-weight:800}.tk-pick svg{flex:none;width:20px;height:20px}
+body.uni-terre .tk-pick{background:linear-gradient(135deg,#ffb347,#b4541a);box-shadow:0 10px 22px rgba(180,84,26,.28)}body.uni-terre .tk-pick .tk-n{color:#b4541a}
+body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-shadow:0 10px 22px rgba(29,79,184,.28)}body.uni-pilote .tk-pick .tk-n{color:#10276b}
+.tk-favs[hidden]{display:none}.tk-favh{margin:11px 4px 0;font-size:13px;line-height:1.4;color:var(--muted)}.tk-favh[hidden]{display:none}
+.tk-sport .phseg{margin-top:12px}body.uni-on #tkSport .phseg{display:none}
+.tk-sheet-s{margin:-6px 4px 12px;font-size:13px;line-height:1.4;color:var(--muted)}
+.tk-sheet .tk-chips button.on{border-color:var(--line);background:var(--card);color:var(--muted);box-shadow:none}
+.tk-sheet .tk-chips button.fav{position:relative;border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f4fdfc);color:#0b5f5a;box-shadow:0 8px 16px -8px rgba(20,184,171,.6)}
+.tk-sheet .tk-chips button.fav::after{content:"✓";position:absolute;top:6px;right:7px;width:19px;height:19px;border-radius:50%;background:#14b8ab;color:#fff;font-size:12px;line-height:19px;font-weight:900}
+.tk-sheet-ok{flex:none;margin-top:12px;border:0;border-radius:16px;padding:15px;background:#0b6d72;color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;min-height:0;box-shadow:none}
 .tk-chips button.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f4fdfc);color:#0b5f5a;transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(20,184,171,.6)}
 .tk-rec{position:relative;overflow:hidden;border-radius:28px;padding:18px 16px 16px;color:#fff;background:linear-gradient(165deg,#07222c 0%,#0b3d47 55%,#0f6a67 100%);box-shadow:0 18px 40px -18px rgba(7,34,44,.75);margin-bottom:14px}
 .tk-rec:before{content:"";position:absolute;right:-80px;top:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(47,211,195,.28),rgba(47,211,195,0) 70%);pointer-events:none}
@@ -2354,7 +2365,7 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
 .tk-rec #phStepsKv .v,.tk-rec #phJumpsKv .v{color:#7fe9e0 !important}
 .tk-go{margin-top:16px}
 .tk-rec #phStart{height:64px;border-radius:22px;font-size:19px;background:linear-gradient(135deg,#5ff0c8,#22cdbd);color:#06282a;box-shadow:0 14px 28px -10px rgba(47,211,195,.75);animation:tkPulse 2.4s ease-in-out infinite}
-.tk-rec #phStart:active{transform:scale(.98)}
+.tk-rec #phStart:active{transform:scale(.98)}.tk-rec #phStart{font-size:27px;font-weight:900;letter-spacing:.14em}.tk-h-rec{align-items:flex-start;font-size:15.5px;line-height:1.3}.tk-h-rec b{padding-top:2px}
 .tk-rec #phStop{height:64px;border-radius:22px;font-size:19px}
 @keyframes tkPulse{0%,100%{box-shadow:0 14px 28px -10px rgba(47,211,195,.75),0 0 0 0 rgba(95,240,200,.45)}50%{box-shadow:0 14px 28px -10px rgba(47,211,195,.75),0 0 0 10px rgba(95,240,200,0)}}
 @media (prefers-reduced-motion:reduce){.tk-rec #phStart{animation:none}}
@@ -2964,7 +2975,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   <section id="tab-tracking" class="tabpane" hidden>
   <!-- 13/11 : page Tracking refaite — 1. choisir son sport, 2. tableau de bord + gros bouton, puis carte, partage et sécurité -->
   <div class="tk-sport" id="tkSport">
-    <div class="tk-h"><span class="tk-n">1</span><b>Choisis ton sport</b></div>
+    <button type="button" class="tk-pick" id="tkPick"><span class="tk-n">1</span><b>Choisis ton sport</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <div class="tk-chips tk-favs" id="tkFavs" hidden></div>
+    <p class="tk-favh" id="tkFavH">Touche le bouton pour choisir tes sports : ils s’afficheront ici en favoris.</p>
     <div class="phseg" id="phSeg">
       <button type="button" data-m="mer" aria-selected="true">🌊 Mer</button>
       <button type="button" data-m="terre" aria-selected="false">⛰️ Terre</button>
@@ -2973,14 +2986,16 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     <div class="tk-sheet" id="tkSheet" hidden>
       <div class="tk-sheet-c">
         <div class="tk-sheet-h"><b id="tkSheetT">Mer</b><button type="button" id="tkSheetX" aria-label="Fermer">✕</button></div>
-        <div class="tk-chips" id="tkChips" role="listbox" aria-label="Choix de l'activité"></div>
+        <p class="tk-sheet-s">Touche tous les sports que tu pratiques : ils s’affichent en favoris sur la page Tracking.</p>
+        <div class="tk-chips" id="tkChips" role="listbox" aria-label="Choix de l'activité" aria-multiselectable="true"></div>
+        <button type="button" class="tk-sheet-ok" id="tkSheetOk">Valider</button>
       </div>
     </div>
     <select class="phsel" id="phAct" aria-label="Choix de l'activité" hidden></select>
   </div>
 
   <div class="tk-rec" id="phoneCard">
-    <div class="tk-h tk-h-rec"><span class="tk-n">2</span><b>Lance ta sortie</b></div>
+    <div class="tk-h tk-h-rec"><span class="tk-n">2</span><b>C’est parti ! Profite à fond de ta séance.</b></div>
     <div class="tk-rec-top">
       <div class="trk-chip" id="trkChip"><span class="dot"></span><span id="trkChipTx">Prêt</span></div>
       <div class="tk-now" id="tkNow"></div>
@@ -3010,10 +3025,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     </div>
     <div class="note" id="phMotNote" hidden>Pour compter les pas et mesurer les sauts, garde le téléphone <b>fixé au corps</b> (brassard ou ceinture). Le GPS continue écran verrouillé dans l'appli ; les pas et les sauts, eux, se mesurent écran allumé.</div>
     <div class="tk-go">
-      <button class="primary" id="phStart">▶ Démarrer la sortie</button>
+      <button class="primary" id="phStart">GO</button>
       <button class="danger" id="phStop" hidden>⏹ Terminer</button>
     </div>
-    <div class="note" id="phNote">Prêt. Appuie sur « Démarrer » et autorise la localisation.</div>
+    <div class="note" id="phNote">Prêt. Appuie sur « GO » et autorise la localisation.</div>
     <div class="tk-pts"><span id="phPts">0</span> <span>points GPS</span></div>
   </div>
 
@@ -4017,19 +4032,28 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     sel.innerHTML = "";
     var mine = []; try{ mine = (localStorage.getItem("lf.comm.sports")||"").split(","); }catch(e){}
     PH_ACTS[phMilieu].slice().sort(function(x,y){ return (mine.indexOf(x[0])<0?1:0)-(mine.indexOf(y[0])<0?1:0); }).forEach(function(a){ var o = document.createElement("option"); o.value = a[0]; o.textContent = a[1]; sel.appendChild(o); });
+    var tf = tkFavs(); if(tf.length && sel.querySelector('option[value="'+tf[0]+'"]')) sel.value = tf[0]; // un sport favori d'abord
     phType = sel.value; phCat = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
     tkChips();
   }
   // 13/11 : le sport se choisit avec des pastilles (la liste déroulante #phAct, masquée, reste la référence)
   var TK_EMO = { efoil:"⚡", wingfoil:"🪂", parawing:"🪁", windsurf:"⛵", pumpfoil:"🦵", kitesurf:"🪁", surffoil:"🏄", supdownwind:"🌬️", surf:"🏄", bodyboard:"🌊", sup:"🛶", canoe:"🚣", deriveur:"⛵", jetski:"🚤", swim:"🏊", other:"✨",
     running:"🏃", marche:"🚶", rando:"🥾", trail:"⛰️", velo:"🚴", ski:"🎿", snowboard:"🏂", skate:"🛹", longboard:"🛹", surfskate:"🛹", roller:"🛼", longueur:"🦘", perche:"🤸", parapente:"🪂", ulm:"✈️", voiture:"🚗", moto:"🏍️", vehicule:"🚐" };
+  function tkFavAll(){ var o={}; try{ o=JSON.parse(localStorage.getItem("lf.tk.favs")||"{}")||{}; }catch(e){} return (o && typeof o==="object") ? o : {}; }
+  function tkFavs(){ var a=tkFavAll()[phMilieu], ok=PH_ACTS[phMilieu].map(function(x){ return x[0]; }); return (Array.isArray(a)?a:[]).filter(function(v){ return ok.indexOf(v)>=0; }); }
+  function tkFavSet(a){ var o=tkFavAll(); o[phMilieu]=a; try{ localStorage.setItem("lf.tk.favs", JSON.stringify(o)); }catch(e){} }
+  function tkFavPaint(){ var f=tkFavs(), box=$("tkChips"), row=$("tkFavs"), hint=$("tkFavH"), sel=$("phAct");
+    if(box) Array.prototype.forEach.call(box.children, function(b){ var on=f.indexOf(b.dataset.v)>=0; b.classList.toggle("fav", on); b.setAttribute("aria-selected", on?"true":"false"); });
+    if(row && sel){ row.innerHTML=""; f.forEach(function(v){ var o=sel.querySelector('option[value="'+v+'"]'); if(!o) return; var b=document.createElement("button"); b.type="button"; b.dataset.v=v; if(sel.value===v) b.classList.add("on");
+        var i=document.createElement("i"); if(typeof spIco==="function") i.innerHTML=spIco(v); else i.textContent=TK_EMO[v]||"✨"; var t=document.createElement("span"); t.textContent=o.text; b.appendChild(i); b.appendChild(t); row.appendChild(b); }); row.hidden=!row.children.length; }
+    if(hint) hint.hidden=!!(row && row.children.length); }
   function tkChips(){ var sel=$("phAct"), box=$("tkChips"); if(!sel || !box) return; box.innerHTML="";
     Array.prototype.forEach.call(sel.options, function(o){ var b=document.createElement("button"); b.type="button"; b.dataset.v=o.value; b.setAttribute("role","option");
       var i=document.createElement("i"); if(typeof spIco==="function") i.innerHTML=spIco(o.value); else i.textContent=TK_EMO[o.value]||"✨"; var t=document.createElement("span"); t.textContent=o.text; b.appendChild(i); b.appendChild(t); box.appendChild(b); });
-    box.scrollLeft=0; tkPaint(); }
+    box.scrollLeft=0; tkPaint(); tkFavPaint(); }
   // met à jour la pastille choisie, le sport affiché dans le tableau de bord et les barres du signal GPS
   function tkPaint(){ var sel=$("phAct"), box=$("tkChips");
-    if(sel && box) Array.prototype.forEach.call(box.children, function(b){ var on=b.dataset.v===sel.value; if(b.classList.contains("on")!==on){ b.classList.toggle("on", on); b.setAttribute("aria-selected", on?"true":"false"); } });
+    var frow=$("tkFavs"); if(sel && frow) Array.prototype.forEach.call(frow.children, function(b){ var on=b.dataset.v===sel.value; if(b.classList.contains("on")!==on) b.classList.toggle("on", on); });
     var cur=$("tkCurTx"), cic=$("tkCurIc"); if(cur && sel){ var oc=sel.options[sel.selectedIndex]; if(oc && cur.dataset.v!==oc.value+"|"+oc.text){ cur.dataset.v=oc.value+"|"+oc.text; cur.textContent=oc.text; if(cic){ if(typeof spIco==="function") cic.innerHTML=spIco(oc.value); else cic.textContent=TK_EMO[oc.value]||"✨"; } } }
     var now=$("tkNow"); if(now && sel){ var o=sel.options[sel.selectedIndex], tx=o ? (TK_EMO[o.value]||"")+" "+o.text : ""; if(now.dataset.tx!==tx){ now.dataset.tx=tx; if(o && typeof spIco==="function"){ now.innerHTML=spIco(o.value)+" "; now.appendChild(document.createTextNode(o.text)); } else now.textContent=tx; } }
     var g=$("tkGps"), a=$("phAcc"); if(g && a){ var m=parseFloat(a.textContent), q=isFinite(m) ? (m<=10?3:(m<=30?2:1)) : 0; if(g.dataset.q!==String(q)) g.dataset.q=String(q); } }
@@ -4367,13 +4391,15 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var a=$("phStart"), b=$("phStop"); if(a) a.addEventListener("click", phStart); if(b) b.addEventListener("click", phStop);
     var sheet=$("tkSheet"); if(sheet) document.body.appendChild(sheet); // hors de la page : la fenêtre couvre aussi le menu du bas
     var tkOpen=function(){ if(!sheet || phTimer) return; var bt=document.querySelector('#phSeg [aria-selected="true"]'), tt=$("tkSheetT"); if(tt && bt) tt.textContent=bt.textContent; sheet.hidden=false; };
-    var tkClose=function(){ if(sheet) sheet.hidden=true; };
-    if(sheet){ sheet.addEventListener("click", function(e){ if(e.target===sheet) tkClose(); }); var sx=$("tkSheetX"); if(sx) sx.addEventListener("click", tkClose); }
+    var tkClose=function(){ if(sheet) sheet.hidden=true; var s=$("phAct"), f=tkFavs(); if(s && f.length && f.indexOf(s.value)<0 && !phTimer){ s.value=f[0]; s.dispatchEvent(new Event("change")); } tkFavPaint(); };
+    if(sheet){ sheet.addEventListener("click", function(e){ if(e.target===sheet) tkClose(); }); var sx=$("tkSheetX"); if(sx) sx.addEventListener("click", tkClose); var sok=$("tkSheetOk"); if(sok) sok.addEventListener("click", tkClose); }
+    var pick=$("tkPick"); if(pick) pick.addEventListener("click", tkOpen);
+    var frow=$("tkFavs"); if(frow) frow.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"), s=$("phAct"); if(!b || !s || phTimer) return; s.value=b.dataset.v; s.dispatchEvent(new Event("change")); });
     var tcur=$("tkCur"); if(tcur) tcur.addEventListener("click", tkOpen);
     window.__phSet=function(m){ try{ if(!phTimer && m!==phMilieu) phSetMilieu(m); }catch(e){} };
     var seg=$("phSeg"); if(seg) seg.addEventListener("click", function(e){ var btn=e.target.closest("button[data-m]"); if(!btn) return; if(btn.dataset.m!==phMilieu) phSetMilieu(btn.dataset.m); tkOpen(); });
     var sel=$("phAct"); if(sel) sel.addEventListener("change", function(){ phType=sel.value; phCat=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:""; tkPaint(); });
-    var chips=$("tkChips"); if(chips && sel) chips.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"); if(!b || phTimer) return; sel.value=b.dataset.v; sel.dispatchEvent(new Event("change")); tkClose(); });
+    var chips=$("tkChips"); if(chips && sel) chips.addEventListener("click", function(e){ var b=e.target.closest("button[data-v]"); if(!b || phTimer) return; var f=tkFavs(), i=f.indexOf(b.dataset.v); if(i>=0) f.splice(i,1); else f.push(b.dataset.v); tkFavSet(f); tkFavPaint(); });
     phSetMilieu("mer");
     phNatBoot();
   }
@@ -6429,7 +6455,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var ov=document.createElement("div"); ov.className="mm-ov"; ov.id="rideOv";
     ov.innerHTML='<div class="mm-card ride-sheet"><div class="rs-h">Partager ma sortie</div>'
       +'<div class="rs-prev">'+rideCardHtml(r)+'</div>'
-      +(r.rec?'':'<div class="rs-note"><b>Ce partage n\'enregistre pas ta sortie.</b> Pour qu\'elle compte au classement, lance le suivi dans l\'onglet Tracking (bouton « Démarrer la sortie ») et appuie sur Terminer à la fin.<button class="rs-track" id="rsTrack">▶ Enregistrer une sortie eFoil</button></div>')
+      +(r.rec?'':'<div class="rs-note"><b>Ce partage n\'enregistre pas ta sortie.</b> Pour qu\'elle compte au classement, lance le suivi dans l\'onglet Tracking (bouton « GO ») et appuie sur Terminer à la fin.<button class="rs-track" id="rsTrack">▶ Enregistrer une sortie eFoil</button></div>')
       +'<input id="rideCap" class="rs-cap" maxlength="200" placeholder="Ajouter un mot (optionnel)…">'
       +'<div class="rs-btns"><button class="mm-act rs-cancel">Annuler</button><button class="primary rs-share">Partager</button></div></div>';
     document.body.appendChild(ov);
