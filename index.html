@@ -35,6 +35,29 @@ body.uni-pilote #tab-dash>.uh-sport,body.uni-efoil #tab-dash>.uh-sport,body.uni-
 .uh-cta.uh-cta2{margin-top:10px;background:#fff;color:#8a5a00;border:1.5px solid #ecd9a6;box-shadow:0 6px 16px rgba(138,90,0,.1)}
 body.uni-terre #tab-meteo .ms{background:linear-gradient(135deg,#1a0a04 0%,#5a280b 52%,#c9721f 100%);box-shadow:0 12px 28px rgba(90,40,11,.26)}body.uni-terre #tab-meteo .ms-k,body.uni-terre #tab-meteo .ms-wave{color:#ffd9a8}
 body.uni-terre #tab-meteo #mtoLive,body.uni-terre #tab-meteo #wcBox,body.uni-terre #tab-meteo .ms-favs .ms-cam{display:none!important}body.uni-terre #tab-meteo button.gw-d.on{border-color:#e08a2c;background:linear-gradient(160deg,#fff1df,#fffaf3)}body.uni-terre #tab-meteo .mto-loc .mto-btn{color:#b4541a}
+.wt-open{margin:14px 0 4px}
+.wt-ov{position:fixed;top:0;right:0;bottom:0;left:0;z-index:12500;background:#0a0f12;color:#fff;display:flex;flex-direction:column}
+.wt-top{flex:none;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 12px}.wt-top b{flex:1;font-size:19px;font-weight:800}
+.wt-top button{width:38px;height:38px;min-height:0;padding:0;border:0;border-radius:50%;background:#1a2228;color:#fff;font-size:19px;box-shadow:none}
+.wt-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 16px calc(env(safe-area-inset-bottom,0px) + 28px)}
+.wt-note{font-size:13px;line-height:1.45;color:#9fb0ba;margin:0 2px 14px}.wt-st{display:flex;gap:9px;align-items:flex-start;background:#131b20;border-radius:16px;padding:12px 13px;font-size:13px;line-height:1.4;color:#c9d6dd;margin-bottom:14px}.wt-st i{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;background:#66727d}.wt-st.ok i{background:#2bd47a}
+.wt-card{display:flex;gap:14px;align-items:center;background:#131b20;border-radius:22px;padding:14px;margin-bottom:12px}
+.wt-w{flex:none;width:146px;height:178px;border-radius:36px;background:linear-gradient(180deg,#0e3a55 0%,#06131c 100%);border:3px solid #24313a;padding:13px 9px 9px;display:flex;flex-direction:column;gap:3px;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.wt-hd{display:flex;justify-content:space-between;font-size:9.5px;font-weight:700;color:#9fb0ba;padding:0 4px}.wt-hd b{color:#ff6b6b}
+.wt-g{flex:1;display:grid;gap:3px;min-height:0}.wt-g.n1{grid-template-columns:1fr}.wt-g.n2{grid-template-columns:1fr;grid-template-rows:1fr 1fr}.wt-g.n3,.wt-g.n4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.wt-c{min-width:0;min-height:0;border:1.5px solid transparent;border-radius:11px;background:none;color:#fff;font:inherit;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;box-shadow:none;cursor:pointer}
+.wt-c small{font-size:7.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#5fd0e6;white-space:nowrap}.wt-c b{font-size:21px;font-weight:800;line-height:1.05;white-space:nowrap}.wt-c i{font-style:normal;font-size:7.5px;color:#8ea0aa}
+.wt-g.n1 .wt-c b{font-size:46px}.wt-g.n2 .wt-c b{font-size:29px}.wt-c:active,.wt-c.sel{border-color:#3d8bff;background:rgba(61,139,255,.16)}
+.wt-sosb{flex:none;height:19px;border-radius:999px;background:#e8384f;color:#fff;font-size:10px;font-weight:900;letter-spacing:.08em;display:flex;align-items:center;justify-content:center}
+.wt-big{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}.wt-big u{text-decoration:none;width:84px;height:84px;border-radius:50%;background:#e8384f;border:3px solid rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:900}.wt-big span{font-size:8.5px;color:#9fb0ba}
+.wt-r{flex:1;min-width:0}.wt-r>b{display:block;font-size:16px;font-weight:800}.wt-r>small{display:block;font-size:12px;color:#9fb0ba;margin:3px 0 10px;line-height:1.35}
+.wt-lay{display:flex;gap:7px}.wt-lay button{width:36px;height:36px;min-height:0;padding:0;border-radius:50%;border:2px solid transparent;background:#0a0f12;color:#fff;font:inherit;font-size:14px;font-weight:800;box-shadow:none}.wt-lay button.on{border-color:#3d8bff}
+.wt-del{margin-top:11px;border:0;background:none;color:#ff7d8c;font:inherit;font-size:13px;font-weight:700;padding:0;min-height:0;box-shadow:none}
+.wt-add{display:block;width:100%;border:2px dashed #2c3a44;background:none;color:#5fd0e6;border-radius:22px;padding:18px;font:inherit;font-size:15px;font-weight:800;min-height:0;box-shadow:none;margin-bottom:12px}
+.wt-reset{display:block;margin:6px auto 0;border:0;background:none;color:#9fb0ba;font:inherit;font-size:13px;font-weight:700;min-height:0;box-shadow:none}
+.wt-sh{position:fixed;top:0;right:0;bottom:0;left:0;z-index:12600;background:rgba(0,0,0,.55);display:flex;align-items:flex-end}
+.wt-sh-c{width:100%;max-height:76vh;overflow-y:auto;background:#131b20;border-radius:24px 24px 0 0;padding:16px 14px calc(env(safe-area-inset-bottom,0px) + 18px)}.wt-sh-c>b{display:block;font-size:18px;font-weight:800;margin:0 4px 12px}
+.wt-m{display:flex;align-items:center;gap:12px;width:100%;border:0;border-bottom:1px solid #212c33;background:none;color:#fff;font:inherit;text-align:left;padding:11px 4px;min-height:0;box-shadow:none}.wt-m span{flex:1;font-size:15.5px;font-weight:700}.wt-m em{font-style:normal;min-width:86px;text-align:center;background:linear-gradient(180deg,#0e3a55,#082231);border-radius:10px;padding:7px 8px;font-size:15px;font-weight:800}.wt-m em i{font-style:normal;font-size:10px;color:#8ea0aa;font-weight:600}.wt-m u{text-decoration:none;width:20px;color:#3d8bff;font-weight:900}
 .uh-one{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 12px;padding:13px 14px;border:0;border-radius:20px;background:radial-gradient(120% 150% at 100% 0%,var(--sb1,#1fb5a8) 0%,var(--sb2,#0b4f55) 55%,var(--sb3,#04161a) 100%);color:#fff;font:inherit;text-align:left;cursor:pointer;min-height:0;box-shadow:0 10px 24px var(--sg,rgba(0,0,0,.2))}
 .uh-one[hidden]{display:none}.uh-one svg{flex:none;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.800;stroke-linecap:round}.uh-one span{flex:1;min-width:0}.uh-one b{display:block;font-size:16px;font-weight:800}.uh-one small{display:block;font-size:12px;opacity:.8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.uh-one i{font-style:normal;font-size:22px;opacity:.8}
 body.uni-on #tab-dash .home-card:has(.home-stats){background:radial-gradient(120% 150% at 100% 0%,var(--sb1,#1fb5a8) 0%,var(--sb2,#0b4f55) 48%,var(--sb3,#04161a) 100%);border:0;box-shadow:0 10px 30px var(--sg,rgba(0,0,0,.2)),0 8px 22px rgba(0,0,0,.14)}
@@ -3074,6 +3097,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   </div>
 
   <div class="tk-opts">
+    <button type="button" class="uh-row wt-open" id="wtOpen"><span class="uh-ri" style="background:#0b1114;color:#5ff0c8"><svg viewBox="0 0 24 24"><rect x="6.500" y="6" width="11" height="12" rx="3.200"/><path d="M9 6l.700-3h4.600l.700 3M9 18l.700 3h4.600l.700-3M12 10v2.500l1.500 1"/></svg></span><span class="uh-rt"><b>Ma montre</b><small>Choisis les infos affichées, SOS toujours en premier</small></span><span class="uh-ch">›</span></button>
     <h2>Partage &amp; sécurité</h2>
     <div class="sec-card" id="secCard">
       <div class="sec-h"><span class="sec-ic">🛟</span><b>Sécurité</b><button type="button" class="sec-sos" id="secSosBtn">SOS</button></div>
@@ -11039,7 +11063,7 @@ body.lf-defi #defiTop{display:flex}
 #sosFab{display:none;position:fixed;right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:850;width:76px;height:42px;min-height:0;padding:0;border:2px solid #fff;border-radius:999px;background:#e8384f;color:#fff;font:inherit;font-weight:900;font-size:13.5px;letter-spacing:.06em;cursor:pointer;box-shadow:0 8px 20px rgba(232,56,79,.45)}
 body[data-tab="dash"] #sosFab,body:not([data-tab]) #sosFab{display:block}body.uni-efoil #sosFab{bottom:calc(18px + env(safe-area-inset-bottom,0px))}body.lf-defi #sosFab{display:none}
 #sosFab{display:block!important;z-index:13450}#abSos,.sos-in{display:none!important}
-body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body:has(#lfOnb:not([hidden])) #sosFab{display:none!important}
+body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body:has(#lfOnb:not([hidden])) #sosFab{display:none!important}
 #secSosBtn,.sec-fab{display:none!important}#sosFab{touch-action:none;-webkit-user-select:none;user-select:none}#sosFab.mv{transform:scale(1.12);box-shadow:0 14px 30px rgba(232,56,79,.55);cursor:grabbing}
 #sosFab.on,.sos-in.on{animation:sosP 1.1s infinite}@keyframes sosP{50%{box-shadow:0 0 0 9px rgba(232,56,79,.25)}}
 .sos-in{margin-left:auto;flex:none;min-height:0;height:32px!important;width:auto!important;padding:0 13px!important;border:0!important;border-radius:999px!important;background:#e8384f!important;color:#fff;font:inherit;font-weight:900;font-size:12.5px!important;letter-spacing:.08em;cursor:pointer}
@@ -11115,6 +11139,61 @@ body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:has(.uni-ov) #sosFab,body
     ov.addEventListener("input", function(e){ var x=e.target.dataset && e.target.dataset.x; if(!x || x==="close" || x==="save") return; var c=get(); c[x]=String(e.target.value||"").slice(0,40); save(c); var sb=ov.querySelector(".efc-sum b"), s=summary(); if(sb && s) sb.textContent=s; });
     paint(); document.body.appendChild(ov); }
   window.__efCfg={ open:open, get:get, summary:summary };
+  // Ma montre : écrans composés ici, envoyés à la montre ; pendant une sortie, les chiffres partent toutes les 2 secondes
+  (function(){ var M={ dur:["Durée","20:12",""], dist:["Distance","2,45","km"], spd:["Vitesse","36,7","km/h"], max:["Vitesse max","38,9","km/h"], avg:["Vitesse moy.","27,4","km/h"], clock:["Heure","10:09",""], steps:["Pas","1 240","pas"], bat:["Batterie eFoil","82","%"], pow:["Puissance","1,8","kW"], wind:["Vent","14","nds"], temp:["Température","18","°C"] };
+    var ORDER=["dur","dist","spd","max","avg","clock","wind","temp","bat","pow","steps"], DEF=[["dur","dist","spd","max"],["spd"]];
+    var esc=function(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]; }); };
+    var get=function(){ var c=null; try{ c=JSON.parse(localStorage.getItem("lf.watch.cfg")||"null"); }catch(e){} if(!Array.isArray(c) || !c.length) c=DEF;
+      c=c.filter(function(s){ return Array.isArray(s) && s.length; }).slice(0,5).map(function(s){ return s.slice(0,4).map(function(k){ return M[k] ? k : "dur"; }); }); return c.length ? c : DEF.map(function(s){ return s.slice(); }); };
+    var plug=function(){ try{ return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LfWatch; }catch(e){ return null; } };
+    var push=function(){ var W=plug(); if(!W || !W.setScreens) return; var lb={}; ORDER.forEach(function(k){ lb[k]=M[k][0]; }); try{ var p=W.setScreens({ scr:JSON.stringify(get()), lb:lb }); if(p && p.catch) p.catch(function(){}); }catch(e){} };
+    var save=function(c){ try{ localStorage.setItem("lf.watch.cfg", JSON.stringify(c)); }catch(e){} push(); };
+    // chiffres en direct, lus sur la page Tracking
+    var tx=function(id){ var e=document.getElementById(id); return e ? String(e.textContent||"").trim() : ""; };
+    var vu=function(s){ s=String(s||"").trim(); if(!s || s.charAt(0)==="—") return ""; var i=s.lastIndexOf(" "); return i>0 ? s.slice(0,i)+"|"+s.slice(i+1) : s; };
+    var wasRec=false;
+    var live=function(){ var W=plug(); if(!W || !W.live) return; var chip=document.getElementById("trkChip"), rec=!!(chip && chip.classList.contains("rec")), pz=!!(chip && chip.classList.contains("pause"));
+      if(!rec && !wasRec) return; wasRec=rec;
+      var lv={ dur:tx("phDur"), dist:vu(tx("phDist")), spd:vu(tx("phSpd")), max:vu(tx("phSpdMax")) };
+      var d=parseFloat(tx("phDist").replace(",", ".")), p=tx("phDur").split(":").map(Number), sec=p.length===3 ? p[0]*3600+p[1]*60+p[2] : (p[0]||0)*60+(p[1]||0);
+      if(isFinite(d) && sec>5) lv.avg=(d/(sec/3600)).toFixed(1).replace(".", ",")+"|km/h";
+      var st=tx("phSteps"); if(st && st!=="0" && st!=="—") lv.steps=st+"|pas";
+      var D=window.__lfDash||{}; if(D.soc!=null && isFinite(+D.soc)) lv.bat=Math.round(+D.soc)+"|%";
+      var pw=D.vescPow!=null ? +D.vescPow : (D.batPow!=null ? +D.batPow : NaN); if(isFinite(pw)) lv.pow=(Math.abs(pw)/1000).toFixed(1).replace(".", ",")+"|kW";
+      var w=tx("hcWind"); if(w && w!=="—") lv.wind=w+"|"+tx("hcUnit"); var t=tx("hcTemp"); if(t && t!=="—") lv.temp=t.replace(/\s*°C?$/, "")+"|°C";
+      Object.keys(lv).forEach(function(k){ if(!lv[k]) delete lv[k]; });
+      try{ var q=W.live({ lv:lv, st: rec ? (pz ? "pause" : "rec") : "idle", sp:tx("tkNow") }); if(q && q.catch) q.catch(function(){}); }catch(e){} };
+    setInterval(live, 2000); setTimeout(push, 7000);
+    // page de réglage
+    var cell=function(k, si, ci){ var m=M[k]; return '<button type="button" class="wt-c" data-s="'+si+'" data-c="'+ci+'"><small>'+esc(m[0])+'</small><b>'+esc(m[1])+'</b>'+(m[2] ? '<i>'+esc(m[2])+'</i>' : '')+'</button>'; };
+    var open=function(){ var ov=document.createElement("div"); ov.className="wt-ov"; ov.setAttribute("data-no-i18n","");
+      var plat=""; try{ plat=window.Capacitor && window.Capacitor.getPlatform ? window.Capacitor.getPlatform() : ""; }catch(e){}
+      var stat='<div class="wt-st" id="wtSt"><i></i><span>'+(plat==="ios" ? "Recherche de ton Apple Watch…" : plat==="android" ? "Montres Android (Wear OS) : l’appli montre n’est pas encore disponible. Tes écrans sont enregistrés et seront repris dès sa sortie." : "Ouvre Lite Foil sur ton iPhone pour envoyer ces écrans à ton Apple Watch.")+'</span></div>';
+      var paint=function(){ var c=get(), b=ov.querySelector(".wt-body"), sc=b ? b.scrollTop : 0;
+        ov.innerHTML='<div class="wt-top"><button type="button" data-x="close" aria-label="Retour">‹</button><b>Ma montre</b></div><div class="wt-body">'
+          +'<p class="wt-note">Compose les écrans de ta montre : touche une info sur la montre pour la changer. Sur la montre, tu passes d’un écran à l’autre en glissant.</p>'+stat
+          +'<div class="wt-card"><div class="wt-w"><div class="wt-hd"><span>Lite Foil</span><span>10:09</span></div><div class="wt-big"><u>SOS</u><span>Maintiens 2 secondes</span></div></div><div class="wt-r"><b>Écran SOS</b><small>Toujours le premier écran. Un gros bouton à maintenir 2 secondes : tes proches reçoivent l’alerte et ta position.</small></div></div>'
+          +c.map(function(s, si){ return '<div class="wt-card"><div class="wt-w"><div class="wt-hd"><b>● REC</b><span>10:09</span></div><div class="wt-g n'+s.length+'">'+s.map(function(k, ci){ return cell(k, si, ci); }).join("")+'</div><div class="wt-sosb">SOS</div></div>'
+              +'<div class="wt-r"><b>Écran '+(si+1)+'</b><small>Nombre d’infos sur cet écran</small><div class="wt-lay">'+[1,2,3,4].map(function(n){ return '<button type="button" data-lay="'+n+'" data-s="'+si+'"'+(s.length===n ? ' class="on"' : '')+'>'+n+'</button>'; }).join("")+'</div>'+(c.length>1 ? '<button type="button" class="wt-del" data-del="'+si+'">Supprimer cet écran</button>' : '')+'</div></div>'; }).join("")
+          +(c.length<5 ? '<button type="button" class="wt-add" data-x="add">+ Ajouter un écran</button>' : '')+'<button type="button" class="wt-reset" data-x="reset">Revenir aux écrans d’origine</button></div>';
+        var nb=ov.querySelector(".wt-body"); if(nb) nb.scrollTop=sc; status(); };
+      var status=function(){ var W=plug(), el=ov.querySelector("#wtSt"); if(!el || plat!=="ios") return; var sp=el.querySelector("span");
+        if(!W || !W.status){ sp.textContent="Apple Watch : mets l’appli Lite Foil à jour pour envoyer tes écrans."; return; }
+        try{ W.status().then(function(r){ var ok=!!(r && r.installed); el.classList.toggle("ok", ok); sp.textContent = ok ? (W.setScreens ? "Apple Watch connectée : tes écrans sont envoyés automatiquement." : "Apple Watch connectée. Les écrans personnalisés arrivent avec la prochaine mise à jour de l’appli.") : (r && r.paired ? "Apple Watch détectée : installe l’appli Lite Foil sur la montre (appli Watch de l’iPhone)." : "Aucune Apple Watch jumelée à cet iPhone."); }).catch(function(){}); }catch(e){} };
+      var pick=function(si, ci){ var c=get(), cur=c[si][ci], sh=document.createElement("div"); sh.className="wt-sh";
+        sh.innerHTML='<div class="wt-sh-c"><b>Quelle info ici ?</b>'+ORDER.map(function(k){ var m=M[k]; return '<button type="button" class="wt-m" data-k="'+k+'"><span>'+esc(m[0])+'</span><em>'+esc(m[1])+(m[2] ? ' <i>'+esc(m[2])+'</i>' : '')+'</em><u>'+(k===cur ? "✓" : "")+'</u></button>'; }).join("")+'</div>';
+        sh.addEventListener("click", function(e){ var b=e.target.closest("[data-k]"); if(b){ var c2=get(); c2[si][ci]=b.dataset.k; save(c2); paint(); } if(b || e.target===sh) sh.remove(); });
+        ov.appendChild(sh); };
+      ov.addEventListener("click", function(e){ var t=e.target.closest("[data-x],[data-lay],[data-del],.wt-c"); if(!t || t.closest(".wt-sh")) return; var c=get();
+        if(t.dataset.x==="close"){ ov.remove(); return; }
+        if(t.dataset.x==="add"){ c.push(["spd","dist"]); save(c); paint(); return; }
+        if(t.dataset.x==="reset"){ save(DEF.map(function(s){ return s.slice(); })); paint(); return; }
+        if(t.dataset.del!=null){ c.splice(+t.dataset.del, 1); save(c); paint(); return; }
+        if(t.dataset.lay){ var s=c[+t.dataset.s], n=+t.dataset.lay; while(s.length>n) s.pop(); for(var i=0; s.length<n && i<ORDER.length; i++){ if(s.indexOf(ORDER[i])<0) s.push(ORDER[i]); } save(c); paint(); return; }
+        if(t.classList.contains("wt-c")) pick(+t.dataset.s, +t.dataset.c); });
+      paint(); document.body.appendChild(ov); push(); };
+    var ob=document.getElementById("wtOpen"); if(ob) ob.addEventListener("click", open);
+    window.__lfWatch={ open:open, get:get }; })();
   // raccourcis de l'accueil : on les déplace, on en retire, on en ajoute ; l'ordre est gardé sur le téléphone
   (function(){ var box=document.querySelector("#tab-dash .quick"), head=document.querySelector("#tab-dash .qk-head"); if(!box || !head) return;
     [].forEach.call(box.children, function(el){ el.dataset.qid = el.dataset.qk || el.dataset.goto || "activites"; });

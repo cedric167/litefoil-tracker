@@ -3,7 +3,7 @@ import WatchKit
 import WatchConnectivity
 import CoreLocation
 
-/// Lite Foil sur Apple Watch : un bouton SOS.
+/// Lite Foil sur Apple Watch : un bouton SOS, puis les écrans d'infos de la sortie composés sur l'iPhone.
 /// L'iPhone prépare une « sortie SOS en attente » (identifiant + clé secrète + proches à prévenir) et la
 /// transmet à la montre. Un appui long sur SOS l'active sur le serveur Lite Foil : les proches reçoivent
 /// la notification SOS, puis la position de la montre est envoyée toutes les 10 secondes.
@@ -18,6 +18,16 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     @Published var contacts: Int = 0
     @Published var hasFix = false
     @Published var lastSent: Date?
+    // écrans d'infos : composés sur l'iPhone, chiffres envoyés par l'iPhone pendant la sortie
+    @Published var screens: [[String]] = [["dur", "dist", "spd", "max"], ["spd"]]
+    @Published var live: [String: String] = [:]
+    @Published var state: String = "idle"
+    @Published var sport: String = ""
+    @Published var now = Date()
+    private var labels: [String: String] = ["dur": "Durée", "dist": "Distance", "spd": "Vitesse", "max": "Vitesse max", "avg": "Vitesse moy.",
+                                            "clock": "Heure", "steps": "Pas", "bat": "Batterie", "pow": "Puissance", "wind": "Vent", "temp": "Température"]
+    private var liveAt = Date.distantPast
+    private var clock: Timer?
 
     private let store = UserDefaults.standard
     private let loc = CLLocationManager()
@@ -36,6 +46,48 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if WCSession.isSupported() { WCSession.default.delegate = self; WCSession.default.activate() }
         refresh()
         if store.bool(forKey: "sosOn") { phase = .active; startTracking() }
+        if let s = store.string(forKey: "scr"), let a = SosModel.parseScreens(s) { screens = a }
+        if let lb = store.dictionary(forKey: "lb") as? [String: String], !lb.isEmpty { labels = lb }
+        clock = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in self?.now = Date() }
+    }
+
+    // MARK: écrans d'infos
+    private static func parseScreens(_ s: String) -> [[String]]? {
+        guard let d = s.data(using: .utf8), let o = try? JSONSerialization.jsonObject(with: d), let a = o as? [[String]] else { return nil }
+        var ok: [[String]] = []
+        for scr in a where !scr.isEmpty && ok.count < 5 { ok.append(Array(scr.prefix(4))) }
+        return ok.isEmpty ? nil : ok
+    }
+    private func applyScreens(_ c: [String: Any]) {
+        let raw = c["scr"] as? String
+        var arr: [[String]]? = nil
+        if let r = raw { arr = SosModel.parseScreens(r) }
+        let lb = c["lb"] as? [String: String]
+        if arr == nil && lb == nil { return }
+        DispatchQueue.main.async {
+            if let a = arr { self.screens = a; self.store.set(raw ?? "", forKey: "scr") }
+            if let l = lb, !l.isEmpty { self.labels = l; self.store.set(l, forKey: "lb") }
+        }
+    }
+    private func applyLive(_ msg: [String: Any]) {
+        guard let lv = msg["lv"] as? [String: String] else { return }
+        let st = msg["st"] as? String ?? "idle"
+        let sp = msg["sp"] as? String ?? ""
+        DispatchQueue.main.async { self.live = lv; self.state = st; self.sport = sp; self.liveAt = Date(); self.now = Date() }
+    }
+    var fresh: Bool { now.timeIntervalSince(liveAt) < 20 }
+    func label(_ k: String) -> String { labels[k] ?? k }
+    /// valeur et unité d'une info ; un tiret quand l'iPhone n'envoie rien
+    func value(_ k: String) -> (String, String) {
+        if k == "clock" { let f = DateFormatter(); f.dateFormat = "HH:mm"; return (f.string(from: now), "") }
+        guard fresh, let raw = live[k], !raw.isEmpty else { return ("—", "") }
+        let p = raw.components(separatedBy: "|")
+        return (p[0], p.count > 1 ? p[1] : "")
+    }
+    var stateText: String {
+        if !fresh { return "En attente" }
+        if state == "pause" { return "Pause" }
+        return state == "rec" ? "● REC" : "Terminé"
     }
 
     private func refresh() {
@@ -46,7 +98,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
 
     // MARK: réglages reçus de l'iPhone
     private func apply(_ c: [String: Any]) {
-        guard let a = c["api"] as? String, let k = c["k"] as? String else { return }
+        applyScreens(c)
+        guard let a = c["api"] as? String, let k = c["k"] as? String, !a.isEmpty, !k.isEmpty else { return }
         DispatchQueue.main.async {
             // pendant un SOS en cours on garde la sortie déjà déclenchée
             if self.phase == .active || self.phase == .sending { return }
@@ -61,6 +114,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if !session.receivedApplicationContext.isEmpty { apply(session.receivedApplicationContext) }
     }
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) { apply(applicationContext) }
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) { applyLive(message) }
 
     // MARK: SOS
     func fire() {
@@ -131,11 +185,81 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
 }
 
+/// Une info : libellé, valeur, unité.
+struct MetricCell: View {
+    let label: String
+    let value: String
+    let unit: String
+    let size: CGFloat
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(label.uppercased()).font(.system(size: 9, weight: .semibold)).foregroundColor(.teal).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(.system(size: size, weight: .bold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.35)
+            if !unit.isEmpty { Text(unit).font(.system(size: 9)).foregroundColor(.secondary).lineLimit(1) }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+/// Un écran d'infos (1 à 4), avec en bas un bouton rouge qui ramène à l'écran SOS.
+struct MetricScreen: View {
+    @ObservedObject var m: SosModel
+    let keys: [String]
+    let goSos: () -> Void
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack {
+                Text(m.stateText).font(.system(size: 11, weight: .semibold)).foregroundColor(m.state == "rec" && m.fresh ? .red : .secondary)
+                Spacer()
+                Text(m.sport).font(.system(size: 11)).foregroundColor(.secondary).lineLimit(1)
+            }
+            if keys.count <= 1 {
+                cell(keys.first ?? "dur", 50)
+            } else if keys.count == 2 {
+                cell(keys[0], 34)
+                cell(keys[1], 34)
+            } else {
+                HStack(spacing: 2) { cell(keys[0], 26); cell(keys[1], 26) }
+                HStack(spacing: 2) {
+                    cell(keys[2], 26)
+                    if keys.count > 3 { cell(keys[3], 26) }
+                }
+            }
+            Button(action: goSos) {
+                Text("SOS").font(.system(size: 13, weight: .heavy)).foregroundColor(.white)
+                    .frame(maxWidth: .infinity).frame(height: 24).background(Capsule().fill(Color.red))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Aller à l'écran SOS")
+        }
+        .padding(.horizontal, 2)
+    }
+
+    private func cell(_ k: String, _ size: CGFloat) -> MetricCell {
+        let v = m.value(k)
+        return MetricCell(label: m.label(k), value: v.0, unit: v.1, size: size)
+    }
+}
+
 struct ContentView: View {
     @StateObject private var m = SosModel()
     @State private var pressing = false
+    @State private var page = 0
 
+    // Écran 0 : SOS (toujours le premier). Ensuite les écrans d'infos, en glissant.
     var body: some View {
+        TabView(selection: $page) {
+            sosPage.tag(0)
+            ForEach(0..<m.screens.count, id: \.self) { i in
+                MetricScreen(m: m, keys: m.screens[i], goSos: { page = 0 }).tag(i + 1)
+            }
+        }
+        .tabViewStyle(PageTabViewStyle())
+    }
+
+    private var sosPage: some View {
         ScrollView {
             VStack(spacing: 8) {
                 switch m.phase {
