@@ -5582,6 +5582,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // se déconnecter : ce téléphone ne reçoit plus les notifications du compte, puis fermeture de la session (le profil reste intact)
       signOutAccount(){ var ups=[]; try{ if(lfPushKey) ups.push(db.remove(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey)).catch(function(){})); ups.push(db.remove(db.ref(d,"presence/"+uid)).catch(function(){})); }catch(e){}
         return Promise.all(ups).then(function(){ return authMod.signOut(auth); }); },
+      pushNote(o){ if(!lfPushKey) return Promise.resolve(); return db.update(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey), o).catch(function(){}); },
       savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_"); lfPushKey=key;
         return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,ss:(plat==="android" && /LiteFoilSosScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
       // compteurs de non-lus tenus par le serveur (chiffre sur l'icône) : on remet à zéro en lisant
@@ -6387,11 +6388,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // l'écoute d'abord : sur iPhone le jeton arrive souvent après coup, quand Apple a répondu
       if(!nativePushListen){ nativePushListen=true;
         FM.addListener("tokenReceived", function(ev){ if(ev && ev.token && backend && backend.savePushToken){ nativePushReady=true; backend.savePushToken(ev.token, plat); } });
-        FM.addListener("notificationActionPerformed", function(ev){ openFromPush((ev && ev.notification && ev.notification.data) || {}); }); }
+        FM.addListener("notificationActionPerformed", function(ev){ openFromPush((ev && ev.notification && ev.notification.data) || {}); });
+        FM.addListener("notificationReceived", function(){ try{ if(backend && backend.pushNote) backend.pushNote({ rx:Date.now() }); }catch(e){} }); }
       // puis la demande, avec de nouveaux essais (2 s, 5 s, 12 s, 30 s) tant qu'Apple n'a pas donné son jeton à l'appli
       const waits=[0,2000,5000,12000,30000]; let got=false;
       const ask=async function(i){ if(got) return true;
-        try{ const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat); return true; } }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); }
+        try{ const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat);
+            try{ const pm=await FM.checkPermissions(); if(backend.pushNote) backend.pushNote({ pm:String(pm && pm.receive), v:402 }); }catch(e){} return true; } }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); }
         if(i+1<waits.length) setTimeout(function(){ ask(i+1); }, waits[i+1]); return false; };
       await ask(0); return true;
     }catch(e){ console.warn("Notifications natives indisponibles :", e); return false; }
