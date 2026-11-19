@@ -10,6 +10,10 @@ var box=null, A=null, map=null, lay=null, P=null, R=null, addOnMap=false, aero=f
 var NM=1852, FT=3.28084;
 
 var TR={
+ "Vol libre":["Free flight","Vuelo libre"],"Ouvrir la carte":["Open the map","Abrir el mapa"],"Sans plan de vol : la carte suit ta position, avec vitesse, altitude, zones et terrains proches.":["No flight plan: the map follows your position, with speed, altitude, airspace and nearby airfields.","Sin plan de vuelo: el mapa sigue tu posición, con velocidad, altitud, zonas y aeródromos cercanos."],
+ "Vitesse en km/h":["Speed in km/h","Velocidad en km/h"],"Vitesse en nœuds (kt)":["Speed in knots (kt)","Velocidad en nudos (kt)"],"Vitesse affichée en km/h":["Speed shown in km/h","Velocidad en km/h"],"Vitesse affichée en nœuds":["Speed shown in knots","Velocidad en nudos"],
+ "Parcouru":["Flown","Recorrido"],"Route suivie":["Track","Rumbo"],"Temps de vol":["Flight time","Tiempo de vuelo"],"Préparer une navigation":["Plan a route","Preparar una ruta"],
+ "Vol libre : la carte suit ta position. Garde toujours la carte officielle et le regard dehors.":["Free flight: the map follows your position. Always keep the official chart and your eyes outside.","Vuelo libre: el mapa sigue tu posición. Mantén siempre la carta oficial y la vista fuera."],
  "Espaces aériens sur la route":["Airspace along the route","Espacios aéreos en la ruta"],"Contrôle des espaces aériens…":["Checking airspace…","Comprobando espacios aéreos…"],
  "Ta route traverse une zone où tu n'as pas le droit de passer":["Your route crosses an area you may not enter","Tu ruta cruza una zona donde no puedes pasar"],"Clairance ou conditions nécessaires sur la route":["Clearance or conditions required along the route","Autorización o condiciones necesarias en la ruta"],
  "Aucun espace contrôlé ou réglementé à ton altitude":["No controlled or restricted airspace at your altitude","Ningún espacio controlado o restringido a tu altitud"],"Branche":["Leg","Tramo"],"activable par NOTAM":["activated by NOTAM","activable por NOTAM"],
@@ -69,6 +73,9 @@ function d3(d){ d=Math.round(d)%360; if(d<=0) d+=360; return (d<100?"0":"")+(d<1
 function p2(n){ return (n<10?"0":"")+n; } function hm(d){ return p2(d.getHours())+":"+p2(d.getMinutes()); }
 function fDur(min){ min=Math.max(0,Math.round(min)); var h=Math.floor(min/60), m=min%60; return h ? h+" h "+p2(m) : m+" min"; }
 function nf(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g," "); }
+function kmh(){ return lget("lf.ulm.kmh","0")==="1"; }
+function spdH(ms){ return kmh() ? Math.round(ms*3.6)+"<small>km/h</small>" : Math.round(ms*1.94384)+"<small>kt</small>"; }
+function flyLabels(F){ var L3=F.free ? [T("Parcouru"),T("Route suivie"),T("Temps de vol")] : [T("Distance"),T("Cap à suivre"),T("Temps")]; ["nvL1","nvL2","nvL3"].forEach(function(id,i){ var e=F.el.querySelector("#"+id); if(e) e.textContent=L3[i]; }); F.el.classList.toggle("free", !!F.free); }
 function toast(msg){ var t=document.createElement("div"); t.className="nv-toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2600); }
 
 // ---------- catalogue d'appareils (valeurs indicatives des constructeurs : croisière km/h, consommation L/h, réservoir L) ----------
@@ -243,8 +250,9 @@ function paint(){ if(!box) return; killMap(); var n=P.pts.length, sv=lget("lf.ul
   // 1) mon vol : départ, arrivée, étapes éventuelles
   var hero=(dep && arr && editPt!=="dep" && editPt!=="arr");
   var midH=(mid.length?'<details class="nv-mid"'+(SEC.mid?" open":"")+' data-sec="mid"><summary>'+(mans?ic("pin")+mans+" "+esc(T(mans>1?"étapes":"étape")):"")+(mans&&autos?" · ":"")+(autos?ic("shield")+autos+" "+esc(T(autos>1?"points de contournement automatiques":"point de contournement automatique")):"")+' <u>'+esc(T("voir"))+'</u></summary><div id="nvPts">'+P.pts.map(function(p,i){ return (i>0 && i<n-1) ? ptRow(p,i,n) : ""; }).join("")+'</div></details>':'');
-  var h = hero ? heroHtml(dep, arr, midH)+'<div class="nv-card nv-vol nv-vol2">'
-               : '<div class="nv-card nv-vol"><div class="nv-h">'+esc(T("Mon vol"))+'</div>'+endRow("dep",dep)+'<div class="nv-link"></div>'+(midH?midH+'<div class="nv-link"></div>':'')+endRow("arr",arr);
+  var freeH='<div class="nv-card" style="padding:14px"><button class="nv-go" data-act="free" style="margin-top:0;background:linear-gradient(135deg,#12408a,#2f8fe0);box-shadow:0 12px 24px rgba(47,111,224,.32) !important">'+ic("plane","pl")+esc(T("Vol libre"))+" · "+esc(T("Ouvrir la carte"))+'</button><div class="nv-note" style="margin:10px 2px 0;font-size:13px;text-align:center">'+esc(T("Sans plan de vol : la carte suit ta position, avec vitesse, altitude, zones et terrains proches."))+'</div><div class="nv-row" style="justify-content:center;margin-top:10px"><button class="nv-chip'+(kmh()?" on":"")+'" data-act="unit">'+esc(T(kmh()?"Vitesse en km/h":"Vitesse en nœuds (kt)"))+'</button></div></div>';
+  var h = freeH + (hero ? heroHtml(dep, arr, midH)+'<div class="nv-card nv-vol nv-vol2">'
+               : '<div class="nv-card nv-vol"><div class="nv-h">'+esc(T("Mon vol"))+'</div>'+endRow("dep",dep)+'<div class="nv-link"></div>'+(midH?midH+'<div class="nv-link"></div>':'')+endRow("arr",arr));
   h+=""
     +(editPt==="add"?'<div class="nv-edit"><input class="nv-in" id="nvQ" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="🔎 '+esc(T("Ajouter une étape (nom, ville ou code)"))+'"><div id="nvRes"></div></div>':'')
     +'<div class="nv-row nv-row2">'+(n>=2?'<button class="nv-chip" data-act="rev">'+ic("swap")+esc(T("Inverser"))+'</button><button class="nv-chip" data-act="rt">'+ic("back")+esc(T("Aller-retour"))+'</button><button class="nv-chip'+(editPt==="add"?" on":"")+'" data-edit="add">'+ic("plus")+esc(T("Étape"))+'</button>':"")+(n?'<button class="nv-chip" data-act="clr">'+ic("x")+esc(T("Effacer"))+'</button>':"")+'</div></div>';
@@ -426,6 +434,8 @@ function onClick(e){ var b=e.target.closest("button"); if(!b || !box.contains(b)
   if(d.load!=null){ var r=lget("lf.ulm.routes",[])[+d.load]; if(r){ P.pts=JSON.parse(JSON.stringify(r.pts)); if(r.alt) P.alt=r.alt; savePlan(); recalc(); try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(x2){} } return; }
   if(d.del!=null){ var l=lget("lf.ulm.routes",[]); l.splice(+d.del,1); lset("lf.ulm.routes",l); return paint(); }
   switch(d.act){
+    case "free": lset("lf.ulm.land","map"); return startFly(false, true);
+    case "unit": lset("lf.ulm.kmh", kmh()?"0":"1"); toast(T(kmh()?"Vitesse affichée en km/h":"Vitesse affichée en nœuds")); return paint();
     case "pick": addOnMap=!addOnMap; SEC.map=true; paint(); if(addOnMap){ var m=box.querySelector("#nvMap"); if(m) m.scrollIntoView({ block:"center", behavior:"smooth" }); } return;
     case "aero": aero=!aero; lset("lf.ulm.aero",aero); return paint();
     case "rt": P.pts.push(JSON.parse(JSON.stringify(P.pts[0]))); savePlan(); return recalc();
@@ -506,10 +516,12 @@ function rotLoad(cb){ if(rotSt===2 || rotSt===3) return cb(); var done=false, fi
 function vpLock(on){ try{ var m=document.querySelector('meta[name="viewport"]'); if(!m) return; if(on){ if(vpOld==null) vpOld=m.getAttribute("content"); m.setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"); } else if(vpOld!=null){ m.setAttribute("content", vpOld); vpOld=null; } }catch(e){} }
 function flyBack(){ if(!FLY) return; if(FLY.done || confirm(T("Quitter la navigation ?"))){ FLY.popped=true; stopFly(); } else { try{ history.pushState({ lfFly:1 },""); }catch(e){} } }
 function flyBearing(F, deg, anim){ if(!F.rot) return; F.brg=((deg%360)+360)%360; try{ F.map.setBearing(F.brg); }catch(e){} var nd=F.el.querySelector("#nvNd"); if(nd) nd.style.transform="rotate("+F.brg+"deg)"; var pl=F.el.querySelector("#nvPl"); if(pl && F.trk!=null) pl.style.transform="rotate("+(F.trk+F.brg)+"deg)"; }
-function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt===0){ rotSt=1; rotLoad(function(){ startFly(sim); }); } return; } killMap();
+function startFly(sim, free){ if((!free && P.pts.length<2) || FLY) return; if(rotSt<2){ if(rotSt===0){ rotSt=1; rotLoad(function(){ startFly(sim, free); }); } return; } killMap();
+  if(!document.getElementById("nvCss2")){ var st2=document.createElement("style"); st2.id="nvCss2"; st2.textContent='.nv-fly.free .nv-cdi,.nv-fly.free .nv-cdt,.nv-fly.free .nv-nx small,.nv-fly.free [data-f="next"]{display:none}.nv-fly:not(.free) [data-f="plan"]{display:none}.nv-fly.free .nv-st{grid-template-columns:1fr 1fr}.nv-fly.free .nv-st>div:nth-child(n+3){display:none}.nv-st [data-f="unit"]{cursor:pointer}'; document.head.appendChild(st2); }
+  var o0=(P.pts.length ? P.pts[0] : ((A && A.refPos) ? A.refPos() : { lat:46.6, lon:2.4 })), fpts=free ? [{ name:"", code:"", lat:o0.lat, lon:o0.lon },{ name:"", code:"", lat:o0.lat, lon:o0.lon }] : null;
   var el=document.createElement("div"); el.className="nv-fly"; el.setAttribute("data-no-i18n","");
   el.innerHTML='<div class="nv-fmap" id="nvFMap"><div class="nv-top"><div class="nv-nx"><div><small>'+esc(T("Prochain point"))+'</small><b id="nvNx">–</b></div><button class="nv-x" data-f="quit" aria-label="'+esc(T("Quitter"))+'">✕</button></div>'
-    +'<div class="nv-big"><div><b id="nvDs">–</b><span>'+esc(T("Distance"))+'</span></div><div class="mg"><b id="nvBg">–</b><span>'+esc(T("Cap à suivre"))+'</span></div><div><b id="nvEt">–</b><span>'+esc(T("Temps"))+'</span></div></div>'
+    +'<div class="nv-big"><div><b id="nvDs">–</b><span id="nvL1">'+esc(T("Distance"))+'</span></div><div class="mg"><b id="nvBg">–</b><span id="nvL2">'+esc(T("Cap à suivre"))+'</span></div><div><b id="nvEt">–</b><span id="nvL3">'+esc(T("Temps"))+'</span></div></div>'
     +'<div class="nv-cdi"><u style="left:10%"></u><u style="left:30%"></u><u style="left:70%"></u><u style="left:90%"></u><i id="nvCd" style="left:50%"></i></div><div class="nv-cdt" id="nvCt">'+esc(T("Recherche du signal GPS…"))+'</div><div class="nv-ban a" id="nvBanA" hidden></div><div class="nv-ban r" id="nvBanT" hidden></div><div class="nv-ban a" id="nvBanN" hidden></div><div class="nv-ban w" id="nvBanW" data-f="wxgo" hidden></div></div>'
     +'<div class="nv-ctl" id="nvCtl"><button data-f="lay" aria-label="'+esc(T("Calques de la carte"))+'"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>'
       +'<div class="nv-lay" id="nvLay" hidden><button data-f="laero"><span>'+esc(T("Carte aéronautique"))+'</span><i></i></button><button data-f="lsat"><span>'+esc(T("Vue satellite"))+'</span><i></i></button><button data-f="lasp"><span>'+esc(T("Zones sur ma route"))+'</span><i></i></button><button data-f="lrad"><span>'+esc(T("Radar de pluie"))+'</span><i></i></button><button data-f="ltraf"><span>'+esc(T("Trafic autour de moi"))+'</span><i></i></button></div>'
@@ -519,19 +531,20 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
       +'<button data-f="full" aria-label="'+esc(T("Toute la carte"))+'"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>'
       +'<button data-f="zin" aria-label="'+esc(T("Zoom avant"))+'">+</button><button data-f="zout" aria-label="'+esc(T("Zoom arrière"))+'">−</button></div>'
     +'<div class="nv-gli" id="nvLiveL" style="bottom:136px" hidden></div><div class="nv-gli" id="nvTrL" style="bottom:104px;color:#e9f2ff;border-color:rgba(233,242,255,.4)" hidden></div><div class="nv-gli" id="nvRadL" style="bottom:72px;color:#9fd0ff;border-color:rgba(120,180,255,.5)" hidden></div><div class="nv-acc" id="nvAcc" hidden></div><div class="nv-gli" id="nvGli" hidden></div><div class="nv-msg" id="nvMsg">'+esc(T("Recherche du signal GPS…"))+'</div></div>'
-    +'<div class="nv-bot"><div class="nv-st"><div><b id="nvGs">–</b><span>'+esc(T("Vitesse sol"))+'</span></div><div><b id="nvAl">–</b><span id="nvVz">'+esc(T("Altitude"))+'</span></div><div><b id="nvRm">–</b><span>'+esc(T("Reste"))+'</span></div><div><b id="nvEa">–</b><span>'+esc(T("Arrivée"))+'</span></div></div>'
-    +'<div class="nv-bts"><button data-f="center" class="on" style="flex:.6" aria-label="'+esc(T("Recentrer"))+'">◎</button><button data-f="voice" class="on" style="flex:.6" aria-label="'+esc(T("Voix"))+'">🔊</button><button data-f="next">⏭ '+esc(T("Suivant"))+'</button><button data-f="near" style="background:#b86a00">🛬 '+esc(T("Terrain"))+'</button><button data-f="sos" class="sos">🆘 SOS</button><button data-f="quit" style="flex:.6;background:#3a4252" aria-label="'+esc(T("Quitter"))+'">✕</button></div></div>';
+    +'<div class="nv-bot"><div class="nv-st"><div data-f="unit" role="button"><b id="nvGs">–</b><span>'+esc(T("Vitesse sol"))+' ⇄</span></div><div><b id="nvAl">–</b><span id="nvVz">'+esc(T("Altitude"))+'</span></div><div><b id="nvRm">–</b><span>'+esc(T("Reste"))+'</span></div><div><b id="nvEa">–</b><span>'+esc(T("Arrivée"))+'</span></div></div>'
+    +'<div class="nv-bts"><button data-f="center" class="on" style="flex:.6" aria-label="'+esc(T("Recentrer"))+'">◎</button><button data-f="voice" class="on" style="flex:.6" aria-label="'+esc(T("Voix"))+'">🔊</button><button data-f="next">⏭ '+esc(T("Suivant"))+'</button><button data-f="plan" aria-label="'+esc(T("Préparer une navigation"))+'">🧭 Nav</button><button data-f="near" style="background:#b86a00">🛬 '+esc(T("Terrain"))+'</button><button data-f="sos" class="sos">🆘 SOS</button><button data-f="quit" style="flex:.6;background:#3a4252" aria-label="'+esc(T("Quitter"))+'">✕</button></div></div>';
   document.body.appendChild(el);
   try{ var tp=el.querySelector(".nv-top"); if(localStorage.getItem("lf.ulm.topmin")==="1") tp.classList.add("min");
     tp.addEventListener("click", function(e){ if(e.target.closest("button, .nv-ban")) return; var m=tp.classList.toggle("min"); try{ localStorage.setItem("lf.ulm.topmin", m?"1":"0"); }catch(x){} }); }catch(e){}
   sndUnlock(); geoLoad(); vpLock(true); try{ history.pushState({ lfFly:1 },""); window.addEventListener("popstate", flyBack); }catch(e){}
-  FLY={ el:el, rot:rotSt===2, brg:0, hup:false, pts:JSON.parse(JSON.stringify(P.pts)), i:1, pos:null, trk:null, follow:true, voice:true, trail:[], last:null, done:false, sim:!!sim, said:{}, aspT:0, wxSug:null };
+  FLY={ el:el, rot:rotSt===2, brg:0, hup:false, pts:free ? fpts : JSON.parse(JSON.stringify(P.pts)), i:1, pos:null, trk:null, follow:true, voice:true, trail:[], last:null, done:!!free, free:!!free, t0:Date.now(), fd:0, sim:!!sim, said:{}, aspT:0, wxSug:null };
+  flyLabels(FLY);
   if(window.LFSafe) window.LFSafe.loadAsp(FLY.pts).catch(function(){});
   FLY.wxT=setInterval(flyWx, 600000); setTimeout(flyWx, sim?4000:25000);
   var m=L.map(el.querySelector("#nvFMap"), FLY.rot ? { zoomControl:false, attributionControl:true, rotate:true, bearing:0, touchRotate:true, rotateControl:false, shiftKeyRotate:false } : { zoomControl:false, attributionControl:true });
   if(FLY.rot){ m.on("rotate", function(){ if(!FLY) return; var b=0; try{ b=m.getBearing(); }catch(e){} FLY.brg=((b%360)+360)%360; var nd=el.querySelector("#nvNd"); if(nd) nd.style.transform="rotate("+FLY.brg+"deg)"; var pl=el.querySelector("#nvPl"); if(pl && FLY.trk!=null) pl.style.transform="rotate("+(FLY.trk+FLY.brg)+"deg)"; }); } else { var rb0=el.querySelector("#nvRot"); if(rb0) rb0.hidden=true; } FLY.map=m; flyAspDraw(FLY); flyLayers(FLY); try{ L.DomEvent.disableClickPropagation(el.querySelector("#nvCtl")); L.DomEvent.disableScrollPropagation(el.querySelector("#nvCtl")); }catch(e){} if(lget("lf.ulm.ffull","0")==="1"){ el.classList.add("full"); var fb0=el.querySelector('[data-f="full"]'); if(fb0) fb0.classList.add("on"); } m.setView([FLY.pts[0].lat,FLY.pts[0].lon],11);
-  FLY.line=L.polyline(FLY.pts.map(function(p){ return [p.lat,p.lon]; }),{ color:"#ff5ad2", weight:5, opacity:.95, interactive:false }).addTo(m); FLY.act=L.polyline([],{ color:"#fff", weight:2.5, dashArray:"6 7", interactive:false }).addTo(m); FLY.tr=L.polyline([],{ color:"#35d0ff", weight:3, opacity:.9, interactive:false }).addTo(m);
-  FLY.pts.forEach(function(p,i){ L.marker([p.lat,p.lon],{ icon:mkIcon(i,FLY.pts.length), interactive:false }).addTo(m); });
+  FLY.line=L.polyline(free ? [] : FLY.pts.map(function(p){ return [p.lat,p.lon]; }),{ color:"#ff5ad2", weight:5, opacity:.95, interactive:false }).addTo(m); FLY.act=L.polyline([],{ color:"#fff", weight:2.5, dashArray:"6 7", interactive:false }).addTo(m); FLY.tr=L.polyline([],{ color:"#35d0ff", weight:3, opacity:.9, interactive:false }).addTo(m);
+  if(!free) FLY.pts.forEach(function(p,i){ L.marker([p.lat,p.lon],{ icon:mkIcon(i,FLY.pts.length), interactive:false }).addTo(m); });
   FLY.me=L.marker([FLY.pts[0].lat,FLY.pts[0].lon],{ icon:L.divIcon({ className:"", html:'<div class="nv-plane" id="nvPl">'+PLANE+'</div>', iconSize:[44,44], iconAnchor:[22,22] }), interactive:false, zIndexOffset:900 }).addTo(m);
   m.on("dragstart", function(){ FLY.follow=false; el.querySelector('[data-f="center"]').classList.remove("on"); });
   el.addEventListener("click", flyClick);
@@ -541,6 +554,7 @@ function startFly(sim){ if(P.pts.length<2 || FLY) return; if(rotSt<2){ if(rotSt=
   setTimeout(function(){ if(FLY) flyTraffic(FLY); }, 2500);
   if(!sim && lget("lf.ulm.flive","0")==="1") setTimeout(function(){ if(FLY && !FLY.live) liveStart(FLY); }, 1500);
   if(lget("lf.ulm.f3d","0")==="1") setTimeout(function(){ if(FLY && !FLY.v3) fly3d(FLY, true); }, 600);
+  if(free){ toast(T("Vol libre : la carte suit ta position. Garde toujours la carte officielle et le regard dehors.")); return; }
   toast(T("L'écran reste allumé pendant la navigation. Garde toujours la carte officielle et le regard dehors."));
   setTimeout(function(){ if(FLY) say(T("Prochain point :")+" "+spk(FLY.pts[1])+", "+T("cap")+" "+Math.round(brg(FLY.pts[0],FLY.pts[1]))); }, 900); }
 function spk(p){ return p.name; }
@@ -735,19 +749,20 @@ function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon
   var nt=null; if(g.hdg!=null && isFinite(g.hdg) && g.hdg>=0 && gs>5) nt=g.hdg; else if(F.last && distM(F.last,p)>25) nt=brg(F.last,p);
   if(nt!=null) F.trk = F.trk==null ? nt : ((F.trk+((((nt-F.trk+540)%360)-180)*0.6))+360)%360;
   if(!F.last || distM(F.last,p)>25) F.last={ lat:p.lat, lon:p.lon, t:g.t };
-  if(!F.trP || distM(F.trP,p)>8){ F.trP=p; F.trail.push([p.lat,p.lon]); if(F.trail.length>1500) F.trail.splice(0,2); F.tr.setLatLngs(F.trail); }
+  if(!F.trP || distM(F.trP,p)>8){ if(F.trP && distM(F.trP,p)<3000) F.fd=(F.fd||0)+distM(F.trP,p); F.trP=p; F.trail.push([p.lat,p.lon]); if(F.trail.length>1500) F.trail.splice(0,2); F.tr.setLatLngs(F.trail); }
   F.pos=p; F.gs=gs; flyGlide(F, p, F.trk, F.sim ? 900 : dtFix); if(F.gl) fly3dData(F);
   // passage au point suivant
   while(!F.done){ var to=F.pts[F.i], fr=F.pts[F.i-1], dTo=distM(p,to), leg=distM(fr,to), passed=F.direct?false:(distM(fr,p)*Math.cos(rad(brg(fr,p)-brg(fr,to)))>=leg);
     if(dTo<(F.i===F.pts.length-1?600:1300) || (passed && dTo<6000)){ if(F.i>=F.pts.length-1){ F.done=true; say(T("Tu es arrivé")+" : "+spk(to), "arr"); break; } F.i++; F.direct=false; var nx=F.pts[F.i]; say(spk(to)+" "+T("atteint")+". "+T("Prochain point :")+" "+spk(nx)+", "+T("cap")+" "+Math.round(brg(p,nx))+", "+Math.round(distM(p,nx)/NM)+" "+T("nautiques"), "next"); } else break; }
   var to2=F.pts[F.i], fr2=F.direct?F.direct:F.pts[F.i-1], d2=distM(p,to2), b2=brg(p,to2), kt=gs*1.94384, set=function(id,v){ var e=el.querySelector("#"+id); if(e && e.dataset.v!==v){ e.dataset.v=v; e.innerHTML=v; } };
-  F.act.setLatLngs([[p.lat,p.lon],[to2.lat,to2.lon]]);
-  set("nvNx", F.done ? "✓ "+esc(T("Tu es arrivé")) : esc((to2.code?to2.code+" · ":"")+to2.name)); set("nvDs", (d2/NM).toFixed(d2<18520?1:0)+"<small>NM</small>"); set("nvBg", d3(b2)); set("nvEt", kt>15 ? fDur(d2/NM/kt*60) : "–");
+  F.act.setLatLngs(F.free ? [] : [[p.lat,p.lon],[to2.lat,to2.lon]]);
+  if(F.free){ set("nvNx", esc(T("Vol libre"))); set("nvDs", kmh() ? ((F.fd||0)/1000).toFixed(1)+"<small>km</small>" : ((F.fd||0)/NM).toFixed(1)+"<small>NM</small>"); set("nvBg", F.trk!=null ? d3(F.trk) : "–"); set("nvEt", fDur(Math.max(0,(Date.now()-F.t0)/60000))); }
+  else { set("nvNx", F.done ? "✓ "+esc(T("Tu es arrivé")) : esc((to2.code?to2.code+" · ":"")+to2.name)); set("nvDs", (d2/NM).toFixed(d2<18520?1:0)+"<small>NM</small>"); set("nvBg", d3(b2)); set("nvEt", kt>15 ? fDur(d2/NM/kt*60) : "–"); }
   // écart de route (positif = à droite de la route)
   var xt=Math.asin(Math.sin(distM(fr2,p)/6371000)*Math.sin(rad(brg(fr2,p)-brg(fr2,to2))))*6371000, xn=xt/NM, cd=el.querySelector("#nvCd"); if(cd) cd.style.left=Math.max(4,Math.min(96,50-xn/2*40))+"%";
   set("nvCt", Math.abs(xn)<0.15 ? "✓ "+esc(T("Sur la route")) : esc(T("Écart de route"))+" : "+Math.abs(xn).toFixed(1)+" NM "+esc(T(xn>0?"à droite":"à gauche")));
   var rem=d2; for(var j=F.i;j<F.pts.length-1;j++) rem+=distM(F.pts[j],F.pts[j+1]);
-  set("nvGs", Math.round(kt)+"<small>kt</small>"); set("nvAl", (g.alt!=null && isFinite(g.alt)) ? nf(g.alt*FT)+"<small>ft</small>" : "–");
+  set("nvGs", spdH(gs)); set("nvAl", (g.alt!=null && isFinite(g.alt)) ? nf(g.alt*FT)+"<small>ft</small>" : "–");
   // vitesse verticale : pente de l'altitude sur les 4 à 8 dernières secondes, affichée à partir de 100 ft/min
   if(g.alt!=null && isFinite(g.alt)){ F.alts=F.alts||[]; F.alts.push([g.t, g.alt]); while(F.alts.length>2 && g.t-F.alts[0][0]>8000) F.alts.shift(); var a0=F.alts[0], vz=(g.t-a0[0]>=4000) ? (g.alt-a0[1])*FT/((g.t-a0[0])/60000) : 0, vr=Math.round(vz/50)*50, vzE=el.querySelector("#nvVz");
     if(vzE){ var tx=Math.abs(vr)>=100 ? (vr>0?"↑ ":"↓ ")+nf(Math.abs(vr))+" ft/min" : T("Altitude"); if(vzE.textContent!==tx){ vzE.textContent=tx; vzE.style.color=Math.abs(vr)>=100 ? (vr>0?"#35d07f":"#ffb020") : ""; vzE.style.opacity=Math.abs(vr)>=100?"1":""; } } } set("nvRm", (rem/NM).toFixed(0)+"<small>NM</small>"); set("nvEa", kt>15 ? hm(new Date(Date.now()+rem/NM/kt*3600000)) : "–");
@@ -755,7 +770,9 @@ function onPos(g){ if(!FLY) return; var F=FLY, el=F.el, p={ lat:g.lat, lon:g.lon
   F.altM=(g.alt!=null && isFinite(g.alt)) ? g.alt : null; if(F.alts && F.alts.length>1){ var q0=F.alts[0]; F.vzM=(g.t-q0[0]>=4000) ? (g.alt-q0[1])/((g.t-q0[0])/1000) : 0; }
   try{ flyGlideRing(F); flyTerr(g); flyNight(F, rem, kt); }catch(e){}
   try{ flyLog(F, p, g, gs); if(F.live && !F.sim){ var lp={ lat:p.lat, lng:p.lon, t:g.t||Date.now(), spd:Math.round(gs*36)/10 }; if(F.altM!=null) lp.alt=Math.round(F.altM); if(F.trk!=null) lp.hdg=Math.round(F.trk); if(F.vzM!=null && isFinite(F.vzM)) lp.vz=Math.round(F.vzM*10)/10; F.live.buf.push(lp); F.live.rem=Math.round(rem); if(F.live.buf.length>120) F.live.buf.splice(0,60); } }catch(e){} }
-function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY) return; var F=FLY, d=b.dataset;
+function flyClick(e){ var b=e.target.closest("button, .nv-ban.w, [data-f='unit']"); if(!b || !FLY) return; var F=FLY, d=b.dataset;
+  if(d.f==="unit"){ lset("lf.ulm.kmh", kmh()?"0":"1"); toast(T(kmh()?"Vitesse affichée en km/h":"Vitesse affichée en nœuds")); if(F.pos) onPos({ lat:F.pos.lat, lon:F.pos.lon, spd:F.gs, alt:F.altM, t:Date.now() }); return; }
+  if(d.f==="plan"){ lset("lf.ulm.land","plan"); return stopFly(); }
   if(d.f==="lay"){ var ly=F.el.querySelector("#nvLay"); ly.hidden=!ly.hidden; b.classList.toggle("on", !ly.hidden); return; }
   if(d.f==="ltraf"){ lset("lf.ulm.ftraf", lget("lf.ulm.ftraf","1")==="1"?"0":"1"); flyLayers(F); return flyTraffic(F); }
   if(d.f==="lrad"){ lset("lf.ulm.frad", lget("lf.ulm.frad","0")==="1"?"0":"1"); flyLayers(F); return flyRadar(F); }
@@ -778,7 +795,7 @@ function flyClick(e){ var b=e.target.closest("button, .nv-ban.w"); if(!b || !FLY
       +l.map(function(x){ var a=x[1], rw=(a.rw||[]).slice().sort(function(u,v){ return (v[2]||0)-(u[2]||0); })[0]; return '<button class="f" data-direct="'+esc(a.code)+'"><div><b>'+esc(a.name)+'</b><small>'+esc(a.code)+(rw?" · "+esc(T("piste"))+" "+esc(rw[0]+"/"+rw[1])+" · "+(rw[2]||"?")+" m":"")+(a.fq&&a.fq[0]?" · "+a.fq[0][1].toFixed(3):"")+'</small>'+((F.glR>300 && x[0]*1000<=F.glR)?'<small style="color:#1f9d57;font-weight:800">🪂 '+esc(T("Atteignable en plané"))+'</small>':'')+'</div><em>'+d3(brg(ref,a))+" · "+(x[0]/1.852).toFixed(1)+' NM</em></button>'; }).join("")+'</div>';
       var o=F.el.querySelector("#nvNear"); if(o) o.remove(); F.el.querySelector("#nvFMap").insertAdjacentHTML("beforeend", h); }); return; }
   if(d.f==="nclose"){ var o2=F.el.querySelector("#nvNear"); if(o2) o2.remove(); return; }
-  if(d.direct){ var f=A.byCode(d.direct), o3=F.el.querySelector("#nvNear"); if(o3) o3.remove(); if(!f) return; var here=F.pos||F.pts[0]; F.pts=[{ name:"", lat:here.lat, lon:here.lon }, ptOf(f)]; F.i=1; F.done=false; F.direct={ lat:here.lat, lon:here.lon };
+  if(d.direct){ var f=A.byCode(d.direct), o3=F.el.querySelector("#nvNear"); if(o3) o3.remove(); if(!f) return; var here=F.pos||F.pts[0]; F.pts=[{ name:"", lat:here.lat, lon:here.lon }, ptOf(f)]; F.i=1; F.done=false; if(F.free){ F.free=false; flyLabels(F); } F.direct={ lat:here.lat, lon:here.lon };
     F.line.setLatLngs([[here.lat,here.lon],[f.lat,f.lon]]); L.marker([f.lat,f.lon],{ icon:mkIcon(1,2), interactive:false }).addTo(F.map); say(T("Direct vers")+" "+f.name+", "+T("cap")+" "+Math.round(brg(here,f))+", "+Math.round(distM(here,f)/NM)+" "+T("nautiques")); if(F.pos) onPos({ lat:F.pos.lat, lon:F.pos.lon, spd:F.gs, t:Date.now() }); return; } }
 function stopFly(){ if(!FLY) return; var F=FLY; if(F.radT) clearInterval(F.radT); if(F.trT) clearInterval(F.trT); try{ flyLogClose(F, Date.now()); liveStop(F, true); }catch(e){} FLY=null; if(F.gl){ try{ F.gl.remove(); }catch(e){} F.gl=null; } if(F.raf){ try{ cancelAnimationFrame(F.raf); }catch(e){} } vpLock(false); try{ window.removeEventListener("popstate", flyBack); if(!F.popped && history.state && history.state.lfFly) history.back(); }catch(e){} try{ if(F.watch!=null) navigator.geolocation.clearWatch(F.watch); }catch(e){} if(F.simT) clearInterval(F.simT); if(F.wxT) clearInterval(F.wxT); try{ if(F.wl) F.wl.release(); }catch(e){} try{ speechSynthesis.cancel(); }catch(e){} try{ F.map.remove(); }catch(e){} F.el.remove(); paint(); if(F.lastFlight){ try{ flyDone(F.lastFlight); }catch(e){} } }
 
@@ -786,5 +803,5 @@ window.__lfFlyTest={ done:flyDone, replay:flyReplay, book:bookOpen, save:flySave
 window.LFNav={ show:function(el, api){ A=api; if(window.LFSafe) window.LFSafe.init(api); if(box!==el){ box=el; box.addEventListener("click", onClick); if(!document.getElementById("nvCss")){ var st=document.createElement("style"); st.id="nvCss"; st.textContent=CSS; document.head.appendChild(st); } }
     if(!P){ loadPlan(); aero=!!lget("lf.ulm.aero",false); if(!P.pts.length && api.field) P.pts.push(ptOf(api.field)); }
     if(P.pts.length>=2 && !R) recalc(); else paint(); },
-  _sim:function(){ startFly(true); }, _state:function(){ return { P:P, R:R, FLY:FLY }; } };
+  _sim:function(){ startFly(true); }, free:function(){ if(box && P && !FLY) startFly(false, true); }, ready:function(){ return !!(box && P); }, _state:function(){ return { P:P, R:R, FLY:FLY }; } };
 })();
