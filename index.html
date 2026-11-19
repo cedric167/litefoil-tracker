@@ -6370,7 +6370,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // Appli iPhone/Android : notifications du téléphone via le module Firebase Messaging (jeton FCM natif).
   // Le serveur n'envoie que les messages privés, les groupes où je suis et les discussions de mes événements,
   // avec le nombre de non-lus pour l'icône. Sans le module (ancienne version de l'appli), on gère juste l'icône.
-  let nativePushReady=false, nativePushListen=false;
+  let nativePushReady=false, nativePushListen=false, nativePushFull=false;
   async function registerNativePush(prompt){
     const FM=nativePlug("FirebaseMessaging");
     if(!FM){ const B=nativePlug("Badge"); if(!B) return false; try{ let p=await B.checkPermissions(); if(p.display!=="granted" && prompt) p=await B.requestPermissions(); return p.display==="granted"; }catch(e){ return false; } }
@@ -6378,6 +6378,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       let st=await FM.checkPermissions(); if(st.receive!=="granted" && prompt) st=await FM.requestPermissions();
       if(st.receive!=="granted") return false;
       if(nativePushReady) return true;
+      try{ if(!nativePushFull && window.Capacitor.getPlatform && window.Capacitor.getPlatform()==="ios"){ nativePushFull=true; await FM.requestPermissions(); } }catch(e){}
       const plat=(window.Capacitor.getPlatform&&window.Capacitor.getPlatform())||"native";
       // 14/11 : canaux Android avec leur propre sonnerie (le son est dans l'appli à partir de la version marquée LiteFoilRing)
       if(plat==="android" && /LiteFoilRing\//.test(navigator.userAgent) && FM.createChannel){
