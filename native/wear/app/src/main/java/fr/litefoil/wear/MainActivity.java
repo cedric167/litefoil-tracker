@@ -69,6 +69,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     static final String BASE = "https://litefoil-communaute-222fd.web.app";
     static final int MATCH = ViewGroup.LayoutParams.MATCH_PARENT, WRAP = ViewGroup.LayoutParams.WRAP_CONTENT;
     static final String[] SPORTS = { "eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski" };
+    static final long AUTO_LOCK_MS = 8000;   // sans toucher l'écran pendant la sortie : verrouillage automatique
     static final double FOIL_ON = 12.0, FOIL_OFF = 9.0;   // km/h : un « run » commence au-dessus de 12, finit sous 9
     static final int C_BG1 = 0xFF0F3A5C, C_BG2 = 0xFF04141D, C_ACC = 0xFF5FD0E6, C_MUTE = 0xFF8FB4C6, C_RED = 0xFFE8384F, C_GO = 0xFF2FD3C3;
 
@@ -92,7 +93,8 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     // sortie mesurée par la montre
     private boolean running = false, paused = false, locked = false;
-    private long runMs = 0, moveMs = 0, lastTick = 0, startWall = 0;
+    private long runMs = 0, moveMs = 0, lastTick = 0, startWall = 0, lastTouch = 0;
+    private float rotary = 0f;
     private double distM = 0, maxKmh = 0, curKmh = 0;
     private Location anchor = null, fix = null, prevFix = null;
     private boolean gpsOn = false;
@@ -140,8 +142,24 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
+        if (!locked) lastTouch = SystemClock.elapsedRealtime();
         try { gesture.onTouchEvent(e); } catch (Exception x) { /* geste ignoré */ }
         return super.dispatchTouchEvent(e);
+    }
+
+    /** Couronne ou lunette tournante : écran suivant / précédent, même écran verrouillé (doigts mouillés, gants). */
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent e) {
+        if (e.getAction() == MotionEvent.ACTION_SCROLL && e.isFromSource(android.view.InputDevice.SOURCE_ROTARY_ENCODER) && view == V_RUN) {
+            rotary -= e.getAxisValue(MotionEvent.AXIS_SCROLL);
+            if (Math.abs(rotary) >= 1.2f) {
+                int np = page + (rotary > 0 ? 1 : -1);
+                rotary = 0f;
+                if (np >= 0 && np <= screens.length && !(locked && np == screens.length)) { page = np; buzz(20); if (!locked) lastTouch = SystemClock.elapsedRealtime(); render(); }
+            }
+            return true;
+        }
+        return super.onGenericMotionEvent(e);
     }
 
     @Override
@@ -425,6 +443,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
             if (running) {
                 if (!paused) { long d = now - lastTick; runMs += d; if (curKmh >= 3) moveMs += d; if (onFoil) foilMs += d; }
                 lastTick = now;
+                if (!paused && !locked && view == V_RUN && page < screens.length && now - lastTouch >= AUTO_LOCK_MS) { locked = true; buzz(40); render(); }
             }
             if (resumed) updateValues();
             if (resumed || running) h.postDelayed(this, 1000);
@@ -442,7 +461,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         runMs = 0; moveMs = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = null; prevFix = null;
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilMs = 0; foilDistM = 0; longRunMs = 0; longRunDistM = 0; runMaxKmh = 0;
         hrSum = 0; hrN = 0; hrMax = 0;
-        lastTick = SystemClock.elapsedRealtime(); startWall = System.currentTimeMillis();
+        lastTick = SystemClock.elapsedRealtime(); lastTouch = lastTick; startWall = System.currentTimeMillis();
         startGps(); startHr();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         buzz(120);
@@ -454,7 +473,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     private void pauseRun(boolean on) {
         if (on) endFoilRun();
         paused = on; anchor = null; prevFix = null; curKmh = 0;
-        lastTick = SystemClock.elapsedRealtime();
+        lastTick = SystemClock.elapsedRealtime(); lastTouch = lastTick;
         buzz(80);
         render();
     }
@@ -940,7 +959,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         private final RectF box = new RectF();
         private float prog = 0f;
         private ValueAnimator anim;
-        private final Runnable open = new Runnable() { @Override public void run() { locked = false; buzz(120); render(); } };
+        private final Runnable open = new Runnable() { @Override public void run() { locked = false; lastTouch = SystemClock.elapsedRealtime(); buzz(120); render(); } };
 
         LockView(Context c) {
             super(c);

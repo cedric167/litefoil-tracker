@@ -54,6 +54,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     private var anchor: CLLocation?
     private var prevFix: CLLocation?
     private var lastTick = Date()
+    private var lastTouch = Date()
+    static let autoLockS = 8.0   // secondes sans toucher l'écran avant le verrouillage automatique pendant la sortie
     // runs sur le foil
     private(set) var onFoil = false
     private var foilUp = 0, foilDown = 0
@@ -149,13 +151,17 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) { applyLive(message) }
 
     // MARK: sortie
+    /// l'utilisateur vient de toucher l'écran ou de changer de page : on repousse le verrouillage automatique
+    func touched() { lastTouch = Date() }
+    func unlock() { locked = false; lastTouch = Date(); WKInterfaceDevice.current().play(.success) }
+
     func chooseSport(_ s: String) { sport = s; store.set(s, forKey: "sport"); screen = .home }
 
     func startRide() {
         if loc.authorizationStatus == .notDetermined { loc.requestWhenInUseAuthorization() }
         runS = 0; moveS = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = nil; prevFix = nil
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilS = 0; foilDistM = 0; longRunS = 0; longRunDistM = 0; runMaxKmh = 0
-        startDate = Date(); lastTick = Date()
+        startDate = Date(); lastTick = Date(); lastTouch = Date()
         running = true; paused = false; locked = false
         page = 0; screen = .run
         startLocation()
@@ -163,7 +169,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     func pauseRide(_ on: Bool) {
         if on { endFoilRun() }
-        paused = on; anchor = nil; prevFix = nil; curKmh = 0; lastTick = Date()
+        paused = on; anchor = nil; prevFix = nil; curKmh = 0; lastTick = Date(); lastTouch = Date()
         WKInterfaceDevice.current().play(.click)
     }
     func stopRide(keep: Bool) {
@@ -183,6 +189,11 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
                 if onFoil { foilS += d }
             }
             lastTick = t
+            // verrouillage automatique : sortie en cours, écran d'infos affiché, personne n'a touché l'écran depuis 8 secondes
+            if !paused && !locked && screen == .run && page < screens.count && t.timeIntervalSince(lastTouch) >= SosModel.autoLockS {
+                locked = true
+                WKInterfaceDevice.current().play(.click)
+            }
         }
         now = t
     }
@@ -561,17 +572,18 @@ struct LockOverlay: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             Color.black.opacity(0.02)
-            Text(pressing ? "Maintiens…" : "Verrouillé · maintiens 2 s").font(.system(size: 10, weight: .bold)).foregroundColor(.white)
+            Text(pressing ? "Maintiens…" : "Verrouillé · maintiens 2 s · couronne = écran suivant").font(.system(size: 10, weight: .bold)).foregroundColor(.white)
                 .padding(.horizontal, 10).padding(.vertical, 4).background(Capsule().fill(Color.black.opacity(0.6))).padding(.bottom, 2)
         }
         .contentShape(Rectangle())
-        .onLongPressGesture(minimumDuration: 2, maximumDistance: 80, perform: { pressing = false; m.locked = false; WKInterfaceDevice.current().play(.success) },
+        .onLongPressGesture(minimumDuration: 2, maximumDistance: 80, perform: { pressing = false; m.unlock() },
                             onPressingChanged: { p in pressing = p })
     }
 }
 
 struct RunView: View {
     @ObservedObject var m: SosModel
+    @State private var crown = 0.0
 
     var body: some View {
         ZStack {
@@ -584,6 +596,19 @@ struct RunView: View {
             .tabViewStyle(PageTabViewStyle())
             if m.locked { LockOverlay(m: m) }
         }
+        // la couronne fait défiler les écrans, même écran verrouillé (doigts mouillés, gants)
+        .focusable(true)
+        .digitalCrownRotation($crown, from: 0, through: Double(m.screens.count), by: 1, sensitivity: .low, isContinuous: false, isHapticFeedbackEnabled: true)
+        .onChange(of: crown) { v in
+            let p = Int(v.rounded())
+            if p != m.page && p >= 0 && p <= m.screens.count { m.page = p }
+        }
+        .onChange(of: m.page) { p in
+            m.touched()
+            if Int(crown.rounded()) != p { crown = Double(p) }
+        }
+        .simultaneousGesture(TapGesture().onEnded { m.touched() })
+        .onAppear { crown = Double(m.page) }
     }
 }
 
