@@ -14,7 +14,8 @@ public class LfTrackPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "status", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "getPoints", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "clear", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "openSettings", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "openSettings", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "apns", returnType: CAPPluginReturnPromise)
     ]
 
     private var pendingStart: CAPPluginCall?
@@ -104,6 +105,20 @@ public class LfTrackPlugin: CAPPlugin, CAPBridgedPlugin {
                 UIApplication.shared.open(url)
             }
             call.resolve()
+        }
+    }
+
+    // 19/11 : état de l'inscription aux notifications Apple (noté par AppDelegate), avec nouvelle demande si retry = true
+    @objc func apns(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            if call.getBool("retry") == true { UIApplication.shared.registerForRemoteNotifications() }
+            let d = UserDefaults.standard
+            call.resolve([
+                "state": d.string(forKey: "lf.apns") ?? "aucune reponse",
+                "at": d.double(forKey: "lf.apns.t"),
+                "reg": UIApplication.shared.isRegisteredForRemoteNotifications,
+                "build": (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?"
+            ])
         }
     }
 }

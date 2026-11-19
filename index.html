@@ -6396,6 +6396,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       const dg=function(o){ try{ if(plat==="ios" && backend && backend.pushDiag){ o.t=Date.now(); backend.pushDiag(o); } }catch(e){} };
       try{ if(plat==="ios" && backend && backend.pushDiag){ let bn="?"; try{ const AP=nativePlug("App"); if(AP && AP.getInfo){ const inf=await AP.getInfo(); bn=String(inf.version)+" ("+String(inf.build)+")"; } }catch(e){} await backend.pushDiag({ perm:String(st && st.receive), start:Date.now(), t:Date.now(), v:406, app:bn, ua:String(navigator.userAgent).slice(-70) }, true); } }catch(e){}
       FM.addListener("tokenReceived", function(ev){ dg({ ev:Date.now(), evTok:String((ev && ev.token)||"").slice(0,8) }); });
+      const apnsDg=async function(tag){ try{ const LT=nativePlug("LfTrack"); if(plat==="ios" && LT && LT.apns){ const r=await LT.apns({ retry: tag!=="a0" }); const o={}; o[tag]=String(r.state)+" | reg "+r.reg+" | build "+r.build; dg(o); } }catch(e){ const o={}; o[tag]="LfTrack.apns absent"; dg(o); } };
+      apnsDg("a0"); setTimeout(function(){ apnsDg("a1"); }, 6000); setTimeout(function(){ apnsDg("a2"); }, 20000);
       const ask=async function(i){ if(got) return true;
         try{ const r=await Promise.race([FM.getToken(), new Promise(function(_,no){ setTimeout(function(){ no(new Error("sans réponse après 8 s")); }, 8000); })]);
           if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat);

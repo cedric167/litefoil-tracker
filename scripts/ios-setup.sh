@@ -201,6 +201,7 @@ PLIST
           // LITEFOIL_PUSH : jeton Apple transmis a Firebase et au module @capacitor-firebase/messaging
           func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
               Messaging.messaging().apnsToken = deviceToken
+              UserDefaults.standard.set("ok, jeton de \\(deviceToken.count) octets", forKey: "lf.apns"); UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lf.apns.t")
               // 19/11 : le module @capacitor-firebase/messaging attend le jeton Apple brut (Data) et le donne lui-meme a Firebase.
               // Avant, on lui envoyait le jeton Firebase (texte) : il l ignorait, et son Firebase n avait jamais le jeton Apple,
               // donc aucune notification n arrivait appli fermee sur iPhone.
@@ -208,6 +209,7 @@ PLIST
           }
 
           func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+              UserDefaults.standard.set("erreur : \\(error.localizedDescription)", forKey: "lf.apns"); UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lf.apns.t")
               NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
           }
 
