@@ -504,10 +504,10 @@ struct MetricCell: View {
     let size: CGFloat
 
     var body: some View {
-        VStack(spacing: -2) {
-            Text(label).font(.system(size: 11, weight: .medium)).foregroundColor(.lfMute).lineLimit(1).minimumScaleFactor(0.6)
-            Text(value).font(.system(size: size, weight: .semibold, design: .rounded)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.35)
-            Text(unit.isEmpty ? " " : unit).font(.system(size: 11)).foregroundColor(.lfAccent).lineLimit(1)
+        VStack(spacing: -4) {
+            Text(label).font(.system(size: 13, weight: .medium)).foregroundColor(.lfMute).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(.system(size: size, weight: .bold, design: .rounded)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.3)
+            Text(unit.isEmpty ? " " : unit).font(.system(size: 13, weight: .medium)).foregroundColor(.lfAccent).lineLimit(1)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -565,26 +565,26 @@ struct MetricScreen: View {
             }
             if !(scr.top[0].isEmpty && scr.top[1].isEmpty) {
                 HStack {
-                    Text(m.topText(scr.top[0])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
+                    Text(m.topText(scr.top[0])).font(.system(size: 16, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
                     Spacer()
-                    Text(m.topText(scr.top[1])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
+                    Text(m.topText(scr.top[1])).font(.system(size: 16, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
                 }
             }
             if scr.m.count <= 1 {
-                cell(scr.m.first ?? "dur", 84)
+                cell(scr.m.first ?? "dur", 118)
             } else if scr.m.count == 2 {
-                cell(scr.m[0], 50)
-                cell(scr.m[1], 50)
+                cell(scr.m[0], 64)
+                cell(scr.m[1], 64)
             } else if scr.m.count == 3 {
-                cell(scr.m[0], 48)
-                HStack(spacing: 2) { cell(scr.m[1], 34); cell(scr.m[2], 34) }
+                cell(scr.m[0], 60)
+                HStack(spacing: 2) { cell(scr.m[1], 42); cell(scr.m[2], 42) }
             } else {
-                HStack(spacing: 2) { cell(scr.m[0], 36); cell(scr.m[1], 36) }
-                HStack(spacing: 2) { cell(scr.m[2], 36); cell(scr.m[3], 36) }
+                HStack(spacing: 2) { cell(scr.m[0], 44); cell(scr.m[1], 44) }
+                HStack(spacing: 2) { cell(scr.m[2], 44); cell(scr.m[3], 44) }
             }
             if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 1)
     }
 
     private func cell(_ k: String, _ size: CGFloat) -> MetricCell {
