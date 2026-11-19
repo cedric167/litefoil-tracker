@@ -538,8 +538,8 @@ struct MetricCell: View {
     var body: some View {
         VStack(spacing: -6) {
             HStack(spacing: 4) {
-                Text(label).font(.system(size: 12, weight: .semibold)).foregroundColor(.lfMute)
-                if !unit.isEmpty { Text(unit).font(.system(size: 12, weight: .semibold)).foregroundColor(.lfAccent) }
+                Text(label).font(.system(size: 16, weight: .semibold)).foregroundColor(.lfMute)
+                if !unit.isEmpty { Text(unit).font(.system(size: 16, weight: .semibold)).foregroundColor(.lfAccent) }
             }
             .lineLimit(1).minimumScaleFactor(0.6)
             Text(value).font(.system(size: size, weight: .bold, design: .rounded)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.3)
@@ -599,22 +599,22 @@ struct MetricScreen: View {
             }
             .padding(.leading, 12).padding(.top, 6).frame(height: 28)
             HStack(spacing: 3) {
-                Text(m.topText(scr.top[0])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
-                Text(m.elapsedText).font(.system(size: 15, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow).lineLimit(1).fixedSize()
-                Text(m.topText(scr.top[1])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .trailing)
+                Text(m.topText(scr.top[0])).font(.system(size: 18, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
+                Text(m.elapsedText).font(.system(size: 19, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow).lineLimit(1).fixedSize()
+                Text(m.topText(scr.top[1])).font(.system(size: 18, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.horizontal, 4)
             if scr.m.count <= 1 {
-                cell(scr.m.first ?? "dur", 136)
+                cell(scr.m.first ?? "dur", 176)
             } else if scr.m.count == 2 {
-                cell(scr.m[0], 76)
-                cell(scr.m[1], 76)
+                cell(scr.m[0], 99)
+                cell(scr.m[1], 99)
             } else if scr.m.count == 3 {
-                cell(scr.m[0], 72)
-                HStack(spacing: 2) { cell(scr.m[1], 50); cell(scr.m[2], 50) }
+                cell(scr.m[0], 94)
+                HStack(spacing: 2) { cell(scr.m[1], 65); cell(scr.m[2], 65) }
             } else {
-                HStack(spacing: 2) { cell(scr.m[0], 56); cell(scr.m[1], 56) }
-                HStack(spacing: 2) { cell(scr.m[2], 56); cell(scr.m[3], 56) }
+                HStack(spacing: 2) { cell(scr.m[0], 73); cell(scr.m[1], 73) }
+                HStack(spacing: 2) { cell(scr.m[2], 73); cell(scr.m[3], 73) }
             }
             if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
