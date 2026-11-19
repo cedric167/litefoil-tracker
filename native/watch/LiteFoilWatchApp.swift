@@ -534,7 +534,7 @@ struct MetricCell: View {
     let value: String
     let unit: String
     let size: CGFloat
-    var lsize: CGFloat = 16
+    var lsize: CGFloat = 14
 
     var body: some View {
         VStack(spacing: -6) {
@@ -601,22 +601,22 @@ struct MetricScreen: View {
             }
             .padding(.leading, 12).padding(.top, 6).frame(height: 36)
             HStack(spacing: 3) {
-                Text(m.topText(scr.top[0])).font(.system(size: 18, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
-                Text(m.elapsedText).font(.system(size: 19, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow).lineLimit(1).fixedSize()
-                Text(m.topText(scr.top[1])).font(.system(size: 18, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .trailing)
+                Text(m.topText(scr.top[0])).font(.system(size: 15, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
+                Text(m.elapsedText).font(.system(size: 16, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow).lineLimit(1).fixedSize()
+                Text(m.topText(scr.top[1])).font(.system(size: 15, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.horizontal, 4)
             if scr.m.count <= 1 {
-                cell(scr.m.first ?? "dur", 176)
+                cell(scr.m.first ?? "dur", 146)
             } else if scr.m.count == 2 {
-                cell(scr.m[0], 99)
-                cell(scr.m[1], 99)
+                cell(scr.m[0], 84)
+                cell(scr.m[1], 84)
             } else if scr.m.count == 3 {
-                cell(scr.m[0], 94)
-                HStack(spacing: 6) { cell(scr.m[1], 65); cell(scr.m[2], 65) }
+                cell(scr.m[0], 78)
+                HStack(spacing: 6) { cell(scr.m[1], 54); cell(scr.m[2], 54) }
             } else {
-                HStack(spacing: 6) { cell(scr.m[0], 54, 13); cell(scr.m[1], 54, 13) }
-                HStack(spacing: 6) { cell(scr.m[2], 54, 13); cell(scr.m[3], 54, 13) }
+                HStack(spacing: 6) { cell(scr.m[0], 46, 12); cell(scr.m[1], 46, 12) }
+                HStack(spacing: 6) { cell(scr.m[2], 46, 12); cell(scr.m[3], 46, 12) }
             }
             if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
@@ -624,7 +624,7 @@ struct MetricScreen: View {
         .ignoresSafeArea(.container, edges: .top)
     }
 
-    private func cell(_ k: String, _ size: CGFloat, _ lsize: CGFloat = 16) -> MetricCell {
+    private func cell(_ k: String, _ size: CGFloat, _ lsize: CGFloat = 14) -> MetricCell {
         let v = m.value(k)
         return MetricCell(label: m.shortLabel(k), value: v.0, unit: v.1, size: size, lsize: lsize)
     }
