@@ -1,0 +1,9 @@
+.gradle/
+build/
+app/build/
+gradle/
+gradlew
+gradlew.bat
+local.properties
+build-local.log
+*.orig
