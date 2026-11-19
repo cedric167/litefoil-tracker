@@ -51,6 +51,7 @@ public class LfWatchPlugin: CAPPlugin, CAPBridgedPlugin, WCSessionDelegate {
     /// Écrans de la montre : « scr » = liste d'écrans en JSON, « lb » = libellé de chaque info.
     @objc func setScreens(_ call: CAPPluginCall) {
         screens["scr"] = call.getString("scr") ?? "[]"
+        if let s2 = call.getString("scr2"), !s2.isEmpty { screens["scr2"] = s2 }   // nouvelle forme : disposition + petites infos du haut
         var lb: [String: String] = [:]
         if let o = call.getObject("lb") { for (k, v) in o { if let t = v as? String { lb[k] = t } } }
         screens["lb"] = lb
