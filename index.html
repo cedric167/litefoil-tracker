@@ -5582,6 +5582,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // se déconnecter : ce téléphone ne reçoit plus les notifications du compte, puis fermeture de la session (le profil reste intact)
       signOutAccount(){ var ups=[]; try{ if(lfPushKey) ups.push(db.remove(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey)).catch(function(){})); ups.push(db.remove(db.ref(d,"presence/"+uid)).catch(function(){})); }catch(e){}
         return Promise.all(ups).then(function(){ return authMod.signOut(auth); }); },
+      pushDiag(o){ return db.update(db.ref(d,"pushTokens/"+uid+"/_d"), o).catch(function(){}); },
       pushNote(o){ if(!lfPushKey) return Promise.resolve(); return db.update(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey), o).catch(function(){}); },
       savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_"); lfPushKey=key;
         return db.update(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo||null,v:404,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,ss:(plat==="android" && /LiteFoilSosScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
@@ -6392,9 +6393,16 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         FM.addListener("notificationReceived", function(){ try{ if(backend && backend.pushNote) backend.pushNote({ rx:Date.now() }); }catch(e){} }); }
       // puis la demande, avec de nouveaux essais (2 s, 5 s, 12 s, 30 s) tant qu'Apple n'a pas donné son jeton à l'appli
       const waits=[0,2000,5000,12000,30000]; let got=false;
+      const dg=function(o){ try{ if(plat==="ios" && backend && backend.pushDiag){ o.t=Date.now(); o.v=405; backend.pushDiag(o); } }catch(e){} };
+      dg({ perm:String(st && st.receive), start:Date.now() });
+      FM.addListener("tokenReceived", function(ev){ dg({ ev:Date.now(), evTok:String((ev && ev.token)||"").slice(0,8) }); });
       const ask=async function(i){ if(got) return true;
-        try{ const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat);
-            try{ const pm=await FM.checkPermissions(); if(backend.pushNote) backend.pushNote({ pm:String(pm && pm.receive) }); }catch(e){} return true; } }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); }
+        try{ const r=await Promise.race([FM.getToken(), new Promise(function(_,no){ setTimeout(function(){ no(new Error("sans réponse après 8 s")); }, 8000); })]);
+          if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat);
+            const o={}; o["ok"+i]=String(r.token).slice(0,8); dg(o);
+            try{ const pm=await FM.checkPermissions(); if(backend.pushNote) backend.pushNote({ pm:String(pm && pm.receive) }); }catch(e){} return true; }
+          const o2={}; o2["vide"+i]=1; dg(o2);
+        }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); const o3={}; o3["err"+i]=String((e && e.message)||e).slice(0,140); dg(o3); }
         if(i+1<waits.length) setTimeout(function(){ ask(i+1); }, waits[i+1]); return false; };
       await ask(0); return true;
     }catch(e){ console.warn("Notifications natives indisponibles :", e); return false; }
