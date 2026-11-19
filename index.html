@@ -6370,7 +6370,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // Appli iPhone/Android : notifications du téléphone via le module Firebase Messaging (jeton FCM natif).
   // Le serveur n'envoie que les messages privés, les groupes où je suis et les discussions de mes événements,
   // avec le nombre de non-lus pour l'icône. Sans le module (ancienne version de l'appli), on gère juste l'icône.
-  let nativePushReady=false;
+  let nativePushReady=false, nativePushListen=false;
   async function registerNativePush(prompt){
     const FM=nativePlug("FirebaseMessaging");
     if(!FM){ const B=nativePlug("Badge"); if(!B) return false; try{ let p=await B.checkPermissions(); if(p.display!=="granted" && prompt) p=await B.requestPermissions(); return p.display==="granted"; }catch(e){ return false; } }
@@ -6383,10 +6383,16 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(plat==="android" && /LiteFoilRing\//.test(navigator.userAgent) && FM.createChannel){
         try{ await FM.createChannel({ id:"lf_calls", name:"Appels", description:"Appels audio et vidéo", importance:5, visibility:1, sound:"lf_ring", vibration:true, lights:true }); }catch(e){}
         try{ await FM.createChannel({ id:"lf_sos", name:"SOS", description:"Alertes SOS de tes proches", importance:5, visibility:1, sound:"lf_sos", vibration:true, lights:true }); }catch(e){} }
-      const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken) await backend.savePushToken(r.token, plat);
-      FM.addListener("tokenReceived", function(ev){ if(ev && ev.token && backend && backend.savePushToken) backend.savePushToken(ev.token, plat); });
-      FM.addListener("notificationActionPerformed", function(ev){ openFromPush((ev && ev.notification && ev.notification.data) || {}); });
-      nativePushReady=true; return true;
+      // l'écoute d'abord : sur iPhone le jeton arrive souvent après coup, quand Apple a répondu
+      if(!nativePushListen){ nativePushListen=true;
+        FM.addListener("tokenReceived", function(ev){ if(ev && ev.token && backend && backend.savePushToken){ nativePushReady=true; backend.savePushToken(ev.token, plat); } });
+        FM.addListener("notificationActionPerformed", function(ev){ openFromPush((ev && ev.notification && ev.notification.data) || {}); }); }
+      // puis la demande, avec de nouveaux essais (2 s, 5 s, 12 s, 30 s) tant qu'Apple n'a pas donné son jeton à l'appli
+      const waits=[0,2000,5000,12000,30000]; let got=false;
+      const ask=async function(i){ if(got) return true;
+        try{ const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat); return true; } }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); }
+        if(i+1<waits.length) setTimeout(function(){ ask(i+1); }, waits[i+1]); return false; };
+      await ask(0); return true;
     }catch(e){ console.warn("Notifications natives indisponibles :", e); return false; }
   }
   // 14/11 : alerte vent. Les spots favoris (Météo → Mes spots) sont envoyés au serveur, qui prévient le matin s'il y a 12 nœuds ou plus.
