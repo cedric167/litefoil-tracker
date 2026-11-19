@@ -308,6 +308,38 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         default: return k
         }
     }
+    /// libellé court, lisible d'un coup d'œil en pleine session
+    func shortLabel(_ k: String) -> String {
+        switch k {
+        case "spd": return "VIT"
+        case "max": return "VMAX"
+        case "avg": return "VMOY"
+        case "ravg": return "MOY RUN"
+        case "rmax": return "MAX RUN"
+        case "favg": return "MOY FOIL"
+        case "dist": return "DIST"
+        case "rdist": return "DIST RUN"
+        case "fdist": return "DIST FOIL"
+        case "dur": return "DURÉE"
+        case "act": return "ACTIF"
+        case "rdur": return "RUN"
+        case "fdur": return "FOIL"
+        case "clock": return "HEURE"
+        case "run": return "RUN N°"
+        case "runs": return "RUNS"
+        case "lrdur", "lrdist": return "LONG RUN"
+        case "hr": return "CARDIO"
+        case "hravg": return "FC MOY"
+        case "hrmax": return "FC MAX"
+        case "bat": return "EFOIL"
+        case "pow": return "PUISS"
+        case "wind": return "VENT"
+        case "temp": return "TEMP"
+        case "wbat": return "MONTRE"
+        case "steps": return "PAS"
+        default: return label(k).uppercased()
+        }
+    }
     /// valeur et unité d'une info ; un tiret quand la montre ne peut pas la connaître
     func value(_ k: String) -> (String, String) {
         let curRunS = onFoil ? runS - runStartS : 0, curRunM = onFoil ? distM - runStartDist : 0
@@ -504,10 +536,13 @@ struct MetricCell: View {
     let size: CGFloat
 
     var body: some View {
-        VStack(spacing: -4) {
-            Text(label).font(.system(size: 13, weight: .medium)).foregroundColor(.lfMute).lineLimit(1).minimumScaleFactor(0.6)
+        VStack(spacing: -6) {
+            HStack(spacing: 4) {
+                Text(label).font(.system(size: 12, weight: .semibold)).foregroundColor(.lfMute)
+                if !unit.isEmpty { Text(unit).font(.system(size: 12, weight: .semibold)).foregroundColor(.lfAccent) }
+            }
+            .lineLimit(1).minimumScaleFactor(0.6)
             Text(value).font(.system(size: size, weight: .bold, design: .rounded)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.3)
-            Text(unit.isEmpty ? " " : unit).font(.system(size: 13, weight: .medium)).foregroundColor(.lfAccent).lineLimit(1)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -558,38 +593,38 @@ struct MetricScreen: View {
 
     var body: some View {
         VStack(spacing: 1) {
-            HStack(spacing: 5) {
-                Text("Lite Foil").font(.system(size: 12, weight: .semibold)).foregroundColor(.lfAccent)
-                Text(m.elapsedText).font(.system(size: 14, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow)
+            HStack {
+                Text("Lite Foil").font(.system(size: 14, weight: .bold)).foregroundColor(.lfAccent)
                 Spacer()
             }
-            if !(scr.top[0].isEmpty && scr.top[1].isEmpty) {
-                HStack {
-                    Text(m.topText(scr.top[0])).font(.system(size: 16, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
-                    Spacer()
-                    Text(m.topText(scr.top[1])).font(.system(size: 16, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
-                }
+            .padding(.leading, 12).padding(.top, 6).frame(height: 28)
+            HStack(spacing: 3) {
+                Text(m.topText(scr.top[0])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
+                Text(m.elapsedText).font(.system(size: 15, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow).lineLimit(1).fixedSize()
+                Text(m.topText(scr.top[1])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .trailing)
             }
+            .padding(.horizontal, 4)
             if scr.m.count <= 1 {
-                cell(scr.m.first ?? "dur", 118)
+                cell(scr.m.first ?? "dur", 136)
             } else if scr.m.count == 2 {
-                cell(scr.m[0], 64)
-                cell(scr.m[1], 64)
+                cell(scr.m[0], 76)
+                cell(scr.m[1], 76)
             } else if scr.m.count == 3 {
-                cell(scr.m[0], 60)
-                HStack(spacing: 2) { cell(scr.m[1], 42); cell(scr.m[2], 42) }
+                cell(scr.m[0], 72)
+                HStack(spacing: 2) { cell(scr.m[1], 50); cell(scr.m[2], 50) }
             } else {
-                HStack(spacing: 2) { cell(scr.m[0], 44); cell(scr.m[1], 44) }
-                HStack(spacing: 2) { cell(scr.m[2], 44); cell(scr.m[3], 44) }
+                HStack(spacing: 2) { cell(scr.m[0], 56); cell(scr.m[1], 56) }
+                HStack(spacing: 2) { cell(scr.m[2], 56); cell(scr.m[3], 56) }
             }
             if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
         .padding(.horizontal, 1)
+        .ignoresSafeArea(.container, edges: .top)
     }
 
     private func cell(_ k: String, _ size: CGFloat) -> MetricCell {
         let v = m.value(k)
-        return MetricCell(label: m.label(k), value: v.0, unit: v.1, size: size)
+        return MetricCell(label: m.shortLabel(k), value: v.0, unit: v.1, size: size)
     }
 }
 
