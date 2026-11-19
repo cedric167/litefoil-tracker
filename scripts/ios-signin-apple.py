@@ -65,7 +65,8 @@ profs = [p for p in call("GET", "/bundleIds/" + bid + "/profiles?limit=200")["da
 def has_cap(p):
     try:
         raw = base64.b64decode(p["attributes"]["profileContent"]); a = raw.index(b"<?xml"); b = raw.index(b"</plist>") + 8
-        return "com.apple.developer.applesignin" in plistlib.loads(raw[a:b]).get("Entitlements", {})
+        ent = plistlib.loads(raw[a:b]).get("Entitlements", {})
+        return "com.apple.developer.applesignin" in ent and "aps-environment" in ent  # 19/11 : le profil doit aussi porter les notifications
     except Exception:
         return False
 good = [p for p in profs if p["attributes"]["profileState"] == "ACTIVE" and has_cap(p)]

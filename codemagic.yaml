@@ -42,6 +42,8 @@ workflows:
       - name: Signature automatique
         script: |
           xcode-project use-profiles
+      - name: Droits de l appli (notifications, Sign in with Apple)
+        script: bash scripts/ios-entitlements.sh
       - name: Numero de build
         script: |
           cd ios/App
@@ -52,6 +54,7 @@ workflows:
           xcode-project build-ipa \
             --workspace "ios/App/App.xcworkspace" \
             --scheme "App" || { echo "===== ERREURS XCODE ====="; grep -h -B2 -A8 -E "error:|ARCHIVE FAILED|provisioning profile" /tmp/xcodebuild_logs/*.log | head -200; exit 1; }
+          bash scripts/ios-entitlements.sh verifie
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -111,6 +114,8 @@ workflows:
       - name: Signature automatique
         script: |
           xcode-project use-profiles
+      - name: Droits de l appli (notifications, Sign in with Apple)
+        script: bash scripts/ios-entitlements.sh
       - name: Numero de build (identique iPhone et montre)
         script: |
           bash scripts/ios-watch.sh version 1.6.0 $(($(date +%s) / 60))
@@ -119,6 +124,7 @@ workflows:
           xcode-project build-ipa \
             --workspace "ios/App/App.xcworkspace" \
             --scheme "App" || { echo "===== ERREURS XCODE ====="; grep -h -B2 -A8 -E "error:|ARCHIVE FAILED|provisioning profile" /tmp/xcodebuild_logs/*.log | head -200; exit 1; }
+          bash scripts/ios-entitlements.sh verifie
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
