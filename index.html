@@ -79,7 +79,10 @@ body.uni-on #tab-dash .home-card:has(.home-stats) .home-stats b{color:#fff}body.
 .qk-sheet-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.qk-sheet-h b{font-size:19px;font-weight:800;color:#0e1417}.qk-sheet-h button{width:36px;height:36px;border:0;border-radius:50%;background:#eef2f5;color:#0e1417;font-size:15px;min-height:0;padding:0;box-shadow:none}
 .qk-none{margin:6px 4px 10px;color:#66727d;font-size:14px}
 #tab-dash{position:relative}.home-me{position:absolute;top:14px;right:14px;z-index:6;width:42px;height:42px;box-shadow:0 0 0 2px rgba(255,255,255,.95),0 6px 14px rgba(0,0,0,.3)}body:not(.uni-on) .home-me{display:none}body.uni-on #tab-dash>.home-me.home-me{display:flex!important}
-body.uni-sport #bnav [data-nav="tracking"]{display:none}#tab-dash>#homeBr{display:none!important}#mtoUlm{display:none!important}
+.tk-week{margin:18px 0 6px}.tk-week>h3{margin:0 2px 10px;font-size:19px;font-weight:800;letter-spacing:-.01em}.tk-week #defiBox{margin:0 0 14px}
+.tk-evs{background:var(--card,#fff);border-radius:22px;padding:14px 10px 10px;box-shadow:0 6px 22px rgba(10,30,50,.07)}.tk-evs>b{display:block;font-size:16px;font-weight:800;padding:0 6px 4px}.tk-evs .tk-ev0{padding:8px 6px 6px;font-size:14px;line-height:1.45;color:var(--muted-2,#6b7c88)}
+.tk-evs .tk-evall{display:block;width:100%;margin-top:8px;height:46px;border:0;border-radius:15px;background:rgba(20,120,140,.1);color:inherit;font:inherit;font-size:14.5px;font-weight:800;min-height:0;box-shadow:none}
+#tab-dash>#homeBr{display:none!important}#mtoUlm{display:none!important}
 body.uni-nautique #phSeg [data-m]:not([data-m="mer"]),body.uni-efoil #phSeg [data-m]:not([data-m="mer"]),body.uni-terre #phSeg [data-m]:not([data-m="terre"]),body.uni-pilote #phSeg [data-m]:not([data-m="air"]){display:none!important}body.uni-bonride #uhBr{display:block}.uh-brnote{font-size:12.5px;color:#66757c;text-align:center;margin:12px 10px 4px;line-height:1.45}
 #bnav .bn-br{display:none}body.uni-bonride #bnav [data-nav="bonride"]{display:flex}
 body.uni-bonride #bnav [data-nav="meteo"],body.uni-bonride #bnav [data-nav="tracking"],body.uni-bonride #bnav [data-nav="videos"],body.uni-bonride #bnav [data-nav="fil"]{display:none}
@@ -3099,6 +3102,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     <a class="linkbtn" id="btnStlMap" href="https://www.sportstracklive.com/" target="_blank" rel="noopener" style="margin-top:10px">Voir la session sur SportsTrackLive</a>
   </div>
   </div>
+
+  <!-- 19/11 (demande de Cédric) : sur la page Tracking, le défi de la semaine avec son podium et les événements de la semaine -->
+  <div class="tk-week" id="tkWeek"><h3>Cette semaine</h3><div id="tkDefi"></div><div class="tk-evs" id="tkEvs"></div></div>
 
   <div class="tk-opts">
     <button type="button" class="uh-row wt-open" id="wtOpen"><span class="uh-ri" style="background:#0b1114;color:#5ff0c8"><svg viewBox="0 0 24 24"><rect x="6.500" y="6" width="11" height="12" rx="3.200"/><path d="M9 6l.700-3h4.600l.700 3M9 18l.700 3h4.600l.700-3M12 10v2.500l1.500 1"/></svg></span><span class="uh-rt"><b>Ma montre</b><small>Choisis les infos affichées, SOS toujours en premier</small></span><span class="uh-ch">›</span></button>
@@ -9111,7 +9117,20 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +(r.proof?'<a href="'+esc(r.proof)+'" target="_blank" rel="noopener">Voir la preuve ↗</a>':'<small>Pas de lien de preuve</small>')+'<div class="res-acts"><button data-rok="'+esc(r.uid)+'|'+esc(r.id)+'">✓ Valider</button><button class="no" data-rno="'+esc(r.uid)+'|'+esc(r.id)+'">Refuser</button></div></div></div>'; }).join("")+'</div>'; }
   function bindReview(root){ root.querySelectorAll("[data-rok],[data-rno]").forEach(function(b){ b.addEventListener("click", function(){ var v=(b.dataset.rok||b.dataset.rno).split("|"); backend.reviewResult(v[0], v[1], b.dataset.rok?"ok":"no").catch(function(){ alert("Action impossible."); }); }); }); }
   // carte Événements en haut de la Communauté : prochain événement + pastille
-  function updEvCard(){ var nx=$("cmEvNext"); if(nx){ var now=Date.now(), up=(myEvents||[]).filter(function(e){ return !e.cancelled && (+e.when||0)>now-3600000; });
+  // 19/11 : page Tracking — événements de la semaine, et le défi (podium) qui suit l'onglet affiché
+  function tkEvRender(){ var box=$("tkEvs"); if(!box) return; var now=Date.now(), up=(myEvents||[]).filter(function(e){ return !e.cancelled && (+e.when||0)>now-3600000; });
+    var wk=up.filter(function(e){ return (+e.when||0)<now+7*86400000; }), list=(wk.length?wk:up).slice(0,4);
+    function row(e){ var n=evAtt(e).length, sub=[fmtEvWhen(e.when)]; if(e.place) sub.push(e.place);
+      return '<button class="grow" data-eid="'+esc(e.id)+'">'+evThumbHtml(e,false)+'<span class="grow-main"><span class="grow-top"><b>'+esc(e.title)+'</b></span><span class="grow-sub">'+esc(sub.join(" · "))+'</span></span><span class="grow-right"><span class="grow-tm">👥 '+n+(e.max?"/"+e.max:"")+'</span>'+(evIn(e)?'<span class="ev-in">Inscrit ✓</span>':'')+'</span></button>'; }
+    box.innerHTML='<b>'+(wk.length||!up.length?"Événements de la semaine":"Prochains événements")+'</b>'
+      +(list.length?'<div class="glist">'+list.map(row).join("")+'</div>':'<div class="tk-ev0">Aucun événement prévu cette semaine. Organise une sortie : les membres pourront s\'inscrire en un clic.</div>')
+      +'<button type="button" class="tk-evall" id="tkEvAll">Voir tous les événements</button>';
+    box.querySelectorAll(".grow[data-eid]").forEach(function(b){ b.addEventListener("click", function(){ openEventDetail(b.dataset.eid); }); });
+    $("tkEvAll").addEventListener("click", function(){ var t=document.querySelector('.tab[data-tab="communaute"]'); if(t) t.click(); setTimeout(function(){ var x=$("cmEvents"); if(x) x.click(); window.scrollTo({top:0}); },250); }); }
+  function tkWeekPlace(){ var t=$("tab-tracking"), d=$("defiBox"), slot=$("tkDefi"), home=$("homeDefi"); if(!t||!d||!slot||!home) return;
+    if(!t.hidden){ if(d.parentNode!==slot) slot.appendChild(d); } else if(d.parentNode===slot) home.parentNode.insertBefore(d, home); }
+  try{ new MutationObserver(tkWeekPlace).observe($("tab-tracking"),{attributes:true,attributeFilter:["hidden"]}); tkWeekPlace(); setTimeout(tkEvRender,0); }catch(e){}
+  function updEvCard(){ try{ tkEvRender(); }catch(e){} var nx=$("cmEvNext"); if(nx){ var now=Date.now(), up=(myEvents||[]).filter(function(e){ return !e.cancelled && (+e.when||0)>now-3600000; });
       nx.textContent = up.length ? ("Prochain : "+up[0].title+" · "+fmtEvWhen(up[0].when)) : "Sorties et rendez-vous des membres"; }
     var src=$("evChipBadge"), b=$("cmEvBadge"); if(src && b){ b.hidden=src.hidden; b.textContent=src.textContent; } }
   function openRiderCard(uid, sel){ uid=uid||me.uid; var o=gOverlay(); o.hidden=false; var mine=uid===me.uid;
