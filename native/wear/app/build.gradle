@@ -2,12 +2,12 @@ plugins { id 'com.android.application' }
 
 android {
     namespace 'fr.litefoil.wear'
-    compileSdk 34
+    compileSdk 36
     defaultConfig {
         // même identifiant que l appli téléphone : Google Play range la montre sous la même fiche
         applicationId "fr.litefoil.tracker"
         minSdk 26
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
     }
