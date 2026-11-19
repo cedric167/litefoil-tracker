@@ -9024,7 +9024,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +'<div class="ts-tabs"><button type="button" data-tt="riders" class="on">Membres</button><button type="button" data-tt="top">Top</button><button type="button" data-tt="vid">Vidéos</button></div>'
       +'<div class="ts-body"></div>';
     document.body.appendChild(ov); document.body.style.overflow="hidden";
-    var inp=ov.querySelector("input"), body=ov.querySelector(".ts-body"), clr=ov.querySelector(".ts-clear"), tab="riders", tmr=null, lastIds=[], mutual={};
+    var inp=ov.querySelector("input"), body=ov.querySelector(".ts-body"), clr=ov.querySelector(".ts-clear"), tab="riders", tmr=null, lastIds=[], lastTotal=0, lastShown=60, lastQ=null, mutual={};
     var close=function(){ ov.remove(); document.body.style.overflow=""; };
     ov.querySelector(".ts-back").addEventListener("click", close);
     clr.addEventListener("click", function(){ inp.value=""; clr.hidden=true; run(); inp.focus(); });
@@ -9043,10 +9043,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(tab==="top"){ if(ids.length){ h+='<div class="ts-sec"><b>'+(q?"Membres":"Suggestions")+'</b>'+(ids.length>3?'<button type="button" class="ts-all">Tout voir ›</button>':'')+'</div>'+ids.slice(0,3).map(rowHtml).join(""); }
         var vl=vidsFor(q); if(vl.length) h+='<div class="ts-sep"></div>'+vidHtml(vl);
         if(!h) h='<div class="comm-empty">Aucun résultat pour « '+esc(inp.value.trim())+' ».</div>'; }
-      else if(tab==="riders"){ h = ids.length ? '<div class="ts-count">'+ids.length+(ids.length>1?" membres":" membre")+(q?" trouvé"+(ids.length>1?"s":""):"")+'</div>'+ids.map(rowHtml).join("") : '<div class="comm-empty">Aucun membre trouvé.</div>'; }
+      else if(tab==="riders"){ var tot=Math.max(lastTotal, ids.length); h = ids.length ? '<div class="ts-count">'+tot.toLocaleString("fr-FR")+(tot>1?" membres":" membre")+(q?" trouvé"+(tot>1?"s":""):"")+'</div>'+ids.map(rowHtml).join("")+(tot>ids.length?'<button type="button" class="ts-more" style="display:block;width:100%;margin:10px 0 4px;height:46px;border:0;border-radius:15px;background:rgba(20,120,140,.1);color:inherit;font:inherit;font-size:14.5px;font-weight:800;min-height:0;box-shadow:none">Afficher plus ('+(tot-ids.length).toLocaleString("fr-FR")+' restants)</button>':'') : '<div class="comm-empty">Aucun membre trouvé.</div>'; }
       else { var vl2=vidsFor(q); h = vl2.length ? vidHtml(vl2) : '<div class="comm-empty">Aucune vidéo trouvée.</div>'; }
       body.innerHTML=h;
       var all=body.querySelector(".ts-all"); if(all) all.addEventListener("click", function(){ ov.querySelector('[data-tt="riders"]').click(); });
+      var more=body.querySelector(".ts-more"); if(more) more.addEventListener("click", function(){ lastShown+=60; run(); });
       body.querySelectorAll("[data-tsu]").forEach(function(r){ r.addEventListener("click", function(){ openUserProfile(r.dataset.tsu); }); });
       body.querySelectorAll("[data-tsm]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); var u=b.dataset.tsm; close(); goToCommunaute(); openDM(u, pName(u)); }); });
       body.querySelectorAll("[data-tsf]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); var u=b.dataset.tsf;
@@ -9057,7 +9058,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // sans recherche : membres en ligne puis les plus récents
       if(!q) local.sort(function(a,b){ return (onlineIds.indexOf(b)>=0)-(onlineIds.indexOf(a)>=0) || ((profileMap[b]||{}).t||0)-((profileMap[a]||{}).t||0); });
       else local.sort(function(a,b){ return (pseudoKey(pName(a)).indexOf(q)===0?0:1)-(pseudoKey(pName(b)).indexOf(q)===0?0:1); });
-      lastIds=local.slice(0,40); draw();
+      if(v!==lastQ){ lastQ=v; lastShown=60; } lastTotal=local.length; lastIds=local.slice(0,lastShown); draw();
       // amis en commun (« Ami(e) avec … »)
       lastIds.slice(0,10).forEach(function(u){ if(mutual[u]!==undefined || !backend || !backend.getFriends) return; mutual[u]=null; backend.getFriends(u).then(function(m){ var c=Object.keys(m||{}).filter(function(x){ return myFriends[x] && x!==u; })[0]; if(c){ mutual[u]=c; draw(); } }); }); };
     inp.addEventListener("input", function(){ clearTimeout(tmr); tmr=setTimeout(run,180); });
