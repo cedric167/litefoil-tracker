@@ -198,16 +198,13 @@ PLIST
       s.sub!("import Capacitor\n", "import Capacitor\nimport FirebaseCore\nimport FirebaseMessaging\n") or abort "import Capacitor introuvable"
       s.sub!(/(didFinishLaunchingWithOptions[^{]*\{\n)/) { $1 + "        // LITEFOIL_PUSH : Firebase pour les notifications\n        if FirebaseApp.app() == nil { FirebaseApp.configure() }\n" } or abort "didFinishLaunching introuvable"
       methods = <<~SWIFT
-          // LITEFOIL_PUSH : jeton Apple -> jeton Firebase, transmis au module @capacitor-firebase/messaging
+          // LITEFOIL_PUSH : jeton Apple transmis a Firebase et au module @capacitor-firebase/messaging
           func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
               Messaging.messaging().apnsToken = deviceToken
-              Messaging.messaging().token(completion: { (token, error) in
-                  if let error = error {
-                      NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
-                  } else if let token = token {
-                      NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: token)
-                  }
-              })
+              // 19/11 : le module @capacitor-firebase/messaging attend le jeton Apple brut (Data) et le donne lui-meme a Firebase.
+              // Avant, on lui envoyait le jeton Firebase (texte) : il l ignorait, et son Firebase n avait jamais le jeton Apple,
+              // donc aucune notification n arrivait appli fermee sur iPhone.
+              NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
           }
 
           func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
