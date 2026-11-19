@@ -613,10 +613,10 @@ struct MetricScreen: View {
                 cell(scr.m[1], 84)
             } else if scr.m.count == 3 {
                 cell(scr.m[0], 78)
-                HStack(spacing: 6) { cell(scr.m[1], 54); cell(scr.m[2], 54) }
+                HStack(spacing: 6) { cell(scr.m[1], 42, 12); cell(scr.m[2], 42, 12) }
             } else {
-                HStack(spacing: 6) { cell(scr.m[0], 46, 12); cell(scr.m[1], 46, 12) }
-                HStack(spacing: 6) { cell(scr.m[2], 46, 12); cell(scr.m[3], 46, 12) }
+                HStack(spacing: 6) { cell(scr.m[0], 38, 12); cell(scr.m[1], 38, 12) }
+                HStack(spacing: 6) { cell(scr.m[2], 38, 12); cell(scr.m[3], 38, 12) }
             }
             if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
