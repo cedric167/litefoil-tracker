@@ -156,11 +156,13 @@ async function sendToUids(uids, data, opts) {
   if (!messages.length) return;
 
   const dead = [];
+  const diag = {};
   let okN = 0; const koCodes = {};
   for (let i = 0; i < messages.length; i += 500) {
     const resp = await getMessaging().sendEach(messages.slice(i, i + 500));
     resp.responses.forEach((r, j) => {
       if (r.success) okN++; else { const cc = (r.error && r.error.code) || "?"; koCodes[cc] = (koCodes[cc] || 0) + 1; }
+      try { const du = String(paths[i + j]).split("/")[1]; (diag[du] = diag[du] || []).push(r.success ? "ok" : (((r.error && r.error.code) || "?") + " : " + String((r.error && r.error.message) || "").slice(0, 160))); } catch (e) {}
       if (!r.success) {
         const code = r.error && r.error.code;
         if (code === "messaging/registration-token-not-registered" ||
@@ -172,6 +174,7 @@ async function sendToUids(uids, data, opts) {
     });
   }
   console.log("push", data.type, "envoyes", okN, "sur", messages.length, JSON.stringify(koCodes));
+  try { const up = {}; for (const du in diag) up["pushDiag/" + du] = { t: Date.now(), type: String(data.type || ""), r: diag[du].slice(0, 6) }; if (Object.keys(up).length) await db.ref().update(up); } catch (e) {}
   if (dead.length) await Promise.all(dead);
 }
 
