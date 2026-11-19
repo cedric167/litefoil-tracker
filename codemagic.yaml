@@ -30,6 +30,7 @@ workflows:
       - name: Generer / synchroniser le projet iOS
         script: |
           # notifications + connexion Apple/Google : modules Firebase seulement si le fichier de config iOS est fourni
+          set -e
           if [ -f ios-assets/GoogleService-Info.plist ]; then npm install @capacitor-firebase/messaging@6.3.1 @capacitor-firebase/authentication@6.3.1 firebase@10.12.5; fi
           if [ ! -d "ios" ]; then npx cap add ios; fi
           # permissions, Bluetooth en arriere-plan, chiffrement, iOS 15, icone, ecran de demarrage, module LfTrack (suivi GPS)
@@ -100,6 +101,7 @@ workflows:
         script: npm run build:www
       - name: Generer / synchroniser le projet iOS
         script: |
+          set -e
           if [ -f ios-assets/GoogleService-Info.plist ]; then npm install @capacitor-firebase/messaging@6.3.1 @capacitor-firebase/authentication@6.3.1 firebase@10.12.5; fi
           if [ ! -d "ios" ]; then npx cap add ios; fi
           bash scripts/ios-setup.sh

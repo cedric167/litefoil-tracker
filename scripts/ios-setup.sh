@@ -158,7 +158,8 @@ if [ -f "$GSI" ]; then
   ' "$APP/App.xcodeproj"
   # sonneries (appel, SOS) jouées par les notifications, même appli fermée
   cp "$ROOT/native/sounds/lf_ring.wav" "$ROOT/native/sounds/lf_sos.wav" "$APP/App/"
-  /usr/bin/ruby -e '
+  # 19/11 : « /usr/bin/ruby » (Ruby du système) n a pas xcodeproj : le script s arrêtait ici depuis le 14/11, sans droits ni AppDelegate
+  /usr/bin/env ruby -e '
     require "xcodeproj"
     p = Xcodeproj::Project.open(ARGV[0])
     t = p.targets.find { |x| x.name == "App" }
