@@ -1859,6 +1859,10 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .rc-how{ display:flex; flex-direction:column; gap:7px; font-size:14px; color:var(--text); }
   .rc-how div{ display:flex; justify-content:space-between; gap:10px; padding:9px 12px; background:var(--tile); border-radius:12px; }
   .rc-how b{ color:var(--accent-ink); white-space:nowrap; }
+  .rc-how > div > b{ text-align:right; } .rc-how .bar-nx{ display:block; margin-top:3px; font-size:12px; font-weight:600; color:var(--muted); }
+  .rc-how .bar-t{ display:block; margin:4px 0 0 auto; width:max-content; font-style:normal; font-size:11px; font-weight:800; letter-spacing:.3px; padding:2px 8px; border-radius:6px; }
+  .bar-t.t-blue{ background:#1e5bd6; color:#fff; } .bar-t.t-bronze{ background:#c98d55; color:#2b1708; } .bar-t.t-silver{ background:#d5dde2; color:#1b2328; } .bar-t.t-gold{ background:#f1cd61; color:#2a1d05; } .bar-t.t-icon{ background:#fffdf3; color:#3a2a00; box-shadow:inset 0 0 0 2px #c9a227; }
+  .bar-sex{ display:flex; gap:8px; margin-bottom:6px; } .bar-sex button{ flex:1; height:42px; min-height:0; border:0; border-radius:12px; background:var(--tile); color:var(--text); font:inherit; font-size:14.5px; font-weight:800; box-shadow:none; } .bar-sex button.on{ background:#1fb5bd; color:#04262a; }
   .rc-prog{ height:8px; border-radius:100px; background:var(--tile); overflow:hidden; }
   .rc-prog i{ display:block; height:100%; background:linear-gradient(90deg,#1fb5bd,#5acdd1); border-radius:100px; }
   .rider-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -8475,11 +8479,60 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(k==="perche") return ["HMX","HGN","SMX","SGN","DIS","DGN","ALT","STA"];
     if(sp.mil==="terre") return ["SMX","SGN","DIS","DGN","ALT","STA"];
     return LF_ST_WAV[k] ? ["SMX","SGN","DIS","DGN","WAV","STA"] : ["SMX","SGN","DIS","DGN","STA"]; }
-  function stInfo(k, st){ var d=LF_ST[st]||[st,st,""]; if(k==="longueur" && st==="DIS") return ["DIS","Distance la plus longue sautée","m"]; if(k==="longueur" && st==="DGN") return ["DIS GEN","Distance moyenne sautée","m"]; return d; }
+  const LF_STB = { SMX:["SPD MAX","Vitesse max tenue (moyenne de tes 3 meilleures activités)","km/h"], SGN:["SPD GEN","Vitesse générale hors arrêts (3 meilleures activités)","km/h"], DIS:["DIS","Distance record (moyenne de tes 3 plus longues)","km"], HMX:["HT MAX","Hauteur franchie (moyenne de tes 3 meilleurs sauts)","m"] };
+  function stInfo(k, st){ var d=LF_ST[st]||[st,st,""];
+    if(LF_BAR[k]){ if(k==="longueur" && st==="DIS") return ["DIS","Longueur sautée (moyenne de tes 3 meilleurs sauts)","m"];
+      if((k==="ski"||k==="snowboard")){ if(st==="ALT") return ["D−","Dénivelé descendu moyen (remontées exclues)","m"]; if(st==="SGN") return ["SPD GEN","Vitesse générale en descente (3 meilleures activités)","km/h"]; if(st==="STA") return ["STA","Durée moyenne de glisse active","min"]; }
+      if(LF_STB[st] && !(k==="longueur" && st==="DGN")) return LF_STB[st]; }
+    if(k==="longueur" && st==="DIS") return ["DIS","Distance la plus longue sautée","m"]; if(k==="longueur" && st==="DGN") return ["DIS GEN","Distance moyenne sautée","m"]; return d; }
   // anciennes activités du tracking → sport de carte
   const LF_OLD = { wing:"wingfoil", kite:"kitesurf", kayak:"canoe", hiking:"rando", cycling:"velo", skiing:"ski", free_flight:"parapente", electric:"efoil", phone:"" };
   function sportOf(a){ var t=String((a&&a.activityType)||"").toLowerCase(); if(LF_SP[t]) return t; if(LF_OLD[t]!=null) return LF_OLD[t]||null;
     var c=String((a&&a.categoryName)||"").toLowerCase(); if(/foil [ée]lectrique|e-?foil/.test(c)) return "efoil"; return null; }
+  // ---------- 19/11 : barèmes par discipline. [début Bronze, début Argent, début Or, début Icône] ; F = seuils femme quand ils diffèrent ----------
+  const LF_BAR = {
+    running:{ H:{SMX:[13,16,19,22],SGN:[9.5,12,14.5,17],DIS:[8,15,25,42],DGN:[5,8,12,18],STA:[30,45,65,90]}, F:{SMX:[11.5,14,16.5,19.5],SGN:[8.5,10.5,12.5,14.8],DIS:[7,13,21,42],DGN:[4.5,7.5,11,16]} },
+    marche:{ H:{SMX:[8.5,10.5,12.5,14.5],SGN:[6.5,8,9.8,11.8],DIS:[5,10,15,20],DGN:[4,6.5,9.5,13],STA:[30,45,65,90]}, F:{SMX:[7.5,9.5,11.2,13],SGN:[6,7.3,8.8,10.6],DIS:[5,8,13,20],DGN:[4,6,8.5,12]} },
+    trail:{ H:{SMX:[11,14.5,17.5,20.5],SGN:[5.5,7.5,9.5,11.5],DIS:[10,20,35,55],DGN:[7,12,18,26],ALT:[250,500,900,1400],STA:[60,110,170,260]}, F:{SMX:[10,13,15.5,18.5],SGN:[5,6.8,8.5,10.3],DIS:[10,18,32,50],DGN:[6.5,11,16,23]} },
+    rando:{ H:{SMX:[4.5,6,7.2,8.5],SGN:[2.5,3.5,4.5,5.5],DIS:[8,14,20,28],DGN:[6,10,15,21],ALT:[200,450,750,1150],STA:[90,150,240,360]} },
+    velo:{ H:{SMX:[40,52,64,75],SGN:[20,25,30,35],DIS:[45,80,130,180],DGN:[30,50,80,115],ALT:[300,700,1200,1800],STA:[60,105,165,240]}, F:{SMX:[35,46,57,68],SGN:[18,22.5,27,31.5],DIS:[35,65,110,155],DGN:[25,42,68,98]} },
+    ski:{ H:{SMX:[45,65,82,98],SGN:[22,34,46,58],DIS:[15,30,45,65],DGN:[10,20,32,45],ALT:[1500,3500,5500,8000],STA:[60,120,180,240]}, F:{SMX:[40,58,74,90]} },
+    snowboard:{ H:{SMX:[38,55,72,88],SGN:[18,28,38,48],DIS:[12,25,38,55],DGN:[8,16,26,38],ALT:[1200,2800,4500,6800],STA:[60,120,180,240]}, F:{SMX:[33,48,64,80]} },
+    roller:{ H:{SMX:[20,27,34,42],SGN:[12,17,22,28],DIS:[6,12,21,42],DGN:[4,7,12,20],STA:[25,40,65,95]}, F:{SMX:[18,24,31,38],SGN:[11,15.5,20,25]} },
+    longboard:{ H:{SMX:[16,23,30,38],SGN:[9,13,17,21],DIS:[5,10,18,30],DGN:[3,6,10,16],STA:[25,40,65,95]} },
+    surfskate:{ H:{SMX:[14,19,24,29],SGN:[7,10,13,16],DIS:[3,5,8,12],DGN:[2,3.5,5.5,8],STA:[20,35,50,75]} },
+    skate:{ H:{SMX:[13,18,23,28],SGN:[6,9,12,15],DIS:[2,4,7,11],DGN:[1.5,2.5,4.5,7],STA:[20,30,45,70]} },
+    longueur:{ H:{DIS:[4.8,5.6,6.3,7]}, F:{DIS:[3.8,4.6,5.15,5.6]} },
+    perche:{ H:{HMX:[2.4,3.3,4.1,4.8]}, F:{HMX:[1.8,2.5,3,3.4]} },
+    swim:{ H:{SMX:[2.5,3.3,4.1,5],SGN:[1.8,2.4,3,3.7],DIS:[1,2.5,5,10],DGN:[0.8,1.5,2.8,4.5],STA:[25,40,60,90]}, F:{SMX:[2.2,2.9,3.7,4.5],SGN:[1.6,2.1,2.7,3.4],DGN:[0.7,1.4,2.5,4]} },
+    windsurf:{ H:{SMX:[25,37,48,60],SGN:[12,18,25,32],DIS:[10,22,40,65],DGN:[7,14,25,40],STA:[45,75,115,160]} },
+    wingfoil:{ H:{SMX:[22,32,41,50],SGN:[12,17,22,28],DIS:[10,20,38,60],DGN:[7,14,24,38],STA:[45,75,115,160]} },
+    parawing:{ H:{SMX:[20,28,36,44],SGN:[11,15,20,25],DIS:[8,16,30,50],DGN:[5,11,20,32],STA:[40,65,100,145]} },
+    kitesurf:{ H:{SMX:[28,40,52,64],SGN:[15,21,27,34],DIS:[12,25,45,75],DGN:[8,16,28,45],STA:[45,75,115,165]} },
+    deriveur:{ H:{SMX:[13,19,26,34],SGN:[7,10,13.5,17],DIS:[8,16,28,45],DGN:[5,10,18,28],STA:[60,100,150,210]} },
+    surf:{ H:{SMX:[16,22,28,34],SGN:[10,14,18,22],DIS:[3,6,10,15],DGN:[2,4,7,10],STA:[45,75,110,150]} },
+    bodyboard:{ H:{SMX:[14,20,25,30],SGN:[9,13,16.5,20],DIS:[2.5,5,8,12],DGN:[1.5,3,5.5,8],STA:[45,75,110,150]} },
+    surffoil:{ H:{SMX:[20,26,32,38],SGN:[13,17,21,25],DIS:[4,8,15,25],DGN:[2.5,5,9,15],STA:[40,65,95,130]} },
+    pumpfoil:{ H:{SMX:[14,18,21,24],SGN:[11,14,16.5,19],DIS:[0.5,1.5,3.5,7],DGN:[0.3,0.8,2,4],STA:[15,25,40,60]} },
+    supdownwind:{ H:{SMX:[22,28,34,40],SGN:[14,18,22,26],DIS:[8,15,25,40],DGN:[5,10,18,28],STA:[35,55,85,120]} },
+    sup:{ H:{SMX:[8,10,12,13.8],SGN:[5.5,7,8.5,10],DIS:[5,10,18,30],DGN:[3,6,10,16],STA:[35,55,85,125]}, F:{SMX:[7.2,9,10.8,12.5],SGN:[5,6.3,7.7,9.1],DIS:[5,10,16,26],DGN:[3,5.5,9,14]} },
+    canoe:{ H:{SMX:[10,12.5,15,17.5],SGN:[6.5,8.5,10.5,12.5],DIS:[8,15,25,40],DGN:[5,9,15,22],STA:[40,65,100,145]}, F:{SMX:[9,11.2,13.5,15.8],SGN:[6,7.7,9.5,11.3],DIS:[7,13,22,35],DGN:[4.5,8,13,19]} },
+    efoil:{ H:{SMX:[22,30,38,45],SGN:[15,20,25,30],DIS:[8,15,24,35],DGN:[5,10,17,25],STA:[25,40,60,85]} },
+    jetski:{ H:{SMX:[50,70,90,110],SGN:[28,40,52,65],DIS:[20,45,80,130],DGN:[15,30,55,90],STA:[35,60,95,140]} } };
+  let myBar="H"; try{ if(localStorage.getItem("lf.comm.bar")==="F") myBar="F"; }catch(e){}
+  function barOf(k, sex){ var b=LF_BAR[k]; if(!b) return null; var o={}; Object.keys(b.H).forEach(function(q){ o[q]=b.H[q]; }); if(sex==="F" && b.F) Object.keys(b.F).forEach(function(q){ o[q]=b.F[q]; }); return o; }
+  // note de 1 à 99 d'un indicateur : chaque palier du barème tombe dans la couleur correspondante (borne basse incluse, borne haute exclue)
+  function barNote(x, t){ x=+x||0; if(!(x>0)) return 20; var f=function(a,b){ return (x-a)/(b-a); };
+    if(x<t[0]) return Math.min(49, Math.floor(20+29*x/t[0])); if(x<t[1]) return 50+Math.floor(15*f(t[0],t[1])); if(x<t[2]) return 65+Math.floor(10*f(t[1],t[2])); if(x<t[3]) return 75+Math.floor(17*f(t[2],t[3]));
+    return Math.min(99, 92+Math.floor(7*(x-t[3])/(t[3]-t[2]))); }
+  function barIdx(n){ return n>=92?4:n>=75?3:n>=65?2:n>=50?1:0; }
+  const BAR_NAME=["Bleu","Bronze","Argent","Or","Icône"], BAR_CLS=["t-blue","t-bronze","t-silver","t-gold","t-icon"], BAR_RNG=[[1,49],[50,64],[65,74],[75,91],[92,99]];
+  // blason de la carte : 1 pt Bronze, 2 Argent, 3 Or, 4 Icône par indicateur, moyenne pondérée (40 % vitesse générale, 25 % distance / dénivelé, 20 % vitesse max, 15 % durée)
+  function barCard(bn){ var w={}, dk=["DIS","DGN","ALT","HMX"].filter(function(q){ return bn[q]; }); if(bn.SGN) w.SGN=0.4; if(bn.SMX) w.SMX=0.2; if(bn.STA) w.STA=0.15; dk.forEach(function(q){ w[q]=0.25/dk.length; });
+    var W=0, P=0, N=0; Object.keys(w).forEach(function(q){ W+=w[q]; P+=w[q]*barIdx(bn[q]); N+=w[q]*bn[q]; }); if(!W) return 20;
+    var ti=Math.max(0, Math.min(4, Math.floor(P/W+0.5))), r=BAR_RNG[ti]; return Math.max(r[0], Math.min(r[1], Math.round(N/W))); }
+  // fenêtre (secondes) sur laquelle la vitesse max doit être tenue : écarte les sauts du GPS
+  function barWin(sp){ if(sp.k==="swim") return 60; if(sp.fam==="terre" && sp.k!=="velo" && sp.k!=="ski" && sp.k!=="snowboard") return 30; return 10; }
   // couleurs : bleu 1-49, bronze 50-64, argent 65-74, or 75-91, icône 92-99
   function cardTier(n){ return n>=92?["t-icon","ICÔNE"]:n>=75?["t-gold","OR"]:n>=65?["t-silver","ARGENT"]:n>=50?["t-bronze","BRONZE"]:["t-blue","BLEU"]; }
   function lfDist(a,b){ var R=6371000, dLa=(b.lat-a.lat)*Math.PI/180, dLo=(b.lon-a.lon)*Math.PI/180, x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(x))); }
@@ -8494,8 +8547,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(+a.official>0) m.jD=Math.max(m.jD, +a.official); m.jDs=J.map(function(j){ return +j.d||0; }).filter(function(x){ return x>0; }); if(+a.official>0) m.jDs.push(+a.official);
     m.jHs=J.map(function(j){ return +j.h||0; }).filter(function(x){ return x>0; });
     var AL=P.map(function(p){ return +p.alt; }).filter(function(x){ return isFinite(x) && x!==0; }); m.altMax=AL.length?Math.max.apply(null,AL):0; m.altAvg=AL.length?AL.reduce(function(x,y){ return x+y; },0)/AL.length:0;
+    if(m.dur>0 && m.d>0) m.sg=m.d/(m.dur/3600);
     if(P.length<5) return m;
-    var sp2=P.map(function(p){ return +p.speed||0; }).slice().sort(function(x,y){ return x-y; }); m.vmax=Math.min(m.vmax||1e9, sp2[Math.floor(sp2.length*0.98)]||m.vmax); // écarte les pics GPS
+    var vRaw=m.vmax; var sp2=P.map(function(p){ return +p.speed||0; }).slice().sort(function(x,y){ return x-y; }); m.vmax=Math.min(m.vmax||1e9, sp2[Math.floor(sp2.length*0.98)]||m.vmax); // écarte les pics GPS
     var thr=sp.thr, tFly=0, tMove=0, last=null, alt0=P[0].alt||0, mv=[], hd=null, hdT=0, inWave=false, base=0, peaks=0, prevS=P[0].speed||0, rising=false;
     for(var i=1;i<P.length;i++){ var p=P[i], q=P[i-1], dt=Math.max(0, (p.t||0)-(q.t||0)); if(dt>30) dt=0; var v=+p.speed||0;
       if(v>thr){ tMove+=dt; mv.push(v); } if(v>thr) tFly+=dt;
@@ -8504,6 +8558,25 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(i>=5){ var o=P[i-5], dts=(p.t||0)-(o.t||0); if(dts>0 && dts<12){ var g=(v-(+o.speed||0))/dts; if(g>m.acc) m.acc=g; if(v>thr && (v-(+o.speed||0))>sp.vref*0.12) { if(!inWave){ m.waves++; inWave=true; } } else if(v<thr) inWave=false; } }
       if(v>thr && i%3===0){ var b=bearingOf(P[Math.max(0,i-3)],p); if(hd!=null){ var dd=Math.abs(((b-hd)+540)%360-180); hdT+=dd; if(dd>110) m.turns+=0.5; } hd=b; }
       var up=v>prevS; if(rising && !up && v>thr*0.6 && v<thr*2.2) peaks++; rising=up; prevS=v; }
+    if(LF_BAR[sp.k]){ try{
+      var W=barWin(sp), j0=0, acc=0, cnt=0, vw=0, tCov=0, tMv=0, k8=(sp.k==="pumpfoil"||sp.k==="efoil")?sp.thr:8, a8=0, n8=0, dFly=0, dDesc=0, tDesc=0, dMin=0, aD=+P[0].alt||0, hasAlt=AL.length>P.length*0.5;
+      var glide=(sp.k==="surf"||sp.k==="bodyboard"||sp.k==="surffoil"||sp.k==="pumpfoil"||sp.k==="efoil"), snow=(sp.k==="ski"||sp.k==="snowboard");
+      for(var i2=0;i2<P.length;i2++){ var pp=P[i2], v2=+pp.speed||0; acc+=v2; cnt++;
+        while(j0<i2 && (pp.t||0)-(P[j0].t||0)>W){ acc-=(+P[j0].speed||0); cnt--; j0++; }
+        if(cnt>=3 && (pp.t||0)-(P[j0].t||0)>=W*0.7 && acc/cnt>vw) vw=acc/cnt;
+        if(v2>k8){ a8+=v2; n8++; }
+        if(i2>0){ var qq=P[i2-1], d2=(pp.t||0)-(qq.t||0); if(d2>0 && d2<=30){ tCov+=d2; if(v2>=1.5) tMv+=d2;
+            if(sp.k==="pumpfoil" && v2>sp.thr) dFly+=lfDist(qq,pp);
+            if(snow && hasAlt){ var dz=(+pp.alt||0)-aD; if(dz<-3){ dMin-=dz; aD=+pp.alt||0; } else if(dz>3) aD=+pp.alt||0;
+              if(i2>=3){ var o3=P[i2-3], h3=lfDist(o3,pp); if(h3>5 && ((+pp.alt||0)-(+o3.alt||0))/h3 < -0.03){ dDesc+=lfDist(qq,pp); tDesc+=d2; } } } } } }
+      if(vw>0) m.vmax=Math.min(vRaw||vw, vw);
+      if(m.dur>0 && m.d>0) m.sg=m.d/(m.dur/3600);
+      if(tCov>=m.dur*0.8 && tMv>60 && m.d>0) m.sg=m.d/(tMv/3600);
+      if(glide && n8>=5) m.sg=a8/n8;
+      if(sp.k==="pumpfoil" && dFly>50) m.d=dFly/1000;
+      if(snow && dDesc>200 && tDesc>60){ m.d=dDesc/1000; m.sg=m.d/(tDesc/3600); m.durA=tDesc; m.dminus=dMin; }
+      if(m.sg>0 && m.vmax>0) m.sg=Math.min(m.sg, m.vmax);
+    }catch(e){} }
     m.fly = m.dur>0 ? tFly/m.dur : 0;
     m.turnsH = m.dur>0 ? (hdT/360)/(m.dur/3600) : 0;
     m.pump = tMove>0 ? peaks/(tMove/60) : 0;
@@ -8545,11 +8618,18 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       AMX:max(function(m){ return m.altMax||0; }), AGN:mean(M.map(function(m){ return m.altAvg||0; }).filter(function(x){ return x>0; })), HMX:max(function(m){ return m.jH; }), HGN:mean(JH) };
     var nrm={ SMX:real.SMX/sp.vref, SGN:real.SGN/(sp.vref*0.55), DIS:real.DIS/sp.dref, DGN:real.DGN/(sp.dref*0.6), ALT:real.ALT/600, STA:real.STA/120, WAV:real.WAV/150, AMX:real.AMX/3000, AGN:real.AGN/1500, HMX:real.HMX/4, HGN:real.HGN/3 };
     if(sp.k==="longueur"){ real.DIS=max(function(m){ return m.jD; }); real.DGN=mean(JD); nrm.DIS=real.DIS/8.5; nrm.DGN=real.DGN/6.5; }
-    var keys=spStats(sp.k), st=keys.map(function(k){ return rate(nrm[k]); });
+    var B=barOf(sp.k, myBar), bn=null;
+    if(B){ var top3=function(a){ return mean(a.filter(function(x){ return x>0; }).sort(function(x,y){ return y-x; }).slice(0,3)); };
+      real.SMX=top3(M.map(function(m){ return m.vmax; })); real.SGN=top3(M.map(function(m){ return m.sg||0; }));
+      real.DIS = sp.k==="longueur" ? top3(JD) : top3(M.map(function(m){ return m.d; }));
+      if(sp.k==="perche") real.HMX=top3(JH);
+      if(sp.k==="ski" || sp.k==="snowboard"){ real.ALT=avg(function(m){ return m.dminus||0; }); real.STA=avg(function(m){ return m.durA||m.dur; })/60; }
+      bn={}; Object.keys(B).forEach(function(q){ bn[q]=barNote(real[q], B[q]); }); }
+    var keys=spStats(sp.k), st=keys.map(function(k){ return bn ? (bn[k]||0) : rate(nrm[k]); });
     // 13/11 : valeurs réelles affichées sur la carte (vitesse max en km/h, plus longue sortie en km)
     var r1=function(x){ return isFinite(x)&&x>0 ? Math.round(x*10)/10 : 0; };
     var vv={}; keys.forEach(function(k){ vv[k] = (k==="ALT"||k==="AMX"||k==="AGN"||k==="STA"||k==="WAV") ? Math.round(real[k]||0) : (k==="HMX"||k==="HGN"||sp.k==="longueur"&&(k==="DIS"||k==="DGN")) ? Math.round((real[k]||0)*100)/100 : r1(real[k]); });
-    return { k:sp.k, n:n, r:Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st, v:vv }; }
+    return { k:sp.k, n:n, r: bn ? barCard(bn) : Math.round(st.reduce(function(x,y){return x+y;},0)/st.length), s:st, v:vv }; }
   // valeur affichée d'une stat : [texte, unité]. Toutes les stats sont des valeurs réelles (les cartes publiées par une ancienne version n'ont que la vitesse max et la distance).
   function cardVal(c, st, i, k){ var inf=stInfo(k, st), v=c&&c.v||{}, x=+v[st]||0; if(!x && st==="SMX") x=+v.SPD||0; if(!x && st==="DIS" && !v.SMX) x=+v.DIS||0;
     if(!(x>0)) return [ (st==="WAV" && c && c.n && v.SMX) ? "0" : "—", inf[2] ];
@@ -9188,7 +9268,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel&&!mdSel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>'+spIco("trophy")+' Globale</span></button>'
       +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("")
       +MD.map(function(m,i){ return '<button type="button" class="fc-th md'+m.r+(mdSel===m?' on':'')+'" data-cs="md:'+i+'"><b>'+MD_ICO[m.r-1]+'</b><span>'+esc(LF_SP[m.s].name)+'</span></button>'; }).join("");
-    var legend = mdSel ? '<div class="gc-count"><b>Carte '+MD_NAME[mdSel.r-1]+' de la semaine</b> · <b>'+esc(LF_SP[mdSel.s].name)+'</b> · <span>semaine du</span> <span data-no-i18n>'+esc(mdWeekLabel(mdSel.w))+'</span></div>' : sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+spStats(sel).map(function(s,i){ var cv=cardVal(cur,s,i,sel), inf=stInfo(sel,s); return '<div><span><b>'+esc(inf[0])+'</b> · '+esc(inf[1])+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+'</b></div>'; }).join("")+'</div>'
+    var legend = mdSel ? '<div class="gc-count"><b>Carte '+MD_NAME[mdSel.r-1]+' de la semaine</b> · <b>'+esc(LF_SP[mdSel.s].name)+'</b> · <span>semaine du</span> <span data-no-i18n>'+esc(mdWeekLabel(mdSel.w))+'</span></div>' : sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+spStats(sel).map(function(s,i){ var cv=cardVal(cur,s,i,sel), inf=stInfo(sel,s), nt=LF_BAR[sel]&&cur.n?(+cur.s[i]||0):0, ti=barIdx(nt), tb=(mine&&barOf(sel,myBar)||{})[s], nx="";
+          if(nt && tb && ti<4) nx='<small class="bar-nx">'+BAR_NAME[ti+1]+" à partir de "+String(tb[ti]).replace(".",",")+(inf[2]?" "+inf[2]:"")+'</small>';
+          return '<div><span><b>'+esc(inf[0])+'</b> · '+esc(inf[1])+nx+'</span><b>'+esc(cv[0]+(cv[1]?" "+cv[1]:""))+(nt?'<i class="bar-t '+BAR_CLS[ti]+'">'+BAR_NAME[ti]+'</i>':'')+'</b></div>'; }).join("")+'</div>'
+        +(LF_BAR[sel]?'<div class="gc-count">Barème Lite Foil '+esc(sp.name)+' : Bronze = pratique loisir, Argent = pratiquant régulier, Or = compétiteur confirmé, Icône = niveau national. La carte compte la vitesse générale pour 40 %, la distance et le dénivelé pour 25 %, la vitesse max pour 20 % et la durée pour 15 %.</div>':'')
         +(mine&&!cur.n?'<div class="gc-count">Enregistre une sortie de '+esc(sp.name)+' dans Tracking pour faire monter cette carte.</div>':'')
       : '<div class="gc-count">La carte principale fait la moyenne de tes sports, en comptant plus ceux que tu pratiques le plus.</div>';
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Mes Cartes Membre":"Cartes Membre")+'</b><span></span></div><div class="gc-body">'
@@ -9197,9 +9280,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +'<button class="rc-share-btn" id="rcShare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Partager '+(mine?"ma":"cette")+' carte</button>'
       +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de toi en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
       +legend
+      +(mine?'<div class="gi-mlabel">Mon barème</div><div class="bar-sex"><button type="button" data-bar="H" class="'+(myBar==="H"?"on":"")+'">Homme</button><button type="button" data-bar="F" class="'+(myBar==="F"?"on":"")+'">Femme</button></div>':'')
       +'<div class="gi-mlabel">Niveaux des cartes</div><div class="fc-tiers"><span class="t-blue">1-49 Bleu</span><span class="t-bronze">50-64 Bronze</span><span class="t-silver">65-74 Argent</span><span class="t-gold">75-91 Or</span><span class="t-icon">92-99 Icône</span></div>'
       +'</div></div>';
     o.querySelectorAll("[data-cs]").forEach(function(b){ b.addEventListener("click", function(){ openRiderCard(uid, b.dataset.cs||null); }); });
+    o.querySelectorAll("[data-bar]").forEach(function(b){ b.addEventListener("click", function(){ myBar=b.dataset.bar==="F"?"F":"H"; try{ localStorage.setItem("lf.comm.bar", myBar); }catch(e){} try{ publishRatings(); }catch(e){} openRiderCard(uid, sel); }); });
     var rs=$("rcSports"); if(rs) rs.addEventListener("click", function(){ openSportsPicker(); });
     $("rcClose").addEventListener("click", closeOverlay);
     var sb=$("rcShare"); if(sb) sb.addEventListener("click", function(){ shareRiderCard(uid, sel); });
