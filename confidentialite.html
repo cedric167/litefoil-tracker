@@ -7,7 +7,7 @@
 <link rel="icon" href="icon-192.png">
 <script src="i18n/i18n.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Instrument+Serif&display=swap">
-<title>Lite Foil Tracker : confidentialité</title>
+<title>Lite Foil : confidentialité</title>
 <!-- Privacy policy of the Lite Foil Tracker app, required by the Play Store listing.
      Plain statements of what the app does with data; nothing here is marketing. -->
 <style>
@@ -26,81 +26,111 @@
   <div data-lang-picker="row" style="float:right;margin-top:8px"></div>
   <img src="litefoil-logo.png" alt="Lite Foil" style="height:48px">
   <h1>Politique de confidentialité</h1>
-  <p class="muted">Application « Lite Foil Tracker » · dernière mise à jour : 19 octobre 2026</p>
+  <p class="muted">Application « Lite Foil » (téléphone, Apple Watch, montre Android) · dernière mise à jour : 19 novembre 2026</p>
 
-  <p>L'application Lite Foil Tracker sert à configurer, par Bluetooth, le tracker GPS Lite Foil :
-    y enregistrer le compte SportsTrackLive dans lequel les sorties seront publiées, démarrer ou arrêter
-    le suivi, et voir l'état du tracker. Elle donne aussi accès au site litefoil.fr.</p>
-  <p>Elle sert aussi à suivre et régler, par Bluetooth, la batterie, le contrôleur moteur et la télécommande
-    de la planche (onglets et ateliers Batterie et VESC).</p>
+  <p>Lite Foil est l'application des pratiquants d'eFoil, de sports nautiques, de sports terrestres et d'ULM :
+    enregistrement des sorties par GPS, météo, communauté de membres, alerte SOS vers vos proches, et réglage par
+    Bluetooth du matériel Lite Foil (tracker GPS, batterie, contrôleur moteur, télécommande).</p>
+  <p>Cette page décrit, simplement, les données que l'application utilise, où elles vont et comment les supprimer.
+    L'éditeur est Lite Foil. Pour toute question : <a href="https://litefoil.fr/pages/contact" target="_blank" rel="noopener">litefoil.fr/pages/contact</a>.</p>
 
-  <h2>Données saisies dans l'application</h2>
+  <h2>Sans compte</h2>
+  <p>Une partie de l'application s'utilise sans compte : météo, enregistrement de vos sorties sur le téléphone, réglage
+    du matériel par Bluetooth. Dans ce cas, vos sorties et vos réglages restent sur votre téléphone.</p>
+
+  <h2>Votre compte membre</h2>
   <ul>
-    <li><strong>L'e-mail et le mot de passe de votre compte SportsTrackLive.</strong> Ils sont transmis par
-      Bluetooth au tracker, qui les conserve dans sa mémoire et les utilise pour se connecter à
-      sportstracklive.com et y publier vos sorties. Ils ne sont envoyés à aucun serveur de Lite Foil.
-      Le bouton « Effacer le compte » les supprime du tracker.</li>
-    <li>Si vous renseignez la clé d'application (option avancée), l'application vérifie elle-même vos
-      identifiants auprès de sportstracklive.com avant de les enregistrer. Le mot de passe n'est pas
-      conservé par l'application ; l'e-mail et la clé le sont, sur votre téléphone uniquement, pour
-      pré-remplir le formulaire.</li>
+    <li><b>Ce que vous donnez</b> : une adresse e-mail et un mot de passe, ou une connexion par votre compte Apple ou Google ;
+      un pseudo ; et, si vous le souhaitez, une photo de profil, une courte présentation, vos sports et votre matériel.</li>
+    <li><b>À quoi cela sert</b> : vous identifier, afficher votre profil aux autres membres, vous permettre d'échanger avec eux.</li>
+    <li>Votre mot de passe n'est jamais visible par Lite Foil : la connexion est gérée par le service d'authentification de Google (Firebase).</li>
   </ul>
 
-  <h2>Données venant du tracker</h2>
-  <p>Position, vitesse, satellites, batterie, état du réseau et de la session sont lus par Bluetooth pour
-    être affichés à l'écran. Ils ne sont ni enregistrés par l'application ni transmis par elle.</p>
-
-  <h2>Batterie, contrôleur moteur et télécommande</h2>
-  <p>Leurs mesures (tension, courant, cellules, températures, régime…) et leurs réglages sont lus par Bluetooth
-    pour être affichés et modifiés. Les réglages modifiés sont enregistrés dans l'appareil concerné, jamais
-    sur un serveur.</p>
-
-  <h2>Données gardées sur votre téléphone</h2>
+  <h2>Ce que vous publiez dans la communauté</h2>
   <ul>
-    <li>Des copies des réglages de la batterie et du contrôleur moteur, faites automatiquement avant chaque
-      modification, pour pouvoir revenir en arrière.</li>
-    <li>Les sessions que vous enregistrez dans l'Atelier VESC : trace GPS et mesures du contrôleur.</li>
-    <li>La langue choisie et le dernier appareil Bluetooth utilisé.</li>
-  </ul>
-  <p>Ces données ne quittent le téléphone que si vous les téléchargez vous-même (fichiers de sauvegarde,
-    CSV, GPX). Vous pouvez les supprimer dans l'application ou en effaçant les données du site.</p>
-
-  <h2>Position du téléphone</h2>
-  <p>Seulement quand vous lancez une session dans l'Atelier VESC, et après votre accord, l'application lit
-    la position du téléphone pour tracer la sortie sur la carte. Cette trace reste sur le téléphone.</p>
-
-  <h2>Ce que fait le tracker</h2>
-  <p>Le tracker envoie ses positions à SportsTrackLive, dans le compte que vous lui avez indiqué
-    (<a href="https://www.sportstracklive.com/" target="_blank" rel="noopener">sportstracklive.com</a>, voir
-    leur propre politique de confidentialité), et au service technique de SportsTrackLive qui identifie le
-    tracker par son numéro de série. Ces envois dépendent de votre compte SportsTrackLive, pas de Lite Foil.</p>
-
-  <h2>Ce que l'application ne fait pas</h2>
-  <ul>
-    <li>Pas de compte Lite Foil, pas de serveur Lite Foil : aucune donnée n'est collectée par l'éditeur.</li>
-    <li>Pas de mesure d'audience, pas de publicité, pas de traceur.</li>
-    <li>Pas d'accès à la position du téléphone en dehors des sessions que vous lancez vous-même.</li>
+    <li>Messages privés, messages de groupe et d'événement, publications, commentaires, photos, vidéos, stories, annonces
+      de matériel d'occasion, inscriptions aux événements, relations d'amis et d'abonnés.</li>
+    <li>Les publications, votre profil et vos statistiques de sorties (distance, nombre de sorties, classement des défis)
+      sont visibles des autres membres. Les messages privés ne sont visibles que de leurs destinataires.</li>
+    <li>Le numéro de téléphone que vous indiquez dans une annonce n'est visible que des membres connectés.</li>
+    <li>Les appels audio et vidéo entre membres passent directement entre les deux téléphones quand c'est possible ;
+      ils ne sont pas enregistrés par Lite Foil.</li>
   </ul>
 
-  <h2>Services tiers chargés par la page</h2>
+  <h2>Votre position</h2>
   <ul>
-    <li>Polices de caractères chargées depuis Google Fonts (fonts.googleapis.com) : votre adresse IP est
-      alors vue par Google, comme pour toute ressource web.</li>
-    <li>La vidéo et le logo d'accueil sont chargés depuis le site litefoil.fr (hébergé par Shopify).</li>
-    <li>Les cartes sont chargées depuis Esri (vue satellite) et OpenStreetMap, et leur outil d'affichage depuis
-      cdnjs.cloudflare.com : ces services voient votre adresse IP et les zones de carte affichées.</li>
-    <li>La page elle-même est hébergée par GitHub Pages, qui voit les adresses IP des visiteurs.</li>
+    <li><b>Enregistrement d'une sortie</b> : quand vous lancez une sortie, l'application lit la position du téléphone (ou de la
+      montre) pour tracer le parcours, y compris écran éteint. La trace est gardée sur votre téléphone. Elle n'est publiée
+      que si vous le choisissez (partage, publication en direct, compte SportsTrackLive).</li>
+    <li><b>SOS et partage de sortie</b> : si vous déclenchez un SOS ou partagez votre sortie en direct, votre position est
+      envoyée à notre serveur et visible, par un lien, des proches que vous avez choisis, jusqu'à la fin de l'alerte ou
+      de la sortie. L'application prévient vos proches ; elle n'appelle pas les secours à votre place.</li>
+    <li><b>« Près de moi »</b> : seulement si vous l'activez, votre position approximative est visible des autres membres
+      sur la carte. Vous pouvez la désactiver à tout moment.</li>
+    <li><b>Météo</b> : votre position approximative sert à demander la météo du lieu où vous êtes.</li>
   </ul>
 
-  <h2>Autorisations</h2>
-  <p>Bluetooth, pour parler au tracker « LITEFOIL-TRACKER » et aux autres appareils de la planche, que vous
-    choisissez vous-même dans la liste. Position, seulement pour les sessions de l'Atelier VESC. Aucune autre
-    autorisation.</p>
+  <h2>Notifications</h2>
+  <p>Si vous les autorisez, votre appareil reçoit un identifiant technique de notification (fourni par Apple ou Google),
+    que nous conservons pour vous prévenir des messages, des appels et des alertes SOS de vos proches. Vous pouvez les
+    couper dans les réglages du téléphone.</p>
 
-  <h2>Suppression des données</h2>
-  <p>« Effacer le compte » dans l'application retire l'e-mail et le mot de passe du tracker. Effacer les
-    données du site dans votre navigateur retire l'e-mail et la clé mémorisés sur le téléphone. Pour vos
-    sorties, utilisez votre compte SportsTrackLive.</p>
+  <h2>Micro, caméra, photos</h2>
+  <p>Utilisés seulement quand vous passez un appel, filmez, ou choisissez une photo ou une vidéo à publier.</p>
+
+  <h2>Montres connectées</h2>
+  <p>L'application montre mesure votre sortie avec le GPS de la montre et l'envoie à votre téléphone. Pendant un SOS
+    déclenché depuis la montre, sa position est envoyée à notre serveur pour vos proches. La montre demande aussi la
+    météo du lieu où vous êtes. Si vous autorisez le capteur cardiaque, votre fréquence cardiaque est affichée pendant
+    la sortie ; elle n'est pas envoyée à Lite Foil.</p>
+
+  <h2>Matériel Lite Foil en Bluetooth</h2>
+  <ul>
+    <li>Les mesures et réglages de la batterie, du contrôleur moteur, de la télécommande et du tracker sont lus par
+      Bluetooth pour être affichés et modifiés. Les réglages sont enregistrés dans l'appareil concerné, et des copies
+      de sauvegarde restent sur votre téléphone.</li>
+    <li>Si vous utilisez le tracker GPS Lite Foil avec un compte SportsTrackLive, l'e-mail et le mot de passe de ce compte
+      sont transmis par Bluetooth au tracker, qui les garde en mémoire pour publier vos sorties sur
+      <a href="https://www.sportstracklive.com/" target="_blank" rel="noopener">sportstracklive.com</a>. Le bouton « Effacer le compte » les retire du tracker.</li>
+  </ul>
+
+  <h2>Où sont vos données et qui y a accès</h2>
+  <ul>
+    <li><b>Google Firebase</b> (comptes, messages, publications, photos et vidéos, notifications, positions SOS) : c'est
+      l'hébergeur de nos données. Elles sont accessibles à Lite Foil pour faire fonctionner et modérer le service.</li>
+    <li><b>Apple et Google</b> : acheminement des notifications ; connexion « Continuer avec Apple / Google » si vous l'utilisez.</li>
+    <li><b>SportsTrackLive</b> : seulement si vous y connectez votre compte, pour publier vos sorties.</li>
+    <li><b>Météo et cartes</b> : Open-Meteo, services de météo aéronautique, Esri, OpenStreetMap et openflightmaps reçoivent
+      la zone demandée et votre adresse IP, comme tout service web.</li>
+    <li><b>Hébergement des pages</b> : GitHub Pages et Firebase Hosting voient les adresses IP des visiteurs ; les polices
+      viennent de Google Fonts ; la boutique litefoil.fr est hébergée par Shopify.</li>
+  </ul>
+  <p>Nous ne vendons pas vos données. L'application n'affiche pas de publicité et n'utilise pas d'outil de mesure
+    d'audience ni de traceur publicitaire.</p>
+
+  <h2>Durée de conservation</h2>
+  <p>Vos données de compte et vos contenus sont conservés tant que votre compte existe. Les positions d'un SOS ou d'une
+    sortie partagée ne servent que pendant l'alerte ou la sortie. Les stories disparaissent d'elles-mêmes.</p>
+
+  <h2>Supprimer vos données</h2>
+  <ul>
+    <li>Vous pouvez supprimer vos messages, publications, photos et vidéos dans l'application.</li>
+    <li>Vous pouvez supprimer votre compte depuis l'application : votre compte, votre profil, votre pseudo, vos statistiques
+      et vos identifiants de notification sont alors effacés de nos serveurs. Les messages et publications déjà envoyés
+      peuvent rester visibles de leurs destinataires : supprimez-les avant, ou demandez leur effacement par le
+      formulaire de contact, nous le ferons.</li>
+    <li>Les sorties et réglages gardés sur le téléphone s'effacent en désinstallant l'application ou en effaçant ses données.</li>
+  </ul>
+
+  <h2>Vos droits</h2>
+  <p>Conformément au règlement européen sur la protection des données (RGPD), vous pouvez demander l'accès à vos
+    données, leur rectification, leur effacement ou leur portabilité, et vous opposer à leur traitement, en écrivant
+    par le formulaire de contact. Vous pouvez aussi saisir la CNIL (<a href="https://www.cnil.fr/" target="_blank" rel="noopener">cnil.fr</a>).</p>
+
+  <h2>Sécurité et bon usage</h2>
+  <p>L'application est une aide : elle ne remplace ni la prudence, ni les moyens de secours, ni, pour l'aviation,
+    les instruments et documents officiels. Signalez tout contenu ou comportement abusif depuis l'application :
+    les comptes concernés peuvent être suspendus.</p>
 
   <h2>Contact</h2>
   <p>Lite Foil, via le formulaire du site : <a href="https://litefoil.fr/pages/contact" target="_blank" rel="noopener">litefoil.fr/pages/contact</a>.</p>
