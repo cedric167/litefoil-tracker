@@ -5584,7 +5584,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         return Promise.all(ups).then(function(){ return authMod.signOut(auth); }); },
       pushNote(o){ if(!lfPushKey) return Promise.resolve(); return db.update(db.ref(d,"pushTokens/"+uid+"/"+lfPushKey), o).catch(function(){}); },
       savePushToken(token,plat){ const key=String(token).replace(/[.#$\[\]\/]/g,"_"); lfPushKey=key;
-        return db.set(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,ss:(plat==="android" && /LiteFoilSosScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
+        return db.update(db.ref(d,"pushTokens/"+uid+"/"+key),{token,pseudo:me.pseudo||null,v:404,plat:plat||"web",cs:(plat==="android" && /LiteFoilCallScreen\//.test(navigator.userAgent))?1:null,ss:(plat==="android" && /LiteFoilSosScreen\//.test(navigator.userAgent))?1:null,t:db.serverTimestamp()}); },   /* cs : appli avec écran d'appel natif (1.6.0+) */
       // compteurs de non-lus tenus par le serveur (chiffre sur l'icône) : on remet à zéro en lisant
       clearUnread(key){ if(!key) return Promise.resolve(); return db.remove(db.ref(d,"unread/"+uid+"/"+key)).catch(function(){}); },
       watchEventMsgs(eid,cb){ const q=db.query(db.ref(d,"eventMessages/"+eid), db.limitToLast(50));
@@ -6394,7 +6394,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       const waits=[0,2000,5000,12000,30000]; let got=false;
       const ask=async function(i){ if(got) return true;
         try{ const r=await FM.getToken(); if(r && r.token && backend && backend.savePushToken){ got=true; nativePushReady=true; await backend.savePushToken(r.token, plat);
-            try{ const pm=await FM.checkPermissions(); if(backend.pushNote) backend.pushNote({ pm:String(pm && pm.receive), v:402 }); }catch(e){} return true; } }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); }
+            try{ const pm=await FM.checkPermissions(); if(backend.pushNote) backend.pushNote({ pm:String(pm && pm.receive) }); }catch(e){} return true; } }catch(e){ console.warn("Jeton de notification pas encore prêt :", e && e.message); }
         if(i+1<waits.length) setTimeout(function(){ ask(i+1); }, waits[i+1]); return false; };
       await ask(0); return true;
     }catch(e){ console.warn("Notifications natives indisponibles :", e); return false; }
