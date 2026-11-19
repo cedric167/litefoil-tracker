@@ -9947,6 +9947,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(k==="ext"){ try{ window.open(b.dataset.to, "_blank", "noopener"); }catch(x){ location.href=b.dataset.to; } return; }
       if(k==="br"){ var w=b.dataset.to, n=0; lfGoTab("bonride"); (function tryGo(){ if(window.LFBonRide && window.LFBonRide.go && document.querySelector("#tab-bonride .br-hero, #tab-bonride .br-back")){ window.LFBonRide.go(w); return; } if(++n<40) setTimeout(tryGo, 200); })(); return; }
       if(k==="cfg"){ if(window.__efCfg) window.__efCfg.open(); return; }
+      if(k==="watch"){ if(window.__lfWatch) window.__lfWatch.open(); return; }
       if(k==="go"){ var t=document.querySelector('[data-goto="'+b.dataset.to+'"]'); if(t) t.click(); else lfGoTab(b.dataset.to); return; } });
     // la sphère : glisser pour tourner (avec élan), toucher une planète, un point ou une flèche pour choisir
     hero.addEventListener("pointerdown", function(e){ if(e.target.closest("[data-uh]")) return;
@@ -10033,7 +10034,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +'<div class="uh-brnote">Ces cartes s’ouvrent sur les sites officiels. Elles ne remplacent pas les NOTAM ni le SUP AIP.</div>'; }
     else pil.innerHTML="";
     if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Mon Lite Foil · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
-        +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit"); uhBt(); }
+        +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit")
+        +uhRow("watch","","#5ff0c8","#0b1114",'<rect x="6.500" y="6" width="11" height="12" rx="3.200"/><path d="M9 6l.700-3h4.600l.700 3M9 18l.700 3h4.600l.700-3M12 10v2.500l1.500 1"/>',"Ma montre","Apple Watch et montres Android : écrans, infos affichées, SOS"); uhBt(); }
     else ef.innerHTML="";
     var br=$("uhBr"); if(!br){ br=document.createElement("div"); br.id="uhBr"; br.className="uh-pane"; ef.parentNode.insertBefore(br, ef.nextSibling); }
     if(c==="bonride"){ br.innerHTML='<button type="button" class="uh-cta" data-uh="go" data-to="bonride" style="background:linear-gradient(135deg,#f5c04a,#a86a00);box-shadow:0 14px 28px rgba(168,106,0,.34)">'+uhIc('<path d="M5 8h14l-1.200 11H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>')+'Voir les annonces</button>'
