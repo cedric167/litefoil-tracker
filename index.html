@@ -11115,7 +11115,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <script>
 /* 19/11 : vidéo du bandeau d'accueil, par univers (boucle muette) */
-(function(){ var VID={ pilote:["media/hero-ulm.mp4","media/hero-ulm.jpg"], terre:["media/hero-terre.mp4","media/hero-terre.jpg"] };
+(function(){ var VID={ pilote:["media/hero-ulm.mp4","media/hero-ulm.jpg"], terre:["media/hero-terre.mp4","media/hero-terre.jpg"], nautique:["media/hero-nautique.mp4","media/hero-nautique.jpg"] };
   var cur="", io=null;
   function uni(){ var c=document.body.classList, k=["pilote","nautique","terre","efoil","bonride"]; for(var i=0;i<k.length;i++) if(c.contains("uni-"+k[i])) return k[i]; return ""; }
   function lite(){ try{ var n=navigator.connection; return !!(n && n.saveData); }catch(e){ return false; } }
@@ -11147,6 +11147,8 @@ body.uni-pilote{--sb1:#3d7df0;--sb2:#142f7a;--sb3:#050b1e;--sl:#cfe0ff;--sc:#1f4
 body.uni-terre #tab-dash .home-cond{background:radial-gradient(120% 140% at 100% 0%,#f0a03c 0%,#b4541a 45%,#4a230b 100%);box-shadow:0 10px 30px rgba(120,60,15,.3)}#tab-dash{position:relative}#tab-dash>.hero-lang{position:absolute;left:12px;top:24px;right:auto;bottom:auto;z-index:3}body.uni-on #tab-dash>.home-shop.uh-sport{display:flex!important;flex-direction:column;justify-content:flex-end;align-items:flex-start;aspect-ratio:16/9;margin:12px 0 14px;padding:18px;border-radius:var(--radius);gap:0;text-align:left;background:radial-gradient(120% 95% at 78% 30%,var(--sb1) 0%,var(--sb2) 46%,var(--sb3) 100%);box-shadow:0 14px 30px rgba(10,20,40,.22)}
 body.uni-on #tab-dash>.home-shop.uh-sport::before{content:"";position:absolute;right:20%;top:11%;width:39%;height:54%;background:linear-gradient(160deg,#fff,var(--sl));-webkit-mask:url(onb-logo.png) center/contain no-repeat;mask:url(onb-logo.png) center/contain no-repeat;pointer-events:none;animation:hsLogo3d 7s ease-in-out infinite alternate;will-change:transform;backface-visibility:hidden}@keyframes hsLogo3d{0%{transform:perspective(520px) rotateY(-38deg) rotateX(5deg)}100%{transform:perspective(520px) rotateY(38deg) rotateX(5deg)}}@media (prefers-reduced-motion:reduce){body.uni-on #tab-dash>.home-shop.uh-sport::before{animation:none}}
 body.uni-on #tab-dash>.home-shop.uh-sport.has-vid{overflow:hidden;background:var(--sb3)}
+body{--su:#ff8be6}body.uni-nautique{--su:#45ecd6}body.uni-terre{--su:#ffab4a}body.uni-pilote{--su:#63a8ff}
+body.uni-on #tab-dash>.home-shop.uh-sport.has-vid .hs-tx,body.uni-on #tab-dash>.home-shop.uh-sport.has-vid .hs-tx *{color:var(--su)!important}body.uni-on #tab-dash>.home-shop.uh-sport.has-vid::before{background:var(--su)}
 .hs-vid{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;opacity:0;transition:opacity .6s ease}.hs-vid.on{opacity:1}
 .hs-shade{position:absolute;left:0;top:0;right:0;bottom:0;z-index:0;pointer-events:none;background:linear-gradient(to top,rgba(4,10,26,.88) 0%,rgba(4,10,26,.42) 38%,rgba(4,10,26,.12) 62%,rgba(4,10,26,.34) 100%)}
 body.uni-on #tab-dash>.home-shop.uh-sport.has-vid::before{z-index:1;opacity:.95;filter:drop-shadow(0 2px 8px rgba(0,0,0,.55));left:auto;top:auto;right:14px;bottom:12px;width:74px;height:46px;animation:none}body.uni-on #tab-dash>.home-shop.uh-sport.has-vid .hs-go{display:none}body.uni-on #tab-dash>.home-shop.uh-sport.has-vid .hs-tx{max-width:70%}
