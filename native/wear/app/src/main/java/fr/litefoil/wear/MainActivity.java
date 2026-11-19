@@ -779,7 +779,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
             LinearLayout tr = new LinearLayout(this);
             tr.setOrientation(LinearLayout.HORIZONTAL);
             for (int i = 0; i < 2; i++) {
-                TextView t = text("", 11, 0xFFD6E6EE, true);
+                TextView t = text("", 13, 0xFFD6E6EE, true);
                 t.setGravity(i == 0 ? Gravity.START : Gravity.END); t.setSingleLine(true);
                 tr.addView(t, new LinearLayout.LayoutParams(0, WRAP, 1f));
                 if (top[i].length() > 0) cells.add(new Object[] { top[i], t, null });
@@ -789,22 +789,22 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         }
 
         int n = keys.length;
-        if (n <= 1) col.addView(cell(n == 1 ? keys[0] : "dur", 50), new LinearLayout.LayoutParams(MATCH, 0, 1f));
+        if (n <= 1) col.addView(cell(n == 1 ? keys[0] : "dur", 66), new LinearLayout.LayoutParams(MATCH, 0, 1f));
         else if (n == 2) {
-            col.addView(cell(keys[0], 32), new LinearLayout.LayoutParams(MATCH, 0, 1f));
-            col.addView(cell(keys[1], 32), new LinearLayout.LayoutParams(MATCH, 0, 1f));
+            col.addView(cell(keys[0], 40), new LinearLayout.LayoutParams(MATCH, 0, 1f));
+            col.addView(cell(keys[1], 40), new LinearLayout.LayoutParams(MATCH, 0, 1f));
         } else if (n == 3) {
-            col.addView(cell(keys[0], 30), new LinearLayout.LayoutParams(MATCH, 0, 1f));
+            col.addView(cell(keys[0], 38), new LinearLayout.LayoutParams(MATCH, 0, 1f));
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.addView(cell(keys[1], 22), new LinearLayout.LayoutParams(0, MATCH, 1f));
-            row.addView(cell(keys[2], 22), new LinearLayout.LayoutParams(0, MATCH, 1f));
+            row.addView(cell(keys[1], 28), new LinearLayout.LayoutParams(0, MATCH, 1f));
+            row.addView(cell(keys[2], 28), new LinearLayout.LayoutParams(0, MATCH, 1f));
             col.addView(row, new LinearLayout.LayoutParams(MATCH, 0, 1f));
         } else {
             for (int r = 0; r < 2; r++) {
                 LinearLayout row = new LinearLayout(this);
                 row.setOrientation(LinearLayout.HORIZONTAL);
-                for (int c = 0; c < 2; c++) row.addView(cell(keys[r * 2 + c], 23), new LinearLayout.LayoutParams(0, MATCH, 1f));
+                for (int c = 0; c < 2; c++) row.addView(cell(keys[r * 2 + c], 30), new LinearLayout.LayoutParams(0, MATCH, 1f));
                 col.addView(row, new LinearLayout.LayoutParams(MATCH, 0, 1f));
             }
         }
@@ -828,11 +828,11 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.VERTICAL);
         c.setGravity(Gravity.CENTER);
-        TextView lb = text(label(k), 9, C_MUTE, false);
+        TextView lb = text(label(k), 11, C_MUTE, false);
         lb.setSingleLine(true);
         TextView val = text("", size, 0xFFFFFFFF, false);
         val.setSingleLine(true); val.setIncludeFontPadding(false);
-        TextView unit = text("", 9, 0xFF4FB8E0, false);
+        TextView unit = text("", 11, 0xFF4FB8E0, false);
         unit.setIncludeFontPadding(false);
         c.addView(lb, new LinearLayout.LayoutParams(WRAP, WRAP));
         c.addView(val, new LinearLayout.LayoutParams(WRAP, WRAP));

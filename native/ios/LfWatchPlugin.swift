@@ -13,7 +13,8 @@ public class LfWatchPlugin: CAPPlugin, CAPBridgedPlugin, WCSessionDelegate {
         CAPPluginMethod(name: "setSos", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "setScreens", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "live", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "status", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "status", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "takeRides", returnType: CAPPluginReturnPromise)
     ]
 
     private var pending: [String: Any]?
@@ -81,6 +82,24 @@ public class LfWatchPlugin: CAPPlugin, CAPBridgedPlugin, WCSessionDelegate {
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         push()
     }
+    /// Sortie terminée sur la montre : on la garde jusqu'à ce que la page vienne la chercher (takeRides).
+    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        guard let r = userInfo["ride"] as? String else { return }
+        let d = UserDefaults.standard
+        var a = d.stringArray(forKey: "lf.watch.rides") ?? []
+        a.append(r)
+        if a.count > 30 { a.removeFirst(a.count - 30) }
+        d.set(a, forKey: "lf.watch.rides")
+        notifyListeners("ride", data: [:])
+    }
+
+    @objc func takeRides(_ call: CAPPluginCall) {
+        let d = UserDefaults.standard
+        let a = d.stringArray(forKey: "lf.watch.rides") ?? []
+        d.removeObject(forKey: "lf.watch.rides")
+        call.resolve(["rides": a])
+    }
+
     public func sessionDidBecomeInactive(_ session: WCSession) { }
     public func sessionDidDeactivate(_ session: WCSession) { WCSession.default.activate() }
     public func sessionWatchStateDidChange(_ session: WCSession) { push() }

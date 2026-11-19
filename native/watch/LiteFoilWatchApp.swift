@@ -55,6 +55,13 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     private var prevFix: CLLocation?
     private var lastTick = Date()
     private var lastTouch = Date()
+    // trace de la sortie : [latitude, longitude, vitesse km/h, seconde, altitude], un point toutes les 2 secondes
+    private var track: [[Double]] = []
+    private var lastTrackS = -10.0
+    // météo demandée par la montre elle-même (vent, température)
+    private var wx: [String: String] = [:]
+    private var wxAt = Date.distantPast
+    private var wxBusy = false
     static let autoLockS = 8.0   // secondes sans toucher l'écran avant le verrouillage automatique pendant la sortie
     // runs sur le foil
     private(set) var onFoil = false
@@ -162,6 +169,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         runS = 0; moveS = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = nil; prevFix = nil
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilS = 0; foilDistM = 0; longRunS = 0; longRunDistM = 0; runMaxKmh = 0
         startDate = Date(); lastTick = Date(); lastTouch = Date()
+        track = []; lastTrackS = -10
         running = true; paused = false; locked = false
         page = 0; screen = .run
         startLocation()
@@ -174,6 +182,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     func stopRide(keep: Bool) {
         endFoilRun()
+        if keep { sendRide() }
         running = false; paused = false; locked = false; curKmh = 0
         if phase != .active && phase != .sending { stopLocation() }
         WKInterfaceDevice.current().play(.stop)
@@ -208,6 +217,11 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         let acc = l.horizontalAccuracy
         guard acc >= 0, acc <= 30 else { return }
         if curKmh > maxKmh && curKmh < 150 { maxKmh = curKmh }
+        if runS - lastTrackS >= 2, track.count < 5000 {
+            track.append([l.coordinate.latitude, l.coordinate.longitude, curKmh, runS, l.verticalAccuracy >= 0 ? l.altitude : 0])
+            lastTrackS = runS
+        }
+        if Date().timeIntervalSince(wxAt) > 900 { fetchWeather(l) }
         if let a = anchor {
             let d = l.distance(from: a)
             if d >= max(4.0, min(12.0, acc * 0.6)) { distM += d; if onFoil { foilDistM += d }; anchor = l }
@@ -221,6 +235,35 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             foilDown = curKmh < SosModel.foilOff ? foilDown + 1 : 0
             if foilDown >= 3 { endFoilRun() }
         }
+    }
+    /// La sortie terminée part vers l'iPhone, qui la range dans les activités (remise garantie, même si l'iPhone est loin sur le moment).
+    private func sendRide() {
+        guard track.count >= 2, WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
+        let pts: [[Double]] = track.map { p in
+            [(p[0] * 100000).rounded() / 100000, (p[1] * 100000).rounded() / 100000, (p[2] * 10).rounded() / 10, p[3].rounded(), p[4].rounded()]
+        }
+        let ride: [String: Any] = [
+            "id": "watch-\(Int(startDate.timeIntervalSince1970 * 1000))", "sport": sport,
+            "start": Int(startDate.timeIntervalSince1970 * 1000), "dur": Int(runS), "dist": Int(distM),
+            "max": (maxKmh * 10).rounded() / 10, "runs": runCount, "foilS": Int(foilS), "foilM": Int(foilDistM), "pts": pts
+        ]
+        guard let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
+        WCSession.default.transferUserInfo(["ride": s])
+    }
+    /// Vent et température à l'endroit de la sortie (Open-Meteo, sans compte), au plus une demande par quart d'heure.
+    private func fetchWeather(_ l: CLLocation) {
+        if wxBusy { return }
+        let u = String(format: "https://api.open-meteo.com/v1/forecast?latitude=%.3f&longitude=%.3f&current=temperature_2m,wind_speed_10m&wind_speed_unit=kn", l.coordinate.latitude, l.coordinate.longitude)
+        guard let url = URL(string: u) else { return }
+        wxBusy = true; wxAt = Date()
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            var out: [String: String] = [:]
+            if let d = data, let o = try? JSONSerialization.jsonObject(with: d) as? [String: Any], let c = o["current"] as? [String: Any] {
+                if let t = c["temperature_2m"] as? Double { out["temp"] = String(Int(t.rounded())) + "|°C" }
+                if let w = c["wind_speed_10m"] as? Double { out["wind"] = String(Int(w.rounded())) + "|nds" }
+            }
+            DispatchQueue.main.async { self.wxBusy = false; if !out.isEmpty { self.wx = out } else { self.wxAt = Date().addingTimeInterval(-780) } }
+        }.resume()
     }
     private func endFoilRun() {
         guard onFoil else { return }
@@ -291,8 +334,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             let b = WKInterfaceDevice.current().batteryLevel
             return (b >= 0 ? String(Int((b * 100).rounded())) : "—", "%")
         default:
-            // infos que seul l'iPhone connaît : batterie eFoil, puissance, vent, température
-            guard now.timeIntervalSince(liveAt) < 30, let raw = live[k], !raw.isEmpty else { return ("—", "") }
+            // vent et température : météo demandée par la montre ; batterie eFoil et puissance : données de l'iPhone (appli ouverte)
+            if let w = wx[k], !w.isEmpty { let p = w.components(separatedBy: "|"); return (p[0], p.count > 1 ? p[1] : "") }
+            guard now.timeIntervalSince(liveAt) < 120, let raw = live[k], !raw.isEmpty else { return ("—", "") }
             let p = raw.components(separatedBy: "|")
             return (p[0], p.count > 1 ? p[1] : "")
         }
@@ -308,6 +352,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "clock": return v.0
         case "wbat": return "Montre " + v.0 + " %"
         case "bat": return "eFoil " + v.0 + (v.0 == "—" ? "" : " %")
+        case "temp": return v.0 + (v.0 == "—" ? "" : " °C")
+        case "wind": return "Vent " + v.0
         default: return v.0 + (v.1.isEmpty ? "" : " " + v.1)
         }
     }
@@ -458,10 +504,10 @@ struct MetricCell: View {
     let size: CGFloat
 
     var body: some View {
-        VStack(spacing: 0) {
-            Text(label).font(.system(size: 9)).foregroundColor(.lfMute).lineLimit(1).minimumScaleFactor(0.6)
-            Text(value).font(.system(size: size, weight: .medium, design: .rounded)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.35)
-            Text(unit.isEmpty ? " " : unit).font(.system(size: 9)).foregroundColor(.lfAccent).lineLimit(1)
+        VStack(spacing: -2) {
+            Text(label).font(.system(size: 11, weight: .medium)).foregroundColor(.lfMute).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(.system(size: size, weight: .semibold, design: .rounded)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.35)
+            Text(unit.isEmpty ? " " : unit).font(.system(size: 11)).foregroundColor(.lfAccent).lineLimit(1)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -512,30 +558,31 @@ struct MetricScreen: View {
 
     var body: some View {
         VStack(spacing: 1) {
-            HStack {
-                Text(m.elapsedText).font(.system(size: 12, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow)
+            HStack(spacing: 5) {
+                Text("Lite Foil").font(.system(size: 12, weight: .semibold)).foregroundColor(.lfAccent)
+                Text(m.elapsedText).font(.system(size: 14, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow)
                 Spacer()
             }
             if !(scr.top[0].isEmpty && scr.top[1].isEmpty) {
                 HStack {
-                    Text(m.topText(scr.top[0])).font(.system(size: 11, weight: .semibold)).foregroundColor(.white).lineLimit(1)
+                    Text(m.topText(scr.top[0])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
                     Spacer()
-                    Text(m.topText(scr.top[1])).font(.system(size: 11, weight: .semibold)).foregroundColor(.white).lineLimit(1)
+                    Text(m.topText(scr.top[1])).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.7)
                 }
             }
             if scr.m.count <= 1 {
-                cell(scr.m.first ?? "dur", 54)
+                cell(scr.m.first ?? "dur", 84)
             } else if scr.m.count == 2 {
-                cell(scr.m[0], 34)
-                cell(scr.m[1], 34)
+                cell(scr.m[0], 50)
+                cell(scr.m[1], 50)
             } else if scr.m.count == 3 {
-                cell(scr.m[0], 32)
-                HStack(spacing: 2) { cell(scr.m[1], 24); cell(scr.m[2], 24) }
+                cell(scr.m[0], 48)
+                HStack(spacing: 2) { cell(scr.m[1], 34); cell(scr.m[2], 34) }
             } else {
-                HStack(spacing: 2) { cell(scr.m[0], 25); cell(scr.m[1], 25) }
-                HStack(spacing: 2) { cell(scr.m[2], 25); cell(scr.m[3], 25) }
+                HStack(spacing: 2) { cell(scr.m[0], 36); cell(scr.m[1], 36) }
+                HStack(spacing: 2) { cell(scr.m[2], 36); cell(scr.m[3], 36) }
             }
-            SosChip(m: m)
+            if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
         .padding(.horizontal, 4)
     }
@@ -572,8 +619,8 @@ struct LockOverlay: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             Color.black.opacity(0.02)
-            Text(pressing ? "Maintiens…" : "Verrouillé · maintiens 2 s · couronne = écran suivant").font(.system(size: 10, weight: .bold)).foregroundColor(.white)
-                .padding(.horizontal, 10).padding(.vertical, 4).background(Capsule().fill(Color.black.opacity(0.6))).padding(.bottom, 2)
+            Text(pressing ? "Maintiens…" : "Verrouillé · maintiens 2 s").font(.system(size: 10, weight: .bold)).foregroundColor(.white).lineLimit(1)
+                .padding(.horizontal, 10).frame(height: 20).background(Capsule().fill(Color.black.opacity(0.55))).padding(.bottom, 1)
         }
         .contentShape(Rectangle())
         .onLongPressGesture(minimumDuration: 2, maximumDistance: 80, perform: { pressing = false; m.unlock() },
