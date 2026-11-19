@@ -605,9 +605,11 @@ struct ControlsView: View {
                 if m.paused { LfButton(title: "Reprendre", bg: .lfGo, fg: .black, height: 42, action: { m.pauseRide(false) }) }
                 else { LfButton(title: "Pause", bg: .lfDark, fg: .white, height: 42, action: { m.pauseRide(true) }) }
             }
-            SosChip(m: m)
+            // verrouillé : la place du SOS est laissée à la mention « Verrouillé » (plus de chevauchement)
+            if m.locked { Color.clear.frame(height: 22) } else { SosChip(m: m) }
         }
         .padding(.horizontal, 6)
+        .opacity(m.locked ? 0.45 : 1)
     }
 }
 
