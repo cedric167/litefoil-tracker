@@ -11114,7 +11114,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 </script>
 <script>
 /* 19/11 : vidéo du bandeau d'accueil, par univers (boucle muette) */
-(function(){ var VID={ pilote:["media/hero-ulm.mp4","media/hero-ulm.jpg"] };
+(function(){ var VID={ pilote:["media/hero-ulm.mp4","media/hero-ulm.jpg"], terre:["media/hero-terre.mp4","media/hero-terre.jpg"] };
   var cur="", io=null;
   function uni(){ var c=document.body.classList, k=["pilote","nautique","terre","efoil","bonride"]; for(var i=0;i<k.length;i++) if(c.contains("uni-"+k[i])) return k[i]; return ""; }
   function lite(){ try{ var n=navigator.connection; return !!(n && n.saveData); }catch(e){ return false; } }
