@@ -94,7 +94,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     private boolean running = false, paused = false, locked = false;
     private long runMs = 0, moveMs = 0, lastTick = 0, startWall = 0;
     private double distM = 0, maxKmh = 0, curKmh = 0;
-    private Location anchor = null, fix = null;
+    private Location anchor = null, fix = null, prevFix = null;
     private boolean gpsOn = false;
     // runs sur le foil
     private boolean onFoil = false;
@@ -371,7 +371,10 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         fix = l;
         float acc = l.hasAccuracy() ? l.getAccuracy() : 999f;
         if (running && !paused) {
-            curKmh = l.hasSpeed() ? Math.max(0, l.getSpeed() * 3.6) : 0;
+            if (l.hasSpeed() && l.getSpeed() > 0.05f) curKmh = l.getSpeed() * 3.6;
+            else if (prevFix != null && l.getTime() > prevFix.getTime()) { double k = prevFix.distanceTo(l) / ((l.getTime() - prevFix.getTime()) / 1000.0) * 3.6; curKmh = k < 150 ? k : curKmh; }
+            else curKmh = 0;
+            prevFix = l;
             if (acc <= 30f) {
                 if (curKmh > maxKmh && curKmh < 150) maxKmh = curKmh;
                 if (anchor == null) anchor = l;
@@ -436,7 +439,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
             return;
         }
         running = true; paused = false; locked = false;
-        runMs = 0; moveMs = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = null;
+        runMs = 0; moveMs = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = null; prevFix = null;
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilMs = 0; foilDistM = 0; longRunMs = 0; longRunDistM = 0; runMaxKmh = 0;
         hrSum = 0; hrN = 0; hrMax = 0;
         lastTick = SystemClock.elapsedRealtime(); startWall = System.currentTimeMillis();
@@ -450,7 +453,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     private void pauseRun(boolean on) {
         if (on) endFoilRun();
-        paused = on; anchor = null; curKmh = 0;
+        paused = on; anchor = null; prevFix = null; curKmh = 0;
         lastTick = SystemClock.elapsedRealtime();
         buzz(80);
         render();
@@ -650,7 +653,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setGravity(Gravity.CENTER_HORIZONTAL);
-        int px = dp(round ? 24 : 9), py = dp(round ? 15 : 6);
+        int px = dp(round ? 24 : 9), py = dp(round ? 13 : 6);
         col.setPadding(px, py, px, py);
         return col;
     }
@@ -658,6 +661,24 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     private void backdrop() {
         GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] { C_BG1, C_BG2 });
         root.setBackground(g);
+    }
+
+    /** ligne du haut : aux deux bords sur une montre carrée, regroupée au centre sur une montre ronde */
+    private View header(TextView left, TextView right) {
+        LinearLayout head = new LinearLayout(this);
+        head.setOrientation(LinearLayout.HORIZONTAL);
+        if (round) {
+            head.setGravity(Gravity.CENTER);
+            head.addView(left, new LinearLayout.LayoutParams(WRAP, WRAP));
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(WRAP, WRAP); p.leftMargin = dp(10);
+            head.addView(right, p);
+        } else {
+            head.setGravity(Gravity.CENTER_VERTICAL);
+            left.setGravity(Gravity.START);
+            head.addView(left, new LinearLayout.LayoutParams(0, WRAP, 1f));
+            head.addView(right, new LinearLayout.LayoutParams(WRAP, WRAP));
+        }
+        return head;
     }
 
     /** le petit SOS, présent sur tous les écrans */
@@ -683,7 +704,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         if (view == V_SOS) { root.setBackgroundColor(0xFF000000); col.setGravity(Gravity.CENTER); sosPage(col); scroll(col); return; }
         if (view == V_SPORTS) { sportsPage(col); scroll(col); return; }
         if (view == V_CONFIRM) { col.setGravity(Gravity.CENTER); confirmPage(col); scroll(col); return; }
-        if (view == V_SUMMARY) { summaryPage(col); scroll(col); return; }
+        if (view == V_SUMMARY) { if (round) col.setPadding(dp(44), dp(13), dp(44), dp(13)); summaryPage(col); scroll(col); return; }
         if (view == V_RUN) {
             if (page >= screens.length) { page = screens.length; controlsPage(col); }
             else metricPage(col, screens[page], page < tops.length ? tops[page] : new String[] { "", "" });
@@ -700,13 +721,9 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     // ----- départ -----
     private void homePage(LinearLayout col) {
-        LinearLayout head = new LinearLayout(this);
-        head.setOrientation(LinearLayout.HORIZONTAL); head.setGravity(Gravity.CENTER_VERTICAL);
-        TextView brand = text("Lite Foil", 11, 0xFF9FD8EE, true); brand.setGravity(Gravity.START);
-        head.addView(brand, new LinearLayout.LayoutParams(0, WRAP, 1f));
+        TextView brand = text("Lite Foil", 11, 0xFF9FD8EE, true);
         clockView = text("", 11, 0xFFFFFFFF, true);
-        head.addView(clockView, new LinearLayout.LayoutParams(WRAP, WRAP));
-        col.addView(head, new LinearLayout.LayoutParams(MATCH, WRAP));
+        col.addView(header(brand, clockView), new LinearLayout.LayoutParams(MATCH, WRAP));
 
         LinearLayout mid = new LinearLayout(this);
         mid.setOrientation(LinearLayout.VERTICAL); mid.setGravity(Gravity.CENTER);
@@ -735,13 +752,9 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     // ----- écran d'infos pendant la sortie -----
     private void metricPage(LinearLayout col, String[] keys, String[] top) {
-        LinearLayout head = new LinearLayout(this);
-        head.setOrientation(LinearLayout.HORIZONTAL); head.setGravity(Gravity.CENTER_VERTICAL);
-        elapsedView = text("", 12, 0xFFFFD84A, true); elapsedView.setGravity(Gravity.START);
-        head.addView(elapsedView, new LinearLayout.LayoutParams(0, WRAP, 1f));
+        elapsedView = text("", 12, 0xFFFFD84A, true);
         clockView = text("", 12, 0xFFFFFFFF, true);
-        head.addView(clockView, new LinearLayout.LayoutParams(WRAP, WRAP));
-        col.addView(head, new LinearLayout.LayoutParams(MATCH, WRAP));
+        col.addView(header(elapsedView, clockView), new LinearLayout.LayoutParams(MATCH, WRAP));
 
         if (top[0].length() > 0 || top[1].length() > 0) {
             LinearLayout tr = new LinearLayout(this);
@@ -752,6 +765,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
                 tr.addView(t, new LinearLayout.LayoutParams(0, WRAP, 1f));
                 if (top[i].length() > 0) cells.add(new Object[] { top[i], t, null });
             }
+            if (round) tr.setPadding(dp(16), 0, dp(16), 0);
             col.addView(tr, new LinearLayout.LayoutParams(MATCH, WRAP));
         }
 
