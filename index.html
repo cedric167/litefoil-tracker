@@ -5692,7 +5692,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // en une seule écriture (profil + réservation + libération de l'ancien pseudo), vérifiée par les règles Firebase
       saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var nk=pseudoKey(p.pseudo); if(!nk || !auth.currentUser || !auth.currentUser.emailVerified) return Promise.resolve();
         var o={pseudo:p.pseudo,nk:nk,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; if(me.brand && me.brand!=="none") o.brand=String(me.brand).slice(0,32); if(mySports.length) o.sports=mySports.join(",").slice(0,300);
-        return db.get(db.ref(d,"profiles/"+uid+"/nk")).then(function(s){ var old=s.val(); var up={}; up["names/"+nk]=uid; if(old && old!==nk) up["names/"+old]=null; up["profiles/"+uid]=o; return db.update(db.ref(d),up); }); },
+        var write=function(){ return db.get(db.ref(d,"profiles/"+uid+"/nk")).then(function(s){ var old=s.val(); var up={}; up["names/"+nk]=uid; if(old && old!==nk) up["names/"+old]=null; up["profiles/"+uid]=o; return db.update(db.ref(d),up); }); };
+        // le serveur exige « e-mail validé » dans le jeton : un jeton émis avant la validation est refusé, on le renouvelle
+        var fresh=function(){ try{ return auth.currentUser.getIdTokenResult().then(function(r){ if(!(r && r.claims && r.claims.email_verified===true)) return auth.currentUser.getIdToken(true); }).catch(function(){}); }catch(e){ return Promise.resolve(); } };
+        return fresh().then(write).catch(function(e){ var c=String((e && (e.code||e.message))||""); if(/permission/i.test(c)) return auth.currentUser.getIdToken(true).then(write); throw e; }); },
       nameOwner(nk){ return db.get(db.ref(d,"names/"+nk)).then(function(s){ return s.exists()? s.val() : null; }); },
       // ---------- amis : demande /friendReq/{à}/{de}, liste /friends/{uid}/{ami}=true des deux côtés ----------
       searchNames(k){ return db.get(db.query(db.ref(d,"names"), db.orderByKey(), db.startAt(k), db.endAt(k+"\uf8ff"), db.limitToFirst(15))).then(function(s){ var out=[]; s.forEach(function(c){ out.push({nk:c.key, uid:c.val()}); }); return out; }); },
@@ -8401,13 +8404,20 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function claimProfile(pseudo, silent){
     var k=pseudoKey(pseudo);
     if(!k){ if(!silent) alert("Pseudo invalide : 2 à 24 caractères, lettres, chiffres, espaces et . - _ '"); return Promise.resolve(false); }
-    if(pseudoReserved(k) && !isOfficial(me.uid)){ if(!silent) alert("Ce nom est réservé aux comptes officiels Lite Foil."); return Promise.resolve(false); }
-    if(!backend || !backend.saveProfile) return Promise.resolve(false);
+    claimProfile.why="";
+    if(pseudoReserved(k) && !isOfficial(me.uid)){ claimProfile.why="reserved"; if(!silent) alert("Ce nom est réservé aux comptes officiels Lite Foil."); return Promise.resolve(false); }
+    if(!backend || !backend.saveProfile){ claimProfile.why="net"; return Promise.resolve(false); }
     return backend.saveProfile({pseudo:pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){
       me.pseudo=pseudo; me.claimed=true; savePseudo(); try{ localStorage.setItem("lf.comm.claimed",k); }catch(e){}
       updateChatGate(); publishMe(); if(pendingJoin) tryPendingJoin(); renderProfil(); publishRatings(); renderAbMe(); if(backend.goOnline) backend.goOnline(); return true;
-    }).catch(function(){ me.claimed=false; try{ localStorage.removeItem("lf.comm.claimed"); }catch(e){} updateChatGate();
-      if(!silent) alert("Ce pseudo est déjà pris (ou réservé). Choisis-en un autre."); return false; });
+    }).catch(function(err){ me.claimed=false; try{ localStorage.removeItem("lf.comm.claimed"); }catch(e){} updateChatGate();
+      var code=String((err && (err.code||err.message))||"erreur").slice(0,80);
+      try{ if(backend.pushDiag) backend.pushDiag({ prof:code+" | "+k, t:Date.now() }); }catch(e){}
+      // la vraie raison : pseudo réellement pris par un autre compte, écriture refusée par le serveur, ou réseau
+      return Promise.resolve(backend.nameOwner ? backend.nameOwner(k) : null).catch(function(){ return null; }).then(function(o){
+        claimProfile.why = (o && o!==me.uid) ? "taken" : (/permission/i.test(code) ? "denied" : "net");
+        if(!silent) alert(claimProfile.why==="taken" ? "Ce pseudo est déjà pris. Choisis-en un autre." : claimProfile.why==="denied" ? "Ton compte n'est pas encore reconnu comme validé. Ferme l'application, rouvre-la, puis réessaie." : "Enregistrement impossible pour l'instant (réseau ?). Réessaie dans un instant.");
+        return false; }); });
   }
   function onVerified(){ try{ localStorage.removeItem("lf.comm.verifsent"); }catch(e){} renderVerif();
     var v=$("commPseudo").value.trim()||me.pseudo; if(v) claimProfile(v,false).then(function(ok){ setVerifNote(ok?"✅ C'est tout bon : ton profil est validé, tu peux participer !":"✅ E-mail validé. Choisis maintenant un pseudo libre puis Enregistrer."); });
@@ -10318,7 +10328,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var b=$("lfoPrGo"); b.disabled=true; lfoErr("lfoPrErr","Enregistrement…",true);
     try{ mySports=lfoSports.slice(); saveMySports(); if(lfoLevel) localStorage.setItem("lf.comm.level",lfoLevel); }catch(e){}
     claimProfile(v,true).then(function(ok){ b.disabled=false;
-      if(!ok){ lfoErr("lfoPrErr","Ce pseudo est déjà pris (ou réservé) : choisis-en un autre."); return; }
+      if(!ok){ var w=claimProfile.why; lfoErr("lfoPrErr", w==="reserved" ? "Ce nom est réservé aux comptes officiels Lite Foil : choisis-en un autre."
+          : w==="taken" ? "Ce pseudo est déjà pris : choisis-en un autre."
+          : w==="denied" ? "Ton compte n'est pas encore reconnu comme validé. Ferme l'application, rouvre-la, puis réessaie."
+          : "Enregistrement impossible pour l'instant (réseau ?). Réessaie dans un instant."); return; }
       lfoErr("lfoPrErr",""); try{ publishRatings(); renderProfil(); }catch(e){} lfoShow("perms"); }); }
   function lfoPerms(apply){
     var go=function(){ lfoShow("welcome"); };
