@@ -395,7 +395,7 @@ function terrainView(){ var f=F, o=WX, h='<div class="ul-card">'+h1("Pistes");
   h+='<div class="ul-kv"><span>'+esc(T("Coordonnées"))+'</span><b>'+dms(f.lat,"N","S")+"<br>"+dms(f.lon,"E",lang()===1?"W":"O")+'</b></div></div>';
   h+='<div class="ul-card"><div class="ul-links"><a href="https://www.google.com/maps/search/?api=1&query='+f.lat+"%2C"+f.lon+'" target="_blank" rel="noopener">'+esc(T("Voir sur la carte"))+'<span>›</span></a>';
   if(f.cc==="FR"){ h+='<a href="https://www.sia.aviation-civile.gouv.fr/" target="_blank" rel="noopener">'+esc(T("Cartes et infos officielles (SIA)"))+'<span>›</span></a><a href="https://aviation.meteo.fr/" target="_blank" rel="noopener">'+esc(T("Météo officielle (Aeroweb)"))+'<span>›</span></a>';
-    if(/^LF\d{4}$/.test(f.code)) h+='<a href="https://basulm.ffplum.fr/" target="_blank" rel="noopener">'+esc(T("Fiche BASULM"))+'<span>›</span></a>'; }
+    if(/^LF\d{4}$/.test(f.code)) h+='<a href="https://basulm.ffplum.fr/PDF/'+encodeURIComponent(f.code)+'.pdf" target="_blank" rel="noopener">'+esc(T("Fiche BASULM"))+'<span>›</span></a>'; }
   else if(f.icao) h+='<a href="https://skyvector.com/airport/'+encodeURIComponent(f.icao)+'" target="_blank" rel="noopener">'+esc(T("Carte et infos du terrain (SkyVector)"))+'<span>›</span></a>';
   return h+'</div></div>'; }
 function tendView(){ if(hist==="err") return '<div class="ul-card"><div class="ul-msg">'+esc(T("L'historique sur 24 h sera disponible ici très bientôt."))+'</div></div>';
