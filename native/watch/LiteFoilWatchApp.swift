@@ -48,6 +48,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     @Published var running = false
     @Published var paused = false
     @Published var locked = false
+    /// mode Eau d'Apple en cours (écran tactile coupé par la montre, on en sort avec la Digital Crown)
+    @Published var waterLock = false
+    private var waterAskAt: Date?
     @Published var now = Date()
     private(set) var runS = 0.0, moveS = 0.0, distM = 0.0, maxKmh = 0.0, curKmh = 0.0
     private(set) var startDate = Date()
@@ -62,6 +65,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     private var wx: [String: String] = [:]
     private var wxAt = Date.distantPast
     private var wxBusy = false
+    /// sports sur l'eau : le mode Eau se met tout seul au départ, comme pour un exercice aquatique d'Apple
+    static let waterSports: Set<String> = ["eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile"]
     static let autoLockS = 8.0   // secondes sans toucher l'écran avant le verrouillage automatique pendant la sortie
     // runs sur le foil
     private(set) var onFoil = false
@@ -162,6 +167,18 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     func touched() { lastTouch = Date() }
     func unlock() { locked = false; lastTouch = Date(); WKInterfaceDevice.current().play(.success) }
 
+    /// la montre sait faire le mode Eau (toutes les montres étanches : Series 2 et suivantes, SE, Ultra)
+    var waterOk: Bool { WKInterfaceDevice.current().waterResistanceRating != .ipx7 }
+    /// Mode Eau d'Apple. Il n'est accepté que pendant une sortie (session de localisation active, appli à l'écran).
+    /// Si la montre le refuse, on retombe sur le verrou de l'appli au bout d'une seconde et demie.
+    func waterLockOn() {
+        page = 0; lastTouch = Date()
+        guard running, waterOk else { locked = true; WKInterfaceDevice.current().play(.click); return }
+        locked = false
+        waterAskAt = Date()
+        WKInterfaceDevice.current().enableWaterLock()
+    }
+
     func chooseSport(_ s: String) { sport = s; store.set(s, forKey: "sport"); screen = .home }
 
     func startRide() {
@@ -174,6 +191,13 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         page = 0; screen = .run
         startLocation()
         WKInterfaceDevice.current().play(.start)
+        // sport sur l'eau : mode Eau automatique, une fois le GPS lancé
+        if SosModel.waterSports.contains(sport) && waterOk {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                guard let s = self, s.running, !s.paused, s.screen == .run, !s.waterLock else { return }
+                s.waterLockOn()
+            }
+        }
     }
     func pauseRide(_ on: Bool) {
         if on { endFoilRun() }
@@ -183,7 +207,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     func stopRide(keep: Bool) {
         endFoilRun()
         if keep { sendRide() }
-        running = false; paused = false; locked = false; curKmh = 0
+        running = false; paused = false; locked = false; waterLock = false; waterAskAt = nil; curKmh = 0
         if phase != .active && phase != .sending { stopLocation() }
         WKInterfaceDevice.current().play(.stop)
         screen = keep ? .summary : .home
@@ -198,8 +222,15 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
                 if onFoil { foilS += d }
             }
             lastTick = t
+            // suivi du mode Eau : seul l'utilisateur peut le quitter (Digital Crown), on lit donc son état chaque seconde
+            let wl = WKInterfaceDevice.current().isWaterLockEnabled
+            if wl != waterLock { waterLock = wl; lastTouch = t; if wl { locked = false } }
+            if let a = waterAskAt, t.timeIntervalSince(a) >= 1.5 {
+                waterAskAt = nil
+                if !wl { locked = true; WKInterfaceDevice.current().play(.click) }   // mode Eau refusé par la montre : verrou de l'appli
+            }
             // verrouillage automatique : sortie en cours, écran d'infos affiché, personne n'a touché l'écran depuis 8 secondes
-            if !paused && !locked && screen == .run && page < screens.count && t.timeIntervalSince(lastTouch) >= SosModel.autoLockS {
+            if !paused && !locked && !waterLock && waterAskAt == nil && screen == .run && page < screens.count && t.timeIntervalSince(lastTouch) >= SosModel.autoLockS {
                 locked = true
                 WKInterfaceDevice.current().play(.click)
             }
@@ -636,7 +667,7 @@ struct ControlsView: View {
     var body: some View {
         VStack(spacing: 6) {
             Text(m.elapsedText).font(.system(size: 12, weight: .bold)).foregroundColor(m.paused ? .orange : .lfYellow)
-            LfButton(title: "Verrouiller l'écran", bg: Color(red: 0.11, green: 0.37, blue: 0.56), fg: .white, action: { m.page = 0; m.locked = true; WKInterfaceDevice.current().play(.click) })
+            LfButton(title: m.waterOk ? "💧 Mode Eau" : "Verrouiller l'écran", bg: Color(red: 0.11, green: 0.37, blue: 0.56), fg: .white, action: { m.waterLockOn() })
             HStack(spacing: 6) {
                 LfButton(title: "Fin", bg: .lfRed, fg: .white, height: 42, action: { m.screen = .confirm })
                 if m.paused { LfButton(title: "Reprendre", bg: .lfGo, fg: .black, height: 42, action: { m.pauseRide(false) }) }
