@@ -1049,6 +1049,8 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .lfc-outs button{ width:100%; min-height:0; height:52px; padding:0 12px; border:0; border-radius:13px; background:transparent; color:#fff; display:flex; align-items:center; gap:14px; font-size:16px; font-weight:600; cursor:pointer; box-shadow:none; text-align:left; }
   .lfc-outs button.on{ background:rgba(255,255,255,.10); } .lfc-outs button span{ flex:1; } .lfc-outs button i{ font-style:normal; color:#3fe0a0; font-weight:800; }
   .lfc-outs button svg{ width:24px; height:24px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .lf-sp{ width:52px; height:52px; box-sizing:border-box; border-radius:50%; border:3px solid #fff; overflow:hidden; background:#e9f8fa; box-shadow:0 0 0 4px rgba(25,195,207,.32), 0 5px 12px rgba(0,0,0,.4); }
+  .lf-sp img{ width:100%; height:100%; object-fit:cover; display:block; }
   .lfc-btns.n5{ gap:10px; } .lfc-btns.n5 button:not(.lfc-end){ width:54px; height:54px; } .lfc-btns.n5 button small{ font-size:10.5px; }
   /* 20/11 : messages vocaux */
   .vmsg{ display:flex; align-items:center; gap:10px; min-width:190px; max-width:250px; padding:2px 0 0; }
@@ -3991,7 +3993,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if (!lfMap) return;
     var ll = [lat, lon];
     if (!lfMe){
-      lfMe = L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 }).addTo(lfMap);
+      lfMe = (window.__lfMeMake ? window.__lfMeMake(ll) : L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 })).addTo(lfMap);
       lfMap.setView(ll, 16); lfFollow = true;
       lfTrail.setLatLngs(lfTrail.getLatLngs().concat([ll])); lfTgt = ll; lfTgtT = Date.now();
     } else {
@@ -4094,7 +4096,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(last){
       $("phSpd").textContent = phNum(last.speed||0)+" km/h"; $("phAcc").textContent = (last.acc!=null?Math.round(last.acc)+" m":"—");
       try { mapInit(); if(lfMap){ var ll = phPts.slice(-3000).map(function(q){ return [q.lat,q.lon]; }); if(lfAnim){ cancelAnimationFrame(lfAnim); lfAnim=0; } lfTgt=[last.lat,last.lon]; lfTgtT=Date.now(); lfTrail.setLatLngs(ll);
-        if(!lfMe){ lfMe = L.circleMarker([last.lat,last.lon], { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 }).addTo(lfMap); lfMap.setView([last.lat,last.lon], 16); lfFollow = true; }
+        if(!lfMe){ lfMe = (window.__lfMeMake ? window.__lfMeMake([last.lat,last.lon]) : L.circleMarker([last.lat,last.lon], { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 })).addTo(lfMap); lfMap.setView([last.lat,last.lon], 16); lfFollow = true; }
         else { lfMe.setLatLng([last.lat,last.lon]); if(lfFollow) lfMap.panTo([last.lat,last.lon]); } } } catch(e){}
     }
   }
@@ -4132,6 +4134,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   }
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible" && phNatOn) phNatSync(); });
   var phMilieu = "mer", phType = "efoil", phCat = "Foil électrique";
+  // 20/11 : sur la carte en direct, ma position est une pastille illustrée de mon sport (point bleu si le sport n'a pas d'illustration)
+  window.__lfMeMake = function(ll){ var F={ swim:"nage.svg", voiture:"voiture.svg", moto:"moto.svg", ulm:"avion.svg", surffoil:"pumpfoil.webp", supdownwind:"sup.webp", longboard:"skate.webp", surfskate:"skate.webp" },
+      W="efoil wingfoil parawing windsurf pumpfoil kitesurf surf bodyboard sup canoe deriveur jetski running marche rando trail velo ski snowboard skate roller parapente".split(" "), k=String(phType||""), f=F[k]||(W.indexOf(k)>=0 ? k+".webp" : "");
+    if(!f) return L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 });
+    return L.marker(ll, { icon:L.divIcon({ className:"", html:'<div class="lf-sp"><img alt="" src="img/sports/'+f+'"></div>', iconSize:[52,52], iconAnchor:[26,26] }), interactive:false, zIndexOffset:600 }); };
   // Activités proposées par milieu : [clé interne, libellé affiché]
   // 07/11 : mêmes sports que les Cartes Membre (les sports choisis dans « Mes sports » passent en premier)
   var PH_ACTS = {

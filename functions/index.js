@@ -896,6 +896,12 @@ async function liveApi(req, res, sid) {
   }
   return res.json({ ok: true });
 }
+// illustration du sport d'une sortie (fichier de img/sports), d'après le nom de l'activité ; rien pour un SOS ou un sport inconnu
+const LIVE_SPORTS = [[/e-?foil|foil [ée]lectrique/i, "efoil.webp"], [/para ?wing/i, "parawing.webp"], [/cano[eë]|kayak/i, "canoe.webp"], [/d[ée]riveur/i, "deriveur.webp"], [/wing/i, "wingfoil.webp"],
+  [/kite/i, "kitesurf.webp"], [/windsurf/i, "windsurf.webp"], [/pump|surf ?foil/i, "pumpfoil.webp"], [/body/i, "bodyboard.webp"], [/paddle|\bsup\b/i, "sup.webp"], [/jet/i, "jetski.webp"],
+  [/skate|longboard/i, "skate.webp"], [/surf/i, "surf.webp"], [/nage|swim/i, "nage.svg"], [/trail/i, "trail.webp"], [/rando/i, "rando.webp"], [/marche/i, "marche.webp"], [/run|course/i, "running.webp"],
+  [/v[ée]lo/i, "velo.webp"], [/snow/i, "snowboard.webp"], [/ski/i, "ski.webp"], [/roller/i, "roller.webp"], [/voiture/i, "voiture.svg"], [/moto/i, "moto.svg"], [/ulm|avion/i, "avion.svg"], [/parapente/i, "parapente.webp"]];
+function liveSport(cat) { const c = String(cat || ""); if (/^SOS/i.test(c)) return ""; const r = LIVE_SPORTS.find((x) => x[0].test(c)); return r ? r[1] : ""; }
 async function livePage(req, res, sid, asJson, base) {
   const db = getDatabase();
   const L = sid ? (await db.ref("live/" + sid).get()).val() : null;
@@ -907,7 +913,7 @@ async function livePage(req, res, sid, asJson, base) {
     const old = tail ? [] : all.slice(0, Math.max(0, all.length - 180)), step = Math.max(1, Math.ceil(old.length / 600));
     const trk = old.filter((x, i) => i % step === 0).concat(tail ? all : all.slice(-180));
     return res.json({ ok: true, ps: L.ps || "Membre", cat: L.cat || "", status: L.status || "active", t0: +L.t0 || 0, upd: +L.upd || 0, now: Date.now(), last: L.last || null,
-      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, air: !!L.air, fp: L.air ? liveFpClean(L.fp) : null, rem: L.rem == null ? null : +L.rem, tail: tail, trk: trk });
+      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, air: !!L.air, fp: L.air ? liveFpClean(L.fp) : null, rem: L.rem == null ? null : +L.rem, tail: tail, sp: liveSport(L.cat), trk: trk });
   }
   if (!L) return res.status(404).send(sharePageHtml({ title: "Suivi introuvable · Lite Foil", desc: "Ce suivi n'existe plus.", url: base + "/l/" + sid, app: SHARE_APP,
     body: `<div class="pf"><div class="empty">Ce suivi de sortie n'existe pas ou a expiré.</div></div>` }));
@@ -935,7 +941,11 @@ async function livePage(req, res, sid, asJson, base) {
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}.stats b{display:block;font-size:18px}.stats span{font-size:11.5px;color:#6b7a80;font-weight:600}
 .coord{margin-top:12px;background:#f3f6f7;border-radius:12px;padding:9px 12px;font-size:13.5px;display:flex;justify-content:space-between;gap:8px;align-items:center}.coord b{font-family:ui-monospace,Menlo,monospace;font-size:13px}
 .acts{display:flex;gap:8px;margin-top:12px}.acts a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:14px;padding:12px 8px;border-radius:12px;background:#f1f3f4;color:#0e1417}.acts a.red{background:#e8384f;color:#fff}
-.me{width:22px;height:22px;border-radius:50%;background:#19c3cf;border:4px solid #fff;box-shadow:0 0 0 6px rgba(25,195,207,.35),0 2px 8px rgba(0,0,0,.4)}.me.sos{background:#e8384f;box-shadow:0 0 0 8px rgba(232,56,79,.4)}</style></head><body>
+.me{width:22px;height:22px;border-radius:50%;background:#19c3cf;border:4px solid #fff;box-shadow:0 0 0 6px rgba(25,195,207,.35),0 2px 8px rgba(0,0,0,.4)}.me.sos{background:#e8384f;box-shadow:0 0 0 8px rgba(232,56,79,.4)}
+.sp{width:58px;height:58px;box-sizing:border-box;border-radius:50%;border:3px solid #fff;overflow:hidden;background:#e9f8fa;box-shadow:0 0 0 5px rgba(25,195,207,.32),0 6px 14px rgba(0,0,0,.45)}
+.sp img{width:100%;height:100%;object-fit:cover;display:block}.sp.flip img{transform:scaleX(-1)}
+.sp.mv{animation:spBob .5s ease-in-out infinite alternate}@keyframes spBob{from{transform:translateY(1px)}to{transform:translateY(-4px)}}
+.sp.sos{box-shadow:0 0 0 7px rgba(232,56,79,.6),0 6px 14px rgba(0,0,0,.45)}</style></head><body>
 <div id="map"></div>
 <div class="top"><img src="${escH(SHARE_ICON)}" alt=""><div><b>Sortie de ${ps}</b><small id="sub">Chargement…</small></div><span class="pill" id="pill">…</span></div>
 <div class="ban" id="ban"></div>
@@ -943,7 +953,7 @@ async function livePage(req, res, sid, asJson, base) {
 <div class="coord"><span>Position</span><b id="coord">–</b></div>
 <div class="acts"><a id="nav" href="#" target="_blank" rel="noopener">📍 Itinéraire</a><a class="red" href="tel:${em}">📞 ${emLb}</a></div></div>
 <script>
-var SID=${JSON.stringify(sid)},map=L.map("map",{zoomControl:false,attributionControl:false}).setView([46.5,2.5],5);
+var SID=${JSON.stringify(sid)},APP=${JSON.stringify(SHARE_APP)},map=L.map("map",{zoomControl:false,attributionControl:false}).setView([46.5,2.5],5);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19}).addTo(map);
 var line=L.polyline([],{color:"#19e3ff",weight:4,opacity:.9}).addTo(map),head=L.polyline([],{color:"#19e3ff",weight:4,opacity:.9}).addTo(map),mk=null,first=true,lastStatus="";
 var TR=[],seen=0,OFF=null,DELAY=5500,ANIM=false,ENDED=false,LI=-1,RAF=0,FOL=true,RC=null;
@@ -957,6 +967,7 @@ function frame(){requestAnimationFrame(frame);var n=TR.length;if(!n||!mk||!ANIM)
  if(q&&p[2]&&q[2]-p[2]<15000&&T>p[2]){var k=(T-p[2])/(q[2]-p[2]);ll=[p[0]+(q[0]-p[0])*k,p[1]+(q[1]-p[1])*k];}
  else if(!q&&i>0&&p[2]&&T>p[2]&&T<1e14){var b=TR[i-1];if(b[2]&&p[2]>b[2]&&p[2]-b[2]<5000){var k2=Math.min(1500,T-p[2])/(p[2]-b[2]);ll=[p[0]+(p[0]-b[0])*k2,p[1]+(p[1]-b[1])*k2];}}
  if(i!==LI){LI=i;line.setLatLngs(TR.slice(0,i+1).map(function(x){return[x[0],x[1]];}));}
+ if(q){var dx=q[1]-p[1],el=mk.getElement()&&mk.getElement().firstChild;if(el&&Math.abs(dx)>1e-6)el.classList.toggle("flip",dx<0);}
  head.setLatLngs([[p[0],p[1]],ll]);mk.setLatLng(ll);if(FOL)map.panTo(ll,{animate:false});}
 function dms(v,p,n){var a=Math.abs(v),d=Math.floor(a),m=(a-d)*60;return d+"°"+m.toFixed(3)+"' "+(v>=0?p:n);}
 function dur(ms){var s=Math.max(0,Math.round(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+"h"+String(m).padStart(2,"0"):m+" min";}
@@ -970,8 +981,8 @@ function load(tl){fetch("/l/"+SID+".json"+(tl?"?tail=1":""),{cache:"no-store"}).
  ban.innerHTML=st==="sos"?"🆘 SOS déclenché "+ago(d.now-d.alertT)+". Appelle le <a href='tel:${em}'>${emTx} et donne la position ci-dessous.":st==="alert"?"⚠️ ${ps} ne bouge plus et n'a pas répondu à l'alerte. Essaie de l'appeler ; sans réponse, appelle le <a href='tel:${em}'>${em}</a>.":st==="stale"?"Plus de position depuis "+Math.round((d.now-d.upd)/60000)+" min (zone sans réseau ?). Dernière position ci-dessous.":"";
  if((st==="sos"||st==="alert")&&lastStatus!==st)beep();lastStatus=st;
  ENDED=(st==="ended");feed(d);
- if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon({className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else if(!ANIM)mk.setLatLng(ll);
-  mk.getElement()&&(mk.getElement().firstChild.className="me"+(st==="sos"?" sos":""));
+ if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon(d.sp?{className:"",html:"<div class='sp'><img alt='' src='"+APP+"img/sports/"+d.sp+"'></div>",iconSize:[58,58],iconAnchor:[29,29]}:{className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else if(!ANIM)mk.setLatLng(ll);
+  var _e=mk.getElement()&&mk.getElement().firstChild;if(_e){_e.classList.toggle("sos",st==="sos");_e.classList.toggle("mv",st==="live"&&(+d.last.spd||0)>1.5);}
   if(first){map.setView(ll,16);first=false;if(!RAF){RAF=1;frame();}}
   document.getElementById("coord").textContent=dms(d.last.lat,"N","S")+"  "+dms(d.last.lng,"E","O");
   document.getElementById("nav").href="https://www.google.com/maps/search/?api=1&query="+d.last.lat+","+d.last.lng;
