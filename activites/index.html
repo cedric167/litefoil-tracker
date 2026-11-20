@@ -142,7 +142,18 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover .fview{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 200px);z-index:6;display:flex;gap:3px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:999px;padding:4px}
 .flyover .fview button{border:0;background:transparent;color:#fff;border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;white-space:nowrap}
 .flyover .fview button.on{background:var(--cyan)}
-.flyover .flyrec{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 76px);z-index:7;border:0;border-radius:999px;background:#fff;color:#0e1417;font-size:14px;font-weight:700;padding:10px 16px;display:flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.flyover .fprof{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:5;height:62px;border-radius:16px;background:rgba(10,14,18,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden;pointer-events:none}
+.flyover.sv .fprof{display:none}
+.flyover .fprof svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.flyover .fprof i{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.9)}
+.flyover .fprof i::after{content:"";position:absolute;left:50%;top:var(--y,50%);width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#19e3ff;border:2px solid #fff}
+.flyover .fprof b{position:absolute;left:10px;top:6px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.75);font-weight:700}
+.flyover .fprof em{position:absolute;right:10px;top:6px;font-style:normal;font-size:11.5px;color:#fff;font-weight:700}
+.fly-pin{display:flex;flex-direction:column;align-items:center;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.fly-pin span{width:46px;height:46px;border-radius:50%;border:3px solid #fff;overflow:hidden;background:#0fb9cf;display:block}
+.fly-pin img{width:100%;height:100%;object-fit:cover;display:block}
+.fly-pin u{width:3px;height:44px;background:linear-gradient(#fff,rgba(255,255,255,.55));border-radius:2px;display:block}
+.flyover .flyrec{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 142px);z-index:7;border:0;border-radius:999px;background:#fff;color:#0e1417;font-size:14px;font-weight:700;padding:10px 16px;display:flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .flyover .flyrec[hidden]{display:none}
 .flyover .flyrec svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .flyover .seek{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:18px;padding:8px 10px}
@@ -438,6 +449,7 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
   </div>
   <!-- 13/11 : commandes regroupées dans une seule barre fine, qui s'efface pendant la lecture (toucher l'écran pour la revoir) -->
   <button class="flyrec" id="flyRecenter" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>Recentrer</button>
+  <div class="fprof" id="flyProf" hidden><svg viewBox="0 0 1000 100" preserveAspectRatio="none"><path id="flyProfA" fill="rgba(25,227,255,.30)"/><path id="flyProfL" fill="none" stroke="#19e3ff" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg><i id="flyProfCur"></i><b id="flyProfT">Altitude</b><em id="flyProfV"></em></div>
   <div class="fbar" id="flyBar">
     <div class="fmenu" id="flySpd" hidden>
       <button data-s="0.1">0,1×</button>
@@ -450,6 +462,7 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
       <button data-v="all" class="on">Ensemble</button>
       <button data-v="follow">Suivre</button>
       <button data-v="board">À bord</button>
+      <button data-v="cine">Cinéma</button>
       <button data-v="street" id="flyViewStreet" hidden>Street View</button>
     </div>
     <button id="flyPlay" class="fplay" aria-label="Lecture/Pause">⏸</button>
@@ -814,7 +827,7 @@ const flyStyle = {
   layers:[
     {id:"bg",type:"background",paint:{"background-color":"#16404e"}},
     {id:"sat",type:"raster",source:"esri",paint:{"raster-saturation":0.22,"raster-contrast":0.14,"raster-brightness-min":0.03,"raster-fade-duration":250}},
-    {id:"shade",type:"hillshade",source:"demShade",paint:{"hillshade-exaggeration":0.35,"hillshade-shadow-color":"#0a1b24","hillshade-highlight-color":"#fff6e0","hillshade-accent-color":"#0a1b24"}},
+    {id:"shade",type:"hillshade",source:"demShade",paint:{"hillshade-exaggeration":0.5,"hillshade-illumination-direction":315,"hillshade-shadow-color":"#07151c","hillshade-highlight-color":"#fff1d2","hillshade-accent-color":"#0a1b24"}},
     {id:"places",type:"raster",source:"places",paint:{"raster-opacity":0.85}}
   ]
 };
@@ -906,7 +919,8 @@ function flySeekTo(v){ flyProg=Math.max(0,Math.min(1,v)); if(flyDraw) flyDraw(tr
 // 13/11 : vues du survol. "all" = carte fixe sur tout le parcours ; "follow" = la carte reste centrée sur le point ;
 // "board" = caméra basse derrière le point, tournée dans le sens de la marche (comme si on y était).
 // flyFree = l'utilisateur a déplacé la carte à la main : on ne la bouge plus tant qu'il n'a pas touché « Recentrer ».
-let flyAir=false, flyBackTo=""; let flyView="all", flyFree=false, flyFit=null, flyBear=null, flyBearOff=0, flyAuto=false;
+let flyAir=false, flyBackTo=""; let flyView="all", flyFree=false, flyFit=null, flyBear=null, flyBearOff=0, flyAuto=false, flyOrb=0, flyOrbT=0, flyPin=null;
+const flyCineCam=()=>({ zoom:flyAir?12.4:15.4, pitch:flyAir?66:68 });
 /* ---- Street View (13/11) ----
    Clé Google Maps du projet « Lite Foil Street View », limitée au site cedric167.github.io. Vide = vue masquée.
    Proposée seulement pour les sorties à terre (aucune photo de rue sur l'eau). Google compte un affichage par ouverture
@@ -951,6 +965,7 @@ function flySetView(v){ flyView=v; flyBear=null; flyBearOff=0; flySetFree(false)
   if(!flyMap) return;
   if(v==="all"){ if(flyFit) flyMap.easeTo({center:flyFit.center,zoom:flyFit.zoom,pitch:55,bearing:0,duration:600}); }
   else if(v==="follow"){ flyCam({zoom:flyAir?12:Math.max(flyMap.getZoom(),15.5),pitch:55}); }
+  else if(v==="cine"){ flyOrbT=0; flyCam(flyCineCam()); }
   else { flyCam({zoom:flyAir?12.6:17.2,pitch:flyAir?70:74}); }
   if(flyDraw) flyDraw(true); }
 document.querySelectorAll("#flyView button").forEach(b=>{ b.onclick=()=>flySetView(b.dataset.v); });
@@ -973,9 +988,15 @@ function flyWake(){ const ov=document.getElementById("flyover"); ov.classList.re
 ["pointerdown","touchstart"].forEach(n=>document.getElementById("flyover").addEventListener(n, flyWake, {capture:true, passive:true}));
 document.getElementById("flyZin").onclick=()=>{ if(flyMap) flyMap.zoomIn(); };
 document.getElementById("flyZout").onclick=()=>{ if(flyMap) flyMap.zoomOut(); };
-document.getElementById("flyRotL").onclick=()=>{ if(!flyMap) return; if(flyView==="board" && !flyFree){ flyBearOff-=30; if(flyDraw) flyDraw(true); } else flyMap.easeTo({bearing:flyMap.getBearing()-30,duration:300}); };
-document.getElementById("flyRotR").onclick=()=>{ if(!flyMap) return; if(flyView==="board" && !flyFree){ flyBearOff+=30; if(flyDraw) flyDraw(true); } else flyMap.easeTo({bearing:flyMap.getBearing()+30,duration:300}); };
+document.getElementById("flyRotL").onclick=()=>{ if(!flyMap) return; if((flyView==="board" || flyView==="cine") && !flyFree){ flyBearOff-=30; if(flyDraw) flyDraw(true); } else flyMap.easeTo({bearing:flyMap.getBearing()-30,duration:300}); };
+document.getElementById("flyRotR").onclick=()=>{ if(!flyMap) return; if((flyView==="board" || flyView==="cine") && !flyFree){ flyBearOff+=30; if(flyDraw) flyDraw(true); } else flyMap.easeTo({bearing:flyMap.getBearing()+30,duration:300}); };
 
+// épingle haute plantée sur le relief : photo du membre pour ses propres sorties, sinon illustration du sport
+function flyPinSet(a, p){ try{ if(!flyMap) return; let src=""; if(!flyGuest){ try{ src=localStorage.getItem("lf.comm.avatar")||""; }catch(e){} }
+    if(!src){ const k=sportKey(a); src = k ? "../img/sports/"+k+".webp?v=2" : (a.milieu==="air" ? "../img/sports/avion.svg" : ""); }
+    if(!flyPin){ const el=document.createElement("div"); el.className="fly-pin"; el.innerHTML='<span></span><u></u>'; flyPin=new maplibregl.Marker({ element:el, anchor:"bottom" }); }
+    flyPin.getElement().firstChild.innerHTML = src ? '<img alt="" src="'+String(src).replace(/"/g,"&quot;")+'">' : "";
+    flyPin.setLngLat([p.lon,p.lat]).addTo(flyMap); }catch(e){} }
 async function startFly(a){
   if(!a) return; await ensurePoints(a);
   const pts=a.points; if(!pts||pts.length<2) return;
@@ -984,7 +1005,7 @@ async function startFly(a){
   { const sb=document.getElementById("flyViewStreet"); if(sb) sb.hidden=!svAllowed(a); if(flyView==="street" && !svAllowed(a)){ flyView="all"; document.querySelectorAll("#flyView button").forEach(x=>x.classList.toggle("on",x.dataset.v==="all")); document.getElementById("flyViewBtn").textContent="Ensemble"; } if(flyView!=="street") svClose(); else svOpen(); }
   flyAir = a.milieu==="air";
   // un vol se regarde caméra derrière l'appareil : c'est la vue qui montre le mieux le relief
-  if(flyAir && flyView!=="street"){ flyView="board"; document.querySelectorAll("#flyView button").forEach(x=>{ x.classList.toggle("on",x.dataset.v==="board"); if(x.dataset.v==="board") document.getElementById("flyViewBtn").textContent=x.textContent; }); }
+  if(flyAir && flyView!=="street"){ flyView="cine"; document.querySelectorAll("#flyView button").forEach(x=>{ x.classList.toggle("on",x.dataset.v==="cine"); if(x.dataset.v==="cine") document.getElementById("flyViewBtn").textContent=x.textContent; }); }
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
   document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : flyAir ? " ft" : " m";
   if(!flyMap){
@@ -992,8 +1013,9 @@ async function startFly(a){
     ["dragstart","rotatestart","pitchstart"].forEach(n=>flyMap.on(n,(e)=>{ if(!flyAuto && e && e.originalEvent) flySetFree(true); }));
   }
   const setup=()=>{
-    try{ flyMap.setTerrain({source:"dem",exaggeration:1.4}); }catch(e){}
+    try{ flyMap.setTerrain({source:"dem",exaggeration:1.5}); }catch(e){}
     try{ if(flyMap.setSky) flyMap.setSky({"sky-color":"#3f8fd6","horizon-color":"#d9eefc","fog-color":"#cfe6f5","sky-horizon-blend":0.7,"horizon-fog-blend":0.6,"fog-ground-blend":0.55,"atmosphere-blend":0.8}); }catch(e){}
+    flyPinSet(a, pts[0]);
     for(const id of ["flyDot","flyDotHalo","flyEnds","flyHead","flyHeadCase","flyHeadGlow","flyFull","flyFullCase"]){ if(flyMap.getLayer(id)) flyMap.removeLayer(id); }
     for(const id of ["flyFull","flyHead","flyDot","flyEnds"]){ if(flyMap.getSource(id)) flyMap.removeSource(id); }
     const rc={"line-join":"round","line-cap":"round"}, grad=flyGradient(pts);
@@ -1019,7 +1041,7 @@ async function startFly(a){
     try{ const cam=flyMap.cameraForBounds([[minx,miny],[maxx,maxy]],{padding:70,bearing:0}); if(cam) flyMap.jumpTo({center:cam.center,zoom:Math.min((cam.zoom||14),16.5),pitch:55,bearing:0}); }
     catch(e){ flyMap.jumpTo({center:[pts[0].lon,pts[0].lat],zoom:15,pitch:55,bearing:0}); }
     flyFit={center:flyMap.getCenter(),zoom:flyMap.getZoom()}; flySetFree(false); flyBear=null; flyBearOff=0;
-    if(flyView==="follow") flyCam({zoom:flyAir?12:Math.max(flyMap.getZoom(),15.5),pitch:55}); else if(flyView==="board") flyCam({zoom:flyAir?12.6:17.2,pitch:flyAir?70:74});
+    if(flyView==="follow") flyCam({zoom:flyAir?12:Math.max(flyMap.getZoom(),15.5),pitch:55}); else if(flyView==="board") flyCam({zoom:flyAir?12.6:17.2,pitch:flyAir?70:74}); else if(flyView==="cine"){ flyOrbT=0; flyCam(flyCineCam()); }
     runFly(a,pts);
   };
   flyMap.resize();
@@ -1045,6 +1067,16 @@ function runFly(a,pts){
   const tOf=(q)=>{ const v=(q.t!=null?q.t:(q.time!=null?q.time:null)); return v==null?null:(typeof v==="number"?v:Date.parse(v)); };
   const t0=tOf(pts[0]), t1=tOf(pts[N-1]); let total=(t0!=null&&t1!=null&&t1>t0)?(t1-t0):0; if(total>1e7) total/=1000; // millisecondes -> secondes
   if(!total) total=+a.duration||+a.dur||+a.moving_time||0;
+  // bandeau de profil : altitude quand le parcours a du relief (plus de 15 m d'écart), sinon vitesse
+  const profBox=document.getElementById("flyProf"); let profCur=null, profV=document.getElementById("flyProfV"), profMin=0, profMax=1, profAir=false, profSfx="", profKey="alt";
+  { let amin=1e9, amax=-1e9; for(const q of pts){ const v=+q.alt||0; if(v<amin) amin=v; if(v>amax) amax=v; }
+    profKey = (amax-amin>15) ? "alt" : "speed"; profAir = profKey==="alt" && flyAir; profSfx = profKey==="alt" ? (flyAir?" ft":" m") : " km/h";
+    let lo=1e9, hi=-1e9; for(const q of pts){ const v=+q[profKey]||0; if(v<lo) lo=v; if(v>hi) hi=v; }
+    if(profBox && hi-lo>0.5){ profMin=lo; profMax=hi; const M=Math.min(240,N), co=[]; for(let k=0;k<M;k++){ const q=pts[Math.round(k*(N-1)/(M-1))]; co.push((k/(M-1)*1000).toFixed(1)+" "+(100-(((+q[profKey]||0)-lo)/(hi-lo))*78-8).toFixed(1)); }
+      document.getElementById("flyProfL").setAttribute("d","M"+co.join(" L")); document.getElementById("flyProfA").setAttribute("d","M0 100 L"+co.join(" L")+" L1000 100 Z");
+      document.getElementById("flyProfT").textContent = profKey==="alt" ? "Altitude" : "Vitesse"; profBox.hidden=false; profCur=document.getElementById("flyProfCur"); }
+    else if(profBox) profBox.hidden=true; }
+  const profVal=(fi)=>{ const i0=Math.min(N-1,Math.floor(fi)), f=fi-i0, a0=+pts[i0][profKey]||0, a1=+pts[Math.min(N-1,i0+1)][profKey]||0; return a0+(a1-a0)*f; };
   const sk=document.getElementById("flySeek"), skT=document.getElementById("flySeekT"), skE=document.getElementById("flySeekEnd");
   skE.textContent= total ? flyClock(total) : ((pts[N-1].dist||0)/1000).toFixed(1)+" km"; sk.value=0;
   flyDraw=(fromSeek)=>{
@@ -1054,8 +1086,15 @@ function runFly(a,pts){
       const speed=p0.speed+(p1.speed-p0.speed)*frac, altv=p0.alt+(p1.alt-p0.alt)*frac, distv=p0.dist+(p1.dist-p0.dist)*frac;
       flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1).concat([{lon,lat}])));
       flyMap.getSource("flyDot").setData(ptGeo({lon,lat}));
+      if(flyPin) flyPin.setLngLat([lon,lat]);
+      if(profCur){ profCur.style.left=(flyProg*100)+"%"; const pv=profVal(fi); profCur.style.setProperty("--y", (100-((pv-profMin)/((profMax-profMin)||1))*78-8)+"%"); profV.textContent=Math.round(profAir ? pv*3.28084 : pv)+profSfx; }
       if(flyView==="street"){ const ah=pts[Math.min(N-1, i+Math.max(2,Math.round(N/80)))]; svUpdate(lon,lat,(ah.lon!==lon||ah.lat!==lat)?flyBearing({lon,lat},ah):0, !!fromSeek); }
       if(!flyFree && flyView==="follow") flyCam({center:[lon,lat]});
+      else if(!flyFree && flyView==="cine"){
+        // la caméra tourne autour du point : 7° par seconde de lecture
+        const nowO=performance.now(); if(flyOrbT && !fromSeek) flyOrb=(flyOrb+Math.min(120,nowO-flyOrbT)/1000*7)%360; flyOrbT=nowO;
+        flyCam({center:[lon,lat],bearing:(flyOrb+flyBearOff+360)%360,pitch:flyCineCam().pitch});
+      }
       else if(!flyFree && flyView==="board"){
         // cap : vers un point un peu plus loin sur le parcours (évite les à-coups), lissé d'une image à l'autre
         const ahead=pts[Math.min(N-1, i+Math.max(2,Math.round(N/80)))], here={lon,lat};
