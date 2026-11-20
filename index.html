@@ -1043,6 +1043,27 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .lfc-btns button{ width:62px; height:62px; min-height:0; padding:0; border:0; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; color:#fff; background:rgba(255,255,255,.16); box-shadow:none; position:relative; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
   .lfc-btns button svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .lfc-btns button.off{ background:#fff; color:#0b3138; } .lfc-btns button[hidden]{ display:none; }
+  body:has(#lfCall) #sosFab{ display:none !important; }
+  .lfc-btns.n5{ gap:10px; } .lfc-btns.n5 button:not(.lfc-end){ width:54px; height:54px; } .lfc-btns.n5 button small{ font-size:10.5px; }
+  /* 20/11 : messages vocaux */
+  .vmsg{ display:flex; align-items:center; gap:10px; min-width:190px; max-width:250px; padding:2px 0 0; }
+  .vmsg .vm-play{ flex:0 0 40px; width:40px; height:40px; min-height:0; padding:0; border:0; border-radius:50%; background:rgba(17,139,146,.16); color:inherit; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:none; }
+  .vmsg .vm-play svg{ width:20px; height:20px; fill:currentColor; stroke:none; } .vmsg .vm-ipa{ display:none; } .vmsg.on .vm-ip{ display:none; } .vmsg.on .vm-ipa{ display:block; }
+  .vmsg .vm-mid{ flex:1; min-width:0; } .vmsg .vm-bar{ height:14px; display:flex; align-items:center; cursor:pointer; position:relative; }
+  .vmsg .vm-bar::before{ content:""; position:absolute; left:0; right:0; height:4px; border-radius:2px; background:currentColor; opacity:.22; }
+  .vmsg .vm-bar i{ position:relative; display:block; height:4px; width:0; border-radius:2px; background:currentColor; opacity:.9; }
+  .vmsg .vm-inf{ display:flex; align-items:center; justify-content:space-between; margin-top:2px; font-size:11.5px; opacity:.8; }
+  .vmsg .vm-sp{ min-height:0; padding:1px 7px; border:0; border-radius:9px; background:rgba(127,127,127,.22); color:inherit; font-size:11px; font-weight:700; cursor:pointer; box-shadow:none; }
+  #chatCard .chat-send-btn .cs-mic{ display:none; }
+  #chatCard:not(.has-txt):not(.rec) .chat-send-btn{ opacity:1; transform:scale(1); } #chatCard:not(.has-txt):not(.rec) .chat-send-btn:disabled{ opacity:.35; }
+  #chatCard:not(.has-txt):not(.rec) .chat-send-btn svg:not(.cs-mic){ display:none; }
+  #chatCard:not(.has-txt):not(.rec) .chat-send-btn svg.cs-mic{ display:block; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-left:0; }
+  #chatCard.rec .ci-pill{ display:none; } #chatCard.rec .chat-send-btn{ opacity:1; transform:scale(1); }
+  .vrec{ flex:1; min-width:0; display:flex; align-items:center; gap:9px; height:46px; padding:0 12px 0 4px; border-radius:23px; background:rgba(229,38,63,.10); }
+  .vrec .vr-x{ flex:0 0 38px; width:38px; height:38px; min-height:0; padding:0; border:0; border-radius:50%; background:transparent; color:#e5263f; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:none; }
+  .vrec .vr-x svg{ width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .vrec .vr-dot{ flex:0 0 10px; width:10px; height:10px; border-radius:50%; background:#e5263f; animation:vrBlink 1s ease-in-out infinite; } @keyframes vrBlink{ 50%{ opacity:.25; } }
+  .vrec .vr-t{ font-weight:700; font-variant-numeric:tabular-nums; } .vrec .vr-l{ flex:1; min-width:0; font-size:12px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .lfc-btns button.lfc-end{ width:72px; height:72px; background:#e5263f; box-shadow:0 8px 20px rgba(229,38,63,.45); } .lfc-btns button.lfc-ok{ width:72px; height:72px; background:#19b866; box-shadow:0 8px 20px rgba(25,184,102,.45); animation:lfcBob 1s ease-in-out infinite; }
   @keyframes lfcBob{ 50%{ transform:translateY(-5px); } }
   .lfc-btns button small{ position:absolute; top:100%; margin-top:7px; font-size:11.5px; font-weight:600; color:rgba(255,255,255,.85); white-space:nowrap; }
@@ -5577,7 +5598,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   $("commPseudo").value = me.pseudo;
 
   // texte d'aperçu d'un message (listes de discussions + dernier message)
-  function previewText(o){ if(!o) return ""; if(o.ev) return "📅 "+(o.ev.title||"Événement"); if(o.ride) return "🏄 Sortie eFoil"; if(o.gif) return "GIF"; if(o.img && !o.text) return "📷 Photo"; return o.text||""; }
+  function previewText(o){ if(!o) return ""; if(o.ev) return "📅 "+(o.ev.title||"Événement"); if(o.ride) return "🏄 Sortie eFoil"; if(o.gif) return "GIF"; if(o.au) return "🎤 Message vocal"; if(o.img && !o.text) return "📷 Photo"; return o.text||""; }
   // ---------- backend Firebase (temps réel) ----------
   async function makeFirebaseBackend(){
     const appMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
@@ -5629,7 +5650,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       sendMessage(ch,text,img,reply,extra){ const path = pathFor(ch);
         const o={uid,pseudo:me.pseudo,text:text||"",t:db.serverTimestamp(),topic:(ch==="salon"?((extra&&extra.topic)||chatTopic):null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null};
         if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
-        if(extra){ if(extra.call) o.call=extra.call; if(extra.ride) o.ride=extra.ride; if(extra.gif){ o.gif=extra.gif; } if(extra.ev) o.ev=extra.ev; }
+        if(extra){ if(extra.call) o.call=extra.call; if(extra.au){ o.au=extra.au; o.ad=extra.ad||0; } if(extra.ride) o.ride=extra.ride; if(extra.gif){ o.gif=extra.gif; } if(extra.ev) o.ev=extra.ev; }
         const prev = previewText(o);
         const p = db.push(db.ref(d,path),o);
         if(ch.indexOf("group:")===0){ const gid=ch.slice(6);
@@ -5898,7 +5919,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       publishPresence(o){ mine = o?{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:Date.now()}:null; emit(); return Promise.resolve(); },
       goOnline(){}, watchOnline(cb){ cb({"demo-aurel":{t:Date.now()},"demo-marine":{t:Date.now()},"demo-leo":{t:Date.now()}}); return function(){}; },
       watchPresence(cb){ presCb=cb; emit(); return ()=>{presCb=null;}; },
-      sendMessage(ch,text,img,reply,extra){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?((extra&&extra.topic)||chatTopic):null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; if(extra){ if(extra.ride) mo.ride=extra.ride; if(extra.gif) mo.gif=extra.gif; if(extra.ev) mo.ev=extra.ev; } (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch); var prev=previewText(mo);
+      sendMessage(ch,text,img,reply,extra){ var mo={uid,pseudo:me.pseudo,text:text||"",t:Date.now(),topic:(ch==="salon"?((extra&&extra.topic)||chatTopic):null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null}; if(img) mo.img=img; if(me.av) mo.av=me.av; if(me.bio) mo.bio=me.bio; if(reply) mo.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)}; if(extra){ if(extra.au){ mo.au=extra.au; mo.ad=extra.ad||0; } if(extra.ride) mo.ride=extra.ride; if(extra.gif) mo.gif=extra.gif; if(extra.ev) mo.ev=extra.ev; } (msgs[ch]=msgs[ch]||[]).push(mo); fire(ch); var prev=previewText(mo);
         if(ch.indexOf("group:")===0){ var gid=ch.slice(6); if(demoGroups[gid]){ demoGroups[gid].last={text:prev,pseudo:me.pseudo,by:uid,t:Date.now()}; fireGroups(); } }
         if(ch.startsWith("dm:") && dmPeer){ demoDM[dmPeer.uid]={pseudo:dmPeer.pseudo,text:prev,by:uid,t:Date.now()}; fireDM(); }
         if(ch.startsWith("dm:")) setTimeout(()=>{ var rp=dmPeer?dmPeer.uid:"demo", rn=dmPeer?dmPeer.pseudo:"Membre", rt="(démo) Salut ! On se capte sur l'eau 👋"; msgs[ch].push({uid:rp,pseudo:rn,text:rt,t:Date.now()}); fire(ch); demoDM[rp]={pseudo:rn,text:rt,by:rp,t:Date.now()}; fireDM(); },1200);
@@ -6653,6 +6674,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           note=`<div class="tr-note"><svg viewBox="0 0 24 24"><path d="M4 5h10M9 3v2M11.5 5c0 5-3.5 8-7.5 9"/><path d="M14 20l3.5-9 3.5 9"/></svg>${TR_WORD[tl]||"Traduit"} (${esc((c.det||"").toUpperCase())}→${tl.toUpperCase()}) · <a class="tr-tog" data-h="${h}">${showOrig?(TR_TRAD[tl]||"voir la traduction"):(TR_ORIG[tl]||"voir l'original")}</a></div>`;
         }
       }
+      if(m.au){ bodyText=""; note=""; }
+      const auHtml = m.au ? lfVoiceHtml(m) : "";
       const q = m.rt?`<div class="qreply"><b>${esc(m.rt.p||"")}</b>${esc(m.rt.t||"")}</div>`:"";
       const imgHtml = m.img?`<img class="chat-img" src="${m.img}" data-full="${m.img}" alt="photo">`:"";
       const gifHtml = m.gif?`<img class="chat-img chat-gif" src="${m.gif}" data-full="${m.gif}" alt="gif">`:"";
@@ -6660,7 +6683,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       const txtHtml = bodyText?`<span class="btxt">${bodyText}</span>`:"";
       const onlyImg = ((m.img||m.gif) && !bodyText && !note && !m.rt && !m.ride) ? " only-img" : "";
       const metaB = `<span class="bmeta">${timeLabel(m.t)}${mine&&isConvo?' <span class="btick"><svg viewBox="0 0 18 12"><path d="M1 6.5 4.5 10 11 2.5M7 9.5l.6.5L14 2.5"/></svg></span>':''}</span>`;
-      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}${(m.ride||m.ev)?" has-ride":""}" data-i="${i}">${q}${rideHtml}${imgHtml}${gifHtml}${txtHtml}${note}${metaB}</div>`;
+      const bubble = `<div class="bubble ${mine?"me":"them"}${onlyImg}${(m.ride||m.ev)?" has-ride":""}" data-i="${i}">${q}${rideHtml}${imgHtml}${gifHtml}${auHtml}${txtHtml}${note}${metaB}</div>`;
       const reacts = (function(){ if(!m.reactions) return ""; var cnt={}, mineE=null; for(var k in m.reactions){ var e=m.reactions[k]; if(!e) continue; cnt[e]=(cnt[e]||0)+1; if(k===me.uid) mineE=e; } var keys=Object.keys(cnt); if(!keys.length) return ""; return '<div class="react-row">'+keys.map(function(e){ return '<button class="react-chip'+(mineE===e?" on":"")+'" data-i="'+i+'" data-e="'+e+'">'+e+' '+cnt[e]+'</button>'; }).join("")+'</div>'; })();
       const reactBtn = `<button class="msg-react" data-i="${i}" title="Réagir" aria-label="Réagir">🙂﹢</button>`;
       const delBtn = mine?`<button class="msg-del" data-i="${i}" title="Supprimer" aria-label="Supprimer">🗑</button>`:"";
@@ -6692,6 +6715,47 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
                    : '<span class="cp-av" style="background:'+avatarColor(uidForColor||"x")+'">'+esc(((name||"R").trim()[0]||"R").toUpperCase())+'</span>';
     $("chatTitle").innerHTML = av+'<span class="cp-txt"><span class="cp-name">'+esc(name||"Membre")+'</span><span class="cp-sub" data-rest="'+esc(sub||"")+'">'+esc(sub||"")+'</span></span>';
   }
+  // ================= 20/11 : messages vocaux (son enregistré dans le message, lecture dans la bulle) =================
+  var lfVoiceMap={}, lfVP={ a:null, k:null, sp:1 }, lfVR=null;
+  function lfVoiceFmt(n){ n=Math.max(0, Math.round(+n||0)); var ss=n%60; return Math.floor(n/60)+":"+(ss<10?"0":"")+ss; }
+  function lfVoiceHtml(m){ var k=(+m.t||0)+"_"+(m.uid||""); lfVoiceMap[k]=m.au; if(lfVP.k) setTimeout(lfVoiceSync,0);
+    return '<div class="vmsg" data-k="'+esc(k)+'" data-d="'+(+m.ad||0)+'"><button type="button" class="vm-play" aria-label="Écouter le message vocal"><svg class="vm-ip" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.500z"/></svg><svg class="vm-ipa" viewBox="0 0 24 24"><path d="M7 5h3.500v14H7zM13.500 5H17v14h-3.500z"/></svg></button>'
+      +'<div class="vm-mid"><div class="vm-bar"><i></i></div><div class="vm-inf"><span class="vm-t">'+lfVoiceFmt(m.ad)+'</span><button type="button" class="vm-sp" aria-label="Vitesse de lecture">1×</button></div></div></div>'; }
+  function lfVoiceSync(){ var a=lfVP.a; document.querySelectorAll(".vmsg").forEach(function(el){ var on=!!(a && el.dataset.k===lfVP.k), d=+el.dataset.d||0, cur=on?(a.currentTime||0):0;
+      if(on && isFinite(a.duration) && a.duration>0) d=a.duration;
+      el.classList.toggle("on", on && !a.paused); var i=el.querySelector(".vm-bar i"); if(i) i.style.width=(on && d>0 ? Math.min(100, cur/d*100) : 0)+"%";
+      var t=el.querySelector(".vm-t"); if(t) t.textContent=lfVoiceFmt(on && cur>0 ? cur : (+el.dataset.d||d)); var sp=el.querySelector(".vm-sp"); if(sp) sp.textContent=(lfVP.sp===1?"1":lfVP.sp===1.5?"1,5":"2")+"×"; }); }
+  function lfVoiceStopPlay(){ var a=lfVP.a; lfVP.a=null; lfVP.k=null; if(a){ try{ a.pause(); a.src=""; }catch(e){} } lfVoiceSync(); }
+  function lfVoicePlay(k){ var a=lfVP.a; if(a && lfVP.k===k){ if(a.paused){ var p0=a.play(); if(p0&&p0.catch) p0.catch(function(){}); } else a.pause(); return; }
+    lfVoiceStopPlay(); var src=lfVoiceMap[k]; if(!src) return; a=new Audio(src); lfVP.a=a; lfVP.k=k; a.playbackRate=lfVP.sp;
+    ["timeupdate","play","pause"].forEach(function(ev){ a.addEventListener(ev, lfVoiceSync); }); a.addEventListener("ended", function(){ if(lfVP.a===a) lfVoiceStopPlay(); });
+    var p=a.play(); if(p&&p.catch) p.catch(function(){ if(lfVP.a===a){ lfVoiceStopPlay(); alert("Lecture impossible sur cet appareil."); } }); }
+  document.addEventListener("click", function(e){ var t=e.target; if(!t || !t.closest) return;
+    if(t.closest(".vm-sp")){ lfVP.sp = lfVP.sp===1 ? 1.5 : (lfVP.sp===1.5 ? 2 : 1); if(lfVP.a) lfVP.a.playbackRate=lfVP.sp; lfVoiceSync(); return; }
+    var b=t.closest(".vm-play"); if(b){ lfVoicePlay(b.parentNode.dataset.k); return; }
+    var bar=t.closest(".vm-bar"); if(bar && lfVP.a && bar.closest(".vmsg").dataset.k===lfVP.k){ var r=bar.getBoundingClientRect(), d=isFinite(lfVP.a.duration)&&lfVP.a.duration>0 ? lfVP.a.duration : (+bar.closest(".vmsg").dataset.d||0);
+      if(d>0 && r.width>0){ try{ lfVP.a.currentTime=Math.max(0, Math.min(1,(e.clientX-r.left)/r.width))*d; }catch(x){} lfVoiceSync(); } } });
+  function lfVoiceMime(){ var M=window.MediaRecorder; if(!M || !M.isTypeSupported) return ""; var c=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"]; for(var i=0;i<c.length;i++){ try{ if(M.isTypeSupported(c[i])) return c[i]; }catch(e){} } return ""; }
+  function lfVoiceUI(r){ var card=$("chatCard"), inp=card && card.querySelector(".chat-input"); if(!inp) return; var el=document.createElement("div"); el.id="vrec"; el.className="vrec";
+    el.innerHTML='<button type="button" class="vr-x" aria-label="Annuler le message vocal"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12M10 11v5M14 11v5"/></svg></button><span class="vr-dot"></span><span class="vr-t">0:00</span><span class="vr-l">Enregistrement… touche la flèche pour envoyer</span>';
+    inp.insertBefore(el, inp.firstChild); card.classList.add("rec"); r.el=el; el.querySelector(".vr-x").addEventListener("click", function(){ lfVoiceStop(false); }); }
+  function lfVoiceStart(){ if(lfVR || lfCall) return; if(!charterOk){ showCharter(); return; } if(!profileReady()){ updateChatGate(); askProfile(); return; }
+    if(!backend || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){ alert("Les messages vocaux ne sont pas disponibles sur cet appareil. Mets l'application à jour."); return; }
+    lfVoiceStopPlay(); var r=lfVR={ chunks:[], size:0, send:false, ch:currentChannel(), rp:replyTarget, t0:0 };
+    navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true } }).then(function(ms){
+      if(lfVR!==r){ ms.getTracks().forEach(function(t){ t.stop(); }); return; }
+      var mime=lfVoiceMime(), opt={ audioBitsPerSecond:24000 }; if(mime) opt.mimeType=mime; var mr; try{ mr=new MediaRecorder(ms, opt); }catch(e){ mr=new MediaRecorder(ms); }
+      r.ms=ms; r.mr=mr; r.t0=Date.now(); mr.ondataavailable=function(e){ if(e.data && e.data.size){ r.chunks.push(e.data); r.size+=e.data.size; if(r.size>380000 && lfVR===r) lfVoiceStop(true); } };
+      mr.onstop=function(){ lfVoiceDone(r); }; mr.start(1000); lfVoiceUI(r);
+      r.iv=setInterval(function(){ var n=(Date.now()-r.t0)/1000; var t=r.el && r.el.querySelector(".vr-t"); if(t) t.textContent=lfVoiceFmt(n); if(n>=120) lfVoiceStop(true); }, 250);
+    }).catch(function(e){ if(lfVR===r) lfVR=null; alert(e && e.name==="NotAllowedError" ? "Autorise le micro pour envoyer un message vocal (réglages de l'application)." : "Micro inaccessible : "+((e&&e.message)||"réessaie")); }); }
+  function lfVoiceStop(send){ var r=lfVR; if(!r) return; r.send=!!send; if(!r.mr){ lfVR=null; return; } try{ if(r.mr.state!=="inactive") r.mr.stop(); else lfVoiceDone(r); }catch(e){ lfVoiceDone(r); } }
+  function lfVoiceDone(r){ if(r.done) return; r.done=true; if(lfVR===r) lfVR=null; clearInterval(r.iv); try{ r.ms.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
+    if(r.el) r.el.remove(); var card=$("chatCard"); if(card) card.classList.remove("rec");
+    var dur=Math.round((Date.now()-r.t0)/1000); if(!r.send || dur<1 || !r.chunks.length) return;
+    var blob=new Blob(r.chunks, { type:((r.mr.mimeType||"audio/webm").split(";")[0])||"audio/webm" }); if(blob.size>600000){ alert("Message vocal trop long : enregistre un message plus court."); return; }
+    var fr=new FileReader(); fr.onload=function(){ if(backend) backend.sendMessage(r.ch, "🎤 Message vocal", null, r.rp, { au:String(fr.result), ad:dur }); try{ clearReply(); }catch(e){} }; fr.onerror=function(){ alert("Envoi du message vocal impossible."); }; fr.readAsDataURL(blob); }
+  window.addEventListener("pagehide", function(){ if(lfVR) lfVoiceStop(false); });
   // ================= 13/11 : appels audio / vidéo entre deux membres (messages privés) =================
   // Le message d'appel (dm/<paire>/<id>) porte la signalisation WebRTC dans « rtc » ; la sonnerie passe par userDM/<destinataire>/<moi>/call.
   var lfCall=null, lfCallSeen={}, lfCallOld=false;
@@ -6700,7 +6764,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     cam:'<svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="M15 10.5l6-3.5v10l-6-3.5z"/></svg>',
     flip:'<svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2"/><path d="M20 4v4h-4M4 20v-4h4"/></svg>',
     end:'<svg viewBox="0 0 24 24"><path d="M3 14c5-5 13-5 18 0l-2.5 2.5-3.5-1.5v-3a12 12 0 0 0-6 0v3l-3.5 1.5z"/></svg>',
-    ok:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>' };
+    ok:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+    spk:'<svg viewBox="0 0 24 24"><path d="M4 9.500v5h3.500l4.500 4v-13l-4.500 4z"/><path d="M15.500 9a4.200 4.200 0 0 1 0 6M18 6.500a7.800 7.800 0 0 1 0 11"/></svg>' };
+  // 20/11 : session d'appel native (applis 1.7.0+) : le micro reste actif quand on quitte l'appli, et le son passe par l'écouteur ou le haut-parleur
+  function lfCallPlat(){ try{ var C=window.Capacitor; return (C && C.isNativePlatform && C.isNativePlatform()) ? (C.getPlatform ? C.getPlatform() : "native") : ""; }catch(e){ return ""; } }
+  function lfCallAudio(c){ var P=nativePlug("LfCall"); if(!c || lfCall!==c || !P || !P.audio) return;
+    try{ P.audio({ on:true, speaker:!!c.spk, video:c.kind==="v", name:c.name||"", route:(lfCallPlat()!=="ios" || !!c.spkTouched) })
+      .then(function(){ if(lfCall===c && !c.spkOk){ c.spkOk=true; lfCallDraw(); } }).catch(function(){ if(lfCall===c && c.spkOk!==false){ c.spkOk=false; lfCallDraw(); } }); }catch(e){} }
   function lfCallOk(){ return !!(backend && backend.rt && window.RTCPeerConnection && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
   function lfCallBtns(){ var a=$("chatCallA"), v=$("chatCallV"); if(!a||!v) return;
     var C=window.Capacitor, nat=!!(C && C.isNativePlatform && C.isNativePlatform()), okApp=!nat || /LiteFoilCall\//.test(navigator.userAgent);   /* applis natives : seulement celles qui ont le micro et la caméra (1.5.0+) */
@@ -6717,17 +6787,20 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     el.innerHTML='<video class="lfc-rem" autoplay playsinline></video><video class="lfc-loc" autoplay playsinline muted></video>'
       +'<div class="lfc-who"><div class="lfc-av" style="background:'+avatarColor(c.peer)+'">'+av+'</div><div class="lfc-name">'+esc(c.name||"Membre")+'</div><div class="lfc-st"></div></div>'
       +'<div class="lfc-btns"></div>';
-    document.body.appendChild(el); c.el=el; el.addEventListener("click", function(e){ var b=e.target.closest("button[data-a]"); if(!b) return; var a=b.dataset.a;
+    document.body.appendChild(el); try{ var _sf=document.getElementById("sosFab"); if(_sf){ _sf.style.visibility="hidden"; var _mo=new MutationObserver(function(){ if(!document.body.contains(el)){ _sf.style.visibility=""; _mo.disconnect(); } }); _mo.observe(document.body,{childList:true}); } }catch(e){} c.el=el; el.addEventListener("click", function(e){ var b=e.target.closest("button[data-a]"); if(!b) return; var a=b.dataset.a;
       if(a==="end") lfCallEnd(c.incoming && !c.accepted ? "no" : "end"); else if(a==="ok") lfCallAccept();
       else if(a==="mic"){ c.muted=!c.muted; if(c.stream) c.stream.getAudioTracks().forEach(function(t){ t.enabled=!c.muted; }); lfCallDraw(); }
       else if(a==="cam"){ c.camOff=!c.camOff; if(c.stream) c.stream.getVideoTracks().forEach(function(t){ t.enabled=!c.camOff; }); lfCallDraw(); }
+      else if(a==="spk"){ c.spk=!c.spk; c.spkTouched=true; lfCallAudio(c); lfCallDraw(); }
       else if(a==="flip") lfCallFlip(); });
     lfCallDraw(); }
   function lfCallDraw(){ var c=lfCall; if(!c||!c.el) return; var st=c.el.querySelector(".lfc-st"), bt=c.el.querySelector(".lfc-btns");
     c.el.classList.toggle("lfc-ring", !!(c.incoming && !c.accepted)); c.el.classList.toggle("live", c.state==="on"); c.el.classList.toggle("back", c.facing==="environment");
     st.textContent = c.state==="on" ? lfCallDur(c) : (c.incoming && !c.accepted ? (c.kind==="v"?"Appel vidéo entrant…":"Appel audio entrant…") : (c.state==="conn" ? "Connexion…" : "Ça sonne…"));
     if(c.incoming && !c.accepted){ bt.innerHTML='<button type="button" class="lfc-end" data-a="end" aria-label="Refuser">'+LFC_SVG.end+'<small>Refuser</small></button><span style="flex:0 0 46px"></span><button type="button" class="lfc-ok" data-a="ok" aria-label="Décrocher">'+LFC_SVG.ok+'<small>Décrocher</small></button>'; return; }
+    bt.classList.toggle("n5", c.kind==="v" && c.spkOk===true);
     bt.innerHTML='<button type="button" data-a="mic" class="'+(c.muted?"off":"")+'" aria-label="Micro">'+LFC_SVG.mic+'<small>'+(c.muted?"Micro coupé":"Micro")+'</small></button>'
+      +(c.spkOk===true?'<button type="button" data-a="spk" class="'+(c.spk?"off":"")+'" aria-label="Haut-parleur">'+LFC_SVG.spk+'<small>Haut-parleur</small></button>':'')
       +(c.kind==="v"?'<button type="button" data-a="cam" class="'+(c.camOff?"off":"")+'" aria-label="Caméra">'+LFC_SVG.cam+'<small>Caméra</small></button><button type="button" data-a="flip" aria-label="Retourner la caméra">'+LFC_SVG.flip+'<small>Retourner</small></button>':'')
       +'<button type="button" class="lfc-end" data-a="end" aria-label="Raccrocher">'+LFC_SVG.end+'<small>Raccrocher</small></button>'; }
   function lfCallDur(c){ var n=Math.max(0, Math.round((Date.now()-(c.t0||Date.now()))/1000)), m=Math.floor(n/60), ss=n%60; return (m<10?"0":"")+m+":"+(ss<10?"0":"")+ss; }
@@ -6737,7 +6810,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     c.stream.getTracks().forEach(function(t){ pc.addTrack(t, c.stream); });
     pc.onicecandidate=function(e){ if(e.candidate) rt.push(rt.ref(c.path+"/rtc/ic"), { by:me.uid, c:JSON.stringify(e.candidate) }).catch(function(){}); };
     pc.ontrack=function(e){ var v=c.el&&c.el.querySelector(".lfc-rem"); if(v){ v.srcObject=e.streams[0]||new MediaStream([e.track]); var p=v.play(); if(p&&p.catch) p.catch(function(){}); } };
-    pc.onconnectionstatechange=function(){ var x=pc.connectionState; if(x==="connected" && c.state!=="on"){ c.state="on"; c.t0=Date.now(); if(c.tone){ c.tone(); c.tone=null; } clearInterval(c.tick); c.tick=setInterval(lfCallDraw,1000); lfCallDraw(); }
+    pc.onconnectionstatechange=function(){ var x=pc.connectionState; if(x==="connected" && c.state!=="on"){ c.state="on"; c.t0=Date.now(); if(c.tone){ c.tone(); c.tone=null; } clearInterval(c.tick); c.tick=setInterval(lfCallDraw,1000); lfCallDraw(); lfCallAudio(c); }
       else if(x==="failed"){ lfCallEnd("fail"); } };
     c.unIc=rt.onChildAdded(rt.ref(c.path+"/rtc/ic"), function(sn){ var v=sn.val(); if(!v || v.by===me.uid) return; var cand; try{ cand=new RTCIceCandidate(JSON.parse(v.c)); }catch(e){ return; }
       if(pc.remoteDescription && pc.remoteDescription.type) pc.addIceCandidate(cand).catch(function(){}); else c.pend.push(cand); });
@@ -6747,9 +6820,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // appelant
   function lfCallStart(kind){ if(lfCall || !dmPeer) return;
     if(lfCallOld){ alert("Les appels arrivent avec la prochaine mise à jour de l'application (version 1.5.0, en cours de validation). En attendant, tu peux appeler depuis le site dans Chrome ou Safari."); return; } if(!lfCallOk()){ alert("Les appels ne sont pas disponibles sur cet appareil (micro inaccessible)."); return; }
-    var peer=dmPeer.uid, pair=pairKey(me.uid,peer), rt=backend.rt, c=lfCall={ kind:kind, peer:peer, name:dmPeer.pseudo, incoming:false, state:"ring", facing:"user" };
+    var peer=dmPeer.uid, pair=pairKey(me.uid,peer), rt=backend.rt, c=lfCall={ kind:kind, peer:peer, name:dmPeer.pseudo, incoming:false, state:"ring", facing:"user", spk:(kind==="v" || lfCallPlat()==="ios") };
     lfCallUI(c);
-    lfCallMedia(c).then(function(){ if(lfCall!==c) return; var pc=lfCallPeer0(c, pair); return pc; }).catch(function(e){ if(lfCall===c){ lfCallEnd("local", true); alert(e && e.name==="NotAllowedError" ? "Autorise le micro"+(kind==="v"?" et la caméra":"")+" pour appeler (réglages de l'application)." : "Appel impossible : "+((e&&e.message)||"micro inaccessible")); } }); }
+    lfCallMedia(c).then(function(){ if(lfCall!==c) return; lfCallAudio(c); var pc=lfCallPeer0(c, pair); return pc; }).catch(function(e){ if(lfCall===c){ lfCallEnd("local", true); alert(e && e.name==="NotAllowedError" ? "Autorise le micro"+(kind==="v"?" et la caméra":"")+" pour appeler (réglages de l'application)." : "Appel impossible : "+((e&&e.message)||"micro inaccessible")); } }); }
   function lfCallPeer0(c, pair){ var rt=backend.rt, label=c.kind==="v"?"📹 Appel vidéo":"📞 Appel audio";
     var p=backend.sendMessage("dm:"+pair, label, null, null, { call:{ k:c.kind } }); c.mid=p.key; c.path="dm/"+pair+"/"+c.mid; c.label=label;
     return Promise.resolve(p).then(function(){ if(lfCall!==c) return; var pc=lfCallPeer(c);
@@ -6767,14 +6840,14 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     un=rt.onValue(rt.ref(path+"/rtc"), function(sn){ var v=sn.val(); if(done) return; if(!v) return; done=true; setTimeout(function(){ try{ un&&un(); }catch(e){} },0);
       if(v.st!=="ring" || !v.offer){ rt.remove(rt.ref("userDM/"+me.uid+"/"+peer+"/call")).catch(function(){}); return; }   // appel déjà terminé
       if(lfCall){ return; }                                                                                               // déjà en ligne
-      var c=lfCall={ kind:(v.k==="v"?"v":"a"), peer:peer, name:name, incoming:true, accepted:false, state:"ring", facing:"user", path:path, mid:k.mid, offer:v.offer };
+      var c=lfCall={ kind:(v.k==="v"?"v":"a"), peer:peer, name:name, incoming:true, accepted:false, state:"ring", facing:"user", path:path, mid:k.mid, offer:v.offer, spk:(v.k==="v" || lfCallPlat()==="ios") };
       lfCallUI(c); c.tone=lfCallTone("in"); lfCallWatch(c); c.to=setTimeout(function(){ if(lfCall===c && !c.accepted) lfCallEnd("miss", true); }, 50000); lfCallNative(); }); }
   // 15/11 : écran d'appel natif (Android 1.6.0+). Si on a déjà décroché ou refusé sur cet écran, la page applique le choix sans redemander.
   function lfCallNative(){ var c=lfCall, P=nativePlug("LfCall"); if(!c || !c.incoming || c.accepted || !P || !P.pending) return;
     P.pending().then(function(p){ if(lfCall!==c || c.accepted || !p || p.mid!==c.mid || Date.now()-(+p.t||0)>90000) return; if(p.act==="answer") lfCallAccept(); else if(p.act==="decline") lfCallEnd("no"); }).catch(function(){}); }
   document.addEventListener("visibilitychange", function(){ if(!document.hidden) lfCallNative(); });
   function lfCallAccept(){ var c=lfCall; if(!c || !c.incoming || c.accepted) return; c.accepted=true; c.state="conn"; if(c.tone){ c.tone(); c.tone=null; } clearTimeout(c.to); lfCallDraw(); var rt=backend.rt;
-    lfCallMedia(c).then(function(){ if(lfCall!==c) return; var pc=lfCallPeer(c);
+    lfCallMedia(c).then(function(){ if(lfCall!==c) return; lfCallAudio(c); var pc=lfCallPeer(c);
       return pc.setRemoteDescription(new RTCSessionDescription(c.offer)).then(function(){ lfCallFlush(c); return pc.createAnswer(); }).then(function(a){ return pc.setLocalDescription(a); })
         .then(function(){ if(lfCall!==c) return; return rt.update(rt.ref(c.path+"/rtc"), { st:"on", answer:{ type:pc.localDescription.type, sdp:pc.localDescription.sdp } }); }); })
       .catch(function(e){ if(lfCall===c){ lfCallEnd("fail"); alert(e && e.name==="NotAllowedError" ? "Autorise le micro"+(c.kind==="v"?" et la caméra":"")+" pour répondre (réglages de l'application)." : "Impossible de répondre : "+((e&&e.message)||"micro inaccessible")); } }); }
@@ -6797,7 +6870,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   (function(){ var a=$("chatCallA"), v=$("chatCallV"); if(a) a.addEventListener("click", function(e){ e.stopPropagation(); lfCallStart("a"); }); if(v) v.addEventListener("click", function(e){ e.stopPropagation(); lfCallStart("v"); });
     window.addEventListener("pagehide", function(){ if(lfCall) lfCallEnd("end"); }); })();
   // aperçu de l’écran d’appel (contrôle visuel) : lfCallPreview("a"|"v", entrant, enLigne)
-  window.lfCallPreview=function(kind,inc,live){ if(lfCall) return; lfCall={ kind:kind||"a", peer:"demo", name:"Most Charly", incoming:!!inc, accepted:!!live, state:live?"on":"ring", t0:Date.now()-83000, facing:"user" }; lfCallUI(lfCall); };
+  window.lfCallPreview=function(kind,inc,live){ if(lfCall) return; lfCall={ kind:kind||"a", peer:"demo", name:"Most Charly", incoming:!!inc, accepted:!!live, state:live?"on":"ring", t0:Date.now()-83000, facing:"user", spkOk:true, spk:(kind==="v") }; lfCallUI(lfCall); };
 
   // ferme tout ce qui peut recouvrir la conversation (carte Près de moi, fil vidéo ouvert par-dessus, fiches)
   function dmClearLayers(){ try{ nearMapClose(); }catch(e){} try{ var vf=$("vf"); if(vf && !vf.hidden && vfMode!=="tab") closeFeed(); }catch(e){} try{ closeOverlay(); }catch(e){}
@@ -9827,6 +9900,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var cam=$("chatCam"); if(cam) cam.addEventListener("click", function(){ if(!profileReady()||!charterOk){ updateChatGate(); return; } var f=$("chatFile"); f.setAttribute("capture","environment"); f.click(); });
     // le bouton Envoyer s'allume quand il y a du texte
     var inp=$("chatInput"), sendB=$("chatSend"), lit=function(){ card.classList.toggle("has-txt", !!(inp.value||"").trim()); }; inp.addEventListener("input", lit); sendB.addEventListener("click", function(){ setTimeout(lit,30); });
+    try{ sendB.insertAdjacentHTML("beforeend", '<svg class="cs-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>');
+      sendB.addEventListener("click", function(){ if(lfVR){ lfVoiceStop(true); return; } if(!(inp.value||"").trim()) lfVoiceStart(); }); }catch(e){}
     // grille des salons (avec nouveaux messages)
     function openChanSheet(){ var ov=document.createElement("div"); ov.className="mm-ov"; var keys=Object.keys(CHANS);
       var unread=function(tp){ var o=document.querySelector('#chatChannel option[value="'+tp+'"]'); var m=o&&o.textContent.match(/🔴\s*(\d+\+?)/); return m?m[1]:""; };

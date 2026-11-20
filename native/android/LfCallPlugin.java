@@ -13,6 +13,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  * Lite Foil : module « LfCall » lu par la page.
  * pending() : dernier appel reçu par l'écran d'appel natif et le choix fait (answer / decline).
  * done()    : fin d'appel, l'appli ne s'affiche plus par-dessus l'écran verrouillé.
+ * audio()   : appel en cours (20/11) : micro actif appli en arrière-plan, son sur l'écouteur ou le haut-parleur.
  */
 @CapacitorPlugin(name = "LfCall")
 public class LfCallPlugin extends Plugin {
@@ -67,8 +68,22 @@ public class LfCallPlugin extends Plugin {
         call.resolve();
     }
 
+    /** Appel en cours : on = vrai pour démarrer ou régler la session (speaker, video, name, route), faux pour l'arrêter. */
+    @PluginMethod
+    public void audio(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", true));
+        if (!on) { LfCallService.stop(getContext()); call.resolve(); return; }
+        if (!LfCallService.micGranted(getContext())) { call.reject("micro non autorisé"); return; }
+        try {
+            LfCallService.start(getContext(), Boolean.TRUE.equals(call.getBoolean("speaker", false)), Boolean.TRUE.equals(call.getBoolean("video", false)),
+                call.getString("name", ""), Boolean.TRUE.equals(call.getBoolean("route", true)));
+            call.resolve();
+        } catch (Exception e) { call.reject("session d'appel impossible"); }
+    }
+
     @PluginMethod
     public void done(PluginCall call) {
+        LfCallService.stop(getContext());
         LfCall.prefs(getContext()).edit().putString("act", "done").apply();
         LfCall.stop(getContext(), null);
         getActivity().runOnUiThread(new Runnable() { @Override public void run() {

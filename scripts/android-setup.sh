@@ -17,7 +17,7 @@ mkdir -p "$PKG_DIR"
 cp "$ROOT/native/android/LfTrackStore.java" "$ROOT/native/android/LfTrackService.java" \
    "$ROOT/native/android/LfTrackPlugin.java" "$ROOT/native/android/MainActivity.java" "$PKG_DIR/"
 # 1 ter) Écran d'appel entrant façon téléphone (15/11) : plein écran, sonnerie en boucle, Décrocher / Refuser
-cp "$ROOT/native/android/LfCall.java" "$ROOT/native/android/LfCallActivity.java" "$ROOT/native/android/LfCallReceiver.java"    "$ROOT/native/android/LfCallMessagingService.java" "$ROOT/native/android/LfCallPlugin.java" "$PKG_DIR/"
+cp "$ROOT/native/android/LfCall.java" "$ROOT/native/android/LfCallActivity.java" "$ROOT/native/android/LfCallReceiver.java"    "$ROOT/native/android/LfCallMessagingService.java" "$ROOT/native/android/LfCallPlugin.java" "$ROOT/native/android/LfCallService.java" "$PKG_DIR/"
 # 1 quater) Écran d'alerte SOS (18/11) : plein écran, sonnerie en boucle sur le volume alarme (s'entend en silencieux)
 cp "$ROOT/native/android/LfSos.java" "$ROOT/native/android/LfSosActivity.java" "$PKG_DIR/"
 
@@ -26,7 +26,7 @@ mkdir -p "$MAIN/res/raw"
 cp "$ROOT/native/sounds/lf_ring.ogg" "$ROOT/native/sounds/lf_sos.ogg" "$MAIN/res/raw/"
 
 # 2) Permissions : localisation, service de premier plan (Android 14+), notification (Android 13+)
-for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION WAKE_LOCK POST_NOTIFICATIONS RECORD_AUDIO MODIFY_AUDIO_SETTINGS CAMERA USE_FULL_SCREEN_INTENT VIBRATE; do
+for P in ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION FOREGROUND_SERVICE FOREGROUND_SERVICE_LOCATION FOREGROUND_SERVICE_MICROPHONE WAKE_LOCK POST_NOTIFICATIONS RECORD_AUDIO MODIFY_AUDIO_SETTINGS CAMERA USE_FULL_SCREEN_INTENT VIBRATE; do
   grep -q "android.permission.$P\"" "$MANIFEST" || \
     perl -0pi -e "s#(<uses-permission android:name=\"android.permission.INTERNET\" />)#\$1\n    <uses-permission android:name=\"android.permission.$P\" />#" "$MANIFEST"
 done
@@ -60,6 +60,13 @@ if ! grep -q 'LfCallActivity' "$MANIFEST"; then
         </service>
         <service android:name="io.capawesome.capacitorjs.plugins.firebase.messaging.MessagingService" tools:node="remove" />$1#' "$MANIFEST"
 fi
+# 3 bis-2) Appel en cours (20/11) : service de premier plan « microphone », le micro reste actif quand on quitte l'appli
+if ! grep -q 'LfCallService' "$MANIFEST"; then
+  perl -0pi -e 's#(\s*</application>)#
+        <!-- Lite Foil : appel en cours, micro actif en arriere-plan -->
+        <service android:name=".LfCallService" android:exported="false" android:foregroundServiceType="microphone" />$1#' "$MANIFEST"
+fi
+grep -q 'LfCallService' "$MANIFEST" || { echo "Service d appel non déclaré dans le manifeste" >&2; exit 1; }
 # 3 ter) Écran d'alerte SOS : activité plein écran par-dessus l'écran verrouillé
 if ! grep -q 'LfSosActivity' "$MANIFEST"; then
   perl -0pi -e 's#(\s*</application>)#
