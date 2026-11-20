@@ -5688,7 +5688,7 @@
    "view": "www.haffner.eu Gran Cana",
    "country": "Espagne",
    "area": "Gran Canaria",
-   "id": "5amd8RkRxrs",
+   "id": "4sBtmiClPQs",
    "embed": true,
    "by": "Streamer Haffner",
    "match": [
@@ -6368,7 +6368,7 @@
    "view": "Resort Night Beach",
    "country": "Espagne",
    "area": "Alicante & Costa Blanca",
-   "id": "vPhv2qWnO9Q",
+   "id": "3gMGncR09ow",
    "embed": false,
    "by": "BeniCam - Benidorm Webcam",
    "match": [
@@ -8561,7 +8561,7 @@
    "view": "Caribbean Beach - Aruba",
    "country": "Antilles",
    "area": "Saint-Martin & Saint-Barth",
-   "id": "ZUhJx9EWC9A",
+   "id": "N27ReV6sfYQ",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8578,7 +8578,7 @@
    "view": "Curaçao - Willemstad - Mambo Beach",
    "country": "Antilles néerl.",
    "area": "Aruba, Bonaire & Curaçao",
-   "id": "EHpfmLddjeQ",
+   "id": "Vwc6JMyTfM8",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8816,7 +8816,7 @@
    "view": "Beach - Playa",
    "country": "Costa Rica",
    "area": "Costa Rica & Panama",
-   "id": "jQki_lEGNEs",
+   "id": "Yo5Xg9v7qfY",
    "embed": true,
    "by": "LocalView",
    "match": [
@@ -9292,7 +9292,7 @@
    "view": "七里ヶ浜・江ノ島ライブカメラ（ワイド） 湘南 鎌",
    "country": "Japon",
    "area": "Japon",
-   "id": "XOf7IVpxGoE",
+   "id": "STzhcxzgxNk",
    "embed": true,
    "by": "湘南ライブカメラ",
    "match": [
@@ -9309,7 +9309,7 @@
    "view": "Minegahara Wave",
    "country": "Japon",
    "area": "Japon",
-   "id": "tbhghVFt_b8",
+   "id": "WNJdZosHjm8",
    "embed": true,
    "by": "峰ヒルズcam",
    "match": [
@@ -9343,7 +9343,7 @@
    "view": "실시간 해운대 해수욕장 - Beach",
    "country": "Corée du Sud",
    "area": "Corée, Chine & Taïwan",
-   "id": "b0AUiAC7u4w",
+   "id": "rKh675PnlP4",
    "embed": true,
    "by": "Busan Haeundae Live [부산 해운대 라이브]",
    "match": [
@@ -9423,5 +9423,5 @@
    "approx": true
   }
  ],
- "updated": "2026-11-19"
+ "updated": "2026-11-20"
 }
