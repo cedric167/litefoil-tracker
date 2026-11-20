@@ -80,6 +80,14 @@ grep -q 'firebase-messaging' "$APPGRADLE" || \
   sed -i "s|    implementation project(':capacitor-android')|    implementation project(':capacitor-android')\n    implementation \"com.google.firebase:firebase-messaging:23.4.1\"|" "$APPGRADLE"
 grep -q 'LfCallMessagingService' "$MANIFEST" || { echo "Écran d'appel non déclaré dans le manifeste" >&2; exit 1; }
 
+# 3 quater) GPS (20/11) : le module de localisation demandait un point toutes les 10 s (5 s au mieux), livré avec jusqu'à 20 s de retard :
+#            la carte de vol ULM restait figée. Un point par seconde, livré tout de suite.
+GEO="$ROOT/node_modules/@capacitor/geolocation/android/src/main/java/com/capacitorjs/plugins/geolocation/Geolocation.java"
+if [ -f "$GEO" ]; then
+  sed -i 's/new LocationRequest.Builder(10000)/new LocationRequest.Builder(1000)/; s/\.setMaxUpdateDelayMillis(timeout)/.setMaxUpdateDelayMillis(0)/; s/\.setMinUpdateIntervalMillis(5000)/.setMinUpdateIntervalMillis(500)/' "$GEO"
+  grep -q 'LocationRequest.Builder(1000)' "$GEO" && grep -q 'setMinUpdateIntervalMillis(500)' "$GEO" || { echo "GPS : réglage un point par seconde non appliqué" >&2; exit 1; }
+fi
+
 # 4) Connexion Google (module @capacitor-firebase/authentication, s'il est installé) : bibliothèque Google incluse
 VARS="$ROOT/android/variables.gradle"
 if [ -f "$VARS" ] && ! grep -q rgcfaIncludeGoogle "$VARS"; then
