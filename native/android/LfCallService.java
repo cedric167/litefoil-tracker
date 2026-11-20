@@ -21,20 +21,20 @@ import androidx.core.content.ContextCompat;
 /**
  * Lite Foil : appel en cours (20/11/2026).
  * Service de premier plan « microphone » : le micro reste actif quand on quitte l'appli pendant un appel
- * (sans lui, Android coupe le micro d'une appli qui n'est plus à l'écran). Il règle aussi la sortie du son :
- * écouteur (ou casque / Bluetooth s'il y en a un) ou haut-parleur, et éteint l'écran contre l'oreille.
+ * (sans lui, Android coupe le micro d'une appli qui n'est plus à l'écran). Il règle aussi la sortie du son,
+ * au choix : haut-parleur, écouteur du téléphone, Bluetooth ou casque filaire, et éteint l'écran contre l'oreille.
  */
 public class LfCallService extends Service {
     static final String CHANNEL = "lf_call_live";
     static final int NOTIF_ID = 7712;
-    static final String X_SPEAKER = "speaker", X_VIDEO = "video", X_NAME = "name", X_ROUTE = "route";
+    static final String X_OUT = "out", X_VIDEO = "video", X_NAME = "name", X_ROUTE = "route";
 
     private PowerManager.WakeLock prox;
     private boolean routed = false;
 
     /** Démarre ou met à jour la session d'appel. À appeler appli à l'écran, micro déjà autorisé. */
-    static void start(Context c, boolean speaker, boolean video, String name, boolean route) {
-        Intent i = new Intent(c, LfCallService.class).putExtra(X_SPEAKER, speaker).putExtra(X_VIDEO, video)
+    static void start(Context c, String out, boolean video, String name, boolean route) {
+        Intent i = new Intent(c, LfCallService.class).putExtra(X_OUT, out).putExtra(X_VIDEO, video)
             .putExtra(X_NAME, name == null ? "" : name).putExtra(X_ROUTE, route);
         ContextCompat.startForegroundService(c, i);
     }
@@ -47,7 +47,8 @@ public class LfCallService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean speaker = intent != null && intent.getBooleanExtra(X_SPEAKER, false);
+        String out = intent == null ? null : intent.getStringExtra(X_OUT);
+        if (out == null) out = "earpiece";
         boolean video = intent != null && intent.getBooleanExtra(X_VIDEO, false);
         boolean route = intent == null || intent.getBooleanExtra(X_ROUTE, true);
         String name = intent == null ? "" : intent.getStringExtra(X_NAME);
@@ -59,8 +60,8 @@ public class LfCallService extends Service {
             // micro refusé ou démarrage interdit : l'appel continue appli à l'écran, sans arrière-plan
             try { startForeground(NOTIF_ID, n); } catch (Exception x) { stopSelf(); return START_NOT_STICKY; }
         }
-        if (route) { route(speaker); routed = true; }
-        proximity(!speaker && !video);
+        if (route) { route(out); routed = true; }
+        proximity("earpiece".equals(out) && !video);
         return START_NOT_STICKY;
     }
 
@@ -88,26 +89,61 @@ public class LfCallService extends Service {
             .build();
     }
 
-    /** Sortie du son : haut-parleur, sinon casque filaire / Bluetooth s'il est branché, sinon écouteur. */
-    private void route(boolean speaker) {
+    /** Famille d'une sortie audio : speaker, earpiece, bt, wired, ou null si elle ne sert pas aux appels. */
+    static String kind(int t) {
+        if (t == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) return "speaker";
+        if (t == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) return "earpiece";
+        if (t == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || t == 26 /* TYPE_BLE_HEADSET */) return "bt";
+        if (t == AudioDeviceInfo.TYPE_WIRED_HEADSET || t == AudioDeviceInfo.TYPE_WIRED_HEADPHONES || t == AudioDeviceInfo.TYPE_USB_HEADSET) return "wired";
+        return null;
+    }
+
+    /** Sorties disponibles maintenant, dans l'ordre d'affichage : haut-parleur, téléphone, Bluetooth, casque. */
+    static java.util.List<String> outs(Context c) {
+        java.util.LinkedHashSet<String> found = new java.util.LinkedHashSet<>();
+        AudioManager am = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
+        try {
+            if (am != null) {
+                if (Build.VERSION.SDK_INT >= 31) {
+                    for (AudioDeviceInfo d : am.getAvailableCommunicationDevices()) { String k = kind(d.getType()); if (k != null) found.add(k); }
+                } else if (Build.VERSION.SDK_INT >= 23) {
+                    for (AudioDeviceInfo d : am.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) { String k = kind(d.getType()); if (k != null) found.add(k); }
+                }
+            }
+        } catch (Exception e) { /* liste indisponible : on propose le minimum */ }
+        java.util.ArrayList<String> out = new java.util.ArrayList<>();
+        out.add("speaker");
+        // un casque filaire branché remplace l'écouteur du téléphone, comme pour un appel classique
+        if (found.contains("earpiece") && !found.contains("wired")) out.add("earpiece");
+        if (found.contains("bt")) out.add("bt");
+        if (found.contains("wired")) out.add("wired");
+        if (out.size() == 1) out.add("earpiece");
+        return out;
+    }
+
+    /** Sortie réellement utilisée pour une demande : « auto » = Bluetooth ou casque s'il y en a un, sinon écouteur (audio) ou haut-parleur (vidéo). */
+    static String resolve(Context c, String ask, boolean video) {
+        java.util.List<String> o = outs(c);
+        if (ask != null && o.contains(ask)) return ask;
+        if (o.contains("bt")) return "bt";
+        if (o.contains("wired")) return "wired";
+        return video ? "speaker" : (o.contains("earpiece") ? "earpiece" : "speaker");
+    }
+
+    /** Envoie le son de l'appel sur la sortie choisie. */
+    private void route(String out) {
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (am == null) return;
         try {
             am.setMode(AudioManager.MODE_IN_COMMUNICATION);
             if (Build.VERSION.SDK_INT >= 31) {
-                AudioDeviceInfo spk = null, ear = null, head = null;
-                for (AudioDeviceInfo d : am.getAvailableCommunicationDevices()) {
-                    int t = d.getType();
-                    if (t == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) spk = d;
-                    else if (t == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) ear = d;
-                    else if (t == AudioDeviceInfo.TYPE_WIRED_HEADSET || t == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
-                        || t == AudioDeviceInfo.TYPE_USB_HEADSET || t == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                        || t == AudioDeviceInfo.TYPE_BLE_HEADSET) head = d;
-                }
-                AudioDeviceInfo target = speaker ? spk : (head != null ? head : ear);
+                AudioDeviceInfo target = null;
+                for (AudioDeviceInfo d : am.getAvailableCommunicationDevices()) { if (out.equals(kind(d.getType()))) { target = d; break; } }
                 if (target != null) am.setCommunicationDevice(target); else am.clearCommunicationDevice();
             } else {
-                am.setSpeakerphoneOn(speaker);
+                boolean bt = "bt".equals(out);
+                if (bt) { am.setSpeakerphoneOn(false); am.startBluetoothSco(); am.setBluetoothScoOn(true); }
+                else { if (am.isBluetoothScoOn()) { am.setBluetoothScoOn(false); am.stopBluetoothSco(); } am.setSpeakerphoneOn("speaker".equals(out)); }
             }
         } catch (Exception e) { /* réglage refusé par le téléphone : on garde la sortie par défaut */ }
     }
@@ -141,7 +177,8 @@ public class LfCallService extends Service {
             try {
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 if (am != null) {
-                    if (Build.VERSION.SDK_INT >= 31) am.clearCommunicationDevice(); else am.setSpeakerphoneOn(false);
+                    if (Build.VERSION.SDK_INT >= 31) am.clearCommunicationDevice();
+                    else { if (am.isBluetoothScoOn()) { am.setBluetoothScoOn(false); am.stopBluetoothSco(); } am.setSpeakerphoneOn(false); }
                     am.setMode(AudioManager.MODE_NORMAL);
                 }
             } catch (Exception e) { /* rien à remettre */ }

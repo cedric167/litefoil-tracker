@@ -68,16 +68,23 @@ public class LfCallPlugin extends Plugin {
         call.resolve();
     }
 
-    /** Appel en cours : on = vrai pour démarrer ou régler la session (speaker, video, name, route), faux pour l'arrêter. */
+    /** Appel en cours : on = vrai pour démarrer ou régler la session (out = auto | speaker | earpiece | bt | wired, video, name, route),
+     *  faux pour l'arrêter. Répond avec les sorties disponibles (outs) et celle en service (cur). */
     @PluginMethod
     public void audio(PluginCall call) {
         boolean on = Boolean.TRUE.equals(call.getBoolean("on", true));
         if (!on) { LfCallService.stop(getContext()); call.resolve(); return; }
         if (!LfCallService.micGranted(getContext())) { call.reject("micro non autorisé"); return; }
         try {
-            LfCallService.start(getContext(), Boolean.TRUE.equals(call.getBoolean("speaker", false)), Boolean.TRUE.equals(call.getBoolean("video", false)),
-                call.getString("name", ""), Boolean.TRUE.equals(call.getBoolean("route", true)));
-            call.resolve();
+            boolean video = Boolean.TRUE.equals(call.getBoolean("video", false));
+            String cur = LfCallService.resolve(getContext(), call.getString("out", "auto"), video);
+            LfCallService.start(getContext(), cur, video, call.getString("name", ""), Boolean.TRUE.equals(call.getBoolean("route", true)));
+            JSObject o = new JSObject();
+            com.getcapacitor.JSArray arr = new com.getcapacitor.JSArray();
+            for (String k : LfCallService.outs(getContext())) arr.put(k);
+            o.put("outs", arr);
+            o.put("cur", cur);
+            call.resolve(o);
         } catch (Exception e) { call.reject("session d'appel impossible"); }
     }
 
