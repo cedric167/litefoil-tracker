@@ -120,7 +120,7 @@ workflows:
         script: bash scripts/ios-entitlements.sh
       - name: Numero de build (identique iPhone et montre)
         script: |
-          bash scripts/ios-watch.sh version 1.6.0 $(($(date +%s) / 60))
+          bash scripts/ios-watch.sh version 1.7.0 $(($(date +%s) / 60))
       - name: Build IPA
         script: |
           xcode-project build-ipa \
