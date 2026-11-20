@@ -353,6 +353,32 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
 
 <!-- ============ Fiche détail ============ -->
 <!-- 16/11 : choix de l'activité d'une sortie enregistrée sur le téléphone ou importée -->
+<div class="modal" id="infoModal" hidden style="z-index:91">
+  <div class="modal-card" style="max-height:88vh;overflow-y:auto">
+    <button class="modal-x" id="infoX" aria-label="Fermer">✕</button>
+    <h3 class="serif" style="font-size:22px">Ma sortie</h3>
+    <label class="in-l" for="infoName">Nom</label>
+    <input class="in-f" id="infoName" maxlength="60" autocomplete="off" placeholder="Nom de la sortie">
+    <label class="in-l" for="infoDesc">Descriptif</label>
+    <textarea class="in-f" id="infoDesc" maxlength="400" rows="3" placeholder="Conditions, matériel, souvenirs…"></textarea>
+    <label class="in-l" for="infoFind">Avec qui ?</label>
+    <div class="in-chips" id="infoWith"></div>
+    <input class="in-f" id="infoFind" maxlength="30" autocomplete="off" placeholder="Chercher parmi mes amis">
+    <div class="in-res" id="infoRes"></div>
+    <button class="sharep" id="infoSave" style="margin-top:16px;background:#0b6b78;color:#fff">Enregistrer</button>
+  </div>
+</div>
+<style>
+.in-l{display:block;margin:14px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6b7c80;font-weight:700}
+.in-f{width:100%;box-sizing:border-box;border:1px solid #d9e3e5;border-radius:14px;padding:12px 14px;font:inherit;font-size:16px;background:#fff;color:#12262b;resize:vertical}
+.in-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.in-chips:empty{display:none}
+.in-chips span,.dw span{display:inline-flex;align-items:center;gap:6px;border-radius:16px;padding:6px 10px 6px 12px;background:#e3f4f5;color:#0b6b78;font-weight:700;font-size:14px}
+.in-chips button{border:0;background:transparent;color:#0b6b78;font-size:15px;padding:0 2px;line-height:1}
+.in-res{display:flex;flex-direction:column;gap:6px;margin-top:8px}.in-res button{border:1px solid #d9e3e5;background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:15px;text-align:left;color:#12262b}
+.in-res small{color:#6b7c80;font-size:13px;line-height:1.4}
+#detInfo{margin:10px 0 14px}#detInfo p{margin:0 0 8px;font-size:15px;line-height:1.45;color:#3c4d52;white-space:pre-wrap}
+.dw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.dw em{font-style:normal;font-size:13px;color:#6b7c80;font-weight:700}.dw span{padding:6px 12px}
+</style>
 <div class="modal" id="actModal" hidden style="z-index:90">
   <div class="modal-card" style="max-height:82vh;overflow-y:auto">
     <button class="modal-x" id="actX" aria-label="Fermer">✕</button>
@@ -373,6 +399,7 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
   </div>
   <div class="body">
     <div class="det-h"><span class="det-ic" id="detIc"></span><div style="min-width:0"><h2 class="ttl" id="detName">—</h2><div class="meta" id="detMeta">—</div></div></div>
+    <div id="detInfo" hidden></div>
     <div class="statgrid" id="detStats"></div>
     <button class="fly" id="btnFly"><span class="f-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span><span class="f-tx"><b>Revivre ma session en 3D</b><small id="flySub">Survol du parcours, vue à bord</small></span><span class="f-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></button>
     <!-- 13/11 : partage d'une sortie sur son profil (avant : onglet « Sessions » du profil) -->
@@ -381,6 +408,7 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
       <button class="sharep" id="btnShareProf"></button>
       <div class="sharep-note">Seuls tes amis voient tes sorties partagées, avec le parcours sur la carte.</div>
     </div>
+    <button class="sharep" id="btnInfo" style="margin-top:10px"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M13.500 6.500l4 4"/></svg>Renommer, décrire, ajouter une personne</button>
     <button class="del" id="btnAct" style="color:#0b6b78" hidden>Changer l'activité</button>
     <button class="del" id="btnDel" style="margin-top:2px"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7M10 11v5M14 11v5"/></svg>Supprimer cette sortie</button>
   </div>
@@ -716,6 +744,7 @@ function actOver(){ try{ return JSON.parse(localStorage.getItem("lf_sess_act")||
 function render(){
   { const H=hiddenIds(); if(H.size) ALL=ALL.filter(a=>!H.has(String(a.id))); }
   { const O=actOver(); ALL.forEach(a=>{ const o=O[String(a.id)]; if(o && !a.actSet){ a.milieu=o.m; a.activityType=o.k; a.categoryName=o.c; a.actSet=1; } }); }
+  { const I=infoOver(); ALL.forEach(a=>infoApply(a, I[String(a.id)])); }
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-selected", b.dataset.k===filter));
   const isAir = a => a.milieu==="air" || /^(ulm|parapente|free_flight)$/i.test(a.activityType||"") || /parapente|ulm|avion/i.test(a.categoryName||"");
   const items = ALL.filter(a=> filter==="tout" ? true : filter==="air" ? isAir(a) : filter==="terre" ? (a.milieu==="terre" && !isAir(a)) : a.milieu===filter)
@@ -825,6 +854,7 @@ async function openDetail(a){
   { const pp=String(a.name||"").split(" · "); document.getElementById("detName").textContent=pp.length>1?pp.slice(1).join(" · "):a.name; }
   document.getElementById("detIc").outerHTML=sportBadge(a,"det-ic").replace('<span class="','<span id="detIc" class="');
   document.getElementById("detMeta").innerHTML=`<em class="${a.milieu==="mer"?"badge-mer":"badge-terre"}">${a.categoryName||(a.milieu==="mer"?"Mer":"Terre")}</em>${fmtDate(a.startedAt)}`;
+  paintInfo(a);
   { const fs2=document.getElementById("flySub"); if(fs2) fs2.textContent = a.milieu==="mer" ? "Survol du parcours, vue à bord" : "Survol, vue à bord et Street View 360°"; }
   const sea=a.milieu==="mer";
   document.getElementById("detStats").innerHTML=`
@@ -1082,6 +1112,7 @@ document.getElementById("fileInput").onchange=async(e)=>{
     localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent");
   }catch(err){ alert("Sortie affichée, mais la mémoire du téléphone est pleine : elle n'a pas pu être enregistrée."); }
   e.target.value="";
+  a._new=1;
   ALL.unshift(a); ALL.sort((x,y)=>(y.startedAt?y.startedAt.getTime():0)-(x.startedAt?x.startedAt.getTime():0)); filter="tout"; render(); openDetail(a);
   // 16/11 : sur l'eau ou à terre ? L'altitude du terrain sous le tracé le dit (0 m = mer), puis on demande l'activité
   seaCheck(pts).then(sea=>{ if(sea===null || a.actSet) return; const m=sea?"mer":"terre"; if(m!==a.milieu){ a.milieu=m; saveLocalSess(a); render(); if(current===a) paintActHead(a); } }).catch(()=>{});
@@ -1091,6 +1122,30 @@ document.getElementById("fileInput").onchange=async(e)=>{
 const ACTS={ mer:[["efoil","E-foil"],["wingfoil","Wing foil"],["parawing","Para wing"],["windsurf","Windsurf"],["pumpfoil","Pump foil"],["kitesurf","Kitesurf"],["surffoil","Surf foil"],["supdownwind","SUP Downwind"],["surf","Surf"],["bodyboard","Bodyboard"],["sup","Stand up paddle"],["canoe","Canoë / Kayak"],["deriveur","Dériveur"],["jetski","Jetski"],["swim","Nage"],["other","Autre (eau)"]],
   terre:[["running","Running"],["marche","Marche athlétique"],["rando","Randonnée"],["trail","Trail"],["velo","Vélo"],["ski","Ski"],["snowboard","Snowboard"],["skate","Skateboard"],["longboard","Longboard"],["surfskate","Surfskate"],["roller","Roller"],["voiture","Voiture"],["moto","Moto"],["other","Autre (terre)"]],
   air:[["ulm","ULM / Avion"],["parapente","Parapente"],["other","Autre (air)"]] };
+/* ====================== NOM, DESCRIPTIF ET PERSONNES D'UNE SORTIE (20/11) ====================== */
+// Gardé sur le téléphone, par identifiant de sortie : { n: nom, d: descriptif, w: [{ u: identifiant du membre, p: pseudo }] }
+function infoOver(){ try{ return JSON.parse(localStorage.getItem("lf_sess_info")||"{}")||{}; }catch(e){ return {}; } }
+function infoApply(a, o){ if(!a) return; if(a._n0==null) a._n0=a.name; a.name=(o && o.n) ? o.n : a._n0; a.desc=(o && o.d) || ""; a.withP=(o && Array.isArray(o.w)) ? o.w : []; }
+function infoEsc(t){ return String(t==null?"":t).replace(/[&<>"]/g, c=>({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c])); }
+function infoFriends(){ try{ return (JSON.parse(localStorage.getItem("lf.comm.friendsList")||"[]")||[]).filter(x=>x && x.u && x.p); }catch(e){ return []; } }
+function paintInfo(a){ const box=document.getElementById("detInfo"); if(!box) return; const w=a.withP||[];
+  box.innerHTML=(a.desc?`<p>${infoEsc(a.desc)}</p>`:"")+(w.length?`<div class="dw"><em>Avec</em>${w.map(x=>`<span>${infoEsc(x.p)}</span>`).join("")}</div>`:"");
+  box.hidden=!(a.desc || w.length); }
+let infoCur=null, infoW=[];
+function infoPaintWith(){ document.getElementById("infoWith").innerHTML=infoW.map((x,i)=>`<span>${infoEsc(x.p)}<button type="button" data-i="${i}" aria-label="Retirer">✕</button></span>`).join(""); infoPaintRes(); }
+function infoPaintRes(){ const q=document.getElementById("infoFind").value.trim().toLowerCase(), all=infoFriends(), has={}; infoW.forEach(x=>{ has[x.u]=1; });
+  const box=document.getElementById("infoRes"), l=all.filter(x=>!has[x.u] && (!q || x.p.toLowerCase().indexOf(q)>=0)).slice(0,6);
+  if(!all.length){ box.innerHTML='<small>Aucun ami pour l\'instant. Ajoute des amis dans SwipChat (Rechercher des amis), puis reviens ici pour les associer à tes sorties.</small>'; return; }
+  box.innerHTML = l.length ? l.map(x=>`<button type="button" data-u="${infoEsc(x.u)}" data-p="${infoEsc(x.p)}">＋ ${infoEsc(x.p)}</button>`).join("") : (q ? '<small>Aucun ami ne correspond.</small>' : ""); }
+function openInfo(a){ if(!a) return; infoCur=a; infoW=(a.withP||[]).slice(); const pp=String(a.name||"").split(" · ");
+  document.getElementById("infoName").value = infoOver()[String(a.id)] && infoOver()[String(a.id)].n ? a.name : (pp.length>1 ? pp.slice(1).join(" · ") : (a.name||""));
+  document.getElementById("infoDesc").value=a.desc||""; document.getElementById("infoFind").value=""; infoPaintWith(); document.getElementById("infoModal").hidden=false; }
+function infoSave(){ const a=infoCur; if(!a) return; const n=document.getElementById("infoName").value.trim().slice(0,60), d=document.getElementById("infoDesc").value.trim().slice(0,400);
+  const pp=String(a._n0||"").split(" · "), shown0=pp.length>1 ? pp.slice(1).join(" · ") : (a._n0||"");
+  const o={ n:(n && n!==shown0) ? n : "", d:d, w:infoW.slice(0,20).map(x=>({ u:String(x.u), p:String(x.p).slice(0,24) })) };
+  try{ const I=infoOver(); if(o.n || o.d || o.w.length) I[String(a.id)]=o; else delete I[String(a.id)]; localStorage.setItem("lf_sess_info", JSON.stringify(I)); }
+  catch(e){ lfToast("Mémoire du téléphone pleine : modification non enregistrée."); return; }
+  infoApply(a, o); document.getElementById("infoModal").hidden=true; render(); if(current===a) openDetail(a); }
 function isLocalSess(a){ return !!a && (a.source==="phone" || a.source==="gpx" || String(a.id).indexOf("phone-")===0); }
 function saveLocalSess(a){ try{ const arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; let ok=false;
     arr.forEach(x=>{ if(x && String(x.id)===String(a.id)){ x.milieu=a.milieu; x.activityType=a.activityType; x.categoryName=a.categoryName; if(a.actSet) x.actSet=1; ok=true; } });
@@ -1100,9 +1155,16 @@ function paintActHead(a){ try{ document.getElementById("detIc").outerHTML=sportB
 function openActPicker(a){ if(!a) return; const box=document.getElementById("actList"), T={mer:"Sur l'eau",terre:"À terre",air:"Dans les airs"};
   box.innerHTML=["mer","terre","air"].map(m=>`<h4>${T[m]}</h4><div class="ac-row">`+ACTS[m].map(x=>`<button type="button" data-m="${m}" data-k="${x[0]}" class="${a.milieu===m && a.activityType===x[0]?"on":""}">${x[1]}</button>`).join("")+`</div>`).join("");
   box.onclick=(e)=>{ const b=e.target.closest("button[data-k]"); if(!b) return; a.milieu=b.dataset.m; a.activityType=b.dataset.k; a.categoryName=b.textContent; a.actSet=1;
-    if(isLocalSess(a)) saveLocalSess(a); else { try{ const O=actOver(); O[String(a.id)]={m:a.milieu,k:a.activityType,c:a.categoryName}; localStorage.setItem("lf_sess_act", JSON.stringify(O)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){} } document.getElementById("actModal").hidden=true; render(); if(current===a) openDetail(a); };
+    if(isLocalSess(a)) saveLocalSess(a); else { try{ const O=actOver(); O[String(a.id)]={m:a.milieu,k:a.activityType,c:a.categoryName}; localStorage.setItem("lf_sess_act", JSON.stringify(O)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){} } document.getElementById("actModal").hidden=true; render(); if(current===a) openDetail(a); if(a._new){ delete a._new; openInfo(a); } };
   document.getElementById("actModal").hidden=false; }
-document.getElementById("actX").onclick=()=>{ document.getElementById("actModal").hidden=true; };
+document.getElementById("actX").onclick=()=>{ document.getElementById("actModal").hidden=true; if(current && current._new){ delete current._new; openInfo(current); } };
+document.getElementById("infoX").onclick=()=>{ document.getElementById("infoModal").hidden=true; };
+document.getElementById("infoModal").onclick=(e)=>{ if(e.target.id==="infoModal") document.getElementById("infoModal").hidden=true; };
+document.getElementById("btnInfo").onclick=()=>{ if(current) openInfo(current); };
+document.getElementById("infoSave").onclick=infoSave;
+document.getElementById("infoFind").oninput=infoPaintRes;
+document.getElementById("infoRes").onclick=(e)=>{ const b=e.target.closest("button[data-u]"); if(!b) return; infoW.push({ u:b.dataset.u, p:b.dataset.p }); document.getElementById("infoFind").value=""; infoPaintWith(); };
+document.getElementById("infoWith").onclick=(e)=>{ const b=e.target.closest("button[data-i]"); if(!b) return; infoW.splice(+b.dataset.i,1); infoPaintWith(); };
 document.getElementById("actModal").onclick=(e)=>{ if(e.target.id==="actModal") document.getElementById("actModal").hidden=true; };
 document.getElementById("btnAct").onclick=()=>{ if(current) openActPicker(current); };
 // vrai = sur l'eau, faux = à terre, null = inconnu (pas de réseau). Mer : terrain à 0 m. Lac : terrain parfaitement plat sous tout le tracé.

@@ -8851,7 +8851,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     else { if(!confirm("Retirer "+pName(u)+" de tes amis ?")) return; p=backend.removeFriend(u); }
     p.then(function(){ if(after) after(); renderProfil(); }).catch(function(){ alert("Action impossible pour le moment, réessaie."); }); }
   function bindFriendBtns(root, after){ root.querySelectorAll("[data-fu]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); friendAction(b.dataset.fu, after); }); }); }
-  function onFriends(m){ myFriends=m||{}; var ch=false; for(var u in myFriends){ if(sentReqs[u]){ delete sentReqs[u]; ch=true; } } if(ch) saveSentReqs(); renderProfil(); }
+  function lfFriendsCache(){ try{ var l=Object.keys(myFriends||{}).filter(function(u){ return !blocked.has(u); }).slice(0,300).map(function(u){ var f=myFriends[u]||{}, pr=profileMap[u]||{}; return { u:u, p:String(pr.pseudo||f.pseudo||f.p||"").slice(0,24) }; }).filter(function(x){ return x.p; });
+      if(l.length || !Object.keys(myFriends||{}).length) localStorage.setItem("lf.comm.friendsList", JSON.stringify(l)); }catch(e){} }
+  function onFriends(m){ myFriends=m||{}; lfFriendsCache(); setTimeout(lfFriendsCache, 5000); var ch=false; for(var u in myFriends){ if(sentReqs[u]){ delete sentReqs[u]; ch=true; } } if(ch) saveSentReqs(); renderProfil(); }
   function onFriendReqs(m){ friendReqs=m||{}; var n=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }).length;
     ["cmReqBadge","bnProfBadge"].forEach(function(id){ var b=$(id); if(b){ b.hidden=!n; b.textContent=n||""; } }); renderProfil(); }
   // forme du tracé (sans coordonnées GPS) : points ramenés dans un carré 0-100
