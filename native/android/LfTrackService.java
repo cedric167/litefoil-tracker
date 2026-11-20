@@ -201,7 +201,7 @@ public class LfTrackService extends Service implements LocationListener {
                 liveBuf.put(q);
                 while (liveBuf.length() > 60) liveBuf.remove(0);
                 long now = System.currentTimeMillis();
-                if (now - liveLast < 8000) return;
+                if (now - liveLast < 3000) return;
                 liveLast = now;
                 JSONObject b = new JSONObject();
                 b.put("k", liveKey); b.put("pts", new JSONArray(liveBuf.toString())); b.put("src", "n");

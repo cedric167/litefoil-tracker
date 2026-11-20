@@ -870,7 +870,7 @@ async function liveApi(req, res, sid) {
     if (prev && pt.t <= (+prev.t || 0)) continue;
     if (prev) { const d = hav(prev, pt); if (d < 5000) dist += d; }
     prev = pt;
-    if (pt.t - lt >= 3000 && (!kept || hav(kept, pt) >= 3 || pt.t - lt >= 30000)) { lt = pt.t; kept = { lat: pt.lat, lng: pt.lng }; add[db.ref("liveTrk/" + sid).push().key] = pt.alt != null ? [pt.lat, pt.lng, pt.alt] : [pt.lat, pt.lng]; }
+    if (pt.t - lt >= 1000 && (!kept || hav(kept, pt) >= 3 || pt.t - lt >= 30000)) { lt = pt.t; kept = { lat: pt.lat, lng: pt.lng }; add[db.ref("liveTrk/" + sid).push().key] = { 0: pt.lat, 1: pt.lng, 2: pt.alt != null ? pt.alt : null, 3: pt.t }; }
   }
   if (Object.keys(add).length) await db.ref("liveTrk/" + sid).update(add);
   if (prev && prev !== L.last) { up.last = prev; up.lt = lt; up.dist = Math.round(dist); if (kept) up.kp = kept; }
@@ -902,10 +902,12 @@ async function livePage(req, res, sid, asJson, base) {
   res.set("Cache-Control", "no-store");
   if (asJson) {
     if (!L) return res.status(404).json({ ok: false });
-    const trk = Object.values((await db.ref("liveTrk/" + sid).get()).val() || {});
-    const step = Math.max(1, Math.ceil(trk.length / 600));
+    const tail = String(req.query.tail || "") === "1";
+    const all = Object.values((tail ? await db.ref("liveTrk/" + sid).orderByKey().limitToLast(40).get() : await db.ref("liveTrk/" + sid).get()).val() || {});
+    const old = tail ? [] : all.slice(0, Math.max(0, all.length - 180)), step = Math.max(1, Math.ceil(old.length / 600));
+    const trk = old.filter((x, i) => i % step === 0).concat(tail ? all : all.slice(-180));
     return res.json({ ok: true, ps: L.ps || "Membre", cat: L.cat || "", status: L.status || "active", t0: +L.t0 || 0, upd: +L.upd || 0, now: Date.now(), last: L.last || null,
-      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, air: !!L.air, fp: L.air ? liveFpClean(L.fp) : null, rem: L.rem == null ? null : +L.rem, trk: trk.filter((x, i) => i % step === 0 || i === trk.length - 1) });
+      dist: +L.dist || 0, soc: L.soc == null ? null : +L.soc, alertT: +L.alertT || 0, endT: +L.endT || 0, air: !!L.air, fp: L.air ? liveFpClean(L.fp) : null, rem: L.rem == null ? null : +L.rem, tail: tail, trk: trk });
   }
   if (!L) return res.status(404).send(sharePageHtml({ title: "Suivi introuvable · Lite Foil", desc: "Ce suivi n'existe plus.", url: base + "/l/" + sid, app: SHARE_APP,
     body: `<div class="pf"><div class="empty">Ce suivi de sortie n'existe pas ou a expiré.</div></div>` }));
@@ -943,22 +945,34 @@ async function livePage(req, res, sid, asJson, base) {
 <script>
 var SID=${JSON.stringify(sid)},map=L.map("map",{zoomControl:false,attributionControl:false}).setView([46.5,2.5],5);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19}).addTo(map);
-var line=L.polyline([],{color:"#19e3ff",weight:4,opacity:.9}).addTo(map),mk=null,first=true,lastStatus="";
+var line=L.polyline([],{color:"#19e3ff",weight:4,opacity:.9}).addTo(map),head=L.polyline([],{color:"#19e3ff",weight:4,opacity:.9}).addTo(map),mk=null,first=true,lastStatus="";
+var TR=[],seen=0,OFF=null,DELAY=5500,ANIM=false,ENDED=false,LI=-1,RAF=0,FOL=true,RC=null;
+map.on("dragstart",function(){FOL=false;if(RC)RC.style.display="block";});
+(function(){var C=L.control({position:"bottomright"});C.onAdd=function(){RC=L.DomUtil.create("button","");RC.type="button";RC.textContent="Recentrer";RC.style.cssText="display:none;border:0;border-radius:18px;padding:9px 14px;font:600 14px system-ui,sans-serif;background:#fff;color:#0b3138;box-shadow:0 3px 10px rgba(0,0,0,.35)";L.DomEvent.disableClickPropagation(RC);RC.onclick=function(){FOL=true;RC.style.display="none";};return RC;};C.addTo(map);})();
+function feed(d){var trk=d.trk||[];for(var i=0;i<trk.length;i++){var p=trk[i];if(!p)continue;var t=+p[3]||0;if(t){if(t>seen){TR.push([+p[0],+p[1],t]);seen=t;}}else if(!seen&&!d.tail)TR.push([+p[0],+p[1],0]);}
+ if(d.last&&+d.last.t>seen){TR.push([+d.last.lat,+d.last.lng,+d.last.t]);seen=+d.last.t;}
+ if(seen){var o=Date.now()-seen;if(OFF==null||o<OFF)OFF=o;ANIM=true;}
+ if(!ANIM)line.setLatLngs(TR.map(function(x){return[x[0],x[1]];}));}
+function frame(){requestAnimationFrame(frame);var n=TR.length;if(!n||!mk||!ANIM)return;var T=ENDED?1e15:Date.now()-OFF-DELAY,i=n-1;while(i>0&&TR[i][2]>T)i--;var p=TR[i],q=TR[i+1],ll=[p[0],p[1]];
+ if(q&&p[2]&&q[2]-p[2]<15000&&T>p[2]){var k=(T-p[2])/(q[2]-p[2]);ll=[p[0]+(q[0]-p[0])*k,p[1]+(q[1]-p[1])*k];}
+ else if(!q&&i>0&&p[2]&&T>p[2]&&T<1e14){var b=TR[i-1];if(b[2]&&p[2]>b[2]&&p[2]-b[2]<5000){var k2=Math.min(1500,T-p[2])/(p[2]-b[2]);ll=[p[0]+(p[0]-b[0])*k2,p[1]+(p[1]-b[1])*k2];}}
+ if(i!==LI){LI=i;line.setLatLngs(TR.slice(0,i+1).map(function(x){return[x[0],x[1]];}));}
+ head.setLatLngs([[p[0],p[1]],ll]);mk.setLatLng(ll);if(FOL)map.panTo(ll,{animate:false});}
 function dms(v,p,n){var a=Math.abs(v),d=Math.floor(a),m=(a-d)*60;return d+"°"+m.toFixed(3)+"' "+(v>=0?p:n);}
 function dur(ms){var s=Math.max(0,Math.round(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+"h"+String(m).padStart(2,"0"):m+" min";}
 function ago(ms){var s=Math.round(ms/1000);return s<60?"il y a "+s+" s":"il y a "+Math.round(s/60)+" min";}
 function beep(){try{var c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.value=.2;o.start();setTimeout(function(){o.stop();c.close();},600);}catch(e){}try{navigator.vibrate&&navigator.vibrate([400,200,400]);}catch(e){}}
-function load(){fetch("/l/"+SID+".json",{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){if(!d||!d.ok)return;
+function load(tl){fetch("/l/"+SID+".json"+(tl?"?tail=1":""),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){if(!d||!d.ok)return;
  var stale=d.status==="active"&&d.upd&&d.now-d.upd>5*60000,st=d.status==="ended"?"ended":(d.status==="sos"?"sos":(d.status==="alert"?"alert":(stale?"stale":"live")));
  var pill=document.getElementById("pill");pill.className="pill "+(st==="live"?"":st);pill.textContent={live:"● En direct",ended:"Sortie terminée",sos:"🆘 SOS",alert:"⚠️ Immobile",stale:"⚠️ Sans nouvelles"}[st];
  document.getElementById("sub").textContent=(d.cat?d.cat+" · ":"")+(d.upd?"mis à jour "+ago(d.now-d.upd):"en attente de position");
  var ban=document.getElementById("ban");ban.className="ban "+(st==="sos"?"sos":st==="alert"?"alert":st==="stale"?"stale":"");
  ban.innerHTML=st==="sos"?"🆘 SOS déclenché "+ago(d.now-d.alertT)+". Appelle le <a href='tel:${em}'>${emTx} et donne la position ci-dessous.":st==="alert"?"⚠️ ${ps} ne bouge plus et n'a pas répondu à l'alerte. Essaie de l'appeler ; sans réponse, appelle le <a href='tel:${em}'>${em}</a>.":st==="stale"?"Plus de position depuis "+Math.round((d.now-d.upd)/60000)+" min (zone sans réseau ?). Dernière position ci-dessous.":"";
  if((st==="sos"||st==="alert")&&lastStatus!==st)beep();lastStatus=st;
- var pts=(d.trk||[]).map(function(p){return[p[0],p[1]];});if(d.last)pts.push([d.last.lat,d.last.lng]);line.setLatLngs(pts);
- if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon({className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else mk.setLatLng(ll);
+ ENDED=(st==="ended");feed(d);
+ if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon({className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else if(!ANIM)mk.setLatLng(ll);
   mk.getElement()&&(mk.getElement().firstChild.className="me"+(st==="sos"?" sos":""));
-  if(first){map.setView(ll,14);first=false;}
+  if(first){map.setView(ll,16);first=false;if(!RAF){RAF=1;frame();}}
   document.getElementById("coord").textContent=dms(d.last.lat,"N","S")+"  "+dms(d.last.lng,"E","O");
   document.getElementById("nav").href="https://www.google.com/maps/search/?api=1&query="+d.last.lat+","+d.last.lng;
   document.getElementById("spd").textContent=st==="ended"?"–":(+d.last.spd||0).toFixed(1).replace(".",",");}
@@ -966,7 +980,7 @@ function load(){fetch("/l/"+SID+".json",{cache:"no-store"}).then(function(r){ret
  document.getElementById("dur").textContent=d.t0?dur((d.endT||d.now)-d.t0):"–";
  document.getElementById("soc").textContent=d.soc==null?"–":d.soc+" %";
 }).catch(function(){});}
-load();setInterval(load,5000);
+load();setInterval(function(){load(1);},2000);
 </script></body></html>`);
 }
 
