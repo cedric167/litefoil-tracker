@@ -32,10 +32,11 @@ plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
 plutil -lint "$PLIST" >/dev/null
 
 # 2) Projet Xcode : iOS 15 minimum (exigé par Xcode 27), scripts CocoaPods hors bac à sable,
-#    iPhone uniquement (pas de captures iPad à fournir ; l'app reste installable sur iPad en mode iPhone), équipe Apple
+#    iPhone et iPad, équipe Apple
 sed -i '' -E 's/IPHONEOS_DEPLOYMENT_TARGET = 1[0-4]\.[0-9];/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/' "$PBX"
 sed -i '' 's/ENABLE_USER_SCRIPT_SANDBOXING = YES;/ENABLE_USER_SCRIPT_SANDBOXING = NO;/' "$PBX"
-sed -i '' 's/TARGETED_DEVICE_FAMILY = "1,2";/TARGETED_DEVICE_FAMILY = 1;/' "$PBX"
+# 20/11 : iPhone ET iPad (plein écran sur iPad ; des captures iPad sont à fournir sur la fiche App Store)
+sed -i '' 's/TARGETED_DEVICE_FAMILY = 1;/TARGETED_DEVICE_FAMILY = "1,2";/' "$PBX"
 sed -i '' '/DEVELOPMENT_TEAM = /d' "$PBX"
 sed -i '' "s/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Automatic;\\
 				DEVELOPMENT_TEAM = $TEAM;/" "$PBX"
