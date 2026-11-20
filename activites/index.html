@@ -136,40 +136,44 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover .stats .st .v{font-size:24px;font-weight:700;line-height:1.05}
 .flyover .stats .st .v small{font-size:13px;font-weight:600;opacity:.75}
 .flyover .ctrl{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6}
-.flyover .ctrl button{border:0;background:rgba(255,255,255,.14);color:#fff;backdrop-filter:blur(8px);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.flyover .ctrl button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
 .flyover .ctrl button.primary{background:var(--cyan)}
 .flyover .ctrl{gap:8px;flex-wrap:wrap;padding:0 12px}
-.flyover .fview{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 200px);z-index:6;display:flex;gap:3px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:999px;padding:4px}
+.flyover .fview{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 200px);z-index:6;display:flex;gap:3px;background:rgba(10,14,18,.74);border-radius:999px;padding:4px}
 .flyover .fview button{border:0;background:transparent;color:#fff;border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;white-space:nowrap}
 .flyover .fview button.on{background:var(--cyan)}
-.flyover .fprof{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:5;height:62px;border-radius:16px;background:rgba(10,14,18,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden;pointer-events:none}
+.flyover .fprof{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:5;height:62px;border-radius:16px;background:rgba(10,14,18,.74);overflow:hidden;pointer-events:none}
 .flyover.sv .fprof{display:none}
 .flyover .fprof svg{position:absolute;left:0;top:0;width:100%;height:100%}
-.flyover .fprof i{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.9)}
+.flyover .fprof i{position:absolute;left:0;top:0;bottom:0;width:2px;margin-left:-1px;will-change:transform;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.9)}
 .flyover .fprof i::after{content:"";position:absolute;left:50%;top:var(--y,50%);width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#19e3ff;border:2px solid #fff}
 .flyover .fprof b{position:absolute;left:10px;top:6px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.75);font-weight:700}
 .flyover .fprof em{position:absolute;right:10px;top:6px;font-style:normal;font-size:11.5px;color:#fff;font-weight:700}
-.fly-pin{display:flex;flex-direction:column;align-items:center;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.fly-pin{display:flex;flex-direction:column;align-items:center;pointer-events:none;will-change:transform}
 .fly-pin span{width:46px;height:46px;border-radius:50%;border:3px solid #fff;overflow:hidden;background:#0fb9cf;display:block}
 .fly-pin b{margin-bottom:5px;padding:3px 10px;border-radius:12px;background:rgba(10,14,18,.74);color:#fff;font-size:12.5px;font-weight:700;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
 .fly-pin b:empty{display:none}
-.fly-pin.air span{width:58px;height:58px;box-shadow:0 0 0 3px #ff2d8f,0 0 18px rgba(255,45,143,.65)}
+.fly-pin.air span{width:60px;height:60px;position:relative;overflow:visible;box-shadow:0 0 0 3px #ff2d8f,0 0 22px rgba(255,45,143,.7),0 10px 18px rgba(0,0,0,.45)}
+.fly-pin.air span img{border-radius:50%}
+.fly-pin.air span::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,95,176,.9);animation:flyRing 1.8s ease-out infinite}
+@keyframes flyRing{from{transform:scale(1);opacity:.9}to{transform:scale(1.55);opacity:0}}
+.fly-pin b{box-shadow:0 4px 10px rgba(0,0,0,.4)}
 .fly-pin.air u{height:var(--h,56px);background:linear-gradient(#fff,#ff2d8f 70%,rgba(255,45,143,.25))}
 .fly-pin img{width:100%;height:100%;object-fit:cover;display:block}
 .fly-pin u{width:3px;height:44px;background:linear-gradient(#fff,rgba(255,255,255,.55));border-radius:2px;display:block}
 .flyover .flyrec{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 142px);z-index:7;border:0;border-radius:999px;background:#fff;color:#0e1417;font-size:14px;font-weight:700;padding:10px 16px;display:flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .flyover .flyrec[hidden]{display:none}
 .flyover .flyrec svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
-.flyover .seek{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.55);backdrop-filter:blur(10px);border-radius:18px;padding:8px 10px}
+.flyover .seek{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.74);border-radius:18px;padding:8px 10px}
 .flyover .seek button{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;font-weight:700;line-height:1}
 .flyover .seekbar{flex:1;min-width:0}
 /* barre unique du bas */
-.flyover .fbar{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:999px;padding:6px 8px;transition:opacity .35s}
+.flyover .fbar{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:6;display:flex;align-items:center;gap:8px;background:rgba(10,14,18,.74);border-radius:999px;padding:6px 8px;transition:opacity .35s}
 .flyover .fbar .fplay{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:var(--cyan);color:#fff;font-size:15px;line-height:1;display:grid;place-items:center;padding:0}
 .flyover .fbar .fpill{flex:none;border:0;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:12.5px;font-weight:700;padding:9px 10px;white-space:nowrap;line-height:1}
 .flyover .fbar .seekbar input{height:22px}
 .flyover .fbar .seeklab{font-size:10.5px;margin-top:-4px;padding:0 2px}
-.flyover .fmenu{position:absolute;right:8px;bottom:calc(100% + 8px);display:flex;flex-direction:column;gap:2px;background:rgba(10,14,18,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:16px;padding:5px;min-width:112px}
+.flyover .fmenu{position:absolute;right:8px;bottom:calc(100% + 8px);display:flex;flex-direction:column;gap:2px;background:rgba(10,14,18,.82);border-radius:16px;padding:5px;min-width:112px}
 .flyover .fmenu[hidden]{display:none}
 .flyover .fmenu button{border:0;background:transparent;color:#fff;border-radius:11px;padding:10px 12px;font-size:14px;font-weight:600;text-align:left}
 .flyover .fmenu button.on{background:var(--cyan)}
@@ -179,14 +183,14 @@ header.top{position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);z-inde
 .flyover.idle .topband{opacity:.85}
 .flyover .seekbar input{width:100%;margin:0;accent-color:#ff5a1f;height:26px;touch-action:none}
 .flyover .seeklab{display:flex;justify-content:space-between;color:#fff;font-size:11.5px;opacity:.8;font-variant-numeric:tabular-nums;margin-top:-2px}
-.flyover .spd{display:flex;gap:3px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:4px}
+.flyover .spd{display:flex;gap:3px;background:rgba(255,255,255,.14);border-radius:999px;padding:4px}
 .flyover .spd button{background:transparent;padding:9px 8px;border-radius:999px;font-size:13px;font-weight:600;color:#fff}
 .flyover .spd button.on{background:var(--cyan)}
 .flyover .ctrl #flyPlay,.flyover .ctrl #flyReplay{min-width:48px;justify-content:center}
-.flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px)}
+.flyover .closef{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;}
 .flyover .closef svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .flyover .flyzoom{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:7;display:flex;flex-direction:column;gap:8px}
-.flyover .flyzoom button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:22px;font-weight:700;backdrop-filter:blur(8px)}
+.flyover .flyzoom button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:22px;font-weight:700;}
 
 /* ---------- Connexion (modale) ---------- */
 .modal{position:fixed;inset:0;z-index:70;background:rgba(10,15,18,.45);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
@@ -829,9 +833,9 @@ const flyStyle = {
     demShade:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:14}
   },
   layers:[
-    {id:"bg",type:"background",paint:{"background-color":"#16404e"}},
-    {id:"sat",type:"raster",source:"esri",paint:{"raster-saturation":0.22,"raster-contrast":0.14,"raster-brightness-min":0.03,"raster-fade-duration":250}},
-    {id:"shade",type:"hillshade",source:"demShade",paint:{"hillshade-exaggeration":0.5,"hillshade-illumination-direction":315,"hillshade-shadow-color":"#07151c","hillshade-highlight-color":"#fff1d2","hillshade-accent-color":"#0a1b24"}},
+    {id:"bg",type:"background",paint:{"background-color":"#93a7ae"}},
+    {id:"sat",type:"raster",source:"esri",paint:{"raster-saturation":0.3,"raster-contrast":0.2,"raster-brightness-min":0.02,"raster-brightness-max":0.97,"raster-fade-duration":300}},
+    {id:"shade",type:"hillshade",source:"demShade",paint:{"hillshade-exaggeration":0.6,"hillshade-illumination-direction":300,"hillshade-shadow-color":"#07151c","hillshade-highlight-color":"#fff1d2","hillshade-accent-color":"#0a1b24"}},
     {id:"places",type:"raster",source:"places",paint:{"raster-opacity":0.85}}
   ]
 };
@@ -1004,7 +1008,7 @@ function flyPinSet(a, p){ try{ if(!flyMap) return; let src=""; const mine=!flyGu
     if(!flyPin){ const el=document.createElement("div"); el.className="fly-pin"; el.innerHTML='<b></b><span></span><u></u>'; flyPin=new maplibregl.Marker({ element:el, anchor:"bottom", opacityWhenCovered:"1" }); }
     // nom dans la bulle : mon pseudo pour mes sorties et mes vols, sinon le membre indiqué devant le nom de la sortie
     let who=""; if(mine){ try{ who=localStorage.getItem("lf.comm.pseudo")||""; }catch(e){} } else { const pp=String(a.name||"").split(" · "); if(pp.length>1) who=pp[0]; }
-    const pe=flyPin.getElement(); pe.classList.toggle("air", a.milieu==="air"); pe.querySelector("b").textContent=String(who).slice(0,24);
+    const pe=flyPin.getElement(); pe.classList.add("air"); pe.querySelector("b").textContent=String(who).slice(0,24);
     pe.querySelector("span").innerHTML = src ? '<img alt="" src="'+String(src).replace(/"/g,"&quot;")+'">' : "";
     flyPin.setLngLat([p.lon,p.lat]).addTo(flyMap); }catch(e){} }
 async function startFly(a){
@@ -1020,33 +1024,46 @@ async function startFly(a){
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";
   document.getElementById("flyAltSfx").textContent = a.milieu==="mer" ? " km/h" : flyAir ? " ft" : " m";
   if(!flyMap){
-    flyMap=new maplibregl.Map({container:"flyMap",style:flyStyle,attributionControl:false,interactive:true,antialias:true,fadeDuration:200,maxPitch:80,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
+    flyMap=new maplibregl.Map({container:"flyMap",style:flyStyle,attributionControl:false,interactive:true,antialias:false,pixelRatio:Math.min(window.devicePixelRatio||1,2),fadeDuration:300,maxTileCacheSize:400,maxPitch:80,pitch:55,bearing:0,zoom:14,center:[pts[0].lon,pts[0].lat]});
     ["dragstart","rotatestart","pitchstart"].forEach(n=>flyMap.on(n,(e)=>{ if(!flyAuto && e && e.originalEvent) flySetFree(true); }));
   }
   const setup=()=>{
     try{ flyMap.setTerrain({source:"dem",exaggeration:1.5}); }catch(e){}
     try{ if(flyMap.setSky) flyMap.setSky({"sky-color":"#2f7fd0","horizon-color":"#e8f1f8","fog-color":"#d5e4ee","sky-horizon-blend":0.85,"horizon-fog-blend":0.75,"fog-ground-blend":0.4,"atmosphere-blend":0.9}); }catch(e){}
+    // le point suivi est placé un peu sous le milieu de l'écran : moins de premier plan flou, plus de paysage et d'horizon
+    try{ flyMap.setPadding({top:Math.round(window.innerHeight*0.26),bottom:0,left:0,right:0}); }catch(e){}
     flyPinSet(a, pts[0]);
-    for(const id of ["flyDot","flyDotHalo","flyEnds","flyHeadShadow","flyHead","flyHeadCase","flyHeadGlow","flyFull","flyFullCase"]){ if(flyMap.getLayer(id)) flyMap.removeLayer(id); }
-    for(const id of ["flyFull","flyHead","flyDot","flyEnds"]){ if(flyMap.getSource(id)) flyMap.removeSource(id); }
-    const rc={"line-join":"round","line-cap":"round"}, grad=flyAir ? null : flyGradient(pts), cA=flyAir?"#ff2d8f":"#0fb9cf", cG=flyAir?"#ff5fb0":"#19e3ff";
+    for(const id of ["flyPlane","flyTip","flyTipCase","flyTipGlow","flyDot","flyDotHalo","flyEnds","flyHeadShadow","flyHead","flyHeadCase","flyHeadGlow","flyFull","flyFullCase"]){ if(flyMap.getLayer(id)) flyMap.removeLayer(id); }
+    for(const id of ["flyFull","flyHead","flyTip","flyDot","flyEnds"]){ if(flyMap.getSource(id)) flyMap.removeSource(id); }
+    const rc={"line-join":"round","line-cap":"round"}, grad=null, cA="#ff2d8f", cG="#ff5fb0";
     // parcours entier : fin, sombre dessous, coloré selon la vitesse dessus
     flyMap.addSource("flyFull",{type:"geojson",lineMetrics:true,data:lineGeo(pts)});
     flyMap.addLayer({id:"flyFullCase",type:"line",source:"flyFull",layout:rc,paint:{"line-color":"#04161b","line-width":7,"line-opacity":.35}});
-    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",layout:rc,paint: grad ? {"line-width":4,"line-opacity":.55,"line-gradient":grad} : {"line-color":flyAir?"#ffffff":"#19e3ff","line-width":flyAir?3:4,"line-opacity":flyAir?.5:.4}});
+    flyMap.addLayer({id:"flyFull",type:"line",source:"flyFull",layout:rc,paint: grad ? {"line-width":4,"line-opacity":.55,"line-gradient":grad} : {"line-color":"#ffffff","line-width":3,"line-opacity":.5}});
     // partie déjà parcourue : halo lumineux, liseré blanc, coeur cyan
     flyMap.addSource("flyHead",{type:"geojson",data:lineGeo([pts[0],pts[0]])});
-    if(flyAir) flyMap.addLayer({id:"flyHeadShadow",type:"line",source:"flyHead",layout:rc,paint:{"line-color":"#000","line-width":9,"line-blur":7,"line-opacity":.35,"line-translate":[5,7]}});
-    flyMap.addLayer({id:"flyHeadGlow",type:"line",source:"flyHead",layout:rc,paint:{"line-color":cG,"line-width":flyAir?22:18,"line-blur":14,"line-opacity":flyAir?.6:.55}});
+    flyMap.addLayer({id:"flyHeadShadow",type:"line",source:"flyHead",layout:rc,paint:{"line-color":"#000","line-width":9,"line-blur":7,"line-opacity":.35,"line-translate":[5,7]}});
+    flyMap.addLayer({id:"flyHeadGlow",type:"line",source:"flyHead",layout:rc,paint:{"line-color":cG,"line-width":22,"line-blur":14,"line-opacity":.6}});
     flyMap.addLayer({id:"flyHeadCase",type:"line",source:"flyHead",layout:rc,paint:{"line-color":"#ffffff","line-width":7.5,"line-opacity":.95}});
-    flyMap.addLayer({id:"flyHead",type:"line",source:"flyHead",layout:rc,paint:{"line-color":cA,"line-width":flyAir?5:4.5}});
+    flyMap.addLayer({id:"flyHead",type:"line",source:"flyHead",layout:rc,paint:{"line-color":cA,"line-width":5}});
+    flyMap.addSource("flyTip",{type:"geojson",data:lineGeo([pts[0],pts[0]])});
+    flyMap.addLayer({id:"flyTipGlow",type:"line",source:"flyTip",layout:rc,paint:{"line-color":cG,"line-width":22,"line-blur":14,"line-opacity":.6}});
+    flyMap.addLayer({id:"flyTipCase",type:"line",source:"flyTip",layout:rc,paint:{"line-color":"#ffffff","line-width":7.5,"line-opacity":.95}});
+    flyMap.addLayer({id:"flyTip",type:"line",source:"flyTip",layout:rc,paint:{"line-color":cA,"line-width":5}});
     // départ (vert) et arrivée (rouge)
     flyMap.addSource("flyEnds",{type:"geojson",data:{type:"FeatureCollection",features:[{type:"Feature",properties:{k:"a"},geometry:{type:"Point",coordinates:[pts[0].lon,pts[0].lat]}},{type:"Feature",properties:{k:"b"},geometry:{type:"Point",coordinates:[pts[pts.length-1].lon,pts[pts.length-1].lat]}}]}});
     flyMap.addLayer({id:"flyEnds",type:"circle",source:"flyEnds",paint:{"circle-radius":5.5,"circle-color":["match",["get","k"],"a","#2bd47a","#ff3654"],"circle-stroke-color":"#fff","circle-stroke-width":2.5,"circle-pitch-alignment":"map"}});
     // point mobile : halo qui respire + pastille
     flyMap.addSource("flyDot",{type:"geojson",data:ptGeo(pts[0])});
-    flyMap.addLayer({id:"flyDotHalo",type:"circle",source:"flyDot",paint:{"circle-radius":flyAir?14:20,"circle-color":cG,"circle-opacity":.3,"circle-blur":.6}});
-    flyMap.addLayer({id:"flyDot",type:"circle",source:"flyDot",paint:{"circle-radius":flyAir?5:8,"circle-color":cA,"circle-stroke-color":"#fff","circle-stroke-width":flyAir?2.5:3.5}});
+    // ombre de l'avion posée sur le relief, orientée selon le cap
+    if(flyAir){ try{ if(!flyMap.hasImage("flyPlane")){ const c=document.createElement("canvas"); c.width=c.height=96; const x=c.getContext("2d"); x.translate(48,48); x.fillStyle="rgba(0,0,0,.5)"; x.shadowColor="rgba(0,0,0,.55)"; x.shadowBlur=7;
+          x.beginPath(); x.ellipse(0,0,5,30,0,0,Math.PI*2); x.fill();
+          x.beginPath(); x.moveTo(-38,2); x.lineTo(0,-12); x.lineTo(38,2); x.lineTo(38,8); x.lineTo(0,2); x.lineTo(-38,8); x.closePath(); x.fill();
+          x.beginPath(); x.moveTo(-13,24); x.lineTo(0,19); x.lineTo(13,24); x.lineTo(13,28); x.lineTo(-13,28); x.closePath(); x.fill();
+          flyMap.addImage("flyPlane", x.getImageData(0,0,96,96), {pixelRatio:2}); }
+        flyMap.addLayer({id:"flyPlane",type:"symbol",source:"flyDot",layout:{"icon-image":"flyPlane","icon-size":1.15,"icon-rotate":["coalesce",["get","h"],0],"icon-rotation-alignment":"map","icon-pitch-alignment":"map","icon-allow-overlap":true,"icon-ignore-placement":true}}); }catch(e){} }
+    flyMap.addLayer({id:"flyDotHalo",type:"circle",source:"flyDot",paint:{"circle-radius":14,"circle-color":cG,"circle-opacity":.3,"circle-blur":.6}});
+    flyMap.addLayer({id:"flyDot",type:"circle",source:"flyDot",paint:{"circle-radius":flyAir?4:6,"circle-color":cA,"circle-stroke-color":"#fff","circle-stroke-width":2.5}});
     // vue fixe cadree sur toute la trace : seul le point se deplace
     let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
     for(const q of pts){ if(q.lon<minx)minx=q.lon; if(q.lon>maxx)maxx=q.lon; if(q.lat<miny)miny=q.lat; if(q.lat>maxy)maxy=q.lat; }
@@ -1080,6 +1097,8 @@ function runFly(a,pts){
   const t0=tOf(pts[0]), t1=tOf(pts[N-1]); let total=(t0!=null&&t1!=null&&t1>t0)?(t1-t0):0; if(total>1e7) total/=1000; // millisecondes -> secondes
   if(!total) total=+a.duration||+a.dur||+a.moving_time||0;
   // bandeau de profil : altitude quand le parcours a du relief (plus de 15 m d'écart), sinon vitesse
+  let headI=-1, planeH=0, haloT=0, pinHs="", profW=0; const headStep=Math.max(6,Math.round(N/120));
+  const txt=(el,v)=>{ v=String(v); if(el && el.textContent!==v) el.textContent=v; };
   let flyGround=1e9, flyPinH=0; for(const q of pts){ const v=+q.alt||0; if(v<flyGround) flyGround=v; }
   const profBox=document.getElementById("flyProf"); let profCur=null, profV=document.getElementById("flyProfV"), profMin=0, profMax=1, profAir=false, profSfx="", profKey="alt";
   { let amin=1e9, amax=-1e9; for(const q of pts){ const v=+q.alt||0; if(v<amin) amin=v; if(v>amax) amax=v; }
@@ -1097,15 +1116,17 @@ function runFly(a,pts){
       const p0=pts[i], p1=pts[Math.min(i+1,N-1)];
       const lon=p0.lon+(p1.lon-p0.lon)*frac, lat=p0.lat+(p1.lat-p0.lat)*frac;
       const speed=p0.speed+(p1.speed-p0.speed)*frac, altv=p0.alt+(p1.alt-p0.alt)*frac, distv=p0.dist+(p1.dist-p0.dist)*frac;
-      flyMap.getSource("flyHead").setData(lineGeo(pts.slice(0,i+1).concat([{lon,lat}])));
-      flyMap.getSource("flyDot").setData(ptGeo({lon,lat}));
+      if(fromSeek || headI<0 || i<headI || i-headI>=headStep){ headI=i; flyMap.getSource("flyHead").setData(lineGeo(i>0 ? pts.slice(0,i+1) : [pts[0],pts[0]])); }
+      flyMap.getSource("flyTip").setData(lineGeo(pts.slice(headI,i+1).concat([{lon,lat}])));
+      { const ah=pts[Math.min(N-1, i+Math.max(2,Math.round(N/80)))]; if(ah.lon!==lon || ah.lat!==lat) planeH=flyBearing({lon,lat},ah);
+        flyMap.getSource("flyDot").setData({type:"Feature",properties:{h:planeH},geometry:{type:"Point",coordinates:[lon,lat]}}); }
       if(flyPin){ flyPin.setLngLat([lon,lat]);
         if(flyAir){ let h=56; try{ const T=flyMap.terrain, ex=(T && T.exaggeration) || 1.5, mpp=78271.517*Math.cos(lat*Math.PI/180)/Math.pow(2,flyMap.getZoom());
             let g=NaN; if(T && T.getElevationForLngLatZoom) g=T.getElevationForLngLatZoom(new maplibregl.LngLat(lon,lat), flyMap.transform.tileZoom)/ex;
             if(!isFinite(g) || Math.abs(g-altv)>6000) g=flyGround;
             h=Math.max(44, Math.min(window.innerHeight*0.2, 44+Math.max(0,altv-g)*ex/mpp*Math.sin(flyMap.getPitch()*Math.PI/180))); }catch(e){}
-          flyPinH = flyPinH ? flyPinH+(h-flyPinH)*0.15 : h; flyPin.getElement().style.setProperty("--h", flyPinH.toFixed(1)+"px"); } }
-      if(profCur){ profCur.style.left=(flyProg*100)+"%"; const pv=profVal(fi); profCur.style.setProperty("--y", (100-((pv-profMin)/((profMax-profMin)||1))*78-8)+"%"); profV.textContent=Math.round(profAir ? pv*3.28084 : pv)+profSfx; }
+          flyPinH = flyPinH ? flyPinH+(h-flyPinH)*0.15 : h; const hs=Math.round(flyPinH)+"px"; if(hs!==pinHs){ pinHs=hs; flyPin.getElement().style.setProperty("--h", hs); } } }
+      if(profCur){ if(!profW) profW=profBox.clientWidth||0; profCur.style.transform="translateX("+(flyProg*profW).toFixed(1)+"px)"; const pv=profVal(fi); profCur.style.setProperty("--y", (100-((pv-profMin)/((profMax-profMin)||1))*78-8)+"%"); txt(profV, Math.round(profAir ? pv*3.28084 : pv)+profSfx); }
       if(flyView==="street"){ const ah=pts[Math.min(N-1, i+Math.max(2,Math.round(N/80)))]; svUpdate(lon,lat,(ah.lon!==lon||ah.lat!==lat)?flyBearing({lon,lat},ah):0, !!fromSeek); }
       if(!flyFree && flyView==="follow") flyCam({center:[lon,lat]});
       else if(!flyFree && flyView==="cine"){
@@ -1120,10 +1141,10 @@ function runFly(a,pts){
         flyBear=(flyBear==null || fromSeek) ? want : flyAngLerp(flyBear,want,0.06);
         flyCam({center:[lon,lat],bearing:(flyBear+flyBearOff+360)%360,pitch:flyAir?70:74});
       }
-      spd.textContent=Math.round(speed);
-      alt.textContent= maxSpeedDisplay ? Math.round(Math.max(maxTo[i],speed)) : Math.round(flyAir ? altv*3.28084 : altv);
-      dist.textContent=(distv/1000).toFixed(1);
-      skT.textContent= total ? flyClock(total*flyProg) : (distv/1000).toFixed(1)+" km";
+      txt(spd, Math.round(speed));
+      txt(alt, maxSpeedDisplay ? Math.round(Math.max(maxTo[i],speed)) : Math.round(flyAir ? altv*3.28084 : altv));
+      txt(dist, (distv/1000).toFixed(1));
+      txt(skT, total ? flyClock(total*flyProg) : (distv/1000).toFixed(1)+" km");
       if(!flySeeking) sk.value=Math.round(flyProg*1000);
   };
   const frame=(now)=>{
@@ -1133,7 +1154,7 @@ function runFly(a,pts){
       try{ flyDraw(false); }catch(e){}
       if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; }
     }
-    try{ if(flyMap.getLayer("flyDotHalo")){ const w=(Math.sin(now/420)+1)/2; flyMap.setPaintProperty("flyDotHalo","circle-radius",16+w*9); flyMap.setPaintProperty("flyDotHalo","circle-opacity",.34-w*.2); } }catch(e){}
+    try{ if(now-haloT>100 && !flyPaused && flyMap.getLayer("flyDotHalo")){ haloT=now; const w=(Math.sin(now/420)+1)/2; flyMap.setPaintProperty("flyDotHalo","circle-radius",16+w*9); flyMap.setPaintProperty("flyDotHalo","circle-opacity",.34-w*.2); } }catch(e){}
     flyRAF=requestAnimationFrame(frame);
   };
   try{ flyDraw(false); }catch(e){}
