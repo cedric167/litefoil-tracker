@@ -1060,7 +1060,7 @@ function fly3dLayer(pts){
       const M=mul(matrix,[sc,0,0,0, 0,sc,0,0, 0,0,sc,0, o.x,o.y,-el*sc,1]);
       const m=MC.fromLngLat([S.lon,S.lat],0), Pp=[(m.x-o.x)/sc,(m.y-o.y)/sc,S.alt*EX];
       const i=Math.max(0,Math.min(N-1,Math.floor(S.fi))), fr=S.fi-i, gA=ground[i], gB=ground[Math.min(N-1,i+1)], gP=Math.min(Pp[2],gA+(gB-gA)*fr);
-      const mpp=78271.517*Math.cos(S.lat*Math.PI/180)/Math.pow(2,map.getZoom()), hw=mpp*3.2, span=Math.max(14,mpp*96);
+      const mpp=78271.517*Math.cos(S.lat*Math.PI/180)/Math.pow(2,map.getZoom()), hw=mpp*3.2, span=Math.max(12,mpp*58);
       // orientation : cap, assiette, inclinaison (repère est / sud / haut)
       const r=Math.PI/180, h=S.yaw*r, th=S.pitch*r, ph=S.roll*r, f0=[Math.sin(h),-Math.cos(h),0], r0=[Math.cos(h),Math.sin(h),0], u0=[0,0,1];
       const fv=[f0[0]*Math.cos(th)+u0[0]*Math.sin(th), f0[1]*Math.cos(th)+u0[1]*Math.sin(th), Math.sin(th)], u1=[-f0[0]*Math.sin(th), -f0[1]*Math.sin(th), Math.cos(th)];
