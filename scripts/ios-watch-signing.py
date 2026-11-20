@@ -60,6 +60,15 @@ else:
     w = call("POST", "/bundleIds", {"data": {"type": "bundleIds", "attributes": {"identifier": WATCH, "name": "Lite Foil Watch", "platform": "IOS"}}})["data"]
     print("Identifiant montre enregistré :", WATCH)
 
+# droit HealthKit de l'appli montre (séance d'exercice pendant la sortie) : activé sur l'identifiant s'il ne l'est pas
+caps = [c["attributes"]["capabilityType"] for c in call("GET", "/bundleIds/" + w["id"] + "/bundleIdCapabilities")["data"]]
+if "HEALTHKIT" in caps:
+    print("HealthKit déjà activé sur l'identifiant montre.")
+else:
+    call("POST", "/bundleIdCapabilities", {"data": {"type": "bundleIdCapabilities", "attributes": {"capabilityType": "HEALTHKIT", "settings": []},
+         "relationships": {"bundleId": {"data": {"type": "bundleIds", "id": w["id"]}}}}})
+    print("HealthKit activé sur l'identifiant montre.")
+
 PDIRS = [os.path.expanduser(d) for d in ("~/Library/MobileDevice/Provisioning Profiles", "~/Library/Developer/Xcode/UserData/Provisioning Profiles")]
 for d in PDIRS: os.makedirs(d, exist_ok=True)
 def install(p):
@@ -85,7 +94,8 @@ if not certs:
 for p in store_profiles(w):
     try: have = [c["id"] for c in call("GET", "/profiles/" + p["id"] + "/certificates")["data"]]
     except Exception: have = []
-    if set(certs) <= set(have):
+    # un profil créé avant l'activation de HealthKit ne porte pas ce droit : on ne le réutilise pas
+    if set(certs) <= set(have) and b"com.apple.developer.healthkit" in base64.b64decode(p["attributes"]["profileContent"]):
         install(p); print("Profil montre valide installé :", p["attributes"]["name"]); sys.exit(0)
 
 new = call("POST", "/profiles", {"data": {"type": "profiles",

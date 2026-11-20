@@ -2,6 +2,7 @@ import SwiftUI
 import WatchKit
 import WatchConnectivity
 import CoreLocation
+import HealthKit
 
 /// Lite Foil sur Apple Watch. Version 2 du 19/11/2026.
 /// Départ : le sport et le bouton GO. Pendant la sortie : les écrans composés sur l'iPhone (« Ma montre »), puis une
@@ -51,6 +52,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     /// mode Eau d'Apple en cours (écran tactile coupé par la montre, on en sort avec la Digital Crown)
     @Published var waterLock = false
     private var waterAskAt: Date?
+    // séance d'exercice Apple pendant la sortie : la montre garde l'appli à l'écran au lieu de revenir au cadran
+    private let hk = HKHealthStore()
+    private var workout: HKWorkoutSession?
     @Published var now = Date()
     private(set) var runS = 0.0, moveS = 0.0, distM = 0.0, maxKmh = 0.0, curKmh = 0.0
     private(set) var startDate = Date()
@@ -98,6 +102,11 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if let lb = store.dictionary(forKey: "lb") as? [String: String], !lb.isEmpty { labels = lb }
         if store.bool(forKey: "sosOn") { phase = .active; screen = .sos; startTracking() }
         clock = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in self?.second() }
+        // l'accord « exercice » est demandé à l'ouverture de l'appli, pas au moment du GO (le mode Eau couperait l'écran dessus)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            guard let s = self, HKHealthStore.isHealthDataAvailable() else { return }
+            s.hk.requestAuthorization(toShare: [HKObjectType.workoutType()], read: nil) { _, _ in }
+        }
     }
 
     // MARK: réglages reçus de l'iPhone
@@ -179,6 +188,31 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         WKInterfaceDevice.current().enableWaterLock()
     }
 
+    private func workoutKind() -> HKWorkoutActivityType {
+        switch sport {
+        case "Course": return .running
+        case "Vélo": return .cycling
+        case "Marche": return .walking
+        case "Ski": return .downhillSkiing
+        case "Voile": return .sailing
+        case "Paddle": return .paddleSports
+        case "eFoil", "Wakeboard": return .waterSports
+        default: return .surfingSports
+        }
+    }
+    private func startWorkout() {
+        guard HKHealthStore.isHealthDataAvailable(), workout == nil else { return }
+        let c = HKWorkoutConfiguration()
+        c.activityType = workoutKind()
+        c.locationType = .outdoor
+        do {
+            let w = try HKWorkoutSession(healthStore: hk, configuration: c)
+            workout = w
+            w.startActivity(with: Date())
+        } catch { workout = nil }
+    }
+    private func endWorkout() { workout?.end(); workout = nil }
+
     func chooseSport(_ s: String) { sport = s; store.set(s, forKey: "sport"); screen = .home }
 
     func startRide() {
@@ -190,6 +224,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         running = true; paused = false; locked = false
         page = 0; screen = .run
         startLocation()
+        startWorkout()
         WKInterfaceDevice.current().play(.start)
         // sport sur l'eau : mode Eau automatique, une fois le GPS lancé
         if SosModel.waterSports.contains(sport) && waterOk {
@@ -206,6 +241,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     func stopRide(keep: Bool) {
         endFoilRun()
+        endWorkout()
         if keep { sendRide() }
         running = false; paused = false; locked = false; waterLock = false; waterAskAt = nil; curKmh = 0
         if phase != .active && phase != .sending { stopLocation() }
@@ -736,9 +772,9 @@ struct ConfirmView: View {
         ScrollView {
             VStack(spacing: 6) {
                 Text("Terminer la sortie ?").font(.system(size: 14, weight: .bold)).foregroundColor(.white)
-                LfButton(title: "Terminer", bg: .lfGo, fg: .black, action: { m.stopRide(keep: true) })
-                LfButton(title: "Abandonner", bg: .lfRed, fg: .white, height: 34, action: { m.stopRide(keep: false) })
-                LfButton(title: "Annuler", bg: .lfDark, fg: .white, height: 34, action: { m.screen = .run })
+                // plus de bouton « Abandonner » : trop petit au doigt mouillé ; une sortie se supprime ensuite dans l'appli iPhone
+                LfButton(title: "Terminer", bg: .lfGo, fg: .black, height: 58, action: { m.stopRide(keep: true) })
+                LfButton(title: "Continuer", bg: .lfDark, fg: .white, height: 46, action: { m.screen = .run })
             }
             .padding(.horizontal, 6)
         }

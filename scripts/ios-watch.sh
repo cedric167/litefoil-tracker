@@ -35,7 +35,7 @@ fi
 # 1) fichiers de l'appli montre
 W="$APP/LiteFoilWatch"
 mkdir -p "$W/Assets.xcassets/AppIcon.appiconset"
-cp "$ROOT/native/watch/LiteFoilWatchApp.swift" "$ROOT/native/watch/Info.plist" "$W/"
+cp "$ROOT/native/watch/LiteFoilWatchApp.swift" "$ROOT/native/watch/Info.plist" "$ROOT/native/watch/LiteFoilWatch.entitlements" "$W/"
 cp "$ROOT/ios-assets/AppIcon-1024.png" "$W/Assets.xcassets/AppIcon.appiconset/icon.png"
 cat > "$W/Assets.xcassets/Contents.json" <<'JSON'
 { "info" : { "author" : "xcode", "version" : 1 } }
@@ -78,6 +78,7 @@ grep -q "LfWatchPlugin()" "$VC" || { echo "LFViewController : LfWatch non enregi
       s["PRODUCT_BUNDLE_IDENTIFIER"] = wid
       s["PRODUCT_NAME"] = "$(TARGET_NAME)"
       s["INFOPLIST_FILE"] = "LiteFoilWatch/Info.plist"
+      s["CODE_SIGN_ENTITLEMENTS"] = "LiteFoilWatch/LiteFoilWatch.entitlements"
       s["GENERATE_INFOPLIST_FILE"] = "NO"
       s["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIcon"
       s["SWIFT_VERSION"] = "5.0"
