@@ -154,7 +154,7 @@ body.uni-bonride{--sb1:#d99a1e;--sb2:#5c3d07;--sb3:#150e02;--sl:#ffe9b0;--sc:#8a
 .uh-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid var(--line-soft,#eef2f5);border-radius:20px;padding:13px 14px;margin:0 0 12px;font:inherit;color:#0e1417;cursor:pointer;box-shadow:0 6px 18px rgba(13,40,45,.06);min-height:0}
 .uh-ri{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:none}.uh-ri svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .uh-rt{flex:1;min-width:0}.uh-rt b{display:block;font-size:15px;font-weight:800}.uh-rt small{display:block;font-size:12.5px;color:#66727d;margin-top:1px}.uh-ch{color:#b3bdc5;font-size:21px;flex:none}
-.uh-bt{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.uh-bt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .uh-bt button{position:relative;background:#fff;border:1px solid var(--line-soft,#eef2f5);border-radius:18px;padding:13px 3px 10px;text-align:center;font:inherit;color:#8a1f9c;cursor:pointer;box-shadow:0 6px 18px rgba(13,40,45,.06);min-height:0}
 .uh-bt svg{display:block;margin:0 auto 6px;width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.uh-bt b{display:block;font-size:11.5px;font-weight:900;color:#0e1417;line-height:1.2}.uh-bt small{display:block;font-size:10px;color:#66727d;font-weight:700;margin-top:2px}
 .uh-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#c7d0d7}.uh-dot.on{background:#2bd47a;box-shadow:0 0 0 3px rgba(43,212,122,.2)}
@@ -2635,6 +2635,10 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
         <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="3"/><circle cx="12" cy="8" r="2"/><path d="M10 14h4M10 17.5h4"/></svg></span>
         <span class="dev-nm">Télécommande</span><span class="dev-st">—</span>
       </button>
+      <button class="devcard" data-goto="montre" id="dcWatch">
+        <span class="dev-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6" width="11" height="12" rx="3.2"/><path d="M9 6l.7-3h4.600l.7 3M9 18l.7 3h4.600l.7-3M12 10v2.500l1.500 1"/></svg></span>
+        <span class="dev-nm">Montre</span><span class="dev-st">—</span>
+      </button>
     </div>
 
     <div class="card" id="chipsCard" style="margin-top:12px" hidden>
@@ -3889,7 +3893,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   const HIST = { spd: [], pow: [] };
   function pushH(k, v){ if (v == null || isNaN(v)) return; const a = HIST[k]; a.push(v); if (a.length > 48) a.shift(); }
   const DASH = { spd:null, spdmax:null, sats:null, fix:false, net:false, track:false, batt:null,
-                 soc:null, batPow:null, vescPow:null, sessionStart:null, conn:{ tracker:false, bat:false, vesc:false, remote:false } };
+                 soc:null, batPow:null, vescPow:null, sessionStart:null, conn:{ tracker:false, bat:false, vesc:false, remote:false, watch:false } };
   window.__lfDash = DASH; // 12/11 : lu par le module « sécurité en mer » (batterie)
 
   function sparkSVG(a, color){
@@ -3936,7 +3940,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     setChip("chNet", DASH.net ? "on" : "bad", "Réseau " + (DASH.net ? "en ligne" : "hors ligne"));
     setChip("chTrack", DASH.track ? "on" : "", "Suivi " + (DASH.track ? "en cours" : "arrêté"));
     var _cc=$("chipsCard"); if(_cc) _cc.hidden = !(DASH.conn.tracker || DASH.conn.bat || DASH.conn.vesc || DASH.conn.remote);
-    setDev("dcTracker", DASH.conn.tracker); setDev("dcBat", DASH.conn.bat); setDev("dcVesc", DASH.conn.vesc); setDev("dcRemote", DASH.conn.remote);
+    setDev("dcTracker", DASH.conn.tracker); setDev("dcBat", DASH.conn.bat); setDev("dcVesc", DASH.conn.vesc); setDev("dcRemote", DASH.conn.remote); setDev("dcWatch", DASH.conn.watch);
   }
 
 
@@ -5290,7 +5294,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     const upd = otaUpdater({ meta: "firmware/montre.json", who: "la montre", Who: "La montre", log: wlog,
       ids: { avail: "mwFwAvail", gauge: "mwUpdGauge", fill: "mwUpdFill", note: "mwUpdNote", btn: "btnMwUpdate", cancel: "btnMwUpdCancel" },
       afterInstall: "La montre redémarre toute seule (une dizaine de secondes), puis reconnecte-toi pour vérifier la version." });
-    const enable = on => { for (const b of btns) b.disabled = !on; $("btnMwConnect").textContent = on ? "Déconnecter" : "Connecter"; if (!on) upd.setInstalled(null); upd.refresh(); paintRides(); };
+    const enable = on => { for (const b of btns) b.disabled = !on; $("btnMwConnect").textContent = on ? "Déconnecter" : "Connecter"; DASH.conn.watch = on; renderDash(); if (!on) upd.setInstalled(null); upd.refresh(); paintRides(); };
 
     function paint(s){
       txt("mwFw", s.fw || "—"); txt("mwFw2", s.fw || "—");
@@ -10504,7 +10508,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         +'<button type="button" class="uh-row" data-uh="ext" data-to="https://www.sia.aviation-civile.gouv.fr/schedules"><span class="uh-ri" style="background:#fdeaea;color:#c0392b">'+uhIc('<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 16.500v.500"/>')+'</span><span class="uh-rt"><b>Carte AZBA</b><small>SIA · activation des zones très basse altitude (RTBA)</small></span><span class="uh-ch">↗</span></button>'
         +'<div class="uh-brnote">Ces cartes s’ouvrent sur les sites officiels. Elles ne remplacent pas les NOTAM ni le SUP AIP.</div>'; }
     else pil.innerHTML="";
-    if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Mon Lite Foil · 4 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
+    if(c==="efoil"){ ef.innerHTML='<div class="uh-k">Mon Lite Foil · 5 appareils Bluetooth</div><div class="uh-bt" id="uhBt"></div>'
         +uhRow("cfg","","#fff","linear-gradient(145deg,#ff5fd2,#8a1f9c)",'<image href="onb-logo.png" x="-4" y="1.400" width="32" height="21.400" style="filter:brightness(0) invert(1)"/>',"Ma configuration", (window.__efCfg && window.__efCfg.summary()) || "Planche, batterie, aile, stab, fuselage, gabarit")
         +uhRow("watch","","#5ff0c8","#0b1114",'<rect x="6.500" y="6" width="11" height="12" rx="3.200"/><path d="M9 6l.700-3h4.600l.700 3M9 18l.700 3h4.600l.700-3M12 10v2.500l1.500 1"/>',"Ma montre","Apple Watch et montres Android : écrans, infos affichées, SOS"); uhBt(); }
     else ef.innerHTML="";
@@ -10517,7 +10521,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(fd){ fd.hidden=true; if(false){ $("uhFeedK").textContent = c==="pilote" ? "Fil d'actualité des pilotes" : c==="efoil" ? "Fil d'actualité eFoil" : "Fil d'actualité multisport"; var box=$("uhFeedBox"); box._fdUni=c; try{ fdMount(box, null); }catch(e){} } } }
   function uhBt(){ var el=$("uhBt"); if(!el) return; var D=window.__lfDash||{}, cn=D.conn||{}, soc=(D.soc!=null && isFinite(+D.soc)) ? Math.round(+D.soc)+" %" : "";
     var it=[["batterie","Batterie",cn.bat,soc,'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3M10.500 11v3M14 11v3"/>'],["moteur","Moteur VESC",cn.vesc,"",'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M5.600 18.400l2.100-2.100M16.300 7.700l2.100-2.100"/>'],
-      ["remote","Télécommande",cn.remote,"",'<rect x="8" y="3" width="8" height="18" rx="4"/><circle cx="12" cy="8.500" r="1.800"/><path d="M12 14v3"/>'],["tracker","Tracker GPS",cn.tracker,"",'<path d="M12 21s7-6.200 7-11a7 7 0 1 0-14 0c0 4.800 7 11 7 11z"/><circle cx="12" cy="10" r="2.500"/>']];
+      ["remote","Télécommande",cn.remote,"",'<rect x="8" y="3" width="8" height="18" rx="4"/><circle cx="12" cy="8.500" r="1.800"/><path d="M12 14v3"/>'],["tracker","Tracker GPS",cn.tracker,"",'<path d="M12 21s7-6.200 7-11a7 7 0 1 0-14 0c0 4.800 7 11 7 11z"/><circle cx="12" cy="10" r="2.500"/>'],["montre","Montre",cn.watch,"",'<rect x="6.500" y="6" width="11" height="12" rx="3.200"/><path d="M9 6l.700-3h4.600l.700 3M9 18l.700 3h4.600l.700-3M12 10v2.500l1.500 1"/>']];
     var h=it.map(function(x){ return '<button type="button" data-uh="go" data-to="'+x[0]+'"><span class="uh-dot'+(x[2]?" on":"")+'"></span>'+uhIc(x[4])+'<b>'+x[1]+'</b><small>'+(x[2] ? (x[3]||"Connecté") : "À connecter")+'</small></button>'; }).join(""); if(el._h!==h){ el._h=h; el.innerHTML=h; } }
   setInterval(function(){ try{ if(document.body.classList.contains("uni-efoil") && (document.body.dataset.tab||"dash")==="dash") uhBt(); }catch(e){} }, 3000);
   window.addEventListener("resize", function(){ try{ uhMeasure(); uhPaint(); }catch(e){} });
