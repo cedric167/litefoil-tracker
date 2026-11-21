@@ -11503,15 +11503,21 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
     // sorties faites sur la montre : l'iPhone les garde en attente, on les range ici dans les activités du téléphone
     var WSP={ "eFoil":["efoil","E-foil","mer"], "Wingfoil":["wingfoil","Wing foil","mer"], "Pumpfoil":["pumpfoil","Pump foil","mer"], "Surf foil":["surffoil","Surf foil","mer"], "Windfoil":["windsurf","Windsurf","mer"], "Downwind":["supdownwind","SUP Downwind","mer"],
       "Kitesurf":["kitesurf","Kitesurf","mer"], "Windsurf":["windsurf","Windsurf","mer"], "Wakeboard":["other","Wakeboard","mer"], "Surf":["surf","Surf","mer"], "Paddle":["sup","Stand up paddle","mer"], "Voile":["deriveur","Voile","mer"],
-      "Course":["running","Running","terre"], "Vélo":["velo","Vélo","terre"], "Marche":["marche","Marche","terre"], "Ski":["ski","Ski","terre"] };
+      "Course":["running","Running","terre"], "Vélo":["velo","Vélo","terre"], "Marche":["marche","Marche","terre"], "Ski":["ski","Ski","terre"],
+      "Musculation":["muscu","Musculation","terre"], "Cross training":["crosstraining","Cross training","terre"], "Fitness":["fitness","Fitness","terre"], "Cardio":["cardio","Cardio","terre"] };
     var hav=function(a1,o1,a2,o2){ var R=6371000, r=Math.PI/180, x=(a2-a1)*r, y=(o2-o1)*r, q=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a1*r)*Math.cos(a2*r)*Math.sin(y/2)*Math.sin(y/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(q))); };
-    var rideToSess=function(r){ var P=r.pts||[]; if(P.length<2) return null; var sp=WSP[r.sport]||["other",String(r.sport||"Sortie"),"mer"], cum=0, out=[];
+    var rideToSess=function(r){ var P=r.pts||[]; var hr=((+r.hr||0)>0 || (+r.kcal||0)>0) ? { avg:+r.hr||0, max:+r.hrmax||0, kcal:+r.kcal||0 } : null;
+      // séance de salle : pas de tracé, seulement la durée, le cardio et les calories
+      if(r.indoor){ var si=WSP[r.sport]||["fitness",String(r.sport||"Séance"),"terre"], du=+r.dur||0; if(du<20) return null;
+        return { id:String(r.id||("watch-"+r.start)), name:si[1]+" · montre", categoryName:si[1], activityType:si[0], milieu:"terre", startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:du, distanceM:0, avgSpeedKmh:0, maxSpeedKmh:0, maxAltM:0,
+          firstLat:null, firstLon:null, thumbnailUrl:null, source:"phone", device:"watch", points:[], indoor:true, hr:hr }; }
+      if(P.length<2) return null; var sp=WSP[r.sport]||["other",String(r.sport||"Sortie"),"mer"], cum=0, out=[];
       for(var i=0;i<P.length;i++){ if(i) cum+=hav(P[i-1][0],P[i-1][1],P[i][0],P[i][1]); var brg=0; if(i){ var y=Math.sin((P[i][1]-P[i-1][1])*Math.PI/180)*Math.cos(P[i][0]*Math.PI/180), x=Math.cos(P[i-1][0]*Math.PI/180)*Math.sin(P[i][0]*Math.PI/180)-Math.sin(P[i-1][0]*Math.PI/180)*Math.cos(P[i][0]*Math.PI/180)*Math.cos((P[i][1]-P[i-1][1])*Math.PI/180); brg=(Math.atan2(y,x)*180/Math.PI+360)%360; }
         out.push({ lat:P[i][0], lon:P[i][1], speed:+(+P[i][2]||0).toFixed(1), bearing:Math.round(brg), dist:Math.round(cum), alt:Math.round(+P[i][4]||0), t:Math.round(+P[i][3]||0) }); }
       var dur=+r.dur||out[out.length-1].t, dist=+r.dist||Math.round(cum);
       return { id:String(r.id||("watch-"+r.start)), name:sp[1]+" · montre", categoryName:sp[1], activityType:sp[0], milieu:sp[2], startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:dur, distanceM:dist,
         avgSpeedKmh: dur>0 ? +(dist/dur*3.6).toFixed(1) : 0, maxSpeedKmh:+(+r.max||0).toFixed(1), maxAltM:Math.round(Math.max.apply(null, out.map(function(p){ return p.alt; }))), firstLat:out[0].lat, firstLon:out[0].lon, thumbnailUrl:null,
-        source:"phone", device:"watch", points:out, foil:{ runs:+r.runs||0, sec:+r.foilS||0, m:+r.foilM||0 } }; };
+        source:"phone", device:"watch", points:out, hr:hr, foil:{ runs:+r.runs||0, sec:+r.foilS||0, m:+r.foilM||0 } }; };
     var takeRides=function(){ var W=plug(); if(!W || !W.takeRides) return; try{ W.takeRides().then(function(res){ var L=(res && res.rides)||[]; if(!L.length) return; var arr=[]; try{ arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; }catch(e){}
         var n=0; L.forEach(function(js){ try{ var se=rideToSess(JSON.parse(js)); if(!se) return; arr=arr.filter(function(x){ return x && x.id!==se.id; }); arr.unshift(se); n++; }catch(e){} });
         if(!n) return; arr.sort(function(a,b){ return String(b.startedAt).localeCompare(String(a.startedAt)); }); if(arr.length>100) arr=arr.slice(0,100);

@@ -33,9 +33,9 @@
 		<string>workout-processing</string>
 	</array>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Lite Foil déclare votre sortie comme une séance d'exercice pour que la montre garde vos informations à l'écran et permette le mode Eau.</string>
+	<string>Lite Foil enregistre votre séance (sport, durée) dans l'app Santé et garde vos informations à l'écran pendant la sortie.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Lite Foil déclare votre sortie comme une séance d'exercice pour que la montre garde vos informations à l'écran. Aucune donnée de santé n'est lue.</string>
+	<string>Lite Foil lit votre fréquence cardiaque et vos calories pendant la séance pour les afficher sur la montre et dans le résumé de la séance.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Pendant un SOS, la position de votre montre est envoyée à vos proches pour qu'ils puissent vous retrouver.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

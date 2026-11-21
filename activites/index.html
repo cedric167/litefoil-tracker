@@ -899,13 +899,21 @@ async function openDetail(a){
     <div class="s hot"><i>${ICO.bolt}</i><div class="u">Vitesse max</div><div class="v tnum">${fr(a.maxSpeedKmh,1)}<small> km/h</small></div></div>
     <div class="s"><i>${ICO.alt}</i><div class="u">${sea?"Dénivelé +":"Altitude max"}</div><div class="v tnum">${Math.round(+a.maxAltM||0)}<small> m</small></div></div>
     <div class="s"><i>${ICO.pin}</i><div class="u">Points GPS</div><div class="v tnum">${(a.points||[]).length}</div></div>${(()=>{ const p=a.power; if(!p) return ""; let h=""; if(p.wh!=null) h+=`<div class="s hot"><i>${ICO.bolt}</i><div class="u">Énergie</div><div class="v tnum">${p.wh}<small> Wh</small></div></div><div class="s"><i>${ICO.speed}</i><div class="u">Puissance moy.</div><div class="v tnum">${p.avgW}<small> W</small></div></div><div class="s hot"><i>${ICO.bolt}</i><div class="u">Puissance max</div><div class="v tnum">${p.maxW}<small> W</small></div></div>`; if(p.whKm!=null) h+=`<div class="s blue"><i>${ICO.route}</i><div class="u">Conso</div><div class="v tnum">${p.whKm}<small> Wh/km</small></div></div>`; if(p.soc0!=null) h+=`<div class="s"><i>${ICO.bolt}</i><div class="u">Batterie</div><div class="v tnum">${p.soc0}<small> → ${p.soc1} %</small></div></div>`; return h; })()}${(()=>{ const b=bestOf(a); if(!b) return ""; return `<div class="s hot"><i>${ICO.bolt}</i><div class="u">Meilleur 10 s</div><div class="v tnum">${b.b10?fr(b.b10,1):"—"}<small> km/h</small></div></div><div class="s blue"><i>${ICO.speed}</i><div class="u">Meilleur 500 m</div><div class="v tnum">${b.b500?fr(b.b500,1):"—"}<small> km/h</small></div></div><div class="s"><i>${ICO.clock}</i><div class="u">En mouvement</div><div class="v tnum">${fmtDur(b.mov)}</div></div>`; })()}`;
+  { const S=document.getElementById("detStats"), ind=!!a.indoor;
+    if(ind){ Array.from(S.children).forEach((el,i)=>{ if(i!==1) el.remove(); }); }
+    if(a.hr && (a.hr.avg || a.hr.kcal)){ S.insertAdjacentHTML("beforeend",
+        (a.hr.avg ? `<div class="s hot"><i>${ICO.bolt}</i><div class="u">Cardio moyen</div><div class="v tnum">${Math.round(a.hr.avg)}<small> bpm</small></div></div>` : "")
+       +(a.hr.max ? `<div class="s hot"><i>${ICO.bolt}</i><div class="u">Cardio max</div><div class="v tnum">${Math.round(a.hr.max)}<small> bpm</small></div></div>` : "")
+       +(a.hr.kcal ? `<div class="s blue"><i>${ICO.speed}</i><div class="u">Calories</div><div class="v tnum">${Math.round(a.hr.kcal)}<small> kcal</small></div></div>` : "")); }
+    const dm=document.getElementById("detMap"), bf=document.getElementById("btnFly"); if(dm) dm.style.display=ind?"none":""; if(bf) bf.style.display=ind?"none":""; }
   { const g=document.getElementById("btnGpx"); if(g){ g.hidden=!(a.points&&a.points.length>1); g.onclick=()=>gpxExport(a); } }
   document.getElementById("sheet").classList.add("open");
   setTimeout(()=>drawDetailMap(a),120);
 }
 function drawDetailMap(a){
   const c=document.getElementById("detMap");
-  if(!detMap){ detMap=new maplibregl.Map({container:c,style:mapStyle,attributionControl:false,interactive:true}); }
+  if(c.style.display==="none") return;
+  if(!detMap){ detMap=new maplibregl.Map({container:c,style:mapStyle,attributionControl:false,interactive:true}); } else { try{ detMap.resize(); }catch(e){} }
   const draw=()=>{
     if(detMap.getLayer("trk")) detMap.removeLayer("trk");
     if(detMap.getSource("trk")) detMap.removeSource("trk");

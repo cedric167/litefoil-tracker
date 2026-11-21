@@ -17,11 +17,15 @@ struct WatchScreen {
     var m: [String]
 }
 
-final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationManagerDelegate {
+final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationManagerDelegate, HKLiveWorkoutBuilderDelegate {
     enum Phase { case setup, ready, sending, active, failed }
     enum Screen { case home, sports, run, confirm, summary, sos }
 
-    static let sports = ["eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski"]
+    static let sports = ["eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski", "Musculation", "Cross training", "Fitness", "Cardio"]
+    /// sports de salle : pas de GPS, écrans cardio
+    static let indoorSports: Set<String> = ["Musculation", "Cross training", "Fitness", "Cardio"]
+    static let indoorScreens = [WatchScreen(top: ["clock", "wbat"], m: ["hr", "dur", "kcal"]), WatchScreen(top: ["clock", "wbat"], m: ["dur", "hravg", "hrmax", "kcal"])]
+    var isIndoor: Bool { SosModel.indoorSports.contains(sport) }
     static let foilOn = 12.0, foilOff = 9.0   // km/h : un « run » commence au-dessus de 12, finit sous 9
 
     // SOS
@@ -55,6 +59,10 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     // séance d'exercice Apple pendant la sortie : la montre garde l'appli à l'écran au lieu de revenir au cadran
     private let hk = HKHealthStore()
     private var workout: HKWorkoutSession?
+    private var builder: HKLiveWorkoutBuilder?
+    private var savedScreens: [WatchScreen]?
+    // cardio et calories lus pendant la séance
+    private(set) var hrNow = 0.0, hrAvg = 0.0, hrMax = 0.0, kcal = 0.0
     @Published var now = Date()
     private(set) var runS = 0.0, moveS = 0.0, distM = 0.0, maxKmh = 0.0, curKmh = 0.0
     private(set) var startDate = Date()
@@ -105,7 +113,10 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         // l'accord « exercice » est demandé à l'ouverture de l'appli, pas au moment du GO (le mode Eau couperait l'écran dessus)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             guard let s = self, HKHealthStore.isHealthDataAvailable() else { return }
-            s.hk.requestAuthorization(toShare: [HKObjectType.workoutType()], read: nil) { _, _ in }
+            var rd = Set<HKObjectType>()
+            if let t = HKQuantityType.quantityType(forIdentifier: .heartRate) { rd.insert(t) }
+            if let t = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) { rd.insert(t) }
+            s.hk.requestAuthorization(toShare: [HKObjectType.workoutType()], read: rd) { _, _ in }
         }
     }
 
@@ -197,6 +208,10 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "Voile": return .sailing
         case "Paddle": return .paddleSports
         case "eFoil", "Wakeboard": return .waterSports
+        case "Musculation": return .traditionalStrengthTraining
+        case "Cross training": return .crossTraining
+        case "Fitness": return .functionalStrengthTraining
+        case "Cardio": return .mixedCardio
         default: return .surfingSports
         }
     }
@@ -204,14 +219,49 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         guard HKHealthStore.isHealthDataAvailable(), workout == nil else { return }
         let c = HKWorkoutConfiguration()
         c.activityType = workoutKind()
-        c.locationType = .outdoor
+        c.locationType = isIndoor ? .indoor : .outdoor
+        hrNow = 0; hrAvg = 0; hrMax = 0; kcal = 0
         do {
             let w = try HKWorkoutSession(healthStore: hk, configuration: c)
-            workout = w
-            w.startActivity(with: Date())
-        } catch { workout = nil }
+            let b = w.associatedWorkoutBuilder()
+            b.dataSource = HKLiveWorkoutDataSource(healthStore: hk, workoutConfiguration: c)
+            b.delegate = self
+            workout = w; builder = b
+            let d = Date()
+            w.startActivity(with: d)
+            b.beginCollection(withStart: d) { _, _ in }
+        } catch { workout = nil; builder = nil }
     }
-    private func endWorkout() { workout?.end(); workout = nil }
+    /// fin de la séance : enregistrée dans Santé si la sortie est gardée, sinon jetée
+    private func endWorkout(save: Bool) {
+        guard let w = workout else { return }
+        let b = builder
+        workout = nil; builder = nil
+        w.end()
+        b?.endCollection(withEnd: Date()) { _, _ in
+            if save { b?.finishWorkout { _, _ in } } else { b?.discardWorkout() }
+        }
+    }
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        let bpm = HKUnit.count().unitDivided(by: HKUnit.minute())
+        var h = -1.0, a = -1.0, mx = -1.0, k = -1.0
+        if let t = HKQuantityType.quantityType(forIdentifier: .heartRate), let st = workoutBuilder.statistics(for: t) {
+            h = st.mostRecentQuantity()?.doubleValue(for: bpm) ?? -1
+            a = st.averageQuantity()?.doubleValue(for: bpm) ?? -1
+            mx = st.maximumQuantity()?.doubleValue(for: bpm) ?? -1
+        }
+        if let t = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned), let st = workoutBuilder.statistics(for: t) {
+            k = st.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? -1
+        }
+        DispatchQueue.main.async { [weak self] in
+            guard let s = self else { return }
+            if h >= 0 { s.hrNow = h }
+            if a >= 0 { s.hrAvg = a }
+            if mx >= 0 { s.hrMax = mx }
+            if k >= 0 { s.kcal = k }
+        }
+    }
 
     func chooseSport(_ s: String) { sport = s; store.set(s, forKey: "sport"); screen = .home }
 
@@ -223,7 +273,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         track = []; lastTrackS = -10
         running = true; paused = false; locked = false
         page = 0; screen = .run
-        startLocation()
+        // sport de salle : pas de GPS, écrans cardio à la place des écrans composés sur l'iPhone
+        if isIndoor { savedScreens = screens; screens = SosModel.indoorScreens } else { startLocation() }
         startWorkout()
         WKInterfaceDevice.current().play(.start)
         // sport sur l'eau : mode Eau automatique, une fois le GPS lancé
@@ -237,12 +288,14 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     func pauseRide(_ on: Bool) {
         if on { endFoilRun() }
         paused = on; anchor = nil; prevFix = nil; curKmh = 0; lastTick = Date(); lastTouch = Date()
+        if on { workout?.pause() } else { workout?.resume() }
         WKInterfaceDevice.current().play(.click)
     }
     func stopRide(keep: Bool) {
         endFoilRun()
-        endWorkout()
+        endWorkout(save: keep)
         if keep { sendRide() }
+        if let sv = savedScreens { screens = sv; savedScreens = nil }
         running = false; paused = false; locked = false; waterLock = false; waterAskAt = nil; curKmh = 0
         if phase != .active && phase != .sending { stopLocation() }
         WKInterfaceDevice.current().play(.stop)
@@ -305,14 +358,15 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     /// La sortie terminée part vers l'iPhone, qui la range dans les activités (remise garantie, même si l'iPhone est loin sur le moment).
     private func sendRide() {
-        guard track.count >= 2, WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
+        guard track.count >= 2 || isIndoor, WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
         let pts: [[Double]] = track.map { p in
             [(p[0] * 100000).rounded() / 100000, (p[1] * 100000).rounded() / 100000, (p[2] * 10).rounded() / 10, p[3].rounded(), p[4].rounded()]
         }
         let ride: [String: Any] = [
             "id": "watch-\(Int(startDate.timeIntervalSince1970 * 1000))", "sport": sport,
             "start": Int(startDate.timeIntervalSince1970 * 1000), "dur": Int(runS), "dist": Int(distM),
-            "max": (maxKmh * 10).rounded() / 10, "runs": runCount, "foilS": Int(foilS), "foilM": Int(foilDistM), "pts": pts
+            "max": (maxKmh * 10).rounded() / 10, "runs": runCount, "foilS": Int(foilS), "foilM": Int(foilDistM), "pts": pts,
+            "hr": Int(hrAvg.rounded()), "hrmax": Int(hrMax.rounded()), "kcal": Int(kcal.rounded()), "indoor": isIndoor
         ]
         guard let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
         WCSession.default.transferUserInfo(["ride": s])
@@ -398,6 +452,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "hr": return "CARDIO"
         case "hravg": return "FC MOY"
         case "hrmax": return "FC MAX"
+        case "kcal": return "KCAL"
         case "bat": return "EFOIL"
         case "pow": return "PUISS"
         case "wind": return "VENT"
@@ -428,6 +483,10 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "rmax": return (SosModel.num(onFoil ? runMaxKmh : 0, 1), "km/h")
         case "ravg": return (SosModel.num(curRunS > 2 ? curRunM / curRunS * 3.6 : 0, 1), "km/h")
         case "run", "runs": return (String(runCount), "")
+        case "hr": return (hrNow > 0 ? String(Int(hrNow.rounded())) : "—", "bpm")
+        case "hravg": return (hrAvg > 0 ? String(Int(hrAvg.rounded())) : "—", "bpm")
+        case "hrmax": return (hrMax > 0 ? String(Int(hrMax.rounded())) : "—", "bpm")
+        case "kcal": return (kcal > 0 ? String(Int(kcal.rounded())) : "—", "kcal")
         case "wbat":
             WKInterfaceDevice.current().isBatteryMonitoringEnabled = true
             let b = WKInterfaceDevice.current().batteryLevel
@@ -802,18 +861,33 @@ struct SummaryView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(m.summaryTitle).font(.system(size: 17, weight: .bold)).foregroundColor(.lfAccent)
                 Text(m.summaryDate).font(.system(size: 10)).foregroundColor(.white)
-                Text("Distance et temps").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
-                SummaryLine(a: "Durée", b: SosModel.clockText(m.runS))
-                SummaryLine(a: "Temps actif", b: SosModel.clockText(m.moveS))
-                SummaryLine(a: "Distance", b: SosModel.num(m.distM / 1000, 2) + " km")
-                Text("Vitesse").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
-                SummaryLine(a: "Max", b: SosModel.num(m.maxKmh, 1) + " km/h")
-                SummaryLine(a: "Moyenne", b: SosModel.num(m.runS > 5 ? m.distM / m.runS * 3.6 : 0, 1) + " km/h")
-                Text("Sur le foil").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
-                SummaryLine(a: "Runs", b: String(m.runCount))
-                SummaryLine(a: "Temps sur le foil", b: SosModel.clockText(m.foilS))
-                SummaryLine(a: "Distance sur le foil", b: SosModel.num(m.foilDistM / 1000, 2) + " km")
-                SummaryLine(a: "Plus long run", b: SosModel.clockText(m.longRunS))
+                if m.hrAvg > 0 || m.kcal > 0 || m.isIndoor {
+                    Group {
+                        Text("Cardio").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
+                        if m.isIndoor { SummaryLine(a: "Durée", b: SosModel.clockText(m.runS)) }
+                        SummaryLine(a: "Cardio moyen", b: m.hrAvg > 0 ? String(Int(m.hrAvg.rounded())) + " bpm" : "—")
+                        SummaryLine(a: "Cardio max", b: m.hrMax > 0 ? String(Int(m.hrMax.rounded())) + " bpm" : "—")
+                        SummaryLine(a: "Calories", b: m.kcal > 0 ? String(Int(m.kcal.rounded())) + " kcal" : "—")
+                    }
+                }
+                if !m.isIndoor {
+                    Group {
+                        Text("Distance et temps").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
+                        SummaryLine(a: "Durée", b: SosModel.clockText(m.runS))
+                        SummaryLine(a: "Temps actif", b: SosModel.clockText(m.moveS))
+                        SummaryLine(a: "Distance", b: SosModel.num(m.distM / 1000, 2) + " km")
+                        Text("Vitesse").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
+                        SummaryLine(a: "Max", b: SosModel.num(m.maxKmh, 1) + " km/h")
+                        SummaryLine(a: "Moyenne", b: SosModel.num(m.runS > 5 ? m.distM / m.runS * 3.6 : 0, 1) + " km/h")
+                    }
+                    Group {
+                        Text("Sur le foil").font(.system(size: 12, weight: .bold)).foregroundColor(.lfAccent).padding(.top, 6)
+                        SummaryLine(a: "Runs", b: String(m.runCount))
+                        SummaryLine(a: "Temps sur le foil", b: SosModel.clockText(m.foilS))
+                        SummaryLine(a: "Distance sur le foil", b: SosModel.num(m.foilDistM / 1000, 2) + " km")
+                        SummaryLine(a: "Plus long run", b: SosModel.clockText(m.longRunS))
+                    }
+                }
                 LfButton(title: "Fermer", bg: .lfGo, fg: .black, action: { m.screen = .home }).padding(.top, 8)
                 HStack { Spacer(); SosChip(m: m); Spacer() }.padding(.top, 4)
             }
