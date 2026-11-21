@@ -6156,7 +6156,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       box.hidden=false; }); }
   function lfLiveView(sid, nm){ var ov=document.createElement("div"); ov.className="nm-lv";
     ov.innerHTML='<div class="nm-lv-h"><button type="button" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div><b>'+esc(nm)+'</b><small><i></i>Suivi en direct</small></div></div>'+(sid==="demo"?'<div class="nm-lv-demo">Démonstration : ici s\'affiche la carte en direct de ton ami (position, vitesse, trace).</div>':'<iframe src="'+LIVE_BASE+'/l/'+encodeURIComponent(sid)+'" title="Suivi en direct" allow="geolocation"></iframe>');
-    document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); }); }
+    document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); });
+    // 21/11 : pour un vol, bouton « Revoir en 3D » (vue photoréaliste), pendant et après le vol
+    if(sid!=="demo"){ try{ fetch(LIVE_BASE+"/l/"+encodeURIComponent(sid)+".json?tail=1").then(function(r){ return r.json(); }).then(function(d){
+        if(!d || !d.ok || !/ulm|avion|parapente/i.test(String(d.cat||"")) || !ov.isConnected) return;
+        var b=document.createElement("a"); b.href="activites/vol3d.html?live="+encodeURIComponent(sid); b.setAttribute("data-no-i18n",""); b.textContent="🌍 Revoir en 3D";
+        b.style.cssText="margin-left:auto;margin-right:150px;flex:none;text-decoration:none;border:2px solid rgba(255,255,255,.85);border-radius:999px;padding:8px 13px;background:linear-gradient(135deg,#ff2d8f,#c2186f);color:#fff;font-weight:800;font-size:13.5px;white-space:nowrap;box-shadow:0 6px 16px rgba(255,45,143,.45)";
+        var h=ov.querySelector(".nm-lv-h"); if(h){ h.style.display="flex"; h.style.alignItems="center"; h.appendChild(b); } }).catch(function(){}); }catch(e){} } }
   (function(){ var b=$("nmLive"); if(b) b.addEventListener("click", function(e){ var x=e.target.closest("button[data-sid]"); if(x) lfLiveView(x.dataset.sid, x.dataset.nm); }); })();
   function nearMapClose(){ if(nmLiveIv){ clearInterval(nmLiveIv); nmLiveIv=null; } var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); if(nmSport) nmSportSet(""); }
   function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+(nmSport==="ulm"?" pilote":" membre")+(n>1?"s":"")+" autour de toi") : (nmSport==="ulm" ? "Aucun pilote visible pour l'instant" : "Personne autour pour l'instant");

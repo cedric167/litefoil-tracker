@@ -907,6 +907,7 @@ async function livePage(req, res, sid, asJson, base) {
   const L = sid ? (await db.ref("live/" + sid).get()).val() : null;
   res.set("Cache-Control", "no-store");
   if (asJson) {
+    res.set("Access-Control-Allow-Origin", "*");   // lu aussi par la vue 3D de l'appli (autre domaine)
     if (!L) return res.status(404).json({ ok: false });
     const tail = String(req.query.tail || "") === "1";
     const all = Object.values((tail ? await db.ref("liveTrk/" + sid).orderByKey().limitToLast(40).get() : await db.ref("liveTrk/" + sid).get()).val() || {});
