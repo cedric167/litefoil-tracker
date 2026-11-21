@@ -1,9 +1,9 @@
 {
   "product": "montre",
-  "version": "0.14.0",
-  "file": "montre-0.14.0.bin",
-  "size": 1735888,
-  "md5": "91f224538ed26fed24cf64172a57d636",
+  "version": "0.15.0",
+  "file": "montre-0.15.0.bin",
+  "size": 1736384,
+  "md5": "1473d1f6f7ef63658163060145f05363",
   "date": "2026-11-21",
-  "notes": "Ecrans de sortie comme sur l'Apple Watch (composes dans Ma montre), runs sur le foil, nouvelles boules, nouvel ecran SOS, police de l'appli. Version de test."
+  "notes": "Bluetooth et GPS peuvent etre coupes depuis le panneau rapide de la montre. Version de test."
 }
