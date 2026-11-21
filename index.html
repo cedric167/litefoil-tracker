@@ -5290,6 +5290,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     let sosBase = null, sosxBase = null, sosRun = null, autoBusy = false;
     // Liaison permanente (appli Android récente) : un service du téléphone garde la montre connectée, appli fermée,
     // et c'est lui qui traite le SOS de la montre. Sans lui, la page s'en charge tant qu'elle est ouverte.
+    let chSync = null, syncBusy = false, syncTimer = null, dmUnsub = null, dmPeer = "", lastCall = "", feedCache = [], vidCache = [];
     let nativeLink = false;
     const nat = () => { try { const C = window.Capacitor; return (C && C.isPluginAvailable && C.isPluginAvailable("LfWatchLink")) ? C.Plugins.LfWatchLink : null; } catch (e) { return null; } };
     function paintLink(st){
@@ -5427,6 +5428,108 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
                         cancel: () => { sosRun = null; write("sos=cancel", "SOS"); wlog("SOS annulé."); } });
     }
 
+    // ---------------------------------------------------------------- envoi des infos du téléphone vers la montre
+    // La montre n'affiche ni accents ni émojis, et sépare les champs par « | ».
+    const clean = (s, n) => String(s == null ? "" : s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/œ/g, "oe").replace(/[’‘]/g, "'").replace(/[^\x20-\x7E]/g, "").replace(/\|/g, "/").replace(/\s+/g, " ").trim().slice(0, n || 60);
+    const secApi = () => window.__secApi || null;
+    const ago = t => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 60 ? "il y a " + m + " min" : m < 1440 ? "il y a " + Math.round(m / 60) + " h" : "il y a " + Math.round(m / 1440) + " j"; };
+    let outQ = Promise.resolve();
+    function say(line){   // une ligne après l'autre, sans gêner une mise à jour ni un envoi de sortie
+      outQ = outQ.then(async () => { if (!chSync || upd.running || importing) return;
+        try { const d = new TextEncoder().encode(line.slice(0, 240)); if (chSync.writeValueWithResponse) await chSync.writeValueWithResponse(d); else await chSync.writeValue(d); } catch (e) {} });
+      return outQ;
+    }
+    const WX_IC = (code, day) => code >= 51 ? 3 : code >= 3 ? 2 : code >= 1 ? 1 : (day === 0 ? 4 : 0);
+    const DIRS = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+    async function pushWeather(){
+      let p = null; try { p = JSON.parse(localStorage.getItem("lf.meteo.pos") || "null"); } catch (e) {}
+      if (!p || !isFinite(+p.lat)){ try { const f = JSON.parse(localStorage.getItem("lf.meteo.favs") || "[]")[0]; if (f) p = { lat: f.lat, lng: f.lon, name: f.name }; } catch (e) {} }
+      if (!p || !isFinite(+p.lat)) p = { lat: 43.014, lng: 3.055, name: "Port-la-Nouvelle" };
+      const q = "latitude=" + (+p.lat).toFixed(3) + "&longitude=" + (+(p.lng != null ? p.lng : p.lon)).toFixed(3);
+      try {
+        const r = await (await fetch("https://api.open-meteo.com/v1/forecast?" + q + "&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m,weather_code,is_day&hourly=wind_speed_10m,weather_code,is_day&wind_speed_unit=kn&timezone=auto&forecast_days=2")).json();
+        let sea = ""; try { const m = await (await fetch("https://marine-api.open-meteo.com/v1/marine?" + q + "&current=sea_surface_temperature")).json(); if (m && m.current && isFinite(+m.current.sea_surface_temperature)) sea = Math.round(+m.current.sea_surface_temperature); } catch (e) {}
+        const c = r.current; if (!c) return;
+        await say("wx=" + clean(p.name || "Mon spot", 24) + "|" + Math.round(c.wind_speed_10m) + "|" + DIRS[Math.round(((c.wind_direction_10m % 360) + 360) % 360 / 45) % 8] + "|" + Math.round(c.wind_gusts_10m) + "|" + Math.round(c.temperature_2m) + "|" + sea + "|" + WX_IC(c.weather_code, c.is_day));
+        const H = r.hourly, out = []; if (H && H.time){ const now = Date.now();
+          for (let i = 0; i < H.time.length && out.length < 4; i++){ const t = new Date(H.time[i]).getTime(); if (t <= now) continue;
+            out.push(new Date(t).getHours() + "h:" + WX_IC(H.weather_code[i], H.is_day ? H.is_day[i] : 1) + ":" + Math.round(H.wind_speed_10m[i])); } }
+        if (out.length) await say("wh=" + out.join(","));
+      } catch (e) {}
+    }
+    function convList(){
+      const A = secApi(), me = A && A.me(); if (!A || !me || !me.uid || !A.dms) return [];
+      let seen = {}; try { seen = JSON.parse(localStorage.getItem("lf.comm.dmseen") || "{}") || {}; } catch (e) {}
+      const m = A.dms() || {};
+      return Object.keys(m).map(u => { const e = m[u] || {}; const un = +e.unread > 0 ? +e.unread : ((e.by && e.by !== me.uid && (+e.t || 0) > (+seen[u] || 0)) ? 1 : 0);
+        return { u, name: e.pseudo || (A.who(u) || {}).ps || "Membre", text: e.text || "", t: +e.t || 0, unread: un, call: e.call || null }; }).sort((x, y) => y.t - x.t);
+    }
+    async function pushConvs(){
+      const L = convList().slice(0, 8);
+      await say("cn=" + L.length);
+      for (let i = 0; i < L.length; i++) await say("c=" + i + "|" + L[i].u + "|" + clean(L[i].name, 18) + "|" + Math.min(9, L[i].unread) + "|" + clean(L[i].text, 38));
+    }
+    function watchConv(u){
+      const A = secApi(), me = A && A.me(); if (!A || !A.watchDM || !me || !me.uid) return;
+      if (dmUnsub){ try { dmUnsub(); } catch (e) {} dmUnsub = null; }
+      dmPeer = u;
+      try { dmUnsub = A.watchDM(u, async list => { if (dmPeer !== u) return;
+        const L = (list || []).filter(x => x && (x.text || x.img || x.au || x.gif)).slice(-10);
+        await say("mn=" + u + "|" + L.length);
+        for (let i = 0; i < L.length; i++) await say("m=" + i + "|" + (L[i].uid === me.uid ? 1 : 0) + "|" + (clean(L[i].text, 96) || (L[i].img ? "(photo)" : L[i].au ? "(message vocal)" : "(image)")));
+      }); } catch (e) {}
+      try { if (A.readDM) A.readDM(u); } catch (e) {}
+    }
+    async function pushFeed(){
+      const F = window.__lfFeed; if (!F) return;
+      try { const posts = (await F.load() || []).slice().sort((x, y) => (+y.t || 0) - (+x.t || 0)).slice(0, 6), myUid = F.me();
+        feedCache = posts; await say("pn=" + posts.length);
+        for (let i = 0; i < posts.length; i++){ const p = posts[i], s = p.sess;
+          const text = clean(p.text, 126) || (s ? clean((s.cat || s.sport || "Session") + " : " + (s.d ? (s.d / 1000).toFixed(1) + " km, " : "") + (s.dur ? Math.round(s.dur / 60) + " min" : "") + (s.vmax ? ", max " + Math.round(s.vmax) + " km/h" : ""), 126) : (p.im ? "(photo)" : ""));
+          await say("p=" + i + "|" + clean(p.id, 30) + "|" + clean(p.pseudo || "Membre", 16) + "|" + clean(ago(+p.t || Date.now()) + (s && (s.cat || s.sport) ? " - " + (s.cat || s.sport) : ""), 28)
+            + "|" + Object.keys(p.likes || {}).length + "|0|" + ((p.likes || {})[myUid] ? 1 : 0) + "|" + text); }
+      } catch (e) {}
+    }
+    async function pushVids(){
+      const V = window.__lfVids; if (!V) return;
+      try { const L = (V.list() || []).slice(0, 6); vidCache = L; await say("vn=" + L.length);
+        for (let i = 0; i < L.length; i++) await say("v=" + i + "|" + clean(L[i].id, 30) + "|" + clean(L[i].caption || L[i].topic || "Video", 48) + "|" + clean((L[i].pseudo || "Lite Foil") + (+L[i].vn ? " - " + L[i].vn + " vues" : ""), 32));
+      } catch (e) {}
+    }
+    async function pushAll(){
+      if (!chSync || syncBusy) return; syncBusy = true;
+      try { await pushWeather(); await pushConvs(); await pushFeed(); await pushVids(); } catch (e) {}
+      syncBusy = false;
+    }
+    // appel SwipChat entrant : la montre l'affiche ; décrocher ou refuser se fait avec les boutons de l'appli
+    function callCheck(){
+      if (!chSync) return;
+      const ring = document.querySelector("#lfCall.lfc-ring"); let name = "";
+      if (ring){ const c = convList().filter(x => x.call && Date.now() - (+x.call.t || 0) < 60000)[0]; name = clean(c ? c.name : "Appel", 22) || "Appel"; }
+      if (name !== lastCall){ lastCall = name; say("call=" + name); }
+    }
+    function fromWatch(t){
+      if (t === "sync"){ pushAll(); return; }
+      if (t.startsWith("get:msgs:")){ watchConv(t.slice(9)); return; }
+      if (t.startsWith("send:")){ const i = t.indexOf(":", 5), u = t.slice(5, i), text = t.slice(i + 1), A = secApi();
+        if (!A || i < 0 || !text){ say("err:send"); return; }
+        A.dm(u, text).then(() => { say("ok:send"); wlog("Message envoyé depuis la montre.", "g"); }, () => { say("err:send"); wlog("Message de la montre non envoyé.", "e"); }); return; }
+      if (t.startsWith("like:")){ const p = feedCache.filter(x => clean(x.id, 30) === t.slice(5))[0]; try { if (p && window.__lfFeed) window.__lfFeed.like(p, true); } catch (e) {} return; }
+      if (t.startsWith("open:swip:")){ const i = vidCache.findIndex(x => clean(x.id, 30) === t.slice(10)); try { showTab("videos"); if (i >= 0 && window.__lfVids) setTimeout(() => window.__lfVids.open(i), 400); } catch (e) {} return; }
+      if (t === "call:accept" || t === "call:decline"){ const b = document.querySelector('#lfCall button[data-a="' + (t === "call:accept" ? "ok" : "end") + '"]'); if (b) b.click(); return; }
+    }
+    function syncStart(){
+      if (!chSync) return;
+      // les conversations suivent en direct (le module communauté prévient à chaque changement)
+      if (!window.__mwDmHook){ window.__mwDmHook = true; const prev = window.__secOnDMs;
+        window.__secOnDMs = function(m){ try { if (prev) prev(m); } catch (e) {} try { if (window.__mwOnDMs) window.__mwOnDMs(); } catch (e) {} }; }
+      window.__mwOnDMs = () => { if (chSync && !syncBusy) pushConvs(); };
+      setTimeout(pushAll, 1200);                                   // tout de suite à la connexion
+      if (syncTimer) clearInterval(syncTimer);
+      let n = 0; syncTimer = setInterval(() => { callCheck(); if (++n % 300 === 0) pushAll(); }, 1000);   // appels chaque seconde, le reste toutes les 5 minutes
+      wlog("Météo, messages, fil et Swip envoyés à la montre.", "g");
+    }
+
     // known : montre déjà choisie une fois (reconnexion automatique, sans fenêtre de choix)
     async function connect(known){
       if (!navigator.bluetooth){ setS("Bluetooth web indisponible", "err"); wlog("Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android ou l'appli Lite Foil.", "e"); return; }
@@ -5445,6 +5548,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         try { chOta = await svc.getCharacteristic(CH(5)); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => upd.message(dec(ev.target.value))); }
         catch (e) { chOta = null; }
         upd.setChannel(chOta);
+        // échanges avec la montre (météo, SwipChat, fil, Swip, appels) : montre 0.11.0 et plus
+        try { chSync = await svc.getCharacteristic(CH(6)); await chSync.startNotifications(); chSync.addEventListener("characteristicvaluechanged", ev => fromWatch(dec(ev.target.value))); }
+        catch (e) { chSync = null; }
         await chStatus.startNotifications();
         chStatus.addEventListener("characteristicvaluechanged", async ev => {
           const text = dec(ev.target.value);
@@ -5460,6 +5566,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         await readRides();
         try { localStorage.setItem("lf.mw.auto", "1"); } catch (e) {}
         linkNative();
+        syncStart();
       } catch (e) {
         if (known){ return; }   // reconnexion automatique : la montre n'est pas à portée, on réessaiera
         if (e && e.name === "NotFoundError"){ setS("Non connectée"); wlog("Aucune montre sélectionnée."); }
@@ -5468,6 +5575,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     }
     function onDisc(){
       chStatus = chControl = chRides = chData = chOta = null; rideList = []; sosBase = sosxBase = null;
+      chSync = null; if (syncTimer){ clearInterval(syncTimer); syncTimer = null; } if (dmUnsub){ try { dmUnsub(); } catch (e) {} dmUnsub = null; } dmPeer = ""; lastCall = "";
       if (collect){ const c = collect; collect = null; clearTimeout(c.timer); c.reject(new Error("montre déconnectée")); }
       setS("Montre déconnectée"); enable(false); upd.setChannel(null); upd.lost("montre déconnectée");
       wlog("Montre déconnectée.", "e");
@@ -7434,6 +7542,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     g.innerHTML=vs.map(function(v,i){ return '<button class="vg-it" data-i="'+i+'" style="background-image:url('+(v.thumb||"")+')"><span class="vg-like">▶ '+fmtCount(vidViews(v))+'  ·  ♥ '+fmtCount(vidLikes(v))+'</span>'+(isOfficial(v.uid)?'<span class="vg-off">✓</span>':'')+'</button>'; }).join("");
     g.querySelectorAll(".vg-it").forEach(function(b){ b.addEventListener("click", function(){ openFeed(+b.dataset.i); }); }); }
   window.videosOnShow = function(){ renderVideoGrid(); var vf=$("vf"); if(!vf || vf.hidden || vfMode!=="tab") openFeed(undefined,"tab"); };
+  window.__lfVids={ list:function(){ return vidVisible(); }, open:function(i){ openFeed(i); } };   // montre Lite Foil
   window.vfLeaveTab = function(){ var vf=$("vf"); if(vf && !vf.hidden && vfMode==="tab") closeFeed(); };
   window.vfRefresh = function(){ var vf=$("vf"); if(vf && !vf.hidden && vfMode==="tab"){ var l=$("vfList"); if(l && l.scrollTop>10){ l.scrollTo({top:0,behavior:"smooth"}); } else openFeed(undefined,"tab"); return true; } return false; };
 
@@ -9147,7 +9256,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     friends: function(){ return Object.keys(myFriends||{}).filter(function(u){ return u!==me.uid && u!==TEAM_UID && !blocked.has(u); }); },
     who: function(u){ var pr=profileMap[u]||{}; return { uid:u, ps:pName(u), av:pr.av||"", col:avatarColor(u) }; },
     dm: function(u,text){ if(!backend || !backend.sendMessage) return Promise.reject(new Error("hors ligne")); try{ return Promise.resolve(backend.sendMessage("dm:"+pairKey(me.uid,u), text)); }catch(e){ return Promise.reject(e); } },
-    openDM: function(u){ try{ var b=document.querySelector('[data-nav="communaute"]'); if(b) b.click(); }catch(e){} setTimeout(function(){ try{ openDM(u, pName(u)); }catch(e){} }, 250); }
+    openDM: function(u){ try{ var b=document.querySelector('[data-nav="communaute"]'); if(b) b.click(); }catch(e){} setTimeout(function(){ try{ openDM(u, pName(u)); }catch(e){} }, 250); },
+    // montre Lite Foil : liste des conversations, messages d'une conversation, marquer comme lue (sans ouvrir l'écran)
+    dms: function(){ return myDMs||{}; },
+    watchDM: function(u,cb){ if(!backend || !backend.watchMessages || !me.uid) return function(){}; return backend.watchMessages("dm:"+pairKey(me.uid,u), cb); },
+    readDM: function(u){ try{ dmSeen[u]=Date.now(); saveDmSeen(); dmNotif[u]=dmSeen[u]; if(backend.markDMRead) backend.markDMRead(u); if(backend.clearUnread) backend.clearUnread("d_"+u); }catch(e){} }
   };
   function openFollowList(uid, which){ var o=gOverlay(); o.hidden=false; var tab=which||"followers";
     if(uid===me.uid && tab==="followers"){ followSeen=Date.now(); try{ localStorage.setItem("lf.fol.seen", String(followSeen)); }catch(e){} try{ renderProfil(); }catch(e){} }
@@ -9441,6 +9554,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(h<GO){ set(0, true); return; }
       busy=true; set(44, true); tx.textContent="Actualisation…"; fdPullRefresh(function(){ busy=false; set(0, true); }); };
     pane.addEventListener("touchend", end, {passive:true}); pane.addEventListener("touchcancel", function(){ y0=null; if(!busy) set(0, true); }, {passive:true}); })();
+  window.__lfFeed={ load:function(){ return Promise.resolve(fdLoad(null)).then(function(){ return (fdCache["*"]||{}).posts||[]; }); }, like:function(p,on){ return backend && backend.likePost ? backend.likePost(p,on) : null; }, me:function(){ return me.uid; } };   // montre Lite Foil
   window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent=me.pseudo||"Mon profil"; var fb=$("filFeed"); if(fb) fb._fdUni=(window.__uniCur ? window.__uniCur() : "")||""; fdMount(fb, null); };
   (function(){ var m=$("flMe"); if(m) m.addEventListener("click", function(){ lfGoTab("profil"); window.scrollTo(0,0); });
     var sb=$("flSearch"); if(sb) sb.addEventListener("click", function(){ openFriendSearch(); });

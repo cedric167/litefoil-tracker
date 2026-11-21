@@ -1,9 +1,9 @@
 {
   "product": "montre",
-  "version": "0.10.0",
-  "file": "montre-0.10.0.bin",
-  "size": 1134800,
-  "md5": "98352a927d1bf1fd9d813c190d2faecd",
+  "version": "0.11.0",
+  "file": "montre-0.11.0.bin",
+  "size": 1397840,
+  "md5": "5dc1bdd311bd332138d15a5c1993049e",
   "date": "2026-11-21",
-  "notes": "Sphere des univers, appli Sessions, GPS a 5 positions par seconde (fil RX du GPS sur GPIO43). Version de test."
+  "notes": "Menu carrousel en boules, SwipChat avec clavier, fil, Swip, meteo, appels, logo au demarrage. Version de test."
 }
