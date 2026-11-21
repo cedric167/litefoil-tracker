@@ -13,6 +13,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(LfTrackPlugin.class);
         registerPlugin(LfCallPlugin.class);
+        registerPlugin(LfWatchLinkPlugin.class);   // liaison permanente avec la montre Lite Foil
         super.onCreate(savedInstanceState);
         callIntent(getIntent());
     }

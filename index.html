@@ -3600,6 +3600,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       <div class="kv"><div class="k">Sorties en attente</div><div class="v" id="mwRides">—</div></div>
       <div class="kv"><div class="k">Mémoire libre</div><div class="v" id="mwFree">—</div></div>
       <div class="kv"><div class="k">Heure</div><div class="v" id="mwClock">—</div></div>
+      <div class="kv" style="grid-column:1 / -1"><div class="k">Liaison permanente</div><div class="v" id="mwPerm" style="font-size:15px">—</div></div>
     </div>
     <div class="row" style="margin-top:12px">
       <button id="btnMwBuzz" disabled>Faire sonner la montre</button>
@@ -5287,6 +5288,24 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     let dev = null, chStatus = null, chControl = null, chRides = null, chData = null, chOta = null;
     let rideList = [], collect = null, importing = false;
     let sosBase = null, sosxBase = null, sosRun = null, autoBusy = false;
+    // Liaison permanente (appli Android récente) : un service du téléphone garde la montre connectée, appli fermée,
+    // et c'est lui qui traite le SOS de la montre. Sans lui, la page s'en charge tant qu'elle est ouverte.
+    let nativeLink = false;
+    const nat = () => { try { const C = window.Capacitor; return (C && C.isPluginAvailable && C.isPluginAvailable("LfWatchLink")) ? C.Plugins.LfWatchLink : null; } catch (e) { return null; } };
+    function paintLink(st){
+      const el = $("mwPerm"); if (!el) return;
+      if (!nat()){ el.textContent = "pas encore dans cette version de l'appli"; return; }
+      if (!st || !st.linked){ el.textContent = "inactive (connecte la montre une fois)"; return; }
+      el.textContent = (st.connected ? "active · montre connectée" : "active · en attente de la montre") + (st.sosReady ? "" : " · SOS pas prêt : connecte-toi à ton compte");
+    }
+    function linkNative(){
+      const N = nat(); if (!N || !dev || !dev.id) return;
+      N.link({ id: dev.id }).then(st => { const was = nativeLink; nativeLink = !!(st && st.linked); paintLink(st);
+        if (nativeLink && !was) wlog("Liaison permanente activée : la montre reste connectée et son SOS part même appli fermée.", "g");
+        try { if (window.__secWatchSync) window.__secWatchSync(); } catch (e) {} }).catch(() => {});
+    }
+    function pollLink(){ const N = nat(); if (!N){ paintLink(null); return; } N.status().then(st => { nativeLink = !!(st && st.linked); paintLink(st); }).catch(() => {}); }
+    setTimeout(pollLink, 1500); setInterval(pollLink, 5000);
     const wlog = (m, k) => log("[Montre] " + m, k);
     const setS = (txt, c) => { $("mwState").textContent = txt; $("mwLamp").className = "lamp" + (c ? " " + c : ""); };
     const btns = ["btnMwBuzz", "btnMwImport", "btnMwFace0", "btnMwFace1"].map($);
@@ -5301,7 +5320,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       txt("mwFw", s.fw || "—"); txt("mwFw2", s.fw || "—");
       if (s.fw) upd.setInstalled(s.fw);
       // SOS demandé sur la montre (appui de 3 s) : c'est le téléphone qui l'envoie, après un compte à rebours annulable
-      if (s.sos != null){ const n = +s.sos; if (sosBase === null) sosBase = n; else if (n > sosBase){ sosBase = n; watchSos(s); } }
+      if (s.sos != null){ const n = +s.sos; if (sosBase === null) sosBase = n; else if (n > sosBase){ sosBase = n; if (!nativeLink) watchSos(s); } }
       if (s.sosx != null){ const x = +s.sosx; if (sosxBase === null) sosxBase = x;
         else if (x > sosxBase){ sosxBase = x; if (sosRun){ const r = sosRun; sosRun = null; r.cancel(); wlog("SOS annulé depuis la montre."); } } }
       txt("mwBat", s.bat != null ? s.bat + " %" + (s.vbat ? " · " + s.vbat + " V" : "") : "—");
@@ -5440,6 +5459,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         try { paint(parseLine(dec(await chStatus.readValue()))); } catch (e) {}
         await readRides();
         try { localStorage.setItem("lf.mw.auto", "1"); } catch (e) {}
+        linkNative();
       } catch (e) {
         if (known){ return; }   // reconnexion automatique : la montre n'est pas à portée, on réessaiera
         if (e && e.name === "NotFoundError"){ setS("Non connectée"); wlog("Aucune montre sélectionnée."); }
@@ -5454,7 +5474,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     }
 
     $("btnMwConnect").addEventListener("click", async () => {
-      if (dev && dev.gatt.connected){ try { localStorage.setItem("lf.mw.auto", "0"); } catch (e) {} dev.gatt.disconnect(); return; }   // déconnexion voulue : pas de reconnexion automatique
+      if (dev && dev.gatt.connected){ try { localStorage.setItem("lf.mw.auto", "0"); } catch (e) {}
+        const N = nat(); if (N) N.unlink().then(st => { nativeLink = false; paintLink(st); }).catch(() => {});   // « Déconnecter » arrête aussi la liaison permanente
+        dev.gatt.disconnect(); return; }   // déconnexion voulue : pas de reconnexion automatique
       await connect(); });
     // Reconnexion automatique : une fois la montre choisie, l'appli s'y reconnecte seule dès qu'elle est à portée
     // (appli ouverte). Elle s'arrête si on touche « Déconnecter ».
@@ -11372,11 +11394,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     bar.querySelector("button").addEventListener("click", function(e){ e.stopPropagation(); if(stop() && cb.cancel) cb.cancel(); });
     return { cancel:function(){ stop(); } }; };
   function watchSync(){ var W=null, wear=""; try{ W=window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LfWatch; }catch(e){} try{ wear=ls("lf.wear.ch")||""; }catch(e){}
-    if(!(W && W.setSos) && !wear) return;   // ni Apple Watch ni montre Android liée : rien à préparer
+    var L=null; try{ if(window.Capacitor && window.Capacitor.isPluginAvailable && window.Capacitor.isPluginAvailable("LfWatchLink")) L=window.Capacitor.Plugins.LfWatchLink; }catch(e){}   // montre Lite Foil (liaison permanente Android)
+    if(!(W && W.setSos) && !wear && !L) return;   // ni Apple Watch, ni montre Android, ni montre Lite Foil : rien à préparer
     watchSos().then(function(o){ if(!o) return;
       if(W && W.setSos){ try{ var p=W.setSos(o); if(p && p.catch) p.catch(function(){}); }catch(e){} }
+      if(L){ try{ var q=L.setSos(o); if(q && q.catch) q.catch(function(){}); }catch(e){} }
       try{ if(wear && window.__lfWatch && window.__lfWatch.wearSync) window.__lfWatch.wearSync(o); }catch(e){} }); }
-  setTimeout(watchSync, 9000); setInterval(watchSync, 120000);
+  setTimeout(watchSync, 9000); setInterval(watchSync, 120000); window.__secWatchSync=watchSync;
   function sosFire(kind, pos){ var A=api(), K=KINDS[kind]||KINDS.autre, g=guardians(), me=A&&A.me();
     if(!K.quiet){ vib([300,100,300,100,600]); beep(1200); }
     var started=false;

@@ -94,4 +94,23 @@ if [ -f "$VARS" ] && ! grep -q rgcfaIncludeGoogle "$VARS"; then
   perl -0pi -e 's#ext \{#ext {\n    rgcfaIncludeGoogle = true#' "$VARS"
 fi
 
+# 5) Montre Lite Foil (carte ESP32, 21/11) : liaison Bluetooth permanente et SOS lancé depuis la montre, même appli fermée
+cp "$ROOT/native/android/LfWatchLinkService.java" "$ROOT/native/android/LfWatchLinkPlugin.java" "$ROOT/native/android/LfWatchLinkBoot.java" "$PKG_DIR/"
+for P in FOREGROUND_SERVICE_CONNECTED_DEVICE RECEIVE_BOOT_COMPLETED BLUETOOTH_CONNECT; do
+  grep -q "android.permission.$P\"" "$MANIFEST" || \
+    perl -0pi -e "s#(<uses-permission android:name=\"android.permission.INTERNET\" />)#\$1\n    <uses-permission android:name=\"android.permission.$P\" />#" "$MANIFEST"
+done
+if ! grep -q 'LfWatchLinkService' "$MANIFEST"; then
+  perl -0pi -e 's#(\s*</application>)#
+        <!-- Lite Foil : liaison permanente avec la montre Lite Foil (SOS de la montre, appli fermee) -->
+        <service android:name=".LfWatchLinkService" android:exported="false" android:foregroundServiceType="connectedDevice" android:stopWithTask="false" />
+        <receiver android:name=".LfWatchLinkBoot" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>$1#' "$MANIFEST"
+fi
+grep -q 'LfWatchLinkService' "$MANIFEST" || { echo "Liaison montre non déclarée dans le manifeste" >&2; exit 1; }
+
 echo "Module LfTrack ajouté au projet Android."
