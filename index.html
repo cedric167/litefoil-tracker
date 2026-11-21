@@ -11801,5 +11801,28 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
   setTimeout(function(){ var s=summary(), e2=document.getElementById("efcSub"); if(e2 && s) e2.textContent=s; }, 800);
 })();
 </script>
+<script>
+/* 21/11 : bandeau « Mise à jour disponible » pour les applis installées plus anciennes que la 1.7.0. « Plus tard » le masque 3 jours. */
+(function(){
+  function old(){ try{ var C=window.Capacitor; if(!C || !C.isNativePlatform || !C.isNativePlatform()) return false; var H=C.PluginHeaders; if(!H || !H.length) return false;
+      for(var i=0;i<H.length;i++){ if(H[i] && H[i].name==="LfCall"){ var m=H[i].methods||[]; for(var j=0;j<m.length;j++){ if(m[j] && m[j].name==="audio") return false; } } } return true; }catch(e){ return false; } }
+  function show(){ if(document.getElementById("lfMaj")) return; var lg="fr"; try{ lg=(localStorage.getItem("lf-lang")||"fr").slice(0,2); }catch(e){}
+    var T={ fr:["Mise à jour disponible","Installe la nouvelle version pour profiter des appels, du GPS plus rapide et des dernières nouveautés.","Mettre à jour","Plus tard"],
+      en:["Update available","Install the new version to get calls, a faster GPS and the latest features.","Update","Later"],
+      es:["Actualización disponible","Instala la nueva versión para disfrutar de las llamadas, un GPS más rápido y las últimas novedades.","Actualizar","Más tarde"] }[lg] || null; if(!T) return;
+    var C=window.Capacitor, ios=((C && C.getPlatform && C.getPlatform())==="ios") || /iPhone|iPad|iPod/.test(navigator.userAgent||"");
+    var url= ios ? "https://apps.apple.com/app/id6827991078" : "https://play.google.com/store/apps/details?id=fr.litefoil.tracker";
+    var b=document.createElement("div"); b.id="lfMaj"; b.setAttribute("data-no-i18n","");
+    b.style.cssText="position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:10500;background:#0e1417;color:#fff;border-radius:18px;padding:14px 14px 12px;box-shadow:0 12px 30px rgba(0,0,0,.35)";
+    b.innerHTML='<b style="display:block;font-size:16px">'+T[0]+'</b><p style="margin:4px 0 12px;font-size:13.5px;line-height:1.4;color:#c3ced2">'+T[1]+'</p><div style="display:flex;gap:8px">'
+      +'<a data-a="go" href="'+url+'" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:15px;padding:11px;border-radius:13px;background:linear-gradient(135deg,#2fc4c0,#0f7f86);color:#fff">'+T[2]+'</a>'
+      +'<button type="button" data-a="later" style="flex:0 0 auto;border:0;border-radius:13px;padding:11px 16px;font:inherit;font-weight:700;font-size:14px;background:rgba(255,255,255,.12);color:#fff;box-shadow:none;min-height:0">'+T[3]+'</button></div>';
+    document.body.appendChild(b);
+    b.addEventListener("click", function(e){ var a=e.target.closest && e.target.closest("[data-a]"); if(!a) return; try{ localStorage.setItem("lf.maj.later", String(Date.now())); }catch(e2){} setTimeout(function(){ b.remove(); }, a.dataset.a==="go"?400:0); }); }
+  window.__lfMajShow=show;
+  setTimeout(function(){ try{ if(/[?&]maj=1/.test(location.search)){ show(); return; } if(/[?&]demo=1/.test(location.search) || !old()) return;
+      var t=+(localStorage.getItem("lf.maj.later")||0); if(t && Date.now()-t < 3*86400000) return; show(); }catch(e){} }, 4000);
+})();
+</script>
 </body>
 </html>
