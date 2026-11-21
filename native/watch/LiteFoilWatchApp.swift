@@ -21,10 +21,10 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     enum Phase { case setup, ready, sending, active, failed }
     enum Screen { case home, sports, run, confirm, summary, sos }
 
-    static let sports = ["eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski", "Musculation", "Cross training", "Fitness", "Cardio"]
+    static let sports = ["eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski", "Musculation", "Cross training", "HIIT", "Fitness", "Cardio", "Yoga", "Rameur", "Vélo de salle", "Tapis de course", "Boxe"]
     /// sports de salle : pas de GPS, écrans cardio
-    static let indoorSports: Set<String> = ["Musculation", "Cross training", "Fitness", "Cardio"]
-    static let indoorScreens = [WatchScreen(top: ["clock", "wbat"], m: ["hr", "dur", "kcal"]), WatchScreen(top: ["clock", "wbat"], m: ["dur", "hravg", "hrmax", "kcal"])]
+    static let indoorSports: Set<String> = ["Musculation", "Cross training", "HIIT", "Fitness", "Cardio", "Yoga", "Rameur", "Vélo de salle", "Tapis de course", "Boxe"]
+    static let indoorScreens = [WatchScreen(top: ["clock", "wbat"], m: ["hr", "dur", "kcal"]), WatchScreen(top: ["clock", "wbat"], m: ["zone", "hravg", "hrmax", "kcal"])]
     var isIndoor: Bool { SosModel.indoorSports.contains(sport) }
     // séries (musculation, fitness) ou tours (cross training, cardio) avec chrono de repos
     @Published var setCount = 1
@@ -40,6 +40,100 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     var lastPage: Int { screens.count + (isIndoor ? 1 : 0) }
     func endSet() { resting = true; phaseStart = Date(); restBuzzed = false; touched(); WKInterfaceDevice.current().play(.stop) }
     func nextSet() { resting = false; setCount += 1; phaseStart = Date(); touched(); WKInterfaceDevice.current().play(.start) }
+    // minuteurs : Tabata (8 × 20 s d'effort / 10 s de repos), EMOM (un signal chaque minute), AMRAP (compte à rebours et tours)
+    @Published var timerMode = "series"
+    @Published var timerOn = false
+    @Published var timerDone = false
+    @Published var amrapMin = 10
+    private(set) var timerStart = Date()
+    private var timerKey = -1
+    static let timerModes = ["series", "tabata", "emom", "amrap"]
+    static let amrapChoices = [5, 10, 12, 15, 20]
+    var timerE: Double { timerOn ? max(0, now.timeIntervalSince(timerStart)) : 0 }
+    var modeTitle: String {
+        switch timerMode {
+        case "tabata": return "Tabata"
+        case "emom": return "EMOM"
+        case "amrap": return "AMRAP"
+        default: return setIsSerie ? "Séries" : "Tours"
+        }
+    }
+    func cycleMode() {
+        guard !timerOn else { return }
+        let c = SosModel.timerModes, i = c.firstIndex(of: timerMode) ?? 0
+        timerMode = c[(i + 1) % c.count]; timerDone = false; store.set(timerMode, forKey: "timerMode"); touched()
+        WKInterfaceDevice.current().play(.click)
+    }
+    func cycleAmrap() {
+        guard !timerOn else { return }
+        let c = SosModel.amrapChoices, i = c.firstIndex(of: amrapMin) ?? 1
+        amrapMin = c[(i + 1) % c.count]; timerDone = false; store.set(amrapMin, forKey: "amrapMin"); touched()
+        WKInterfaceDevice.current().play(.click)
+    }
+    func timerToggle() {
+        if timerOn { timerOn = false }
+        else { timerOn = true; timerDone = false; timerStart = Date(); timerKey = -1; if timerMode == "amrap" { setCount = 1 } }
+        touched()
+        WKInterfaceDevice.current().play(timerOn ? .start : .stop)
+    }
+    /// titre, chrono et couleur (0 neutre, 1 effort, 2 repos, 3 terminé) du minuteur
+    func timerInfo() -> (String, String, Int) {
+        let e = timerE
+        switch timerMode {
+        case "tabata":
+            if timerDone { return ("Terminé", "8 / 8", 3) }
+            if !timerOn { return ("8 × 20 s / 10 s", "0:20", 0) }
+            let r = min(7, Int(e / 30)), p = e - Double(r) * 30
+            if p < 20 { return ("Effort " + String(r + 1) + "/8", SosModel.clockText(20 - p + 0.99), 1) }
+            return ("Repos " + String(r + 1) + "/8", SosModel.clockText(30 - p + 0.99), 2)
+        case "emom":
+            if !timerOn { return ("Chaque minute", "1:00", 0) }
+            let mn = Int(e / 60), p = e - Double(mn) * 60
+            return ("Minute " + String(mn + 1), SosModel.clockText(60 - p + 0.99), 1)
+        default:
+            if timerDone { return (String(max(0, setCount - 1)) + " tours", "0:00", 3) }
+            if !timerOn { return ("Compte à rebours", SosModel.clockText(Double(amrapMin * 60)), 0) }
+            return ("Tour " + String(setCount), SosModel.clockText(max(0, Double(amrapMin * 60) - e) + 0.99), 1)
+        }
+    }
+    private func timerTick(_ t: Date) {
+        guard running, timerOn else { return }
+        let e = t.timeIntervalSince(timerStart), dev = WKInterfaceDevice.current()
+        switch timerMode {
+        case "tabata":
+            if e >= 240 { timerOn = false; timerDone = true; dev.play(.success); return }
+            let r = Int(e / 30), key = r * 2 + ((e - Double(r) * 30) < 20 ? 0 : 1)
+            if key != timerKey { if timerKey >= 0 { dev.play(key % 2 == 0 ? .start : .stop) }; timerKey = key }
+        case "emom":
+            let key = Int(e / 60)
+            if key != timerKey { if timerKey >= 0 { dev.play(.notification) }; timerKey = key }
+        case "amrap":
+            if e >= Double(amrapMin * 60) { timerOn = false; timerDone = true; dev.play(.success) }
+        default: break
+        }
+    }
+    // zones cardio : fréquence max estimée à 220 − âge (âge lu dans Santé si l'accès est accepté), sinon 190
+    private var hrCeil = 190.0
+    private func loadAge() {
+        guard let c = try? hk.dateOfBirthComponents(), let y = c.year else { return }
+        let age = Calendar.current.component(.year, from: Date()) - y
+        if age > 10 && age < 100 { hrCeil = Double(220 - age) }
+    }
+    var zone: Int {
+        guard hrNow > 0 else { return 0 }
+        let r = hrNow / hrCeil
+        return r < 0.6 ? 1 : (r < 0.7 ? 2 : (r < 0.8 ? 3 : (r < 0.9 ? 4 : 5)))
+    }
+    static func zoneColor(_ z: Int) -> Color {
+        switch z {
+        case 1: return .lfMute
+        case 2: return .lfAccent
+        case 3: return .lfGo
+        case 4: return .lfYellow
+        case 5: return .lfRed
+        default: return .lfRed
+        }
+    }
     func cycleRest() {
         let c = SosModel.restChoices, i = c.firstIndex(of: restGoal) ?? 2
         restGoal = c[(i + 1) % c.count]; store.set(restGoal, forKey: "restGoal"); touched()
@@ -128,6 +222,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         else if let s = store.string(forKey: "scr"), let a = SosModel.parseScreens(s) { screens = a }
         if let lb = store.dictionary(forKey: "lb") as? [String: String], !lb.isEmpty { labels = lb }
         let rg = store.integer(forKey: "restGoal"); if SosModel.restChoices.contains(rg) { restGoal = rg }
+        let am = store.integer(forKey: "amrapMin"); if SosModel.amrapChoices.contains(am) { amrapMin = am }
+        if let tm = store.string(forKey: "timerMode"), SosModel.timerModes.contains(tm) { timerMode = tm }
         if store.bool(forKey: "sosOn") { phase = .active; screen = .sos; startTracking() }
         clock = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in self?.second() }
         // l'accord « exercice » est demandé à l'ouverture de l'appli, pas au moment du GO (le mode Eau couperait l'écran dessus)
@@ -136,6 +232,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             var rd = Set<HKObjectType>()
             if let t = HKQuantityType.quantityType(forIdentifier: .heartRate) { rd.insert(t) }
             if let t = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) { rd.insert(t) }
+            if let t = HKObjectType.characteristicType(forIdentifier: .dateOfBirth) { rd.insert(t) }
             s.hk.requestAuthorization(toShare: [HKObjectType.workoutType()], read: rd) { _, _ in }
         }
     }
@@ -232,6 +329,12 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "Cross training": return .crossTraining
         case "Fitness": return .functionalStrengthTraining
         case "Cardio": return .mixedCardio
+        case "HIIT": return .highIntensityIntervalTraining
+        case "Yoga": return .yoga
+        case "Rameur": return .rowing
+        case "Vélo de salle": return .cycling
+        case "Tapis de course": return .running
+        case "Boxe": return .boxing
         default: return .surfingSports
         }
     }
@@ -241,6 +344,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         c.activityType = workoutKind()
         c.locationType = isIndoor ? .indoor : .outdoor
         hrNow = 0; hrAvg = 0; hrMax = 0; kcal = 0
+        loadAge()
         do {
             let w = try HKWorkoutSession(healthStore: hk, configuration: c)
             let b = w.associatedWorkoutBuilder()
@@ -287,7 +391,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
 
     func startRide() {
         if loc.authorizationStatus == .notDetermined { loc.requestWhenInUseAuthorization() }
-        setCount = 1; resting = false; phaseStart = Date(); restBuzzed = false
+        setCount = 1; resting = false; phaseStart = Date(); restBuzzed = false; timerOn = false; timerDone = false
         runS = 0; moveS = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = nil; prevFix = nil
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilS = 0; foilDistM = 0; longRunS = 0; longRunDistM = 0; runMaxKmh = 0
         startDate = Date(); lastTick = Date(); lastTouch = Date()
@@ -317,7 +421,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         endWorkout(save: keep)
         if keep { sendRide() }
         if let sv = savedScreens { screens = sv; savedScreens = nil }
-        running = false; paused = false; locked = false; waterLock = false; waterAskAt = nil; curKmh = 0
+        running = false; paused = false; locked = false; waterLock = false; waterAskAt = nil; curKmh = 0; timerOn = false
         if phase != .active && phase != .sending { stopLocation() }
         WKInterfaceDevice.current().play(.stop)
         screen = keep ? .summary : .home
@@ -346,6 +450,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             }
         }
         now = t
+        timerTick(t)
         // repos visé atteint : la montre vibre une fois
         if running && isIndoor && resting && !restBuzzed && t.timeIntervalSince(phaseStart) >= Double(restGoal) {
             restBuzzed = true
@@ -479,6 +584,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "hravg": return "FC MOY"
         case "hrmax": return "FC MAX"
         case "kcal": return "KCAL"
+        case "zone": return "ZONE"
         case "bat": return "EFOIL"
         case "pow": return "PUISS"
         case "wind": return "VENT"
@@ -513,6 +619,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         case "hravg": return (hrAvg > 0 ? String(Int(hrAvg.rounded())) : "—", "bpm")
         case "hrmax": return (hrMax > 0 ? String(Int(hrMax.rounded())) : "—", "bpm")
         case "kcal": return (kcal > 0 ? String(Int(kcal.rounded())) : "—", "kcal")
+        case "zone": return (zone > 0 ? "Z" + String(zone) : "—", "")
         case "wbat":
             WKInterfaceDevice.current().isBatteryMonitoringEnabled = true
             let b = WKInterfaceDevice.current().batteryLevel
@@ -532,7 +639,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         switch k {
         case "run": return "Run " + v.0
         case "runs": return "Runs " + v.0
-        case "hr", "hravg", "hrmax": return "♥ " + v.0
+        case "hr": return "♥ " + v.0 + (zone > 0 ? " Z" + String(zone) : "")
+        case "hravg", "hrmax": return "♥ " + v.0
         case "clock": return v.0
         case "wbat": return "Montre " + v.0 + " %"
         case "bat": return "eFoil " + v.0 + (v.0 == "—" ? "" : " %")
@@ -782,31 +890,53 @@ struct MetricScreen: View {
     }
 }
 
-/// Sport de salle : la série (ou le tour) en cours et le chrono de repos. « Fin de série » lance le repos, la montre vibre au repos visé.
+/// Sport de salle : séries (ou tours) avec chrono de repos, ou minuteur Tabata / EMOM / AMRAP. Le mode se change en touchant la pastille du haut.
 struct IndoorSetView: View {
     @ObservedObject var m: SosModel
 
     var body: some View {
         VStack(spacing: 4) {
-            Text(m.setWord.uppercased() + " " + String(m.setCount)).font(.system(size: 20, weight: .heavy)).foregroundColor(.white)
-            Text((m.resting ? "Repos " : "") + SosModel.clockText(m.phaseS))
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .foregroundColor(m.resting ? (m.phaseS >= Double(m.restGoal) ? Color.lfGo : Color.lfYellow) : Color.lfAccent)
-                .lineLimit(1).minimumScaleFactor(0.6)
-            if m.resting {
-                LfButton(title: m.setIsSerie ? "Série suivante" : "Tour suivant", bg: .lfGo, fg: .black, height: 46, action: { m.nextSet() })
-            } else {
-                LfButton(title: m.setIsSerie ? "Fin de série" : "Fin du tour", bg: .lfYellow, fg: .black, height: 46, action: { m.endSet() })
+            HStack(spacing: 6) {
+                Button(action: { m.cycleMode() }) { chip(m.modeTitle + " ›") }.buttonStyle(.plain)
+                Text("♥ " + m.value("hr").0 + (m.zone > 0 ? " Z" + String(m.zone) : "")).font(.system(size: 13, weight: .bold)).foregroundColor(SosModel.zoneColor(m.zone)).lineLimit(1).minimumScaleFactor(0.7)
             }
-            HStack(spacing: 8) {
-                Button(action: { m.cycleRest() }) {
-                    Text("Repos " + SosModel.clockText(Double(m.restGoal))).font(.system(size: 11, weight: .semibold)).foregroundColor(.lfMute)
-                        .padding(.horizontal, 8).frame(height: 22).background(Capsule().fill(Color.lfDark))
-                }.buttonStyle(.plain)
-                Text("♥ " + m.value("hr").0).font(.system(size: 13, weight: .bold)).foregroundColor(.lfRed)
-            }
+            if m.timerMode == "series" { series } else { timer }
         }
         .padding(.horizontal, 6)
+    }
+
+    private func chip(_ t: String) -> some View {
+        Text(t).font(.system(size: 11, weight: .semibold)).foregroundColor(.white).lineLimit(1)
+            .padding(.horizontal, 8).frame(height: 22).background(Capsule().fill(Color.lfDark))
+    }
+
+    @ViewBuilder private var series: some View {
+        Text(m.setWord.uppercased() + " " + String(m.setCount)).font(.system(size: 17, weight: .heavy)).foregroundColor(.white)
+        Text((m.resting ? "Repos " : "") + SosModel.clockText(m.phaseS))
+            .font(.system(size: 27, weight: .bold, design: .rounded))
+            .foregroundColor(m.resting ? (m.phaseS >= Double(m.restGoal) ? Color.lfGo : Color.lfYellow) : Color.lfAccent)
+            .lineLimit(1).minimumScaleFactor(0.6)
+        if m.resting {
+            LfButton(title: m.setIsSerie ? "Série suivante" : "Tour suivant", bg: .lfGo, fg: .black, height: 42, action: { m.nextSet() })
+        } else {
+            LfButton(title: m.setIsSerie ? "Fin de série" : "Fin du tour", bg: .lfYellow, fg: .black, height: 42, action: { m.endSet() })
+        }
+        Button(action: { m.cycleRest() }) { chip("Repos visé " + SosModel.clockText(Double(m.restGoal))) }.buttonStyle(.plain)
+    }
+
+    @ViewBuilder private var timer: some View {
+        let i = m.timerInfo()
+        Text(i.0).font(.system(size: 15, weight: .heavy)).foregroundColor(.white).lineLimit(1).minimumScaleFactor(0.6)
+        Text(i.1).font(.system(size: 32, weight: .bold, design: .rounded))
+            .foregroundColor(i.2 == 1 ? Color.lfGo : (i.2 == 2 ? Color.lfYellow : (i.2 == 3 ? Color.lfAccent : Color.white)))
+            .lineLimit(1).minimumScaleFactor(0.6)
+        HStack(spacing: 6) {
+            LfButton(title: m.timerOn ? "Stop" : "Départ", bg: m.timerOn ? .lfRed : .lfGo, fg: m.timerOn ? .white : .black, height: 42, action: { m.timerToggle() })
+            if m.timerMode == "amrap" {
+                if m.timerOn { LfButton(title: "Tour +", bg: .lfYellow, fg: .black, height: 42, action: { m.nextSet() }) }
+                else { LfButton(title: String(m.amrapMin) + " min", bg: .lfDark, fg: .white, height: 42, action: { m.cycleAmrap() }) }
+            }
+        }
     }
 }
 
