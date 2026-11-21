@@ -1,9 +1,9 @@
 {
   "product": "montre",
-  "version": "0.8.0",
-  "file": "montre-0.8.0.bin",
-  "size": 966624,
-  "md5": "e0c6fe305f2d98cbff2b3077ccc1f6c7",
+  "version": "0.10.0",
+  "file": "montre-0.10.0.bin",
+  "size": 1134800,
+  "md5": "98352a927d1bf1fd9d813c190d2faecd",
   "date": "2026-11-21",
-  "notes": "SOS depuis la montre (maintenir 3 s, envoye par le telephone). Version de test."
+  "notes": "Sphere des univers, appli Sessions, GPS a 5 positions par seconde (fil RX du GPS sur GPIO43). Version de test."
 }
