@@ -5320,6 +5320,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     function paint(s){
       txt("mwFw", s.fw || "—"); txt("mwFw2", s.fw || "—");
       if (s.fw) upd.setInstalled(s.fw);
+      if (s.fw && !chSync && chControl && verCmp(s.fw, "0.12.0") >= 0){ chSync = chControl; syncStart(); }   // la montre sait recevoir la météo, les messages…
       // SOS demandé sur la montre (appui de 3 s) : c'est le téléphone qui l'envoie, après un compte à rebours annulable
       if (s.sos != null){ const n = +s.sos; if (sosBase === null) sosBase = n; else if (n > sosBase){ sosBase = n; if (!nativeLink) watchSos(s); } }
       if (s.sosx != null){ const x = +s.sosx; if (sosxBase === null) sosxBase = x;
@@ -5363,8 +5364,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     function crc32(buf){ let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++){ c ^= buf[i]; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1)); } return (~c) >>> 0; }
     // données d'une sortie : [2][n° sur 2 octets][morceau] … puis [3][taille][CRC32] ; [4] = introuvable
     function onData(v){
-      if (!collect) return;
       const b = new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+      if (b[0] === 5){ try { fromWatch(dec(b.subarray(1))); } catch (e) {} return; }   // demande de la montre (sync, messages, envoi, appel…)
+      if (!collect) return;
       if (b[0] === 2){ collect.parts.push(b.slice(3)); collect.got += b.length - 3; collect.progress(collect.got); }
       else if (b[0] === 3){ const d = new DataView(v.buffer, v.byteOffset, v.byteLength); const c = collect; collect = null; clearTimeout(c.timer); c.resolve({ size: d.getUint32(1, true), crc: d.getUint32(5, true), parts: c.parts }); }
       else if (b[0] === 4){ const c = collect; collect = null; clearTimeout(c.timer); c.reject(new Error("sortie introuvable dans la montre")); }
@@ -5498,7 +5500,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     }
     async function pushAll(){
       if (!chSync || syncBusy) return; syncBusy = true;
-      try { await pushWeather(); await pushConvs(); await pushFeed(); await pushVids(); } catch (e) {}
+      try { await pushWeather(); await pushConvs(); await pushFeed(); await pushVids(); await outQ;
+        wlog("Montre mise à jour : météo, " + convList().slice(0, 8).length + " conversation(s), " + feedCache.length + " publication(s), " + vidCache.length + " vidéo(s).", "g"); } catch (e) { wlog("Envoi à la montre : " + errText(e), "e"); }
       syncBusy = false;
     }
     // appel SwipChat entrant : la montre l'affiche ; décrocher ou refuser se fait avec les boutons de l'appli
@@ -5527,7 +5530,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       setTimeout(pushAll, 1200);                                   // tout de suite à la connexion
       if (syncTimer) clearInterval(syncTimer);
       let n = 0; syncTimer = setInterval(() => { callCheck(); if (++n % 300 === 0) pushAll(); }, 1000);   // appels chaque seconde, le reste toutes les 5 minutes
-      wlog("Météo, messages, fil et Swip envoyés à la montre.", "g");
+      wlog("Envoi de la météo, des messages, du fil et de Swip à la montre.", "g");
     }
 
     // known : montre déjà choisie une fois (reconnexion automatique, sans fenêtre de choix)
@@ -5548,9 +5551,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         try { chOta = await svc.getCharacteristic(CH(5)); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => upd.message(dec(ev.target.value))); }
         catch (e) { chOta = null; }
         upd.setChannel(chOta);
-        // échanges avec la montre (météo, SwipChat, fil, Swip, appels) : montre 0.11.0 et plus
-        try { chSync = await svc.getCharacteristic(CH(6)); await chSync.startNotifications(); chSync.addEventListener("characteristicvaluechanged", ev => fromWatch(dec(ev.target.value))); }
-        catch (e) { chSync = null; }
+        // échanges avec la montre (météo, SwipChat, fil, Swip, appels) : lancés dès que la montre annonce une version 0.12.0 ou plus (voir paint)
         await chStatus.startNotifications();
         chStatus.addEventListener("characteristicvaluechanged", async ev => {
           const text = dec(ev.target.value);
@@ -5566,7 +5567,6 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         await readRides();
         try { localStorage.setItem("lf.mw.auto", "1"); } catch (e) {}
         linkNative();
-        syncStart();
       } catch (e) {
         if (known){ return; }   // reconnexion automatique : la montre n'est pas à portée, on réessaiera
         if (e && e.name === "NotFoundError"){ setS("Non connectée"); wlog("Aucune montre sélectionnée."); }
