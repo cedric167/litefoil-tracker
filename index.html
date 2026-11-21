@@ -5320,6 +5320,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     function paint(s){
       txt("mwFw", s.fw || "—"); txt("mwFw2", s.fw || "—");
       if (s.fw) upd.setInstalled(s.fw);
+      if (s.fw) accOk = verCmp(s.fw, "0.13.0") >= 0;
       if (s.fw && !chSync && chControl && verCmp(s.fw, "0.12.0") >= 0){ chSync = chControl; syncStart(); }   // la montre sait recevoir la météo, les messages…
       // SOS demandé sur la montre (appui de 3 s) : c'est le téléphone qui l'envoie, après un compte à rebours annulable
       if (s.sos != null){ const n = +s.sos; if (sosBase === null) sosBase = n; else if (n > sosBase){ sosBase = n; if (!nativeLink) watchSos(s); } }
@@ -5432,7 +5433,11 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
 
     // ---------------------------------------------------------------- envoi des infos du téléphone vers la montre
     // La montre n'affiche ni accents ni émojis, et sépare les champs par « | ».
-    const clean = (s, n) => String(s == null ? "" : s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/œ/g, "oe").replace(/[’‘]/g, "'").replace(/[^\x20-\x7E]/g, "").replace(/\|/g, "/").replace(/\s+/g, " ").trim().slice(0, n || 60);
+    let accOk = false;   // vrai quand la montre connectée affiche les accents (version 0.13.0 et plus)
+    const clean = (s, n) => { let t = String(s == null ? "" : s).replace(/[\u2018\u201B\u2019]/g, "'");
+      if (accOk) t = t.replace(/[^\x20-\x7E\u00A0-\u00FF\u0152\u0153\u20AC\u2026]/g, "");   // lettres connues de la montre : français et latin courant
+      else t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/œ/g, "oe").replace(/[^\x20-\x7E]/g, "");
+      return t.replace(/\|/g, "/").replace(/\s+/g, " ").trim().slice(0, n || 60); };
     const secApi = () => window.__secApi || null;
     const ago = t => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 60 ? "il y a " + m + " min" : m < 1440 ? "il y a " + Math.round(m / 60) + " h" : "il y a " + Math.round(m / 1440) + " j"; };
     let outQ = Promise.resolve();
@@ -5575,7 +5580,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     }
     function onDisc(){
       chStatus = chControl = chRides = chData = chOta = null; rideList = []; sosBase = sosxBase = null;
-      chSync = null; if (syncTimer){ clearInterval(syncTimer); syncTimer = null; } if (dmUnsub){ try { dmUnsub(); } catch (e) {} dmUnsub = null; } dmPeer = ""; lastCall = "";
+      accOk = false; chSync = null; if (syncTimer){ clearInterval(syncTimer); syncTimer = null; } if (dmUnsub){ try { dmUnsub(); } catch (e) {} dmUnsub = null; } dmPeer = ""; lastCall = "";
       if (collect){ const c = collect; collect = null; clearTimeout(c.timer); c.reject(new Error("montre déconnectée")); }
       setS("Montre déconnectée"); enable(false); upd.setChannel(null); upd.lost("montre déconnectée");
       wlog("Montre déconnectée.", "e");

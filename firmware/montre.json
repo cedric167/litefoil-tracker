@@ -1,9 +1,9 @@
 {
   "product": "montre",
-  "version": "0.12.0",
-  "file": "montre-0.12.0.bin",
-  "size": 1399024,
-  "md5": "9f782055fecf909152aa082b50ffa6d0",
+  "version": "0.13.0",
+  "file": "montre-0.13.0.bin",
+  "size": 1518144,
+  "md5": "692ed13e337ccd74e35e87db08c9e604",
   "date": "2026-11-21",
-  "notes": "Meteo, messages, fil et Swip recus du telephone, ecran plus lumineux, veille avec reveil au mouvement du poignet. Version de test."
+  "notes": "Lettres lissees avec accents, clavier a grosses touches, gros bouton SOS, logo plus long, ecran plus lumineux, Swip retire du menu. Version de test."
 }
