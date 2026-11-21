@@ -26,6 +26,25 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     static let indoorSports: Set<String> = ["Musculation", "Cross training", "Fitness", "Cardio"]
     static let indoorScreens = [WatchScreen(top: ["clock", "wbat"], m: ["hr", "dur", "kcal"]), WatchScreen(top: ["clock", "wbat"], m: ["dur", "hravg", "hrmax", "kcal"])]
     var isIndoor: Bool { SosModel.indoorSports.contains(sport) }
+    // séries (musculation, fitness) ou tours (cross training, cardio) avec chrono de repos
+    @Published var setCount = 1
+    @Published var resting = false
+    @Published var restGoal = 90
+    private(set) var phaseStart = Date()
+    private var restBuzzed = false
+    static let restChoices = [30, 60, 90, 120, 180]
+    var setIsSerie: Bool { sport == "Musculation" || sport == "Fitness" }
+    var setWord: String { setIsSerie ? "Série" : "Tour" }
+    var phaseS: Double { max(0, now.timeIntervalSince(phaseStart)) }
+    /// dernière page de la sortie (les commandes) : les écrans, plus la page des séries pour un sport de salle
+    var lastPage: Int { screens.count + (isIndoor ? 1 : 0) }
+    func endSet() { resting = true; phaseStart = Date(); restBuzzed = false; touched(); WKInterfaceDevice.current().play(.stop) }
+    func nextSet() { resting = false; setCount += 1; phaseStart = Date(); touched(); WKInterfaceDevice.current().play(.start) }
+    func cycleRest() {
+        let c = SosModel.restChoices, i = c.firstIndex(of: restGoal) ?? 2
+        restGoal = c[(i + 1) % c.count]; store.set(restGoal, forKey: "restGoal"); touched()
+        WKInterfaceDevice.current().play(.click)
+    }
     static let foilOn = 12.0, foilOff = 9.0   // km/h : un « run » commence au-dessus de 12, finit sous 9
 
     // SOS
@@ -108,6 +127,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if let s = store.string(forKey: "scr2"), let a = SosModel.parseScreens2(s) { screens = a }
         else if let s = store.string(forKey: "scr"), let a = SosModel.parseScreens(s) { screens = a }
         if let lb = store.dictionary(forKey: "lb") as? [String: String], !lb.isEmpty { labels = lb }
+        let rg = store.integer(forKey: "restGoal"); if SosModel.restChoices.contains(rg) { restGoal = rg }
         if store.bool(forKey: "sosOn") { phase = .active; screen = .sos; startTracking() }
         clock = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in self?.second() }
         // l'accord « exercice » est demandé à l'ouverture de l'appli, pas au moment du GO (le mode Eau couperait l'écran dessus)
@@ -267,6 +287,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
 
     func startRide() {
         if loc.authorizationStatus == .notDetermined { loc.requestWhenInUseAuthorization() }
+        setCount = 1; resting = false; phaseStart = Date(); restBuzzed = false
         runS = 0; moveS = 0; distM = 0; maxKmh = 0; curKmh = 0; anchor = nil; prevFix = nil
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilS = 0; foilDistM = 0; longRunS = 0; longRunDistM = 0; runMaxKmh = 0
         startDate = Date(); lastTick = Date(); lastTouch = Date()
@@ -325,6 +346,11 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             }
         }
         now = t
+        // repos visé atteint : la montre vibre une fois
+        if running && isIndoor && resting && !restBuzzed && t.timeIntervalSince(phaseStart) >= Double(restGoal) {
+            restBuzzed = true
+            WKInterfaceDevice.current().play(.notification)
+        }
     }
     private func rideFix(_ l: CLLocation) {
         guard running, !paused else { return }
@@ -366,7 +392,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             "id": "watch-\(Int(startDate.timeIntervalSince1970 * 1000))", "sport": sport,
             "start": Int(startDate.timeIntervalSince1970 * 1000), "dur": Int(runS), "dist": Int(distM),
             "max": (maxKmh * 10).rounded() / 10, "runs": runCount, "foilS": Int(foilS), "foilM": Int(foilDistM), "pts": pts,
-            "hr": Int(hrAvg.rounded()), "hrmax": Int(hrMax.rounded()), "kcal": Int(kcal.rounded()), "indoor": isIndoor
+            "hr": Int(hrAvg.rounded()), "hrmax": Int(hrMax.rounded()), "kcal": Int(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord
         ]
         guard let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
         WCSession.default.transferUserInfo(["ride": s])
@@ -756,6 +782,34 @@ struct MetricScreen: View {
     }
 }
 
+/// Sport de salle : la série (ou le tour) en cours et le chrono de repos. « Fin de série » lance le repos, la montre vibre au repos visé.
+struct IndoorSetView: View {
+    @ObservedObject var m: SosModel
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(m.setWord.uppercased() + " " + String(m.setCount)).font(.system(size: 20, weight: .heavy)).foregroundColor(.white)
+            Text((m.resting ? "Repos " : "") + SosModel.clockText(m.phaseS))
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .foregroundColor(m.resting ? (m.phaseS >= Double(m.restGoal) ? Color.lfGo : Color.lfYellow) : Color.lfAccent)
+                .lineLimit(1).minimumScaleFactor(0.6)
+            if m.resting {
+                LfButton(title: m.setIsSerie ? "Série suivante" : "Tour suivant", bg: .lfGo, fg: .black, height: 46, action: { m.nextSet() })
+            } else {
+                LfButton(title: m.setIsSerie ? "Fin de série" : "Fin du tour", bg: .lfYellow, fg: .black, height: 46, action: { m.endSet() })
+            }
+            HStack(spacing: 8) {
+                Button(action: { m.cycleRest() }) {
+                    Text("Repos " + SosModel.clockText(Double(m.restGoal))).font(.system(size: 11, weight: .semibold)).foregroundColor(.lfMute)
+                        .padding(.horizontal, 8).frame(height: 22).background(Capsule().fill(Color.lfDark))
+                }.buttonStyle(.plain)
+                Text("♥ " + m.value("hr").0).font(.system(size: 13, weight: .bold)).foregroundColor(.lfRed)
+            }
+        }
+        .padding(.horizontal, 6)
+    }
+}
+
 struct ControlsView: View {
     @ObservedObject var m: SosModel
 
@@ -803,17 +857,18 @@ struct RunView: View {
                 ForEach(0..<m.screens.count, id: \.self) { i in
                     MetricScreen(m: m, scr: m.screens[i]).tag(i)
                 }
-                ControlsView(m: m).tag(m.screens.count)
+                if m.isIndoor { IndoorSetView(m: m).tag(m.screens.count) }
+                ControlsView(m: m).tag(m.lastPage)
             }
             .tabViewStyle(PageTabViewStyle())
             if m.locked { LockOverlay(m: m) }
         }
         // la couronne fait défiler les écrans, même écran verrouillé (doigts mouillés, gants)
         .focusable(true)
-        .digitalCrownRotation($crown, from: 0, through: Double(m.screens.count), by: 1, sensitivity: .low, isContinuous: false, isHapticFeedbackEnabled: true)
+        .digitalCrownRotation($crown, from: 0, through: Double(m.lastPage), by: 1, sensitivity: .low, isContinuous: false, isHapticFeedbackEnabled: true)
         .onChange(of: crown) { v in
             let p = Int(v.rounded())
-            if p != m.page && p >= 0 && p <= m.screens.count { m.page = p }
+            if p != m.page && p >= 0 && p <= m.lastPage { m.page = p }
         }
         .onChange(of: m.page) { p in
             m.touched()
@@ -868,6 +923,7 @@ struct SummaryView: View {
                         SummaryLine(a: "Cardio moyen", b: m.hrAvg > 0 ? String(Int(m.hrAvg.rounded())) + " bpm" : "—")
                         SummaryLine(a: "Cardio max", b: m.hrMax > 0 ? String(Int(m.hrMax.rounded())) + " bpm" : "—")
                         SummaryLine(a: "Calories", b: m.kcal > 0 ? String(Int(m.kcal.rounded())) + " kcal" : "—")
+                        if m.isIndoor { SummaryLine(a: m.setIsSerie ? "Séries" : "Tours", b: String(m.setCount)) }
                     }
                 }
                 if !m.isIndoor {

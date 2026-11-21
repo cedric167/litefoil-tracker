@@ -11510,7 +11510,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
       // séance de salle : pas de tracé, seulement la durée, le cardio et les calories
       if(r.indoor){ var si=WSP[r.sport]||["fitness",String(r.sport||"Séance"),"terre"], du=+r.dur||0; if(du<20) return null;
         return { id:String(r.id||("watch-"+r.start)), name:si[1]+" · montre", categoryName:si[1], activityType:si[0], milieu:"terre", startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:du, distanceM:0, avgSpeedKmh:0, maxSpeedKmh:0, maxAltM:0,
-          firstLat:null, firstLon:null, thumbnailUrl:null, source:"phone", device:"watch", points:[], indoor:true, hr:hr }; }
+          firstLat:null, firstLon:null, thumbnailUrl:null, source:"phone", device:"watch", points:[], indoor:true, hr:hr, sets:(+r.sets||0)>0 ? { n:+r.sets, w:String(r.setw||"Série").slice(0,12) } : null }; }
       if(P.length<2) return null; var sp=WSP[r.sport]||["other",String(r.sport||"Sortie"),"mer"], cum=0, out=[];
       for(var i=0;i<P.length;i++){ if(i) cum+=hav(P[i-1][0],P[i-1][1],P[i][0],P[i][1]); var brg=0; if(i){ var y=Math.sin((P[i][1]-P[i-1][1])*Math.PI/180)*Math.cos(P[i][0]*Math.PI/180), x=Math.cos(P[i-1][0]*Math.PI/180)*Math.sin(P[i][0]*Math.PI/180)-Math.sin(P[i-1][0]*Math.PI/180)*Math.cos(P[i][0]*Math.PI/180)*Math.cos((P[i][1]-P[i-1][1])*Math.PI/180); brg=(Math.atan2(y,x)*180/Math.PI+360)%360; }
         out.push({ lat:P[i][0], lon:P[i][1], speed:+(+P[i][2]||0).toFixed(1), bearing:Math.round(brg), dist:Math.round(cum), alt:Math.round(+P[i][4]||0), t:Math.round(+P[i][3]||0) }); }

@@ -806,7 +806,7 @@ function render(){
       <div class="mid">
         <div class="nm">${title}</div>
         <div class="sub"><em class="${badge}">${a.categoryName||(a.milieu==="mer"?"Mer":"Terre")}</em>${fmtDate(a.startedAt)}</div>
-        <div class="kps"><span class="kp big">${fr(a.distanceM/1000,2)}<small>km</small></span><span class="kp">${ICO.clock}${fmtDur(a.durationSec)}</span>${spd>0.5?`<span class="kp">${ICO.speed}${fr(spd,1)} km/h</span>`:""}</div>
+        <div class="kps">${a.indoor ? ((a.hr && a.hr.kcal) ? `<span class="kp big">${Math.round(a.hr.kcal)}<small>kcal</small></span>` : "") : `<span class="kp big">${fr(a.distanceM/1000,2)}<small>km</small></span>`}<span class="kp">${ICO.clock}${fmtDur(a.durationSec)}</span>${spd>0.5?`<span class="kp">${ICO.speed}${fr(spd,1)} km/h</span>`:""}</div>
       </div>
       <span class="go">${ICO.chev}</span>`;
     el.onclick=()=>openDetail(a);
@@ -905,6 +905,7 @@ async function openDetail(a){
         (a.hr.avg ? `<div class="s hot"><i>${ICO.bolt}</i><div class="u">Cardio moyen</div><div class="v tnum">${Math.round(a.hr.avg)}<small> bpm</small></div></div>` : "")
        +(a.hr.max ? `<div class="s hot"><i>${ICO.bolt}</i><div class="u">Cardio max</div><div class="v tnum">${Math.round(a.hr.max)}<small> bpm</small></div></div>` : "")
        +(a.hr.kcal ? `<div class="s blue"><i>${ICO.speed}</i><div class="u">Calories</div><div class="v tnum">${Math.round(a.hr.kcal)}<small> kcal</small></div></div>` : "")); }
+    if(a.sets && a.sets.n){ S.insertAdjacentHTML("beforeend", `<div class="s"><i>${ICO.route}</i><div class="u">${a.sets.w==="Tour"?"Tours":"Séries"}</div><div class="v tnum">${Math.round(a.sets.n)}</div></div>`); }
     const dm=document.getElementById("detMap"), bf=document.getElementById("btnFly"); if(dm) dm.style.display=ind?"none":""; if(bf) bf.style.display=ind?"none":""; }
   { const g=document.getElementById("btnGpx"); if(g){ g.hidden=!(a.points&&a.points.length>1); g.onclick=()=>gpxExport(a); } }
   document.getElementById("sheet").classList.add("open");
