@@ -439,6 +439,10 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
 <div class="flyover" id="flyover">
   <div id="flyMap"></div>
   <button id="flyG3d" hidden style="position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 132px);z-index:7;border:2px solid rgba(255,255,255,.85);border-radius:999px;padding:11px 20px;background:linear-gradient(135deg,#ff2d8f,#c2186f);color:#fff;font:inherit;font-size:15px;font-weight:800;white-space:nowrap;box-shadow:0 8px 22px rgba(255,45,143,.5)">🌍 Vue 3D photoréaliste</button>
+  <div id="flyVidBox" hidden style="position:absolute;left:18px;right:18px;top:38%;z-index:9;background:rgba(10,14,18,.92);border-radius:20px;padding:18px;text-align:center;color:#fff">
+    <b style="display:block;font-size:18px">Vidéo prête 🎬</b><p style="margin:6px 0 14px;font-size:14px;color:#c3ced2">20 secondes, format vertical, prête pour Instagram, TikTok ou WhatsApp.</p>
+    <button id="flyVidShare" style="display:block;width:100%;border:0;border-radius:14px;padding:13px;font:inherit;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#ff2d8f,#c2186f)">Partager ou enregistrer</button>
+    <button id="flyVidX" style="display:block;width:100%;margin-top:8px;border:0;border-radius:14px;padding:11px;font:inherit;font-weight:700;font-size:14px;color:#fff;background:rgba(255,255,255,.14)">Fermer</button></div>
   <div id="flyAttr" style="position:absolute;left:10px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:5;font-size:9.5px;color:rgba(255,255,255,.7);text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none">Images © Esri</div>
   <!-- 13/11 : vue Street View (photos de rue Google) pour les sorties à terre. Affichée par-dessus la carte. -->
   <div id="flySV" hidden></div>
@@ -480,6 +484,7 @@ header.top{background:rgba(241,245,246,.9);backdrop-filter:blur(14px);-webkit-ba
     <button id="flyPlay" class="fplay" aria-label="Lecture/Pause">⏸</button>
     <div class="seekbar"><input type="range" id="flySeek" min="0" max="1000" step="1" value="0" aria-label="Position dans le parcours"><div class="seeklab"><span id="flySeekT">0:00</span><span id="flySeekEnd"></span></div></div>
     <button class="fpill" id="flySpdBtn" aria-label="Vitesse de lecture">1×</button>
+    <button class="fpill" id="flyVid" aria-label="Enregistrer une vidéo">🎬</button>
     <button class="fpill" id="flyViewBtn" aria-label="Vue">Ensemble</button>
   </div>
   <div hidden><button id="flyBack"></button><button id="flyFwd"></button><button id="flyReplay"></button><button id="flyClose2"></button></div>
@@ -1009,6 +1014,7 @@ document.getElementById("flyRecenter").onclick=()=>{ flySetFree(false); if(flyVi
 function flyClock(s){ s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), x=s%60; return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(x).padStart(2,"0"); }
 function ptGeo(p){ return {type:"Feature",geometry:{type:"Point",coordinates:[p.lon,p.lat]}}; }
 document.getElementById("btnFly").onclick=()=>startFly(current);
+document.getElementById("flyVid").onclick=()=>flyVidStart();
 document.getElementById("btnFlyG").onclick=()=>flyG3dOpen(current);
 document.getElementById("closeFly").onclick=document.getElementById("flyClose2").onclick=stopFly;
 document.getElementById("flyReplay").onclick=()=>startFly(current);
@@ -1299,9 +1305,9 @@ function runFly(a,pts){
   const frame=(now)=>{
     const dt=now-last; last=now;
     if(!flyPaused && !flySeeking){
-      flyProg=Math.min(1, flyProg + (Math.min(dt,250)/BASE)*flySpeedMul);
+      flyProg=Math.min(1, flyProg + (flyRecS ? Math.min(dt,1000)/20000 : (Math.min(dt,250)/BASE)*flySpeedMul));
       try{ flyDraw(false); }catch(e){}
-      if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; }
+      if(flyProg>=1){ flyPaused=true; if(playBtn) playBtn.textContent="▶"; if(flyRecS) flyVidStop(); }
     }
     try{ if(now-haloT>100 && !flyPaused && flyMap.getLayer("flyDotHalo")){ haloT=now; const w=(Math.sin(now/420)+1)/2; flyMap.setPaintProperty("flyDotHalo","circle-radius",16+w*9); flyMap.setPaintProperty("flyDotHalo","circle-opacity",.34-w*.2); } }catch(e){}
     flyRAF=requestAnimationFrame(frame);
@@ -1310,7 +1316,48 @@ function runFly(a,pts){
   flyRAF=requestAnimationFrame(frame);
 }
 let flyGuest=false; // parcours d'un autre membre ouvert depuis le fil ou un profil : à la fermeture on retourne au fil
-function stopFly(){ if(flyGuest){ flyGuest=false; cancelAnimationFrame(flyRAF); location.replace(flyBackTo==="ulm" ? "../index.html?tab=ulm" : "../index.html?tab=fil"); return; } cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
+/* ====================== EXPORT VIDÉO DU REPLAY (21/11) ====================== */
+let flyRecS=null;
+function flyVidStop(){ const S=flyRecS; if(!S || S.stopping) return; S.stopping=true; setTimeout(()=>{ try{ S.rec.stop(); }catch(e){ flyVidEnd(null); } }, 700); }
+function flyVidEnd(file){ const S=flyRecS; flyRecS=null; try{ if(S && flyMap) flyMap.off("render", S.paint); }catch(e){}
+  const b=document.getElementById("flyVid"); if(b){ b.textContent="🎬"; b.style.background=""; }
+  const box=document.getElementById("flyVidBox"); if(!box) return;
+  if(!file){ box.hidden=true; lfToast("La vidéo n'a pas pu être enregistrée sur cet appareil."); return; }
+  box.hidden=false; const u=URL.createObjectURL(file);
+  document.getElementById("flyVidShare").onclick=()=>{ if(navigator.canShare && navigator.canShare({ files:[file] })){ navigator.share({ files:[file], title:"Lite Foil" }).catch(()=>{}); return; }
+    const l=document.createElement("a"); l.href=u; l.download=file.name; document.body.appendChild(l); l.click(); l.remove(); };
+  document.getElementById("flyVidX").onclick=()=>{ box.hidden=true; setTimeout(()=>URL.revokeObjectURL(u), 4000); }; }
+function flyVidStart(){ if(flyRecS){ flyVidStop(); return; } if(!flyMap || !flyDraw) return;
+  const no=()=>lfToast("L'enregistrement vidéo n'est pas possible sur cet appareil.");
+  if(!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream){ no(); return; }
+  const mime=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].find(m=>{ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }); if(!mime){ no(); return; }
+  const cv=document.createElement("canvas"); cv.width=720; cv.height=1280; const cx=cv.getContext("2d"); let rec;
+  try{ rec=new MediaRecorder(cv.captureStream(30), { mimeType:mime, videoBitsPerSecond:6000000 }); }catch(e){ no(); return; }
+  const tx=(id)=>{ const e=document.getElementById(id); return e ? e.textContent.trim() : ""; };
+  const S={ rec, chunks:[], stopping:false, paint:null }; flyRecS=S;
+  rec.ondataavailable=(e)=>{ if(e.data && e.data.size) S.chunks.push(e.data); };
+  rec.onstop=()=>{ try{ const ext=/mp4/.test(mime) ? "mp4" : "webm", bl=new Blob(S.chunks, { type:mime.split(";")[0] }); if(bl.size<20000){ flyVidEnd(null); return; }
+      flyVidEnd(new File([bl], "lite-foil-replay."+ext, { type:mime.split(";")[0] })); }catch(e){ flyVidEnd(null); } };
+  S.paint=()=>{ try{ const mc=flyMap.getCanvas(), W=720, H=1280, r=Math.max(W/mc.width, H/mc.height), dw=mc.width*r, dh=mc.height*r;
+      cx.drawImage(mc, (W-dw)/2, (H-dh)/2, dw, dh);
+      let g=cx.createLinearGradient(0,0,0,330); g.addColorStop(0,"rgba(6,10,14,.78)"); g.addColorStop(1,"rgba(6,10,14,0)"); cx.fillStyle=g; cx.fillRect(0,0,W,330);
+      g=cx.createLinearGradient(0,H-170,0,H); g.addColorStop(0,"rgba(6,10,14,0)"); g.addColorStop(1,"rgba(6,10,14,.72)"); cx.fillStyle=g; cx.fillRect(0,H-170,W,170);
+      cx.textAlign="center"; cx.fillStyle="#fff"; cx.font="800 26px system-ui, sans-serif"; cx.fillText("L I T E   F O I L", W/2, 62);
+      cx.font="500 27px system-ui, sans-serif"; cx.fillStyle="#d6e3ea"; cx.fillText(tx("flyName").slice(0,44), W/2, 104);
+      const cols=[["VITESSE", tx("flySpeed"), "km/h"], [tx("flyAltU").toUpperCase(), tx("flyAlt"), tx("flyAltSfx")], ["DISTANCE", tx("flyDist"), "km"]];
+      cols.forEach((c,i)=>{ const x=W*(i*2+1)/6; cx.font="600 19px system-ui, sans-serif"; cx.fillStyle="#b9c8cf"; cx.fillText(c[0], x, 160);
+        cx.font="800 52px system-ui, sans-serif"; cx.fillStyle="#fff"; cx.fillText(c[1], x, 216); cx.font="600 21px system-ui, sans-serif"; cx.fillStyle="#d6e3ea"; cx.fillText(c[2], x, 246); });
+      cx.font="800 30px system-ui, sans-serif"; cx.fillStyle="#fff"; cx.fillText("litefoil.fr", W/2, H-62);
+      cx.font="500 17px system-ui, sans-serif"; cx.fillStyle="rgba(255,255,255,.75)"; cx.fillText(tx("flyAttr"), W/2, H-26); }catch(e){} };
+  flyMap.on("render", S.paint);
+  // vue Cinéma, depuis le début, toute la sortie en 20 secondes
+  try{ const cb=document.querySelector('#flyView button[data-v="cine"]'); if(cb && flyView!=="cine") cb.click(); }catch(e){}
+  flySetFree(false); flyProg=0; flyPaused=false; flySeeking=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸";
+  try{ rec.start(500); }catch(e){ flyVidEnd(null); return; }
+  const b=document.getElementById("flyVid"); if(b){ b.textContent="● REC"; b.style.background="#e8384f"; }
+  lfToast("Enregistrement en cours : 20 secondes, ne touche pas l'écran."); }
+function stopFly(){ if(flyRecS){ try{ flyRecS.rec.onstop=null; flyRecS.rec.stop(); }catch(e){} try{ flyMap.off("render", flyRecS.paint); }catch(e){} flyRecS=null; const vb=document.getElementById("flyVid"); if(vb){ vb.textContent="🎬"; vb.style.background=""; } }
+  if(flyGuest){ flyGuest=false; cancelAnimationFrame(flyRAF); location.replace(flyBackTo==="ulm" ? "../index.html?tab=ulm" : "../index.html?tab=fil"); return; } cancelAnimationFrame(flyRAF); flyDraw=null; svClose(); clearTimeout(flyIdleT); document.getElementById("flyover").classList.remove("idle"); flyPaused=false; const pb=document.getElementById("flyPlay"); if(pb) pb.textContent="⏸"; document.getElementById("flyover").classList.remove("open"); }
 
 /* ====================== IMPORT GPX ====================== */
 document.getElementById("btnImport").onclick=()=>document.getElementById("fileInput").click();
