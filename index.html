@@ -4233,7 +4233,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(spd!=null){ p.speed=spd; var vm=phMaxOk(phPts, p, spd); if(vm>phMax) phMax=vm; }
     phPts.push(p); phLast = p;
     try { phStlPush(p); } catch(e){}
-    try { document.dispatchEvent(new CustomEvent("lf-trk-pos", { detail:{ lat:p.lat, lon:p.lon, speed:p.speed, t:tReal, i:phPts.length, first:phPts[0], dist:0, milieu:phMilieu, cat:phCat } })); } catch(e){}
+    try { document.dispatchEvent(new CustomEvent("lf-trk-pos", { detail:{ lat:p.lat, lon:p.lon, alt:p.alt, speed:p.speed, t:tReal, i:phPts.length, first:phPts[0], dist:0, milieu:phMilieu, cat:phCat } })); } catch(e){}
     if(bulk) return;
     var dist = phDistTotal();
     $("phPts").textContent = phPts.length;
@@ -11003,7 +11003,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var pt={ lat:p.lat, lon:p.lon, t:p.t||Date.now(), spd:p.speed||0 };
     if(!S.first) S.first=pt; if(S.last){ var d=hav(S.last,pt); if(d<5000) S.trav+=d; } S.last=pt;
     S.hist.push(pt); var lim=Date.now()-35*60000; while(S.hist.length && S.hist[0].t<lim) S.hist.shift();
-    S.buf.push({ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }); if(S.buf.length>60) S.buf=S.buf.slice(-60);
+    { var lb1={ lat:pt.lat, lng:pt.lon, t:pt.t, spd:Math.round(pt.spd*10)/10 }; if(p.alt!=null && isFinite(+p.alt)) lb1.alt=Math.round(+p.alt); S.buf.push(lb1); } if(S.buf.length>60) S.buf=S.buf.slice(-60);
     if(Date.now()-S.lastPost>2000) post(); }); // 20/11 : position envoyée toutes les 2 s (avant : 8 s) pour que le proche voie le même trajet
   function waList(){ try{ return JSON.parse(ls("lf.sec.wa")||"[]")||[]; }catch(e){ return []; } }
   function waNum(p){ p=String(p||"").replace(/[^0-9+]/g,""); if(p.indexOf("+")===0) p=p.slice(1); else if(p.indexOf("00")===0) p=p.slice(2); else if(p.length===10 && p[0]==="0") p="33"+p.slice(1); return p.replace(/[^0-9]/g,""); }
