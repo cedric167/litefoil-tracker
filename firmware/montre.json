@@ -1,9 +1,9 @@
 {
   "product": "montre",
-  "version": "0.7.4",
-  "file": "montre-0.7.4.bin",
-  "size": 964880,
-  "md5": "21de9daf30a48b29a1747a8d0ebba68f",
+  "version": "0.8.0",
+  "file": "montre-0.8.0.bin",
+  "size": 966624,
+  "md5": "e0c6fe305f2d98cbff2b3077ccc1f6c7",
   "date": "2026-11-21",
-  "notes": "Liaison Bluetooth plus rapide avec le telephone. Version de test."
+  "notes": "SOS depuis la montre (maintenir 3 s, envoye par le telephone). Version de test."
 }

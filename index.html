@@ -5286,6 +5286,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     const dec = v => new TextDecoder().decode(v);
     let dev = null, chStatus = null, chControl = null, chRides = null, chData = null, chOta = null;
     let rideList = [], collect = null, importing = false;
+    let sosBase = null, sosxBase = null, sosRun = null, autoBusy = false;
     const wlog = (m, k) => log("[Montre] " + m, k);
     const setS = (txt, c) => { $("mwState").textContent = txt; $("mwLamp").className = "lamp" + (c ? " " + c : ""); };
     const btns = ["btnMwBuzz", "btnMwImport", "btnMwFace0", "btnMwFace1"].map($);
@@ -5299,6 +5300,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     function paint(s){
       txt("mwFw", s.fw || "—"); txt("mwFw2", s.fw || "—");
       if (s.fw) upd.setInstalled(s.fw);
+      // SOS demandé sur la montre (appui de 3 s) : c'est le téléphone qui l'envoie, après un compte à rebours annulable
+      if (s.sos != null){ const n = +s.sos; if (sosBase === null) sosBase = n; else if (n > sosBase){ sosBase = n; watchSos(s); } }
+      if (s.sosx != null){ const x = +s.sosx; if (sosxBase === null) sosxBase = x;
+        else if (x > sosxBase){ sosxBase = x; if (sosRun){ const r = sosRun; sosRun = null; r.cancel(); wlog("SOS annulé depuis la montre."); } } }
       txt("mwBat", s.bat != null ? s.bat + " %" + (s.vbat ? " · " + s.vbat + " V" : "") : "—");
       txt("mwGps", s.gps === "1" ? (s.fix === "1" ? "position trouvée · " + s.sats + " satellites" : "recherche des satellites") : "module non détecté");
       txt("mwRides", s.rides != null ? s.rides : "—");
@@ -5393,13 +5398,24 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       }
     }
 
-    async function connect(){
+    function watchSos(s){
+      const f = window.__secSosFromWatch;
+      wlog("SOS demandé depuis la montre.", "e");
+      if (!f){ write("sos=cancel", "SOS"); return; }
+      const pos = (s.la && s.lo && isFinite(+s.la) && isFinite(+s.lo)) ? { lat: +s.la, lon: +s.lo } : null;
+      sosRun = f(pos, { wait: n => { write("sos=wait:" + n, "SOS"); },
+                        sent: () => { sosRun = null; write("sos=sent", "SOS"); wlog("SOS envoyé par le téléphone.", "e"); },
+                        cancel: () => { sosRun = null; write("sos=cancel", "SOS"); wlog("SOS annulé."); } });
+    }
+
+    // known : montre déjà choisie une fois (reconnexion automatique, sans fenêtre de choix)
+    async function connect(known){
       if (!navigator.bluetooth){ setS("Bluetooth web indisponible", "err"); wlog("Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android ou l'appli Lite Foil.", "e"); return; }
       try {
-        setS("Recherche de la montre…", "busy");
-        dev = await navigator.bluetooth.requestDevice({ filters: [{ name: NAME }], optionalServices: [SVC] });
+        if (!known) setS("Recherche de la montre…", "busy");
+        dev = known || await navigator.bluetooth.requestDevice({ filters: [{ name: NAME }], optionalServices: [SVC] });
         dev.addEventListener("gattserverdisconnected", onDisc);
-        setS("Connexion…", "busy");
+        if (!known) setS("Connexion…", "busy");
         const server = await dev.gatt.connect();
         const svc = await server.getPrimaryService(SVC);
         chStatus = await svc.getCharacteristic(CH(1));
@@ -5423,19 +5439,34 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         await write("clock=" + n.getFullYear() + "-" + p(n.getMonth() + 1) + "-" + p(n.getDate()) + "T" + p(n.getHours()) + ":" + p(n.getMinutes()) + ":" + p(n.getSeconds()), "Heure");
         try { paint(parseLine(dec(await chStatus.readValue()))); } catch (e) {}
         await readRides();
+        try { localStorage.setItem("lf.mw.auto", "1"); } catch (e) {}
       } catch (e) {
+        if (known){ return; }   // reconnexion automatique : la montre n'est pas à portée, on réessaiera
         if (e && e.name === "NotFoundError"){ setS("Non connectée"); wlog("Aucune montre sélectionnée."); }
         else { setS("Échec de la connexion", "err"); wlog("Connexion impossible : " + errText(e), "e"); }
       }
     }
     function onDisc(){
-      chStatus = chControl = chRides = chData = chOta = null; rideList = [];
+      chStatus = chControl = chRides = chData = chOta = null; rideList = []; sosBase = sosxBase = null;
       if (collect){ const c = collect; collect = null; clearTimeout(c.timer); c.reject(new Error("montre déconnectée")); }
       setS("Montre déconnectée"); enable(false); upd.setChannel(null); upd.lost("montre déconnectée");
       wlog("Montre déconnectée.", "e");
     }
 
-    $("btnMwConnect").addEventListener("click", async () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } await connect(); });
+    $("btnMwConnect").addEventListener("click", async () => {
+      if (dev && dev.gatt.connected){ try { localStorage.setItem("lf.mw.auto", "0"); } catch (e) {} dev.gatt.disconnect(); return; }   // déconnexion voulue : pas de reconnexion automatique
+      await connect(); });
+    // Reconnexion automatique : une fois la montre choisie, l'appli s'y reconnecte seule dès qu'elle est à portée
+    // (appli ouverte). Elle s'arrête si on touche « Déconnecter ».
+    async function autoConnect(){
+      if (autoBusy || document.hidden || (dev && dev.gatt.connected) || !navigator.bluetooth || !navigator.bluetooth.getDevices) return;
+      try { if (localStorage.getItem("lf.mw.auto") !== "1") return; } catch (e) { return; }
+      autoBusy = true;
+      try { const l = await navigator.bluetooth.getDevices(), d = l.filter(x => x.name === NAME).pop(); if (d) await connect(d); } catch (e) {}
+      autoBusy = false;
+    }
+    setTimeout(autoConnect, 5000); setInterval(autoConnect, 20000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(autoConnect, 1500); });
     $("btnMwBuzz").addEventListener("click", async () => { if (await write("buzz", "Sonnerie")) wlog("La montre sonne."); });
     $("btnMwImport").addEventListener("click", importAll);
     $("btnMwFace0").addEventListener("click", async () => { if (await write("face=0", "Cadran")) wlog("Cadran à aiguilles choisi."); });
@@ -11324,6 +11355,22 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var nw={ sid:rnd(12), k:rnd(24), sig:sig };
     return A.liveCreate(nw.sid,{ k:nw.k, ps:m.pseudo, cat:"SOS · Montre", em:"112", status:"wait", contacts:ct }).then(function(){ ls("lf.watch.sos", JSON.stringify(nw)); return out(nw); }).catch(function(){ return null; }); }
   window.__secWatchSos=watchSos;
+  // SOS demandé depuis la montre Lite Foil (Bluetooth) : l'écran SOS s'ouvre, un compte à rebours de 10 s laisse le temps
+  // d'annuler (sur le téléphone ou sur la montre), puis l'alerte part comme avec le bouton SOS.
+  window.__secSosFromWatch=function(pos, cb){ cb=cb||{};
+    openSos(); var ov=sosOv;
+    if(SOS){ if(cb.sent) cb.sent(); return { cancel:function(){} }; }   // une alerte est déjà en cours
+    if(pos && !sosPos){ sosPos={ lat:pos.lat, lon:pos.lon, acc:null }; posPaint(); }
+    var left=10, done=false, bar=document.createElement("div");
+    bar.style.cssText="position:fixed;left:12px;right:12px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:5;background:#fff;color:#0e1417;border-radius:20px;padding:16px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.4);font-weight:700";
+    bar.innerHTML='<div>🆘 SOS demandé depuis la montre</div><div style="font-size:40px;line-height:1.2;color:#e8384f" data-n>10</div><div style="font-weight:500;font-size:13px;margin-bottom:10px">L\'alerte part à la fin du compte à rebours.</div><button type="button" style="width:100%;padding:14px;border-radius:14px;border:0;background:#0e1417;color:#fff;font:inherit;font-size:17px">Annuler</button>';
+    ov.appendChild(bar); vib([400,150,400]); beep(1100); if(cb.wait) cb.wait(left);
+    var stop=function(){ if(done) return false; done=true; clearInterval(iv); bar.remove(); return true; };
+    var iv=setInterval(function(){ if(sosOv!==ov){ if(stop() && cb.cancel) cb.cancel(); return; }
+      left--; var n=bar.querySelector("[data-n]"); if(n) n.textContent=String(Math.max(0,left)); if(left>0){ vib(150); beep(990); }
+      if(left<=0 && stop()){ sosFire(ov._kind, sosPos); if(cb.sent) cb.sent(); } }, 1000);
+    bar.querySelector("button").addEventListener("click", function(e){ e.stopPropagation(); if(stop() && cb.cancel) cb.cancel(); });
+    return { cancel:function(){ stop(); } }; };
   function watchSync(){ var W=null, wear=""; try{ W=window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LfWatch; }catch(e){} try{ wear=ls("lf.wear.ch")||""; }catch(e){}
     if(!(W && W.setSos) && !wear) return;   // ni Apple Watch ni montre Android liée : rien à préparer
     watchSos().then(function(o){ if(!o) return;
