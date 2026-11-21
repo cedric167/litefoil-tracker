@@ -11536,10 +11536,24 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
       return { id:String(r.id||("watch-"+r.start)), name:sp[1]+" · montre", categoryName:sp[1], activityType:sp[0], milieu:sp[2], startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:dur, distanceM:dist,
         avgSpeedKmh: dur>0 ? +(dist/dur*3.6).toFixed(1) : 0, maxSpeedKmh:+(+r.max||0).toFixed(1), maxAltM:Math.round(Math.max.apply(null, out.map(function(p){ return p.alt; }))), firstLat:out[0].lat, firstLon:out[0].lon, thumbnailUrl:null,
         source:"phone", device:"watch", points:out, hr:hr, foil:{ runs:+r.runs||0, sec:+r.foilS||0, m:+r.foilM||0 } }; };
-    var takeRides=function(){ var W=plug(); if(!W || !W.takeRides) return; try{ W.takeRides().then(function(res){ var L=(res && res.rides)||[]; if(!L.length) return; var arr=[]; try{ arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; }catch(e){}
-        var n=0; L.forEach(function(js){ try{ var se=rideToSess(JSON.parse(js)); if(!se) return; arr=arr.filter(function(x){ return x && x.id!==se.id; }); arr.unshift(se); n++; }catch(e){} });
-        if(!n) return; arr.sort(function(a,b){ return String(b.startedAt).localeCompare(String(a.startedAt)); }); if(arr.length>100) arr=arr.slice(0,100);
-        try{ localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); localStorage.removeItem("lf.comm.statsSent"); }catch(e){} try{ document.dispatchEvent(new Event("lf-sess-saved")); }catch(e){} }).catch(function(){}); }catch(e){} };
+    // sorties reçues de la montre, gardées telles quelles tant qu'elles ne sont pas enregistrées dans Activités
+    var rawGet=function(){ try{ return JSON.parse(localStorage.getItem("lf.watch.raw")||"[]")||[]; }catch(e){ return []; } };
+    var rawSet=function(a){ try{ if(a.length) localStorage.setItem("lf.watch.raw", JSON.stringify(a.slice(-30))); else localStorage.removeItem("lf.watch.raw"); }catch(e){} };
+    var wDiag=function(o){ var d={}; try{ d=JSON.parse(localStorage.getItem("lf.watch.diag")||"{}")||{}; }catch(e){} if(o){ for(var k in o) d[k]=o[k]; try{ localStorage.setItem("lf.watch.diag", JSON.stringify(d)); }catch(e){} } return d; };
+    var wSay=function(t){ try{ var f=window.lfToast||window.toast; if(f) f(t); }catch(e){} };
+    // mémoire pleine : on allège le tracé de la plus vieille sortie encore détaillée (un point sur deux)
+    var slim=function(arr){ for(var i=arr.length-1;i>=0;i--){ var s=arr[i]; if(s && s.points && s.points.length>400){ var P=s.points; s.points=P.filter(function(p,j){ return j%2===0 || j===P.length-1; }); return true; } } return false; };
+    var saveRides=function(){ var raw=rawGet(); if(!raw.length) return; var arr=[]; try{ arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; }catch(e){}
+      var n=0, bad=0; raw.forEach(function(js){ var se=null; try{ se=rideToSess(JSON.parse(js)); }catch(e){ se=null; } if(!se){ bad++; return; } arr=arr.filter(function(x){ return x && x.id!==se.id; }); arr.unshift(se); n++; });
+      if(!n){ rawSet([]); if(bad) wDiag({ err:"sortie trop courte ou illisible", errT:Date.now() }); return; }
+      arr.sort(function(a,b){ return String(b.startedAt).localeCompare(String(a.startedAt)); }); if(arr.length>100) arr=arr.slice(0,100);
+      var ok=false; for(var t=0;t<14 && !ok;t++){ try{ localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); ok=true; }catch(e){ if(!slim(arr)) break; } }
+      if(!ok){ wDiag({ err:"mémoire du téléphone pleine", errT:Date.now() }); wSay("Sortie de la montre reçue, mais la mémoire du téléphone est pleine : supprime d'anciennes sorties dans Activités."); return; }
+      rawSet([]); var d=wDiag(); wDiag({ saved:(+d.saved||0)+n, last:Date.now(), err:"" });
+      try{ localStorage.removeItem("lf.comm.statsSent"); }catch(e){} try{ document.dispatchEvent(new Event("lf-sess-saved")); }catch(e){}
+      wSay(n>1 ? n+" sorties de la montre ajoutées à Activités ✔" : "Sortie de la montre ajoutée à Activités ✔"); };
+    var takeRides=function(){ saveRides(); var W=plug(); if(!W || !W.takeRides) return; try{ W.takeRides().then(function(res){ var L=(res && res.rides)||[]; if(!L.length) return;
+        rawSet(rawGet().concat(L)); var d=wDiag(); wDiag({ recv:(+d.recv||0)+L.length, recvT:Date.now() }); saveRides(); }).catch(function(){}); }catch(e){} };
     setTimeout(takeRides, 6000); setInterval(takeRides, 30000); document.addEventListener("visibilitychange", function(){ if(!document.hidden) setTimeout(takeRides, 1200); });
     try{ var W0=plug(); if(W0 && W0.addListener) W0.addListener("ride", function(){ setTimeout(takeRides, 300); }); }catch(e){}
     // page de réglage : grille des écrans, puis réglage d'un écran (disposition, infos du haut, infos principales)
@@ -11578,7 +11592,16 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
         ov.innerHTML=h; var nb=ov.querySelector(".wt-body"); if(nb) nb.scrollTop=sc; status(); };
       var status=function(){ var W=plug(), el=ov.querySelector("#wtSt"); if(!el || plat!=="ios") return; var sp=el.querySelector("span");
         if(!W || !W.status){ sp.textContent="Apple Watch : mets l’appli Lite Foil à jour pour envoyer tes écrans."; return; }
-        try{ W.status().then(function(r){ var ok=!!(r && r.installed); el.classList.toggle("ok", ok); sp.textContent = ok ? "Apple Watch connectée : tes écrans sont envoyés automatiquement." : (r && r.paired ? "Apple Watch détectée : installe l’appli Lite Foil sur la montre (appli Watch de l’iPhone)." : "Aucune Apple Watch jumelée à cet iPhone."); }).catch(function(){}); }catch(e){} };
+        try{ W.status().then(function(r){ var ok=!!(r && r.installed); el.classList.toggle("ok", ok); sp.textContent = ok ? "Apple Watch connectée : tes écrans sont envoyés automatiquement." : (r && r.paired ? "Apple Watch détectée : installe l’appli Lite Foil sur la montre (appli Watch de l’iPhone)." : "Aucune Apple Watch jumelée à cet iPhone.");
+            // suivi des sorties envoyées par la montre : reçues par l'iPhone, puis rangées dans Activités
+            try{ var d=wDiag(), fd=function(t){ var x=new Date(+t); return x.toLocaleDateString("fr-FR",{ day:"numeric", month:"short" })+" à "+x.toLocaleTimeString("fr-FR",{ hour:"2-digit", minute:"2-digit" }); }, L=[];
+              if(r && r.got!=null) L.push("Sorties reçues de la montre par l’iPhone : "+(+r.got||0)+(r.gotT ? " (dernière le "+fd(+r.gotT*1000)+")" : "")+(+r.wait ? ", "+r.wait+" en attente" : ""));
+              else L.push("Mets l’appli iPhone à jour pour voir le suivi des sorties de la montre.");
+              L.push("Sorties rangées dans Activités : "+(+d.saved||0)+(d.last ? " (dernière le "+fd(d.last)+")" : ""));
+              if(d.err) L.push("Dernier problème : "+d.err+(d.errT ? " (le "+fd(d.errT)+")" : ""));
+              var dl=el.querySelector("small.wt-diag"); if(!dl){ dl=document.createElement("small"); dl.className="wt-diag"; dl.style.cssText="display:block;margin-top:6px;font-size:12px;line-height:1.45;opacity:.85;white-space:pre-line"; el.appendChild(dl); }
+              dl.textContent=L.join("\n"); }catch(e2){}
+            }).catch(function(){}); }catch(e){} };
       var pick=function(slot){ var c=get2(), x=c[view], isT=slot.charAt(0)==="t", i=+slot.slice(1), cur=isT ? x.t[i] : x.m[i], sh=document.createElement("div"); sh.className="wt-sh";
         sh.innerHTML='<div class="wt-sh-c wm-pick"><b>Quelle info ici ?</b>'+(isT ? '<button type="button" class="wt-m" data-k=""><span>Aucune</span><em></em><u>'+(cur ? "" : "✓")+'</u></button>' : '')
           +CAT.map(function(g){ return '<h4>'+esc(g[0])+'</h4>'+g[1].map(function(k){ var m=M[k]; return '<button type="button" class="wt-m" data-k="'+k+'"><span>'+esc(m[0])+'</span><em>'+esc(m[1])+(m[2] ? ' <i>'+esc(m[2])+'</i>' : '')+'</em><u>'+(k===cur ? "✓" : "")+'</u></button>'; }).join(""); }).join("")

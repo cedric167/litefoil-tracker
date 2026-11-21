@@ -76,7 +76,10 @@ public class LfWatchPlugin: CAPPlugin, CAPBridgedPlugin, WCSessionDelegate {
         guard WCSession.isSupported() else { call.resolve(["supported": false, "paired": false, "installed": false]); return }
         let s = WCSession.default
         let on = s.activationState == .activated
-        call.resolve(["supported": true, "paired": on && s.isPaired, "installed": on && s.isWatchAppInstalled])
+        let d = UserDefaults.standard
+        call.resolve(["supported": true, "paired": on && s.isPaired, "installed": on && s.isWatchAppInstalled,
+                      "got": d.integer(forKey: "lf.watch.got"), "gotT": d.double(forKey: "lf.watch.gotT"),
+                      "wait": (d.stringArray(forKey: "lf.watch.rides") ?? []).count, "queue": on ? s.outstandingUserInfoTransfers.count : 0])
     }
 
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
@@ -90,6 +93,9 @@ public class LfWatchPlugin: CAPPlugin, CAPBridgedPlugin, WCSessionDelegate {
         a.append(r)
         if a.count > 30 { a.removeFirst(a.count - 30) }
         d.set(a, forKey: "lf.watch.rides")
+        // compteur pour le suivi affiché dans « Ma montre »
+        d.set(d.integer(forKey: "lf.watch.got") + 1, forKey: "lf.watch.got")
+        d.set(Date().timeIntervalSince1970, forKey: "lf.watch.gotT")
         notifyListeners("ride", data: [:])
     }
 
