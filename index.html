@@ -5392,7 +5392,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       for (let i = 0; i < n; i++){ const o = 32 + i * 12; pts.push([d.getInt32(o + 2, true) / 1e6, d.getInt32(o + 6, true) / 1e6, d.getUint16(o + 10, true) / 10, d.getUint16(o, true), 0]); }
       const sport = SPORTS[file[4]] || "eFoil", serie = sport === "Musculation" || sport === "Fitness";
       return { id: "lfw-" + r.id, start: startMs(r), sport, indoor: file[5] === 1, dur: d.getUint32(12, true), dist: d.getUint32(20, true), max: d.getUint16(24, true) / 10,
-               sets: d.getUint16(6, true), setw: serie ? "Série" : "Tour", pts };
+               sets: d.getUint16(6, true), setw: serie ? "Série" : "Tour", pts,
+               runs: file[28] || 0, foilS: d.getUint16(29, true) || 0 };   // runs et temps sur le foil (montre 0.14.0 et plus)
     }
     async function importAll(){
       if (importing || !chRides) return;
@@ -5503,9 +5504,25 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         for (let i = 0; i < L.length; i++) await say("v=" + i + "|" + clean(L[i].id, 30) + "|" + clean(L[i].caption || L[i].topic || "Video", 48) + "|" + clean((L[i].pseudo || "Lite Foil") + (+L[i].vn ? " - " + L[i].vn + " vues" : ""), 32));
       } catch (e) {}
     }
+    // écrans de sortie composés dans « Ma montre » (les mêmes que pour l'Apple Watch) : ws=<e|t|s>|haut1,haut2;info1,info2…|…
+    async function pushScreens(){
+      const G = window.__lfWatch && window.__lfWatch.get2; if (!G || !chSync) return;
+      for (const f of [["eau", "e"], ["terre", "t"], ["salle", "s"]]){
+        try { const c = G(f[0]) || []; if (!c.length) continue;
+          await say("ws=" + f[1] + "|" + c.slice(0, 6).map(x => ((x.t && x.t[0]) || "") + "," + ((x.t && x.t[1]) || "") + ";" + (x.m || []).slice(0, 4).join(",")).join("|")); } catch (e) {}
+      }
+    }
+    window.__mwPushScreens = () => { if (chSync) pushScreens(); };
+    // batterie et puissance de l'eFoil, quand il est connecté à l'appli : lv=<%>|<kW>
+    function pushLive(){
+      if (!chSync || !(DASH.conn.bat || DASH.conn.vesc || DASH.conn.remote)) return;
+      const soc = (DASH.soc != null && isFinite(+DASH.soc)) ? Math.round(+DASH.soc) : "", w = DASH.batPow != null ? +DASH.batPow : (DASH.vescPow != null ? +DASH.vescPow : null);
+      if (soc === "" && w == null) return;
+      say("lv=" + soc + "|" + (w != null && isFinite(w) ? (Math.abs(w) / 1000).toFixed(1) : ""));
+    }
     async function pushAll(){
       if (!chSync || syncBusy) return; syncBusy = true;
-      try { await pushWeather(); await pushConvs(); await pushFeed(); await pushVids(); await outQ;
+      try { await pushScreens(); await pushWeather(); await pushConvs(); await pushFeed(); await pushVids(); await outQ;
         wlog("Montre mise à jour : météo, " + convList().slice(0, 8).length + " conversation(s), " + feedCache.length + " publication(s), " + vidCache.length + " vidéo(s).", "g"); } catch (e) { wlog("Envoi à la montre : " + errText(e), "e"); }
       syncBusy = false;
     }
@@ -5534,7 +5551,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       window.__mwOnDMs = () => { if (chSync && !syncBusy) pushConvs(); };
       setTimeout(pushAll, 1200);                                   // tout de suite à la connexion
       if (syncTimer) clearInterval(syncTimer);
-      let n = 0; syncTimer = setInterval(() => { callCheck(); if (++n % 300 === 0) pushAll(); }, 1000);   // appels chaque seconde, le reste toutes les 5 minutes
+      let n = 0; syncTimer = setInterval(() => { callCheck(); if (++n % 5 === 0) pushLive(); if (n % 300 === 0) pushAll(); }, 1000);   // appels chaque seconde, le reste toutes les 5 minutes
       wlog("Envoi de la météo, des messages, du fil et de Swip à la montre.", "g");
     }
 
@@ -11929,7 +11946,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
     var wearLink=function(code){ var ch=wearCh(); if(!ch){ ch=""; var al="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789", rb=new Uint8Array(24); (window.crypto||window.msCrypto).getRandomValues(rb); for(var i=0;i<24;i++) ch+=al.charAt(rb[i]%al.length); }
       var f=window.__secWatchSos; return (f ? f() : Promise.resolve(null)).catch(function(){ return null; }).then(function(o){ var cfg=wearCfg(o, ch);
         return wearPost(ch, cfg).then(function(ok1){ if(!ok1) return { ok:false }; return wearPost(code, cfg).then(function(ok2){ if(ok2){ try{ localStorage.setItem("lf.wear.ch", ch); }catch(e){} wearLast=JSON.stringify(cfg); } return { ok:ok2, sos:!!(o && o.api) }; }); }); }); };
-    var save=function(c){ try{ localStorage.setItem(famKey(), JSON.stringify(c)); }catch(e){} push(); wearNow(); };
+    var save=function(c){ try{ localStorage.setItem(famKey(), JSON.stringify(c)); }catch(e){} push(); wearNow(); try{ if(window.__mwPushScreens) window.__mwPushScreens(); }catch(e){} };   // + montre Lite Foil
     // chiffres en direct, lus sur la page Tracking
     var tx=function(id){ var e=document.getElementById(id); return e ? String(e.textContent||"").trim() : ""; };
     var vu=function(s){ s=String(s||"").trim(); if(!s || s.charAt(0)==="—") return ""; var i=s.lastIndexOf(" "); return i>0 ? s.slice(0,i)+"|"+s.slice(i+1) : s; };
@@ -12064,7 +12081,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
         if(x==="up" || x==="down"){ var j=view+(x==="up" ? -1 : 1); if(j>=0 && j<c.length){ var tmp=c[view]; c[view]=c[j]; c[j]=tmp; save(c); view=j; paint(); } return; } });
       paint(); document.body.appendChild(ov); push(); };
     var ob=document.getElementById("wtOpen"); if(ob) ob.addEventListener("click", open);
-    window.__lfWatch={ open:open, get:get, wearSync:wearSync, addRaw:function(js){ rawSet(rawGet().concat([js])); saveRides(); } }; setTimeout(wearNow, 12000); })();
+    window.__lfWatch={ open:open, get:get, get2:get2, wearSync:wearSync, addRaw:function(js){ rawSet(rawGet().concat([js])); saveRides(); } }; setTimeout(wearNow, 12000); })();
   // raccourcis de l'accueil : on les déplace, on en retire, on en ajoute ; l'ordre est gardé sur le téléphone
   (function(){ var box=document.querySelector("#tab-dash .quick"), head=document.querySelector("#tab-dash .qk-head"); if(!box || !head) return;
     [].forEach.call(box.children, function(el){ el.dataset.qid = el.dataset.qk || el.dataset.goto || "activites"; });

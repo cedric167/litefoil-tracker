@@ -1,9 +1,9 @@
 {
   "product": "montre",
-  "version": "0.13.0",
-  "file": "montre-0.13.0.bin",
-  "size": 1518144,
-  "md5": "692ed13e337ccd74e35e87db08c9e604",
+  "version": "0.14.0",
+  "file": "montre-0.14.0.bin",
+  "size": 1735888,
+  "md5": "91f224538ed26fed24cf64172a57d636",
   "date": "2026-11-21",
-  "notes": "Lettres lissees avec accents, clavier a grosses touches, gros bouton SOS, logo plus long, ecran plus lumineux, Swip retire du menu. Version de test."
+  "notes": "Ecrans de sortie comme sur l'Apple Watch (composes dans Ma montre), runs sur le foil, nouvelles boules, nouvel ecran SOS, police de l'appli. Version de test."
 }
