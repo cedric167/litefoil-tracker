@@ -172,6 +172,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     // séance d'exercice Apple pendant la sortie : la montre garde l'appli à l'écran au lieu de revenir au cadran
     private let hk = HKHealthStore()
     private var workout: HKWorkoutSession?
+    /// sorties terminées pas encore confiées à l'iPhone
+    @Published var pendingRides = 0
     private var builder: HKLiveWorkoutBuilder?
     private var savedScreens: [WatchScreen]?
     // cardio et calories lus pendant la séance
@@ -295,6 +297,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if !session.receivedApplicationContext.isEmpty { apply(session.receivedApplicationContext) }
+        flushRides()
     }
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) { apply(applicationContext) }
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) { applyLive(message) }
@@ -450,6 +453,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             }
         }
         now = t
+        if Int(t.timeIntervalSince1970) % 20 == 0 { flushRides() }
         timerTick(t)
         // repos visé atteint : la montre vibre une fois
         if running && isIndoor && resting && !restBuzzed && t.timeIntervalSince(phaseStart) >= Double(restGoal) {
@@ -489,7 +493,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     /// La sortie terminée part vers l'iPhone, qui la range dans les activités (remise garantie, même si l'iPhone est loin sur le moment).
     private func sendRide() {
-        guard track.count >= 2 || isIndoor, WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
+        guard track.count >= 2 || isIndoor || runS >= 20 else { return }
         let pts: [[Double]] = track.map { p in
             [(p[0] * 100000).rounded() / 100000, (p[1] * 100000).rounded() / 100000, (p[2] * 10).rounded() / 10, p[3].rounded(), p[4].rounded()]
         }
@@ -499,8 +503,22 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             "max": (maxKmh * 10).rounded() / 10, "runs": runCount, "foilS": Int(foilS), "foilM": Int(foilDistM), "pts": pts,
             "hr": Int(hrAvg.rounded()), "hrmax": Int(hrMax.rounded()), "kcal": Int(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord
         ]
-        guard let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
-        WCSession.default.transferUserInfo(["ride": s])
+        guard JSONSerialization.isValidJSONObject(ride), let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
+        // file d'attente gardée sur la montre : la sortie n'est retirée qu'une fois confiée à la liaison avec l'iPhone
+        var q = store.stringArray(forKey: "pendingRides") ?? []
+        q.append(s)
+        if q.count > 20 { q.removeFirst(q.count - 20) }
+        store.set(q, forKey: "pendingRides")
+        flushRides()
+    }
+    /// envoie à l'iPhone les sorties en attente, dès que la liaison est active
+    func flushRides() {
+        let q = store.stringArray(forKey: "pendingRides") ?? []
+        DispatchQueue.main.async { self.pendingRides = q.count }
+        guard !q.isEmpty, WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
+        for s in q { WCSession.default.transferUserInfo(["ride": s]) }
+        store.removeObject(forKey: "pendingRides")
+        DispatchQueue.main.async { self.pendingRides = 0 }
     }
     /// Vent et température à l'endroit de la sortie (Open-Meteo, sans compte), au plus une demande par quart d'heure.
     private func fetchWeather(_ l: CLLocation) {
@@ -1074,6 +1092,8 @@ struct SummaryView: View {
                         SummaryLine(a: "Plus long run", b: SosModel.clockText(m.longRunS))
                     }
                 }
+                Text(m.pendingRides > 0 ? "En attente de l'iPhone : ouvre Lite Foil sur l'iPhone" : "Sortie envoyée à l'iPhone ✓")
+                    .font(.system(size: 10, weight: .semibold)).foregroundColor(m.pendingRides > 0 ? .lfYellow : .lfGo).padding(.top, 6)
                 LfButton(title: "Fermer", bg: .lfGo, fg: .black, action: { m.screen = .home }).padding(.top, 8)
                 HStack { Spacer(); SosChip(m: m); Spacer() }.padding(.top, 4)
             }

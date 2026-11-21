@@ -11509,7 +11509,9 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
     var hav=function(a1,o1,a2,o2){ var R=6371000, r=Math.PI/180, x=(a2-a1)*r, y=(o2-o1)*r, q=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a1*r)*Math.cos(a2*r)*Math.sin(y/2)*Math.sin(y/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(q))); };
     var rideToSess=function(r){ var P=r.pts||[]; var hr=((+r.hr||0)>0 || (+r.kcal||0)>0) ? { avg:+r.hr||0, max:+r.hrmax||0, kcal:+r.kcal||0 } : null;
       // séance de salle : pas de tracé, seulement la durée, le cardio et les calories
-      if(r.indoor){ var si=WSP[r.sport]||["fitness",String(r.sport||"Séance"),"terre"], du=+r.dur||0; if(du<20) return null;
+      if(r.indoor || P.length<2){ var si=WSP[r.sport]||[r.indoor?"fitness":"other",String(r.sport||"Séance"),r.indoor?"terre":"mer"], du=+r.dur||0; if(du<20) return null;
+        if(!r.indoor) return { id:String(r.id||("watch-"+r.start)), name:si[1]+" · montre", categoryName:si[1], activityType:si[0], milieu:si[2], startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:du, distanceM:+r.dist||0,
+          avgSpeedKmh:(du>0 && +r.dist>0) ? +((+r.dist)/du*3.6).toFixed(1) : 0, maxSpeedKmh:+(+r.max||0).toFixed(1), maxAltM:0, firstLat:null, firstLon:null, thumbnailUrl:null, source:"phone", device:"watch", points:[], notrack:true, hr:hr };
         return { id:String(r.id||("watch-"+r.start)), name:si[1]+" · montre", categoryName:si[1], activityType:si[0], milieu:"terre", startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:du, distanceM:0, avgSpeedKmh:0, maxSpeedKmh:0, maxAltM:0,
           firstLat:null, firstLon:null, thumbnailUrl:null, source:"phone", device:"watch", points:[], indoor:true, hr:hr, sets:(+r.sets||0)>0 ? { n:+r.sets, w:String(r.setw||"Série").slice(0,12) } : null }; }
       if(P.length<2) return null; var sp=WSP[r.sport]||["other",String(r.sport||"Sortie"),"mer"], cum=0, out=[];
