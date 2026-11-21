@@ -4141,11 +4141,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     return L.marker(ll, { icon:L.divIcon({ className:"", html:'<div class="lf-sp"><img alt="" src="img/sports/'+f+'"></div>', iconSize:[52,52], iconAnchor:[26,26] }), interactive:false, zIndexOffset:600 }); };
   // Activités proposées par milieu : [clé interne, libellé affiché]
   // 07/11 : mêmes sports que les Cartes Membre (les sports choisis dans « Mes sports » passent en premier)
+  var PH_INDOOR = ["muscu","crosstraining","hiit","fitness","cardio","yoga","rameur","velosalle","tapis","boxe"];
   var PH_ACTS = {
     mer: [["efoil","E-foil"],["wingfoil","Wing foil"],["parawing","Para wing"],["windsurf","Windsurf"],["pumpfoil","Pump foil"],["kitesurf","Kitesurf"],["surffoil","Surf foil"],["supdownwind","SUP Downwind"],
       ["surf","Surf"],["bodyboard","Bodyboard"],["sup","Stand up paddle"],["canoe","Canoë / Kayak"],["deriveur","Dériveur"],["jetski","Jetski"],["swim","Nage"],["other","Autre (eau)"]],
     terre: [["running","Running"],["marche","Marche athlétique"],["rando","Randonnée"],["trail","Trail"],["velo","Vélo"],["ski","Ski"],["snowboard","Snowboard"],["skate","Skateboard"],["longboard","Longboard"],
-      ["surfskate","Surfskate"],["roller","Roller"],["longueur","Saut en longueur"],["perche","Saut à la perche"],["voiture","Voiture"],["moto","Moto"],["vehicule","Autre véhicule"],["other","Autre (terre)"]],
+      ["surfskate","Surfskate"],["roller","Roller"],["longueur","Saut en longueur"],["perche","Saut à la perche"],["voiture","Voiture"],["moto","Moto"],["vehicule","Autre véhicule"],
+      ["muscu","Musculation"],["crosstraining","Cross training"],["hiit","HIIT"],["fitness","Fitness"],["cardio","Cardio"],["yoga","Yoga"],["rameur","Rameur"],["velosalle","Vélo de salle"],["tapis","Tapis de course"],["boxe","Boxe"],["other","Autre (terre)"]],
     air: [["ulm","ULM / Avion"],["parapente","Parapente"],["other","Autre (air)"]]
   };
   function phFillActs(){
@@ -4391,6 +4393,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     try { $("trkChip").className = "trk-chip"; $("trkChipTx").textContent = "Terminé"; } catch(e){}
     phStopCleanup();
     $("phStart").hidden = false; $("phStop").hidden = true;
+    // sport de salle : pas de tracé, la séance est enregistrée sur sa durée
+    if(PH_INDOOR.indexOf(phType)>=0 && phMilieu==="terre"){ var nwI=Date.now(), duI=Math.max(0, Math.round((nwI-phT0-phPausedMs(nwI))/1000));
+      if(duI<20){ $("phNote").textContent = "Séance trop courte pour être enregistrée."; try { phStlFinish(null); } catch(e){} return; }
+      var catI=phCat||"Séance", seI={ id:"phone-"+phT0, name:catI+" · téléphone", categoryName:catI, activityType:phType, milieu:"terre", startedAt:new Date(phT0).toISOString(), durationSec:duI, distanceM:0, avgSpeedKmh:0, maxSpeedKmh:0, maxAltM:0,
+        firstLat:null, firstLon:null, thumbnailUrl:null, source:"phone", points:[], indoor:true };
+      try { phStlFinish(null); } catch(e){} phSaveLocal(seI);
+      $("phNote").innerHTML = "Séance enregistrée ✔ "+phFmtDur(duI)+". <a href=\"activites/\" style=\"color:var(--accent-ink);font-weight:800\">Voir dans Activités →</a>"; return; }
     if(phPts.length < 2){ $("phNote").textContent = "Sortie trop courte : pas assez de points GPS pour enregistrer."; try { phStlFinish(null); } catch(e){} return; }
     var sess = phBuildSession();
     try { phStlFinish(sess); } catch(e){}

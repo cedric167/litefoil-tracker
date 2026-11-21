@@ -68,7 +68,8 @@ import java.util.Locale;
 public class MainActivity extends Activity implements LocationListener, SensorEventListener {
     static final String BASE = "https://litefoil-communaute-222fd.web.app";
     static final int MATCH = ViewGroup.LayoutParams.MATCH_PARENT, WRAP = ViewGroup.LayoutParams.WRAP_CONTENT;
-    static final String[] SPORTS = { "eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski" };
+    static final String[] SPORTS = { "eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski",
+        "Musculation", "Cross training", "HIIT", "Fitness", "Cardio", "Yoga", "Rameur", "Vélo de salle", "Tapis de course", "Boxe" };
     static final long AUTO_LOCK_MS = 8000;   // sans toucher l'écran pendant la sortie : verrouillage automatique
     static final double FOIL_ON = 12.0, FOIL_OFF = 9.0;   // km/h : un « run » commence au-dessus de 12, finit sous 9
     static final int C_BG1 = 0xFF0F3A5C, C_BG2 = 0xFF04141D, C_ACC = 0xFF5FD0E6, C_MUTE = 0xFF8FB4C6, C_RED = 0xFFE8384F, C_GO = 0xFF2FD3C3;
@@ -121,6 +122,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         sp = getSharedPreferences("lf", Context.MODE_PRIVATE);
         round = getResources().getConfiguration().isScreenRound();
         sport = sp.getString("sport", "eFoil");
+        restGoal = sp.getInt("restGoal", 90); amrapMin = sp.getInt("amrapMin", 10); timerMode = Math.max(0, Math.min(3, sp.getInt("timerMode", 0)));
         root = new FrameLayout(this);
         root.setBackgroundColor(0xFF000000);
         setContentView(root);
@@ -130,7 +132,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
                 if (locked || view != V_RUN) return false;
                 if (Math.abs(vx) < Math.abs(vy) * 1.3f || Math.abs(vx) < 350) return false;
                 int np = page + (vx < 0 ? 1 : -1);
-                if (np < 0 || np > screens.length) return false;   // la dernière page est celle des commandes
+                if (np < 0 || np > lastPage()) return false;   // la dernière page est celle des commandes
                 page = np; render();
                 return true;
             }
@@ -155,7 +157,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
             if (Math.abs(rotary) >= 1.2f) {
                 int np = page + (rotary > 0 ? 1 : -1);
                 rotary = 0f;
-                if (np >= 0 && np <= screens.length && !(locked && np == screens.length)) { page = np; buzz(20); if (!locked) lastTouch = SystemClock.elapsedRealtime(); render(); }
+                if (np >= 0 && np <= lastPage() && !(locked && np >= nScr())) { page = np; buzz(20); if (!locked) lastTouch = SystemClock.elapsedRealtime(); render(); }
             }
             return true;
         }
@@ -443,7 +445,8 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
             if (running) {
                 if (!paused) { long d = now - lastTick; runMs += d; if (curKmh >= 3) moveMs += d; if (onFoil) foilMs += d; }
                 lastTick = now;
-                if (!paused && !locked && view == V_RUN && page < screens.length && now - lastTouch >= AUTO_LOCK_MS) { locked = true; buzz(40); render(); }
+                timerTick(now);
+                if (!paused && !locked && view == V_RUN && page < nScr() && now - lastTouch >= AUTO_LOCK_MS) { locked = true; buzz(40); render(); }
             }
             if (resumed) updateValues();
             if (resumed || running) h.postDelayed(this, 1000);
@@ -451,10 +454,11 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     };
 
     private void startRun() {
-        if (!hasLoc() || (!hasBody() && !sp.getBoolean("askedBody", false))) {
+        // sport de salle : pas de GPS, donc pas besoin de l'accord de position
+        if ((!indoor() && !hasLoc()) || (!hasBody() && !sp.getBoolean("askedBody", false))) {
             sp.edit().putBoolean("askedBody", true).apply();
             pendingAction = 1;
-            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BODY_SENSORS }, 1);
+            requestPermissions(indoor() ? new String[] { Manifest.permission.BODY_SENSORS } : new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BODY_SENSORS }, 1);
             return;
         }
         running = true; paused = false; locked = false;
@@ -462,7 +466,9 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         onFoil = false; foilUp = 0; foilDown = 0; runCount = 0; foilMs = 0; foilDistM = 0; longRunMs = 0; longRunDistM = 0; runMaxKmh = 0;
         hrSum = 0; hrN = 0; hrMax = 0;
         lastTick = SystemClock.elapsedRealtime(); lastTouch = lastTick; startWall = System.currentTimeMillis();
-        startGps(); startHr();
+        setCount = 1; resting = false; restBuzzed = false; phaseStart = lastTick; timerOn = false; timerDone = false;
+        if (!indoor()) startGps();
+        startHr();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         buzz(120);
         h.removeCallbacks(tick); h.post(tick);
@@ -480,7 +486,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     private void stopRun(boolean keep) {
         endFoilRun();
-        running = false; paused = false; locked = false; curKmh = 0;
+        running = false; paused = false; locked = false; curKmh = 0; timerOn = false;
         if (sosPhase != 2 && sosPhase != 1) stopGps();
         stopHr();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -498,7 +504,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         else if ("act".equals(k)) d = "Temps actif"; else if ("rdur".equals(k)) d = "Durée du run"; else if ("fdur".equals(k)) d = "Temps sur le foil";
         else if ("run".equals(k)) d = "Run n°"; else if ("runs".equals(k)) d = "Runs"; else if ("lrdur".equals(k) || "lrdist".equals(k)) d = "Plus long run";
         else if ("hr".equals(k)) d = "Cardio"; else if ("hravg".equals(k)) d = "Cardio moyen"; else if ("hrmax".equals(k)) d = "Cardio max";
-        else if ("wbat".equals(k)) d = "Batterie montre";
+        else if ("wbat".equals(k)) d = "Batterie montre"; else if ("zone".equals(k)) d = "Zone cardio";
         return labels.optString(k, d);
     }
 
@@ -533,6 +539,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         if ("hr".equals(k)) return new String[] { hrNow > 0 ? String.valueOf(hrNow) : "—", "bpm" };
         if ("hravg".equals(k)) return new String[] { hrN > 0 ? String.valueOf(Math.round((double) hrSum / hrN)) : "—", "bpm" };
         if ("hrmax".equals(k)) return new String[] { hrMax > 0 ? String.valueOf(hrMax) : "—", "bpm" };
+        if ("zone".equals(k)) { int z = zone(); return new String[] { z > 0 ? "Z" + z : "—", "" }; }
         if ("wbat".equals(k)) {
             int p = -1;
             try { Intent bi = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)); if (bi != null) { int lv = bi.getIntExtra(BatteryManager.EXTRA_LEVEL, -1), sc = bi.getIntExtra(BatteryManager.EXTRA_SCALE, 100); if (lv >= 0 && sc > 0) p = lv * 100 / sc; } } catch (Exception e) { /* rien */ }
@@ -547,7 +554,8 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         String[] v = value(k);
         if ("run".equals(k)) return "Run " + v[0];
         if ("runs".equals(k)) return "Runs " + v[0];
-        if ("hr".equals(k) || "hravg".equals(k) || "hrmax".equals(k)) return "♥ " + v[0];
+        if ("hr".equals(k)) { int z = zone(); return "♥ " + v[0] + (z > 0 ? " Z" + z : ""); }
+        if ("hravg".equals(k) || "hrmax".equals(k)) return "♥ " + v[0];
         if ("clock".equals(k)) return v[0];
         if ("wbat".equals(k)) return "Montre " + v[0] + " %";
         if ("bat".equals(k)) return "eFoil " + v[0] + (v[0].equals("—") ? "" : " %");
@@ -566,6 +574,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
             elapsedView.setTextColor(paused ? 0xFFFFB347 : 0xFFFFD84A);
         }
         if (clockView != null) clockView.setText(new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date()));
+        updateSets();
     }
 
     // ---------- SOS ----------
@@ -716,7 +725,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     private void render() {
         root.removeAllViews();
-        cells.clear(); elapsedView = null; clockView = null;
+        cells.clear(); elapsedView = null; clockView = null; setsTitle = null; setsClock = null; setsHr = null;
         backdrop();
         if (view == V_RUN && !running) view = V_HOME;
         LinearLayout col = column();
@@ -725,8 +734,9 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         if (view == V_CONFIRM) { col.setGravity(Gravity.CENTER); confirmPage(col); scroll(col); return; }
         if (view == V_SUMMARY) { if (round) col.setPadding(dp(44), dp(13), dp(44), dp(13)); summaryPage(col); scroll(col); return; }
         if (view == V_RUN) {
-            if (page >= screens.length) { page = screens.length; controlsPage(col); }
-            else metricPage(col, screens[page], page < tops.length ? tops[page] : new String[] { "", "" });
+            if (page >= lastPage()) { page = lastPage(); controlsPage(col); }
+            else if (page >= nScr()) setsPage(col);
+            else metricPage(col, scr()[page], page < tps().length ? tps()[page] : new String[] { "", "" });
             root.addView(col, new FrameLayout.LayoutParams(MATCH, MATCH));
             if (locked) root.addView(new LockView(this), new FrameLayout.LayoutParams(MATCH, MATCH));
             updateValues();
@@ -767,6 +777,128 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         if (!linked()) col.addView(text("Montre non liée. Code : " + pairCode() + "\nAppli Lite Foil : Ma montre, Montre Android.", 10, 0xFFFFD84A, false), lp(MATCH, WRAP, dp(8)));
         col.addView(sosChip(), lp(dp(54), dp(24), dp(8)));
         col.addView(new View(this), lp(1, dp(round ? 26 : 6), 0));
+    }
+
+    // ---------- sports de salle : séries / repos, minuteurs, zones cardio ----------
+    static final java.util.Set<String> INDOOR = new java.util.HashSet<>(java.util.Arrays.asList("Musculation", "Cross training", "HIIT", "Fitness", "Cardio", "Yoga", "Rameur", "Vélo de salle", "Tapis de course", "Boxe"));
+    static final String[][] IN_SCREENS = { { "hr", "dur", "zone" }, { "dur", "hravg", "hrmax", "zone" } };
+    static final String[][] IN_TOPS = { { "clock", "wbat" }, { "clock", "wbat" } };
+    private int setCount = 1, restGoal = 90, timerMode = 0, amrapMin = 10, timerKey = -1;   // timerMode : 0 séries, 1 Tabata, 2 EMOM, 3 AMRAP
+    private boolean resting = false, restBuzzed = false, timerOn = false, timerDone = false;
+    private long phaseStart = 0, timerStart = 0;
+    private TextView setsTitle, setsClock, setsHr;
+
+    private boolean indoor() { return INDOOR.contains(sport); }
+    private boolean inRun() { return running && indoor(); }
+    private String[][] scr() { return inRun() ? IN_SCREENS : screens; }
+    private String[][] tps() { return inRun() ? IN_TOPS : tops; }
+    private int nScr() { return scr().length; }
+    /** dernière page de la sortie (les commandes) : les écrans, plus la page des séries pour un sport de salle */
+    private int lastPage() { return nScr() + (inRun() ? 1 : 0); }
+    private boolean onSets() { return view == V_RUN && inRun() && page == nScr(); }
+    private boolean serie() { return "Musculation".equals(sport) || "Fitness".equals(sport); }
+    /** zones cardio sur une fréquence maximale de 190 (la montre ne connaît pas l'âge) */
+    private int zone() { if (hrNow <= 0) return 0; double r = hrNow / 190.0; return r < 0.6 ? 1 : r < 0.7 ? 2 : r < 0.8 ? 3 : r < 0.9 ? 4 : 5; }
+    private static int zoneColor(int z) { return z == 1 ? C_MUTE : z == 2 ? C_ACC : z == 3 ? C_GO : z == 4 ? 0xFFFFD84A : C_RED; }
+    private String modeTitle() { return timerMode == 1 ? "Tabata" : timerMode == 2 ? "EMOM" : timerMode == 3 ? "AMRAP" : serie() ? "Séries" : "Tours"; }
+
+    /** titre, chrono et couleur (0 neutre, 1 effort, 2 repos, 3 terminé) du minuteur */
+    private String[] timerInfo(long now) {
+        double e = timerOn ? (now - timerStart) / 1000.0 : 0;
+        if (timerMode == 1) {
+            if (timerDone) return new String[] { "Terminé", "8 / 8", "3" };
+            if (!timerOn) return new String[] { "8 × 20 s / 10 s", "0:20", "0" };
+            int r = Math.min(7, (int) (e / 30)); double p = e - r * 30;
+            if (p < 20) return new String[] { "Effort " + (r + 1) + "/8", clockOf((long) ((20 - p + 0.99) * 1000)), "1" };
+            return new String[] { "Repos " + (r + 1) + "/8", clockOf((long) ((30 - p + 0.99) * 1000)), "2" };
+        }
+        if (timerMode == 2) {
+            if (!timerOn) return new String[] { "Chaque minute", "1:00", "0" };
+            int mn = (int) (e / 60); double p = e - mn * 60;
+            return new String[] { "Minute " + (mn + 1), clockOf((long) ((60 - p + 0.99) * 1000)), "1" };
+        }
+        if (timerDone) return new String[] { Math.max(0, setCount - 1) + " tours", "0:00", "3" };
+        if (!timerOn) return new String[] { "Compte à rebours", clockOf(amrapMin * 60000L), "0" };
+        return new String[] { "Tour " + setCount, clockOf((long) ((Math.max(0, amrapMin * 60 - e) + 0.99) * 1000)), "1" };
+    }
+
+    private void timerTick(long now) {
+        if (!running) return;
+        if (resting && !restBuzzed && timerMode == 0 && now - phaseStart >= restGoal * 1000L) { restBuzzed = true; buzz(400); }
+        if (!timerOn) return;
+        double e = (now - timerStart) / 1000.0;
+        if (timerMode == 1) {
+            if (e >= 240) { timerOn = false; timerDone = true; buzz(600); if (onSets()) render(); return; }
+            int r = (int) (e / 30), key = r * 2 + ((e - r * 30) < 20 ? 0 : 1);
+            if (key != timerKey) { if (timerKey >= 0) buzz(key % 2 == 0 ? 300 : 150); timerKey = key; }
+        } else if (timerMode == 2) {
+            int key = (int) (e / 60);
+            if (key != timerKey) { if (timerKey >= 0) buzz(300); timerKey = key; }
+        } else if (timerMode == 3) {
+            if (e >= amrapMin * 60) { timerOn = false; timerDone = true; buzz(600); if (onSets()) render(); }
+        }
+    }
+
+    private void updateSets() {
+        if (setsTitle == null || setsClock == null) return;
+        long now = SystemClock.elapsedRealtime();
+        if (setsHr != null) { int z = zone(); setsHr.setText("♥ " + (hrNow > 0 ? String.valueOf(hrNow) : "—") + (z > 0 ? " Z" + z : "")); setsHr.setTextColor(z > 0 ? zoneColor(z) : C_RED); }
+        if (timerMode == 0) {
+            long ph = now - phaseStart;
+            setsTitle.setText((serie() ? "SÉRIE " : "TOUR ") + setCount);
+            setsClock.setText((resting ? "Repos " : "") + clockOf(ph));
+            setsClock.setTextColor(resting ? (ph >= restGoal * 1000L ? C_GO : 0xFFFFD84A) : C_ACC);
+        } else {
+            String[] i = timerInfo(now);
+            setsTitle.setText(i[0]); setsClock.setText(i[1]);
+            setsClock.setTextColor("1".equals(i[2]) ? C_GO : "2".equals(i[2]) ? 0xFFFFD84A : "3".equals(i[2]) ? C_ACC : 0xFFFFFFFF);
+        }
+    }
+
+    private void setsPage(LinearLayout col) {
+        col.setGravity(Gravity.CENTER);
+        LinearLayout top = new LinearLayout(this);
+        top.setOrientation(LinearLayout.HORIZONTAL); top.setGravity(Gravity.CENTER);
+        TextView mode = button(modeTitle() + " ›", 0xFF2A4A60, 0xFFFFFFFF, new View.OnClickListener() { @Override public void onClick(View v) {
+            if (timerOn) return;
+            timerMode = (timerMode + 1) % 4; timerDone = false; sp.edit().putInt("timerMode", timerMode).apply(); buzz(20); render(); } });
+        mode.setTextSize(11); mode.setPadding(dp(10), 0, dp(10), 0);
+        top.addView(mode, new LinearLayout.LayoutParams(WRAP, dp(24)));
+        setsHr = text("", 12, C_RED, true);
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(WRAP, WRAP); hp.leftMargin = dp(8);
+        top.addView(setsHr, hp);
+        col.addView(top, lp(MATCH, WRAP, 0));
+        setsTitle = text("", 15, 0xFFFFFFFF, true);
+        col.addView(setsTitle, lp(MATCH, WRAP, dp(2)));
+        setsClock = text("", 28, C_ACC, true); setsClock.setSingleLine(true);
+        col.addView(setsClock, lp(MATCH, WRAP, 0));
+        if (timerMode == 0) {
+            col.addView(resting
+                ? button(serie() ? "Série suivante" : "Tour suivant", C_GO, 0xFF06282A, new View.OnClickListener() { @Override public void onClick(View v) { resting = false; setCount++; phaseStart = SystemClock.elapsedRealtime(); buzz(120); render(); } })
+                : button(serie() ? "Fin de série" : "Fin du tour", 0xFFFFD84A, 0xFF1A1400, new View.OnClickListener() { @Override public void onClick(View v) { resting = true; restBuzzed = false; phaseStart = SystemClock.elapsedRealtime(); buzz(80); render(); } }), lp(MATCH, dp(38), dp(3)));
+            TextView rg = button("Repos visé " + clockOf(restGoal * 1000L), 0xFF15394F, 0xFFD6E6EE, new View.OnClickListener() { @Override public void onClick(View v) {
+                int[] c = { 30, 60, 90, 120, 180 }; int k = 0; for (int j = 0; j < c.length; j++) if (c[j] == restGoal) k = j;
+                restGoal = c[(k + 1) % c.length]; sp.edit().putInt("restGoal", restGoal).apply(); buzz(20); render(); } });
+            rg.setTextSize(10); rg.setPadding(dp(10), 0, dp(10), 0);
+            col.addView(rg, lp(WRAP, dp(22), dp(3)));
+        } else {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.addView(button(timerOn ? "Stop" : "Départ", timerOn ? C_RED : C_GO, timerOn ? 0xFFFFFFFF : 0xFF06282A, new View.OnClickListener() { @Override public void onClick(View v) {
+                if (timerOn) timerOn = false;
+                else { timerOn = true; timerDone = false; timerStart = SystemClock.elapsedRealtime(); timerKey = -1; if (timerMode == 3) setCount = 1; }
+                buzz(timerOn ? 150 : 80); render(); } }), new LinearLayout.LayoutParams(0, MATCH, 1f));
+            if (timerMode == 3) {
+                LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(0, MATCH, 1f); p2.leftMargin = dp(6);
+                row.addView(timerOn
+                    ? button("Tour +", 0xFFFFD84A, 0xFF1A1400, new View.OnClickListener() { @Override public void onClick(View v) { setCount++; buzz(60); updateSets(); } })
+                    : button(amrapMin + " min", 0xFF2A4A60, 0xFFFFFFFF, new View.OnClickListener() { @Override public void onClick(View v) {
+                        int[] c = { 5, 10, 12, 15, 20 }; int k = 0; for (int j = 0; j < c.length; j++) if (c[j] == amrapMin) k = j;
+                        amrapMin = c[(k + 1) % c.length]; timerDone = false; sp.edit().putInt("amrapMin", amrapMin).apply(); buzz(20); render(); } }), p2);
+            }
+            col.addView(row, lp(MATCH, dp(38), dp(3)));
+        }
+        col.addView(footer(), lp(MATCH, dp(22), dp(3)));
     }
 
     // ----- écran d'infos pendant la sortie -----
@@ -816,7 +948,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         LinearLayout f = new LinearLayout(this);
         f.setOrientation(LinearLayout.HORIZONTAL); f.setGravity(Gravity.CENTER);
         StringBuilder d = new StringBuilder();
-        for (int i = 0; i <= screens.length; i++) d.append(i == page ? "●" : "○").append(i < screens.length ? " " : "");
+        for (int i = 0; i <= lastPage(); i++) d.append(i == page ? "●" : "○").append(i < lastPage() ? " " : "");
         TextView dots = text(d.toString(), 7, 0xFF7FA9BE, false);
         f.addView(dots, new LinearLayout.LayoutParams(WRAP, WRAP));
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(46), dp(20)); p.leftMargin = dp(8);
@@ -859,9 +991,9 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 
     private void confirmPage(LinearLayout col) {
         col.addView(text("Terminer la sortie ?", 14, 0xFFFFFFFF, true));
-        col.addView(button("Terminer", C_GO, 0xFF06282A, new View.OnClickListener() { @Override public void onClick(View v) { stopRun(true); } }), lp(MATCH, dp(36), dp(7)));
-        col.addView(button("Abandonner", C_RED, 0xFFFFFFFF, new View.OnClickListener() { @Override public void onClick(View v) { stopRun(false); } }), lp(MATCH, dp(34), dp(5)));
-        col.addView(button("Annuler", 0xFF2A4A60, 0xFFFFFFFF, new View.OnClickListener() { @Override public void onClick(View v) { view = V_RUN; render(); } }), lp(MATCH, dp(34), dp(5)));
+        // plus de bouton « Abandonner » : trop petit au doigt ; deux gros boutons
+        col.addView(button("Terminer", C_GO, 0xFF06282A, new View.OnClickListener() { @Override public void onClick(View v) { stopRun(true); } }), lp(MATCH, dp(48), dp(8)));
+        col.addView(button("Continuer", 0xFF2A4A60, 0xFFFFFFFF, new View.OnClickListener() { @Override public void onClick(View v) { view = V_RUN; render(); } }), lp(MATCH, dp(42), dp(6)));
     }
 
     // ----- résumé -----
@@ -889,6 +1021,11 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         col.addView(t, lp(MATCH, WRAP, 0));
         TextView d = text(new SimpleDateFormat("EEEE d MMMM", Locale.FRANCE).format(new Date(cal.getTimeInMillis())) + "  ·  " + sport, 10, 0xFFD6E6EE, false); d.setGravity(Gravity.START);
         col.addView(d, lp(MATCH, WRAP, dp(1)));
+        if (indoor()) {
+            section(col, "Séance");
+            line(col, "Durée", clockOf(runMs));
+            line(col, serie() ? "Séries" : "Tours", String.valueOf(setCount));
+        } else {
         section(col, "Distance et temps");
         line(col, "Durée", clockOf(runMs));
         line(col, "Temps actif", clockOf(moveMs));
@@ -902,6 +1039,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         line(col, "Distance sur le foil", num(foilDistM / 1000.0, 2) + " km");
         String[] lr = meters(longRunDistM);
         line(col, "Plus long run", clockOf(longRunMs) + "  ·  " + lr[0] + " " + lr[1]);
+        }
         if (hrN > 0) {
             section(col, "Cardio");
             line(col, "Moyen", Math.round((double) hrSum / hrN) + " bpm");
