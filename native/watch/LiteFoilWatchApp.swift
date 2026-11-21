@@ -509,16 +509,55 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         q.append(s)
         if q.count > 20 { q.removeFirst(q.count - 20) }
         store.set(q, forKey: "pendingRides")
+        lastQueuePush = Date.distantPast
         flushRides()
     }
-    /// envoie à l'iPhone les sorties en attente, dès que la liaison est active
+    private var lastQueuePush = Date.distantPast
+    /// Envoie à l'iPhone les sorties en attente. Chaque sortie reste sur la montre jusqu'à l'accusé de réception de l'iPhone.
     func flushRides() {
         let q = store.stringArray(forKey: "pendingRides") ?? []
         DispatchQueue.main.async { self.pendingRides = q.count }
-        guard !q.isEmpty, WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
-        for s in q { WCSession.default.transferUserInfo(["ride": s]) }
-        store.removeObject(forKey: "pendingRides")
-        DispatchQueue.main.async { self.pendingRides = 0 }
+        guard !q.isEmpty, WCSession.isSupported() else { return }
+        let s = WCSession.default
+        guard s.activationState == .activated else { return }
+        // 1) file du système : arrive même si l'iPhone est loin ou son appli fermée ; au plus une fois toutes les 10 minutes
+        if Date().timeIntervalSince(lastQueuePush) > 600 {
+            lastQueuePush = Date()
+            for r in q { s.transferUserInfo(["ride": r]) }
+        }
+        // 2) message direct dès que l'appli iPhone est joignable : réponse immédiate
+        if s.isReachable {
+            let small = q.filter { $0.utf8.count < 50000 }
+            if !small.isEmpty {
+                s.sendMessage(["rides": small], replyHandler: { [weak self] rep in
+                    if let ids = rep["ack"] as? [String] { self?.ackRides(ids) }
+                }, errorHandler: nil)
+            }
+        }
+    }
+    private func rideId(_ js: String) -> String {
+        guard let d = js.data(using: .utf8), let o = (try? JSONSerialization.jsonObject(with: d)) as? [String: Any] else { return "" }
+        return (o["id"] as? String) ?? ""
+    }
+    /// l'iPhone confirme avoir reçu ces sorties : on les retire de la file
+    func ackRides(_ ids: [String]) {
+        guard !ids.isEmpty else { return }
+        var q = store.stringArray(forKey: "pendingRides") ?? []
+        q.removeAll { ids.contains(self.rideId($0)) }
+        if q.isEmpty { store.removeObject(forKey: "pendingRides") } else { store.set(q, forKey: "pendingRides") }
+        let n = q.count
+        DispatchQueue.main.async { self.pendingRides = n }
+    }
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        if let ids = userInfo["ack"] as? [String] { ackRides(ids) }
+    }
+    /// état de la liaison avec l'iPhone, affiché dans le résumé
+    var linkText: String {
+        guard WCSession.isSupported() else { return "Liaison iPhone indisponible" }
+        let s = WCSession.default
+        if s.activationState != .activated { return "Liaison iPhone inactive" }
+        if !s.isCompanionAppInstalled { return "Appli Lite Foil absente de l'iPhone" }
+        return s.isReachable ? "iPhone connecté" : "iPhone hors de portée ou appli fermée"
     }
     /// Vent et température à l'endroit de la sortie (Open-Meteo, sans compte), au plus une demande par quart d'heure.
     private func fetchWeather(_ l: CLLocation) {
@@ -1092,8 +1131,9 @@ struct SummaryView: View {
                         SummaryLine(a: "Plus long run", b: SosModel.clockText(m.longRunS))
                     }
                 }
-                Text(m.pendingRides > 0 ? "En attente de l'iPhone : ouvre Lite Foil sur l'iPhone" : "Sortie envoyée à l'iPhone ✓")
+                Text(m.pendingRides > 0 ? "En attente (" + String(m.pendingRides) + ") : ouvre Lite Foil sur l'iPhone" : "Sortie reçue par l'iPhone ✓")
                     .font(.system(size: 10, weight: .semibold)).foregroundColor(m.pendingRides > 0 ? .lfYellow : .lfGo).padding(.top, 6)
+                Text(m.linkText).font(.system(size: 9)).foregroundColor(.lfMute)
                 LfButton(title: "Fermer", bg: .lfGo, fg: .black, action: { m.screen = .home }).padding(.top, 8)
                 HStack { Spacer(); SosChip(m: m); Spacer() }.padding(.top, 4)
             }
