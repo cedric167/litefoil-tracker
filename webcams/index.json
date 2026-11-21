@@ -359,7 +359,7 @@
    "sea": "med",
    "place": "Marseille",
    "view": "Vieux-Port",
-   "id": "_zZ140ZbNL4",
+   "id": "MQPaKWFyRV0",
    "embed": true,
    "by": "Hôtel Carré Vieux-Port (privé, pas un organisme public)",
    "match": [
@@ -5892,7 +5892,7 @@
    "view": "Funchal Marina 1 Island",
    "country": "Portugal",
    "area": "Madère & Açores",
-   "id": "DpaiPhbM4t4",
+   "id": "pl2bOOZe5S4",
    "embed": true,
    "by": "Madeira-Web",
    "match": [
@@ -6232,7 +6232,7 @@
    "view": "Funchal Marina 2 Island",
    "country": "Portugal",
    "area": "Madère & Açores",
-   "id": "BYd19W4uy0Y",
+   "id": "pl2bOOZe5S4",
    "embed": true,
    "by": "Madeira-Web",
    "match": [
@@ -6249,7 +6249,7 @@
    "view": "Ribeira and Vila Nova de Gaia",
    "country": "Portugal",
    "area": "Porto & Nord",
-   "id": "QetuuDxsgig",
+   "id": "uHO6kd7pl8U",
    "embed": true,
    "by": "Webcamtaxi",
    "match": [
@@ -6368,7 +6368,7 @@
    "view": "Resort Night Beach",
    "country": "Espagne",
    "area": "Alicante & Costa Blanca",
-   "id": "3gMGncR09ow",
+   "id": "EIFfnqHCG1A",
    "embed": false,
    "by": "BeniCam - Benidorm Webcam",
    "match": [
@@ -8561,7 +8561,7 @@
    "view": "Caribbean Beach - Aruba",
    "country": "Antilles",
    "area": "Saint-Martin & Saint-Barth",
-   "id": "N27ReV6sfYQ",
+   "id": "EfR9f8oRs3A",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8578,7 +8578,7 @@
    "view": "Curaçao - Willemstad - Mambo Beach",
    "country": "Antilles néerl.",
    "area": "Aruba, Bonaire & Curaçao",
-   "id": "Vwc6JMyTfM8",
+   "id": "WuUiYksG__4",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8969,7 +8969,7 @@
    "view": "Praia de em - em santos",
    "country": "Brésil",
    "area": "Sud du Brésil",
-   "id": "9uAswMiifHw",
+   "id": "Mo6NgP6oSTs",
    "embed": true,
    "by": "Olhar 013",
    "match": [
@@ -9292,7 +9292,7 @@
    "view": "七里ヶ浜・江ノ島ライブカメラ（ワイド） 湘南 鎌",
    "country": "Japon",
    "area": "Japon",
-   "id": "STzhcxzgxNk",
+   "id": "zvKCgphHwmE",
    "embed": true,
    "by": "湘南ライブカメラ",
    "match": [
@@ -9423,5 +9423,5 @@
    "approx": true
   }
  ],
- "updated": "2026-11-20"
+ "updated": "2026-11-21"
 }
