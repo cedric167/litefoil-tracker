@@ -174,6 +174,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     private var workout: HKWorkoutSession?
     /// sorties terminées pas encore confiées à l'iPhone
     @Published var pendingRides = 0
+    /// si la dernière fin de sortie a été interrompue (appli fermée par le système), on le dit à l'accueil
+    @Published var stopNote = ""
     private var builder: HKLiveWorkoutBuilder?
     private var savedScreens: [WatchScreen]?
     // jeux d'écrans composés sur l'iPhone pour les sports à terre et pour la salle
@@ -234,6 +236,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if let tm = store.string(forKey: "timerMode"), SosModel.timerModes.contains(tm) { timerMode = tm }
         if store.bool(forKey: "sosOn") { phase = .active; screen = .sos; startTracking() }
         clock = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in self?.second() }
+        let st = store.integer(forKey: "stopStep")
+        if st > 0 { stopNote = "Dernier arrêt interrompu (étape " + String(st) + ")"; store.set(0, forKey: "stopStep") }
+        pendingRides = (store.stringArray(forKey: "pendingRides") ?? []).count
         // l'accord « exercice » est demandé à l'ouverture de l'appli, pas au moment du GO (le mode Eau couperait l'écran dessus)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             guard let s = self, HKHealthStore.isHealthDataAvailable() else { return }
@@ -369,17 +374,24 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             workout = w; builder = b
             let d = Date()
             w.startActivity(with: d)
-            b.beginCollection(withStart: d) { _, _ in }
+            collecting = false
+            b.beginCollection(withStart: d) { [weak self] ok, _ in DispatchQueue.main.async { self?.collecting = ok } }
         } catch { workout = nil; builder = nil }
     }
+    /// vrai quand l'enregistrement Santé a réellement démarré (accord donné)
+    private var collecting = false
     /// fin de la séance : enregistrée dans Santé si la sortie est gardée, sinon jetée
     private func endWorkout(save: Bool) {
         guard let w = workout else { return }
-        let b = builder
-        workout = nil; builder = nil
+        let b = builder, was = collecting
+        workout = nil; builder = nil; collecting = false
+        b?.delegate = nil
         w.end()
-        b?.endCollection(withEnd: Date()) { _, _ in
-            if save { b?.finishWorkout { _, _ in } } else { b?.discardWorkout() }
+        // sans accord Santé, l'enregistrement n'a jamais démarré : il n'y a rien à clôturer
+        guard was, let bb = b else { return }
+        bb.endCollection(withEnd: Date()) { ok, _ in
+            guard ok else { return }
+            if save { bb.finishWorkout { _, _ in } } else { bb.discardWorkout() }
         }
     }
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
@@ -435,15 +447,29 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         WKInterfaceDevice.current().play(.click)
     }
     func stopRide(keep: Bool) {
+        store.set(1, forKey: "stopStep")
         endFoilRun()
-        endWorkout(save: keep)
+        // 1) la sortie est mise en file et confiée à l'iPhone avant tout le reste
         if keep { sendRide() }
-        if let sv = savedScreens { screens = sv; savedScreens = nil }
+        store.set(2, forKey: "stopStep")
         running = false; paused = false; locked = false; waterLock = false; waterAskAt = nil; curKmh = 0; timerOn = false
         if phase != .active && phase != .sending { stopLocation() }
         WKInterfaceDevice.current().play(.stop)
+        page = 0
         screen = keep ? .summary : .home
+        store.set(3, forKey: "stopStep")
+        // 2) les écrans d'origine reviennent une fois la page de sortie quittée, la séance d'exercice est clôturée en dernier
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+            guard let s = self else { return }
+            if !s.running, let sv = s.savedScreens { s.screens = sv; s.savedScreens = nil }
+            s.store.set(4, forKey: "stopStep")
+            s.endWorkout(save: keep)
+            s.store.set(0, forKey: "stopStep")
+        }
     }
+    /// nombre entier sûr : une valeur invalide (infinie, non numérique) donne 0 au lieu de faire tomber l'appli
+    private static func si(_ d: Double) -> Int { d.isFinite ? Int(max(-2e9, min(2e9, d))) : 0 }
+    private static func sd(_ d: Double) -> Double { d.isFinite ? d : 0 }
     private func second() {
         let t = Date()
         if running {
@@ -510,13 +536,13 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     private func sendRide() {
         guard track.count >= 2 || isIndoor || runS >= 20 else { return }
         let pts: [[Double]] = track.map { p in
-            [(p[0] * 100000).rounded() / 100000, (p[1] * 100000).rounded() / 100000, (p[2] * 10).rounded() / 10, p[3].rounded(), p[4].rounded()]
-        }
+            [SosModel.sd((p[0] * 100000).rounded() / 100000), SosModel.sd((p[1] * 100000).rounded() / 100000), SosModel.sd((p[2] * 10).rounded() / 10), SosModel.sd(p[3].rounded()), SosModel.sd(p.count > 4 ? p[4].rounded() : 0)]
+        }.filter { $0[0] != 0 || $0[1] != 0 }
         let ride: [String: Any] = [
-            "id": "watch-\(Int(startDate.timeIntervalSince1970 * 1000))", "sport": sport,
-            "start": Int(startDate.timeIntervalSince1970 * 1000), "dur": Int(runS), "dist": Int(distM),
-            "max": (maxKmh * 10).rounded() / 10, "runs": runCount, "foilS": Int(foilS), "foilM": Int(foilDistM), "pts": pts,
-            "hr": Int(hrAvg.rounded()), "hrmax": Int(hrMax.rounded()), "kcal": Int(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord
+            "id": "watch-\(SosModel.si(startDate.timeIntervalSince1970 * 1000))", "sport": sport,
+            "start": SosModel.si(startDate.timeIntervalSince1970 * 1000), "dur": SosModel.si(runS), "dist": SosModel.si(distM),
+            "max": SosModel.sd((maxKmh * 10).rounded() / 10), "runs": runCount, "foilS": SosModel.si(foilS), "foilM": SosModel.si(foilDistM), "pts": pts,
+            "hr": SosModel.si(hrAvg.rounded()), "hrmax": SosModel.si(hrMax.rounded()), "kcal": SosModel.si(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord
         ]
         guard JSONSerialization.isValidJSONObject(ride), let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
         // file d'attente gardée sur la montre : la sortie n'est retirée qu'une fois confiée à la liaison avec l'iPhone
@@ -896,6 +922,8 @@ struct HomeView: View {
             }
             .buttonStyle(.plain)
             LfButton(title: "GO", bg: .lfGo, fg: .black, height: 42, action: { m.startRide() }).padding(.horizontal, 22)
+            if m.pendingRides > 0 { Text(String(m.pendingRides) + " sortie(s) à envoyer · " + m.linkText).font(.system(size: 9, weight: .semibold)).foregroundColor(.lfYellow).lineLimit(2).multilineTextAlignment(.center) }
+            if !m.stopNote.isEmpty { Text(m.stopNote).font(.system(size: 9)).foregroundColor(.lfMute) }
             Spacer(minLength: 0)
             SosChip(m: m)
         }
