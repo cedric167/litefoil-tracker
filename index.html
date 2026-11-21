@@ -11466,29 +11466,34 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
       dist:["Distance","2,45","km"], rdist:["Distance du run","530","m"], fdist:["Distance sur le foil","2,14","km"],
       dur:["Durée","20:12",""], act:["Temps actif","18:40",""], rdur:["Durée du run","1:12",""], fdur:["Temps sur le foil","4:55",""], clock:["Heure","10:09",""],
       run:["Run n°","3",""], runs:["Runs","5",""], lrdur:["Plus long run","2:08",""], lrdist:["Plus long run","930","m"],
-      hr:["Cardio","145","bpm"], hravg:["Cardio moyen","138","bpm"], hrmax:["Cardio max","162","bpm"],
+      hr:["Cardio","145","bpm"], hravg:["Cardio moyen","138","bpm"], hrmax:["Cardio max","162","bpm"], zone:["Zone cardio","Z3",""], kcal:["Calories","320","kcal"],
       bat:["Batterie eFoil","82","%"], pow:["Puissance","1,8","kW"], wind:["Vent","14","nds"], temp:["Température","18","°C"],
       wbat:["Batterie montre","76","%"], steps:["Pas","1 240","pas"] };
-    var CAT=[["Vitesse",["spd","avg","max","ravg","rmax","favg"]],["Distance",["dist","rdist","fdist"]],["Temps",["dur","act","rdur","fdur","clock"]],["Runs sur le foil",["run","runs","lrdur","lrdist"]],["Cardio",["hr","hravg","hrmax"]],["Lite Foil et météo",["bat","pow","wind","temp"]],["Montre",["wbat","steps"]]];
+    var CAT=[["Vitesse",["spd","avg","max","ravg","rmax","favg"]],["Distance",["dist","rdist","fdist"]],["Temps",["dur","act","rdur","fdur","clock"]],["Runs sur le foil",["run","runs","lrdur","lrdist"]],["Cardio",["hr","hravg","hrmax","zone","kcal"]],["Lite Foil et météo",["bat","pow","wind","temp"]],["Montre",["wbat","steps"]]];
     var ORDER=[]; CAT.forEach(function(c){ ORDER=ORDER.concat(c[1]); });
     var SHORT={ run:"Run", runs:"Runs", hr:"♥", hravg:"♥ moy", hrmax:"♥ max", clock:"", bat:"eFoil", wbat:"Montre", temp:"", wind:"Vent" };
     var DEF2=[{ t:["run","hr"], m:["dur","dist","avg","max"] },{ t:["run","clock"], m:["rdist","rdur","ravg","rmax"] },{ t:["",""], m:["spd"] },{ t:["bat","hr"], m:["spd","dist","fdur","max"] }];
     var MAXS=6;
+    // trois jeux d'écrans : sports nautiques (historique), sports à terre, salle
+    var FAM="eau", FAMS=[["eau","Sports nautiques","eFoil"],["terre","Sports à terre","Course"],["salle","Salle","Musculation"]];
+    var DEFS={ eau:DEF2, terre:[{ t:["hr","clock"], m:["dur","dist","spd","avg"] },{ t:["clock","wbat"], m:["spd"] },{ t:["clock","wbat"], m:["hr","hravg","hrmax","kcal"] }],
+      salle:[{ t:["clock","wbat"], m:["hr","dur","kcal"] },{ t:["clock","wbat"], m:["zone","hravg","hrmax","kcal"] }] };
+    var famKey=function(f){ f=f||FAM; return f==="eau" ? "lf.watch.cfg2" : "lf.watch.cfg2."+f; };
     var esc=function(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]; }); };
     var clone=function(c){ return c.map(function(x){ return { t:[x.t[0]||"", x.t[1]||""], m:x.m.slice() }; }); };
-    var get2=function(){ var c=null; try{ c=JSON.parse(localStorage.getItem("lf.watch.cfg2")||"null"); }catch(e){}
-      if(!Array.isArray(c) || !c.length){ var o=null; try{ o=JSON.parse(localStorage.getItem("lf.watch.cfg")||"null"); }catch(e){}
-        c = (Array.isArray(o) && o.length) ? o.filter(function(x){ return Array.isArray(x) && x.length; }).map(function(x){ return { t:["",""], m:x }; }) : clone(DEF2); }
+    var get2=function(f){ f=f||FAM; var c=null; try{ c=JSON.parse(localStorage.getItem(famKey(f))||"null"); }catch(e){}
+      if(!Array.isArray(c) || !c.length){ var o=null; if(f==="eau"){ try{ o=JSON.parse(localStorage.getItem("lf.watch.cfg")||"null"); }catch(e){} }
+        c = (Array.isArray(o) && o.length) ? o.filter(function(x){ return Array.isArray(x) && x.length; }).map(function(x){ return { t:["",""], m:x }; }) : clone(DEFS[f]); }
       c=c.filter(function(x){ return x && Array.isArray(x.m) && x.m.length; }).slice(0,MAXS).map(function(x){ var t=Array.isArray(x.t) ? x.t : [];
         return { t:[M[t[0]] ? t[0] : "", M[t[1]] ? t[1] : ""], m:x.m.slice(0,4).map(function(k){ return M[k] ? k : "dur"; }) }; });
-      return c.length ? c : clone(DEF2); };
-    var get=function(){ return get2().map(function(x){ return x.m.slice(); }); };
+      return c.length ? c : clone(DEFS[f]); };
+    var get=function(){ return get2("eau").map(function(x){ return x.m.slice(); }); };
     var plug=function(){ try{ return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LfWatch; }catch(e){ return null; } };
-    var push=function(){ var W=plug(); if(!W || !W.setScreens) return; var lb={}; ORDER.forEach(function(k){ lb[k]=M[k][0]; }); try{ var p=W.setScreens({ scr:JSON.stringify(get()), scr2:JSON.stringify(get2()), lb:lb }); if(p && p.catch) p.catch(function(){}); }catch(e){} };
+    var push=function(){ var W=plug(); if(!W || !W.setScreens) return; var lb={}; ORDER.forEach(function(k){ lb[k]=M[k][0]; }); try{ var p=W.setScreens({ scr:JSON.stringify(get()), scr2:JSON.stringify(get2("eau")), scr2t:JSON.stringify(get2("terre")), scr2s:JSON.stringify(get2("salle")), lb:lb }); if(p && p.catch) p.catch(function(){}); }catch(e){} };
     // montre Android (Wear OS) : liée une fois par code, puis mise à jour par son canal privé sur le serveur Lite Foil
     var WBASE="https://litefoil-communaute-222fd.web.app/api/watch/";
     var wearCh=function(){ try{ return localStorage.getItem("lf.wear.ch")||""; }catch(e){ return ""; } };
-    var wearCfg=function(sos, ch){ var lb={}; ORDER.forEach(function(k){ lb[k]=M[k][0]; }); var un={}; ORDER.forEach(function(k){ un[k]=M[k][2]; }); var c={ ch:ch, scr:get(), scr2:get2(), lb:lb, un:un }; if(sos && sos.api && sos.k){ c.api=sos.api; c.k=sos.k; c.ps=sos.ps||""; c.em=sos.em||"112"; c.n=sos.n||0; } return c; };
+    var wearCfg=function(sos, ch){ var lb={}; ORDER.forEach(function(k){ lb[k]=M[k][0]; }); var un={}; ORDER.forEach(function(k){ un[k]=M[k][2]; }); var c={ ch:ch, scr:get(), scr2:get2("eau"), lb:lb, un:un }; if(sos && sos.api && sos.k){ c.api=sos.api; c.k=sos.k; c.ps=sos.ps||""; c.em=sos.em||"112"; c.n=sos.n||0; } return c; };
     var wearPost=function(id, cfg){ return fetch(WBASE+id, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ cfg:cfg }) }).then(function(r){ return r.ok; }).catch(function(){ return false; }); };
     var wearLast="";
     var wearSync=function(sos){ var ch=wearCh(); if(!ch) return; var cfg=wearCfg(sos, ch), s=JSON.stringify(cfg); if(s===wearLast) return; wearPost(ch, cfg).then(function(ok){ if(ok) wearLast=s; }); };
@@ -11496,7 +11501,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
     var wearLink=function(code){ var ch=wearCh(); if(!ch){ ch=""; var al="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789", rb=new Uint8Array(24); (window.crypto||window.msCrypto).getRandomValues(rb); for(var i=0;i<24;i++) ch+=al.charAt(rb[i]%al.length); }
       var f=window.__secWatchSos; return (f ? f() : Promise.resolve(null)).catch(function(){ return null; }).then(function(o){ var cfg=wearCfg(o, ch);
         return wearPost(ch, cfg).then(function(ok1){ if(!ok1) return { ok:false }; return wearPost(code, cfg).then(function(ok2){ if(ok2){ try{ localStorage.setItem("lf.wear.ch", ch); }catch(e){} wearLast=JSON.stringify(cfg); } return { ok:ok2, sos:!!(o && o.api) }; }); }); }); };
-    var save=function(c){ try{ localStorage.setItem("lf.watch.cfg2", JSON.stringify(c)); }catch(e){} push(); wearNow(); };
+    var save=function(c){ try{ localStorage.setItem(famKey(), JSON.stringify(c)); }catch(e){} push(); wearNow(); };
     // chiffres en direct, lus sur la page Tracking
     var tx=function(id){ var e=document.getElementById(id); return e ? String(e.textContent||"").trim() : ""; };
     var vu=function(s){ s=String(s||"").trim(); if(!s || s.charAt(0)==="—") return ""; var i=s.lastIndexOf(" "); return i>0 ? s.slice(0,i)+"|"+s.slice(i+1) : s; };
@@ -11567,6 +11572,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
     var open=function(){ var ov=document.createElement("div"); ov.className="wt-ov wm"; ov.setAttribute("data-no-i18n","");
       var plat=""; try{ plat=window.Capacitor && window.Capacitor.getPlatform ? window.Capacitor.getPlatform() : ""; }catch(e){}
       var view=-1, edit=false;
+      ov.addEventListener("click", function(e){ var fb=e.target.closest && e.target.closest("[data-fam]"); if(!fb) return; FAM=fb.dataset.fam; view=-1; edit=false; paint(); });
       var stat='<div class="wt-st" id="wtSt"><i></i><span>'+(plat==="ios" ? "Recherche de ton Apple Watch…" : plat==="android" ? "Montre Android (Wear OS) : lie-la avec son code, plus bas." : "Ouvre Lite Foil sur ton téléphone pour envoyer ces écrans à ta montre.")+'</span></div>';
       var paint=function(){ var c=get2(), b=ov.querySelector(".wt-body"), sc=b ? b.scrollTop : 0, h;
         if(view>=0 && c[view]){ var x=c[view], n=x.m.length;
@@ -11581,8 +11587,10 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
         else { view=-1;
           h='<div class="wt-top"><button type="button" data-x="close" aria-label="Retour">‹</button><b>Ma montre</b><button type="button" class="wm-ed'+(edit ? " on" : "")+'" data-x="edit">'+(edit ? "OK" : "Modifier")+'</button></div><div class="wt-body">'
             +'<p class="wt-note">Les écrans de ta montre, dans l’ordre où tu les fais défiler. Touche un écran pour le régler. Le SOS reste disponible sur tous les écrans.</p>'+stat
+            +'<p class="wt-note" style="margin-bottom:6px"><b>Écrans pour :</b></p><div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px">'+FAMS.map(function(f){ return '<button type="button" data-fam="'+f[0]+'" style="border:0;border-radius:999px;padding:9px 14px;font:inherit;font-weight:800;font-size:13.5px;min-height:0;box-shadow:none;'+(FAM===f[0] ? "background:#0f7f86;color:#fff" : "background:#e6eef0;color:#0e1417")+'">'+f[1]+'</button>'; }).join("")+'</div>'
+            +(FAM==="salle" ? '<p class="wt-note">En salle, la montre ajoute aussi une page « Séries » (repos, Tabata, EMOM, AMRAP).</p>' : FAM==="terre" ? '<p class="wt-note">Utilisés pour Course, Vélo, Marche et Ski.</p>' : '')
             +'<div class="wm-grid">'
-            +'<div class="wm-t fix"><div class="wm-w"><div class="wm-hd"><span><em>Lite Foil</em></span><span>10:09</span></div><div class="wm-sport"><small>Sport</small><b>eFoil</b><span>GO</span></div><div class="wm-sos">SOS</div></div><span>Départ</span></div>'
+            +'<div class="wm-t fix"><div class="wm-w"><div class="wm-hd"><span><em>Lite Foil</em></span><span>10:09</span></div><div class="wm-sport"><small>Sport</small><b>'+FAMS.filter(function(f){ return f[0]===FAM; })[0][2]+'</b><span>GO</span></div><div class="wm-sos">SOS</div></div><span>Départ</span></div>'
             +c.map(function(x, i){ return '<button type="button" class="wm-t" data-open="'+i+'">'+face(x, false, "")+'<span>Écran '+(i+1)+'</span>'+(edit && c.length>1 ? '<u data-rm="'+i+'">✕</u>' : '')+'</button>'; }).join("")
             +(c.length<MAXS ? '<button type="button" class="wm-t add" data-x="add"><div class="wm-plus">＋</div><span>Ajouter un écran</span></button>' : '')
             +'<div class="wm-t fix"><div class="wm-w"><div class="wm-hd"><span><em>Lite Foil</em></span><span>10:09</span></div><div class="wm-ctl"><i>Verrouiller</i><div><b class="r">Fin</b><b>Pause</b></div></div><div class="wm-sos">SOS</div></div><span>Commandes</span></div>'
@@ -11623,7 +11631,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
           wearLink(code).then(function(r){ t.disabled=false; var m2=ov.querySelector("#wtLinkMsg"); if(!m2) return; m2.textContent = !r.ok ? "Liaison impossible : vérifie le réseau et le code, puis réessaie." : r.sos ? "Montre liée. Elle se met à jour dans quelques secondes : écrans et SOS." : "Montre liée pour les écrans. Connecte-toi à ton compte pour activer aussi le SOS sur la montre."; if(r.ok && inp) inp.value=""; });
           return; }
         if(x==="add"){ c.push({ t:["run","hr"], m:["spd","dist"] }); save(c); view=c.length-1; paint(); return; }
-        if(x==="reset"){ save(clone(DEF2)); paint(); return; }
+        if(x==="reset"){ save(clone(DEFS[FAM])); paint(); return; }
         if(x==="del"){ c.splice(view, 1); save(c); view=-1; paint(); return; }
         if(x==="up" || x==="down"){ var j=view+(x==="up" ? -1 : 1); if(j>=0 && j<c.length){ var tmp=c[view]; c[view]=c[j]; c[j]=tmp; save(c); view=j; paint(); } return; } });
       paint(); document.body.appendChild(ov); push(); };

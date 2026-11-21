@@ -176,6 +176,10 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     @Published var pendingRides = 0
     private var builder: HKLiveWorkoutBuilder?
     private var savedScreens: [WatchScreen]?
+    // jeux d'écrans composés sur l'iPhone pour les sports à terre et pour la salle
+    private var screensTerre: [WatchScreen]?
+    private var screensSalle: [WatchScreen]?
+    static let landSports: Set<String> = ["Course", "Vélo", "Marche", "Ski"]
     // cardio et calories lus pendant la séance
     private(set) var hrNow = 0.0, hrAvg = 0.0, hrMax = 0.0, kcal = 0.0
     @Published var now = Date()
@@ -221,6 +225,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         refresh()
         sport = store.string(forKey: "sport") ?? "eFoil"
         if let s = store.string(forKey: "scr2"), let a = SosModel.parseScreens2(s) { screens = a }
+        if let s = store.string(forKey: "scr2t") { screensTerre = SosModel.parseScreens2(s) }
+        if let s = store.string(forKey: "scr2s") { screensSalle = SosModel.parseScreens2(s) }
         else if let s = store.string(forKey: "scr"), let a = SosModel.parseScreens(s) { screens = a }
         if let lb = store.dictionary(forKey: "lb") as? [String: String], !lb.isEmpty { labels = lb }
         let rg = store.integer(forKey: "restGoal"); if SosModel.restChoices.contains(rg) { restGoal = rg }
@@ -257,6 +263,13 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         return ok.isEmpty ? nil : ok
     }
     private func applyScreens(_ c: [String: Any]) {
+        let rawT = c["scr2t"] as? String, rawS = c["scr2s"] as? String
+        if rawT != nil || rawS != nil {
+            DispatchQueue.main.async {
+                if let r = rawT, let a = SosModel.parseScreens2(r) { self.screensTerre = a; self.store.set(r, forKey: "scr2t") }
+                if let r = rawS, let a = SosModel.parseScreens2(r) { self.screensSalle = a; self.store.set(r, forKey: "scr2s") }
+            }
+        }
         let raw2 = c["scr2"] as? String
         let raw = c["scr"] as? String
         var arr: [WatchScreen]? = nil
@@ -402,7 +415,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         running = true; paused = false; locked = false
         page = 0; screen = .run
         // sport de salle : pas de GPS, écrans cardio à la place des écrans composés sur l'iPhone
-        if isIndoor { savedScreens = screens; screens = SosModel.indoorScreens } else { startLocation() }
+        let alt: [WatchScreen]? = isIndoor ? (screensSalle ?? SosModel.indoorScreens) : (SosModel.landSports.contains(sport) ? screensTerre : nil)
+        if let a = alt, !a.isEmpty { savedScreens = screens; screens = a }
+        if !isIndoor { startLocation() }
         startWorkout()
         WKInterfaceDevice.current().play(.start)
         // sport sur l'eau : mode Eau automatique, une fois le GPS lancé
