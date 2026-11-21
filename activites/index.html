@@ -909,7 +909,7 @@ async function openDetail(a){
        +(a.hr.max ? `<div class="s hot"><i>${ICO.bolt}</i><div class="u">Cardio max</div><div class="v tnum">${Math.round(a.hr.max)}<small> bpm</small></div></div>` : "")
        +(a.hr.kcal ? `<div class="s blue"><i>${ICO.speed}</i><div class="u">Calories</div><div class="v tnum">${Math.round(a.hr.kcal)}<small> kcal</small></div></div>` : "")); }
     if(a.sets && a.sets.n){ S.insertAdjacentHTML("beforeend", `<div class="s"><i>${ICO.route}</i><div class="u">${a.sets.w==="Tour"?"Tours":"Séries"}</div><div class="v tnum">${Math.round(a.sets.n)}</div></div>`); }
-    { const bg=document.getElementById("btnFlyG"); if(bg) bg.hidden=!(a.milieu==="air" && window.LF_GMAPS_KEY && a.points && a.points.length>1); }
+    { const bg=document.getElementById("btnFlyG"); if(bg){ bg.hidden=!((a.milieu==="air" || a.milieu==="terre") && !a.indoor && window.LF_GMAPS_KEY && a.points && a.points.length>1); const sm=bg.querySelector("small"); if(sm) sm.textContent = a.milieu==="air" ? "Relief et paysages réels, caméra derrière l'avion" : "Villes et relief réels en 3D, caméra qui suit ton parcours"; } }
     const nop=ind || !(a.points && a.points.length>1), dm=document.getElementById("detMap"), bf=document.getElementById("btnFly"); if(dm) dm.style.display=nop?"none":""; if(bf) bf.style.display=nop?"none":"";
     if(a.notrack) S.insertAdjacentHTML("afterend", '<p id="detNoTrk" style="margin:10px 2px 0;font-size:13px;color:#6b7c80">La montre n\'a pas reçu de position GPS pendant cette sortie : pas de tracé.</p>'); }
   { const g=document.getElementById("btnGpx"); if(g){ g.hidden=!(a.points&&a.points.length>1); g.onclick=()=>gpxExport(a); } }
@@ -1138,7 +1138,7 @@ function flyPinSet(a, p){ try{ if(!flyMap) return; let src=""; const mine=!flyGu
 // ouvre un vol dans la vue 3D photoréaliste (Google) : le tracé est allégé puis passé à la page vol3d.html
 async function flyG3dOpen(a){ try{ if(!a) return; await ensurePoints(a); const pts=a.points||[]; if(pts.length<2){ lfToast("Ce vol n'a pas de tracé."); return; }
     const st=Math.max(1,Math.ceil(pts.length/1500)), o=[]; for(let k=0;k<pts.length;k+=st){ const q=pts[k]; o.push({ lat:+(+q.lat).toFixed(6), lon:+(+q.lon).toFixed(6), alt:Math.round(+q.alt||0), speed:Math.round(+q.speed||0), dist:Math.round(+q.dist||0), t:Math.round(+q.t||0) }); }
-    sessionStorage.setItem("lf.fly3", JSON.stringify({ pts:o, name:a.name })); location.href="vol3d.html"; }catch(e){ lfToast("Vue 3D indisponible sur cet appareil."); } }
+    sessionStorage.setItem("lf.fly3", JSON.stringify({ pts:o, name:a.name, milieu:a.milieu==="air" ? "air" : "terre" })); location.href="vol3d.html"; }catch(e){ lfToast("Vue 3D indisponible sur cet appareil."); } }
 async function startFly(a){
   if(!a) return; await ensurePoints(a);
   let pts=a.points; if(!pts||pts.length<2) return;
@@ -1148,7 +1148,7 @@ async function startFly(a){
   { const sb=document.getElementById("flyViewStreet"); if(sb) sb.hidden=!svAllowed(a); if(flyView==="street" && !svAllowed(a)){ flyView="all"; document.querySelectorAll("#flyView button").forEach(x=>x.classList.toggle("on",x.dataset.v==="all")); document.getElementById("flyViewBtn").textContent="Ensemble"; } if(flyView!=="street") svClose(); else svOpen(); }
   flyAir = a.milieu==="air";
   // vue 3D photoréaliste (Google) : proposée pour un vol, quand la clé est renseignée
-  { const gb=document.getElementById("flyG3d"); if(gb){ gb.hidden=!(flyAir && window.LF_GMAPS_KEY); gb.onclick=()=>flyG3dOpen(a); } }
+  { const gb=document.getElementById("flyG3d"); if(gb){ gb.hidden=!((flyAir || a.milieu==="terre") && window.LF_GMAPS_KEY); gb.onclick=()=>flyG3dOpen(a); } }
   // un vol se regarde caméra derrière l'appareil : c'est la vue qui montre le mieux le relief
   if(flyAir && flyView!=="street"){ flyView="cine"; document.querySelectorAll("#flyView button").forEach(x=>{ x.classList.toggle("on",x.dataset.v==="cine"); if(x.dataset.v==="cine") document.getElementById("flyViewBtn").textContent=x.textContent; }); }
   document.getElementById("flyAltU").textContent = a.milieu==="mer" ? "Vitesse max" : "Altitude";

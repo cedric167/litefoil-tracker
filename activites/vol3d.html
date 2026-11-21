@@ -54,7 +54,8 @@
         if(i){ const pv=pts[i-1], Rr=6371000, dy=(q.lat-pv.lat)*Math.PI/180*Rr, dx=(q.lon-pv.lon)*Math.PI/180*Rr*Math.cos(q.lat*Math.PI/180), s=Math.hypot(dx,dy); dd+=s; q.dist=dd; const dt=q.t-pv.t; q.speed=dt>0 ? Math.min(400, s/dt*3.6) : pv.speed; }
         pts.push(q); });
       if(pts.length>1) pts[0].speed=pts[1].speed;
-      g={ pts, name:(/ulm|avion|parapente/i.test(d.cat||"") ? "Vol de " : "Sortie de ")+String(d.ps||"Membre") }; msg(""); }
+      const airL=/ulm|avion|parapente/i.test(d.cat||"");
+      g={ pts, name:(airL ? "Vol de " : "Sortie de ")+String(d.ps||"Membre"), milieu:airL ? "air" : "terre" }; msg(""); }
     catch(e){ msg("Ce parcours n'est plus disponible."); return; } }
   if(demo && !g){ // vol simulé autour du Canigou, pour essayer le moteur sans vrai vol
     const pts=[], N=420; let d=0, pv=null;
@@ -67,6 +68,8 @@
   if(!g || !Array.isArray(g.pts) || g.pts.length<2){ msg("Aucun vol à rejouer. Ouvre un vol dans Activités, puis « 3D photoréaliste »."); return; }
   if(!KEY && !demo){ msg("La vue 3D photoréaliste n'est pas encore activée."); return; }
   const P=g.pts.filter(p=>p && isFinite(+p.lat) && isFinite(+p.lon)).map(p=>({ lat:+p.lat, lon:+p.lon, alt:+p.alt||0, speed:+p.speed||0, dist:+p.dist||0, t:+p.t||0 })), N=P.length;
+  // sport à terre : le tracé est posé sur le sol, un point remplace l'avion
+  const GROUND=(g.milieu==="terre"); P.forEach(p=>{ p.a0=p.alt; });
   if(!(P[N-1].dist>0)){ let d=0; for(let i=1;i<N;i++){ const R=6371000, dy=(P[i].lat-P[i-1].lat)*Math.PI/180*R, dx=(P[i].lon-P[i-1].lon)*Math.PI/180*R*Math.cos(P[i].lat*Math.PI/180); d+=Math.hypot(dx,dy); P[i].dist=d; } }
   $("nm").textContent=String(g.name||"Vol").slice(0,60);
 
@@ -78,7 +81,7 @@
   let viewer; try{ viewer=new C.Viewer("map", opt); }catch(e){ msg("La 3D ne démarre pas sur cet appareil."); return; }
   const scene=viewer.scene; try{ scene.skyAtmosphere.show=true; if(scene.globe) scene.globe.depthTestAgainstTerrain=true; }catch(e){}
   try{ viewer.resolutionScale=Math.min(window.devicePixelRatio||1, 2); }catch(e){}
-  let off=0, est=false;
+  let off=0, est=false, h0=null;
   if(KEY){ msg("Chargement de la vue 3D…");
     try{ const ts=await C.Cesium3DTileset.fromUrl("https://tile.googleapis.com/v1/3dtiles/root.json?key="+encodeURIComponent(KEY), { showCreditsOnScreen:true }); scene.primitives.add(ts); }
     catch(e){ msg("La vue 3D photoréaliste n'a pas pu se charger (clé refusée ou réseau)."); return; }
@@ -86,18 +89,21 @@
     try{ viewer.camera.lookAt(C.Cartesian3.fromDegrees(P[0].lon,P[0].lat,P[0].alt), new C.HeadingPitchRange(0,-0.6,1500)); viewer.camera.lookAtTransform(C.Matrix4.IDENTITY);
       const r=await Promise.race([scene.sampleHeightMostDetailed([C.Cartographic.fromDegrees(P[0].lon,P[0].lat)]), new Promise(res=>setTimeout(()=>res(null),9000))]);
       const h=r && r[0] && isFinite(r[0].height) ? r[0].height : null;
-      if(h!=null && (P[0].speed<35 || P[0].alt<h+2)) off=h+2-P[0].alt; }catch(e){}
+      h0=h; if(h!=null && !GROUND && (P[0].speed<35 || P[0].alt<h+2)) off=h+2-P[0].alt; }catch(e){}
+    if(GROUND && h0!=null) off=h0+1.5-P[0].alt;
     // vol enregistré sans altitude : hauteur de vol estimée au-dessus du relief (150 m), montée et descente au début et à la fin
     { let lo=1e9, hi=-1e9; P.forEach(p=>{ if(p.alt<lo) lo=p.alt; if(p.alt>hi) hi=p.alt; });
-      if(hi-lo<8){ msg("Calcul du relief…");
-        try{ const M=Math.min(48,N), idx=[]; for(let k=0;k<M;k++) idx.push(Math.round(k*(N-1)/(M-1)));
-          const hs=await Promise.race([scene.sampleHeightMostDetailed(idx.map(i=>C.Cartographic.fromDegrees(P[i].lon,P[i].lat))), new Promise(res=>setTimeout(()=>res(null),25000))]);
+      if(GROUND || hi-lo<8){ msg("Calcul du relief…");
+        try{ const M=Math.min(GROUND?160:48,N), idx=[]; for(let k=0;k<M;k++) idx.push(Math.round(k*(N-1)/(M-1)));
+          const hs=await Promise.race([scene.sampleHeightMostDetailed(idx.map(i=>C.Cartographic.fromDegrees(P[i].lon,P[i].lat))), new Promise(res=>setTimeout(()=>res(null),GROUND?40000:25000))]);
           if(hs){ const gr=idx.map((i,k)=>(hs[k] && isFinite(hs[k].height)) ? hs[k].height : null); let lastOk=null; for(let k=0;k<M;k++){ if(gr[k]==null) gr[k]=lastOk; else lastOk=gr[k]; } for(let k=M-1;k>=0;k--){ if(gr[k]==null) gr[k]=lastOk; else lastOk=gr[k]; }
+            // à terre : on garde le point le plus bas des voisins, pour ne pas grimper sur un toit quand le GPS dérive
+            if(GROUND && lastOk!=null){ const g2=gr.slice(); for(let k=0;k<M;k++) gr[k]=Math.min(g2[Math.max(0,k-1)], g2[k], g2[Math.min(M-1,k+1)]); }
             if(lastOk!=null){ const raw=new Array(N); for(let i=0;i<N;i++){ const x=i/(N-1)*(M-1), k0=Math.min(M-1,Math.floor(x)), k1=Math.min(M-1,k0+1), f=x-k0; raw[i]=gr[k0]+(gr[k1]-gr[k0])*f; }
               const w=Math.max(2,Math.round(N/30)), sm=(t)=>t*t*(3-2*t);
-              for(let i=0;i<N;i++){ let mx=-1e9; for(let j=Math.max(0,i-w);j<=Math.min(N-1,i+w);j++){ if(raw[j]>mx) mx=raw[j]; } const fr=i/(N-1), rp=sm(Math.max(0,Math.min(1,fr/0.1,(1-fr)/0.1))); P[i].alt=raw[i]+2+((mx-raw[i])+150)*rp; }
-              const w2=Math.max(1,Math.round(N/60)), cp=P.map(p=>p.alt); for(let i=0;i<N;i++){ let s2=0,c2=0; for(let j=Math.max(0,i-w2);j<=Math.min(N-1,i+w2);j++){ s2+=cp[j]; c2++; } P[i].alt=Math.max(raw[i]+2,s2/c2); }
-              off=0; est=true; } } }catch(e){} } }
+              for(let i=0;i<N;i++){ let mx=-1e9; for(let j=Math.max(0,i-w);j<=Math.min(N-1,i+w);j++){ if(raw[j]>mx) mx=raw[j]; } const fr=i/(N-1), rp=sm(Math.max(0,Math.min(1,fr/0.1,(1-fr)/0.1))); P[i].alt = GROUND ? raw[i]+1.5 : raw[i]+2+((mx-raw[i])+150)*rp; }
+              const w2=Math.max(1,Math.round(N/60)), cp=P.map(p=>p.alt); if(!GROUND) for(let i=0;i<N;i++){ let s2=0,c2=0; for(let j=Math.max(0,i-w2);j<=Math.min(N-1,i+w2);j++){ s2+=cp[j]; c2++; } P[i].alt=Math.max(raw[i]+2,s2/c2); }
+              off=0; est=!GROUND; } } }catch(e){} } }
     msg(""); }
   P.forEach(p=>{ p.c=C.Cartesian3.fromDegrees(p.lon,p.lat,p.alt+off); });
 
@@ -138,10 +144,13 @@
   const quat=new C.Quaternion(), hpr=new C.HeadingPitchRoll();
   const pink=C.Color.fromCssColorString("#ff2d8f");
   viewer.entities.add({ polyline:{ positions:cart, width:2, material:C.Color.WHITE.withAlpha(0.35) } });
-  viewer.entities.add({ polyline:{ positions:new C.CallbackProperty(()=>flown,false), width:7, material:new C.PolylineGlowMaterialProperty({ glowPower:0.22, color:pink }) } });
-  viewer.entities.add({ wall:{ positions:new C.CallbackProperty(()=>flown,false), material:pink.withAlpha(0.2) } });
-  viewer.entities.add({ position:new C.CallbackProperty(()=>cur,false), orientation:new C.CallbackProperty(()=>quat,false),
-    model:{ uri:planeGlb(), scale:11, minimumPixelSize:70, maximumScale:6000 } });
+  viewer.entities.add({ polyline:{ positions:new C.CallbackProperty(()=>flown,false), width:GROUND?9:7, material:new C.PolylineGlowMaterialProperty({ glowPower:0.22, color:pink }), depthFailMaterial:pink.withAlpha(0.45) } });
+  if(GROUND){ viewer.entities.add({ position:new C.CallbackProperty(()=>cur,false), point:{ pixelSize:18, color:pink, outlineColor:C.Color.WHITE, outlineWidth:4, disableDepthTestDistance:Number.POSITIVE_INFINITY } });
+    const u=document.getElementById("sAlt").nextElementSibling; if(u) u.textContent=" m"; }
+  else { viewer.entities.add({ wall:{ positions:new C.CallbackProperty(()=>flown,false), material:pink.withAlpha(0.2) } });
+    viewer.entities.add({ position:new C.CallbackProperty(()=>cur,false), orientation:new C.CallbackProperty(()=>quat,false),
+      model:{ uri:planeGlb(), scale:11, minimumPixelSize:70, maximumScale:6000 } }); }
+  const RG=GROUND ? [150,340,850] : [320,900,2600], PT=GROUND ? [-26,-32,-80] : [-17,-24,-78];
   const VIEWS=["Poursuite","Orbite","Dessus"];
   function draw(fromSeek){
     const fi=prog*(N-1), i=Math.min(N-1,Math.floor(fi)), f=fi-i, a=P[i], b=P[Math.min(N-1,i+1)];
@@ -155,10 +164,10 @@
     roll+=(cp(tr*1.3,38)-roll)*kk; pitch+=(cp(cl,22)-pitch)*kk;
     hpr.heading=(head-90)*rad; hpr.pitch=-pitch*rad; hpr.roll=roll*rad; C.Transforms.headingPitchRollQuaternion(cur, hpr, C.Ellipsoid.WGS84, C.Transforms.eastNorthUpToFixedFrame, quat);
     // caméra
-    if(mode===0){ camH=(camH==null || fromSeek) ? head : lerpA(camH,head,0.05); viewer.camera.lookAt(cur, new C.HeadingPitchRange(camH*rad, -17*rad, 320)); }
-    else if(mode===1){ viewer.camera.lookAt(cur, new C.HeadingPitchRange(orb*rad, -24*rad, 900)); }
-    else { viewer.camera.lookAt(cur, new C.HeadingPitchRange(0, -78*rad, 2600)); }
-    $("sSpd").textContent=Math.round(a.speed+(b.speed-a.speed)*f); $("sAlt").textContent=est ? "—" : Math.round(alt*3.28084); $("sDst").textContent=((a.dist+(b.dist-a.dist)*f)/1000).toFixed(1).replace(".",",");
+    if(mode===0){ camH=(camH==null || fromSeek) ? head : lerpA(camH,head,0.05); viewer.camera.lookAt(cur, new C.HeadingPitchRange(camH*rad, PT[0]*rad, RG[0])); }
+    else if(mode===1){ viewer.camera.lookAt(cur, new C.HeadingPitchRange(orb*rad, PT[1]*rad, RG[1])); }
+    else { viewer.camera.lookAt(cur, new C.HeadingPitchRange(0, PT[2]*rad, RG[2])); }
+    $("sSpd").textContent=Math.round(a.speed+(b.speed-a.speed)*f); $("sAlt").textContent=est ? "—" : (GROUND ? Math.round(a.a0+(b.a0-a.a0)*f) : Math.round(alt*3.28084)); $("sDst").textContent=((a.dist+(b.dist-a.dist)*f)/1000).toFixed(1).replace(".",",");
     if(!seeking) $("seek").value=Math.round(prog*1000);
   }
   function frame(now){ const dt=Math.max(0, Math.min(250, now-last)); last=now;

@@ -6159,7 +6159,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     document.body.appendChild(ov); ov.querySelector("button").addEventListener("click", function(){ ov.remove(); });
     // 21/11 : pour un vol, bouton « Revoir en 3D » (vue photoréaliste), pendant et après le vol
     if(sid!=="demo"){ try{ fetch(LIVE_BASE+"/l/"+encodeURIComponent(sid)+".json?tail=1").then(function(r){ return r.json(); }).then(function(d){
-        if(!d || !d.ok || !/ulm|avion|parapente/i.test(String(d.cat||"")) || !ov.isConnected) return;
+        if(!d || !d.ok || !/ulm|avion|parapente|run|marche|rando|trail|v[ée]lo|ski|snow|skate|roller|longboard|voiture|moto/i.test(String(d.cat||"")) || /^SOS/i.test(String(d.cat||"")) || !ov.isConnected) return;
         var b=document.createElement("a"); b.href="activites/vol3d.html?live="+encodeURIComponent(sid); b.setAttribute("data-no-i18n",""); b.textContent="🌍 Revoir en 3D";
         b.style.cssText="margin-left:auto;margin-right:150px;flex:none;text-decoration:none;border:2px solid rgba(255,255,255,.85);border-radius:999px;padding:8px 13px;background:linear-gradient(135deg,#ff2d8f,#c2186f);color:#fff;font-weight:800;font-size:13.5px;white-space:nowrap;box-shadow:0 6px 16px rgba(255,45,143,.45)";
         var h=ov.querySelector(".nm-lv-h"); if(h){ h.style.display="flex"; h.style.alignItems="center"; h.appendChild(b); } }).catch(function(){}); }catch(e){} } }
