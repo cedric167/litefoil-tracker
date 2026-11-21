@@ -3080,6 +3080,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     <button class="ultra-item" data-goto="batterie"><span class="ui-ic">🔋</span><span class="ui-tx"><b>Batterie</b><span>État des cellules, charge et protections (BMS)</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="ultra-item" data-goto="moteur"><span class="ui-ic">⚙️</span><span class="ui-tx"><b>Moteur (VESC)</b><span>Réglages moteur, puissance et diagnostic</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="ultra-item" data-goto="remote"><span class="ui-ic">🎮</span><span class="ui-tx"><b>Télécommande</b><span>État, réglages et mises à jour de la télécommande</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="ultra-item" data-goto="montre"><span class="ui-ic" style="background:linear-gradient(145deg,#5ed1e6,#0f5a7c)">⌚</span><span class="ui-tx"><b>Montre Lite Foil</b><span>Connexion, sorties et mises à jour de la montre</span></span><svg class="ui-ch" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   </section>
 
   <section id="tab-tracking" class="tabpane" hidden>
@@ -3574,6 +3575,66 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       <a href="https://cedric167.github.io/litefoil-tracker/manuel/telecommande.pdf?v=20261030" target="_blank" rel="noopener"><button class="primary" type="button">Ouvrir le manuel</button></a>
       <a href="https://cedric167.github.io/litefoil-tracker/manuel/telecommande.pdf?v=20261030" download="Manuel telecommande Lite Foil.pdf"><button type="button">Télécharger (PDF)</button></a>
     </div>
+  </div>
+  </section>
+
+  <section id="tab-montre" class="tabpane" hidden>
+  <div class="row" style="margin-bottom:14px">
+    <span><span class="lamp" id="mwLamp"></span><span id="mwState">Non connectée</span></span>
+    <span style="flex:1"></span>
+    <button class="primary" id="btnMwConnect">Connecter</button>
+  </div>
+  <div class="note">Allume la montre Lite Foil et garde-la près du téléphone : elle apparaît ici sous le nom <code>LITEFOIL-WATCH</code>.
+    À la connexion, l'appli règle son heure et sa date.</div>
+
+  <h2>État</h2>
+  <div class="card">
+    <div class="grid">
+      <div class="kv"><div class="k">Version</div><div class="v" id="mwFw">—</div></div>
+      <div class="kv"><div class="k">Batterie</div><div class="v" id="mwBat">—</div></div>
+      <div class="kv"><div class="k">GPS</div><div class="v" id="mwGps">—</div></div>
+      <div class="kv"><div class="k">Sorties en attente</div><div class="v" id="mwRides">—</div></div>
+      <div class="kv"><div class="k">Mémoire libre</div><div class="v" id="mwFree">—</div></div>
+      <div class="kv"><div class="k">Heure</div><div class="v" id="mwClock">—</div></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="btnMwBuzz" disabled>Faire sonner la montre</button>
+    </div>
+  </div>
+
+  <h2>Sorties de la montre</h2>
+  <div class="card">
+    <div id="mwRideList" class="note" style="margin:0">Connecte la montre pour voir les sorties qu'elle garde en mémoire.</div>
+    <div class="gauge" id="mwRideGauge" hidden style="margin-top:12px"><div class="fill" id="mwRideFill"></div></div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="btnMwImport" disabled>Récupérer les sorties</button>
+    </div>
+    <div class="note" id="mwImportNote">Chaque sortie est vérifiée, ajoutée à Activités, puis effacée de la montre.</div>
+  </div>
+
+  <h2>Cadran</h2>
+  <div class="card">
+    <div class="row">
+      <button id="btnMwFace0" disabled>Aiguilles</button>
+      <button id="btnMwFace1" disabled>Grands chiffres</button>
+    </div>
+    <div class="note">Choisis l'écran d'accueil de la montre.</div>
+  </div>
+
+  <h2>Mise à jour</h2>
+  <div class="card">
+    <div class="grid">
+      <div class="kv"><div class="k">Installée</div><div class="v" id="mwFw2">—</div></div>
+      <div class="kv"><div class="k">Disponible</div><div class="v" id="mwFwAvail">—</div></div>
+    </div>
+    <div class="gauge" id="mwUpdGauge" hidden style="margin-top:12px"><div class="fill" id="mwUpdFill"></div></div>
+    <div class="note" id="mwUpdNote">Connecte la montre pour comparer sa version avec la dernière publiée.</div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="btnMwUpdate" disabled>Mettre à jour</button>
+      <button id="btnMwUpdCancel" hidden>Annuler</button>
+    </div>
+    <div class="note">La mise à jour passe par Bluetooth. Garde le téléphone à côté de la montre et ne l'éteins pas : elle vérifie
+      l'empreinte du fichier avant d'installer, et garde son programme actuel en cas de souci. Impossible pendant une sortie.</div>
   </div>
   </section>
 
@@ -4747,7 +4808,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // Two tabs: the tracker, and the Lite Foil site (which refuses to be embedded —
   // X-Frame-Options: DENY — so its pages open in the browser).
   // Sous-écrans regroupés dans l'onglet « Lite Foil Ultra »
-  const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote"];
+  const ULTRA_SUB = ["tracker", "batterie", "moteur", "remote", "montre"];
   // barre du bas : met en avant l'onglet ouvert (les sous-écrans Ultra n'en ont pas)
   function syncBottomNav(name){ var vis=function(k){ var b=document.querySelector('#bnav [data-nav="'+k+'"]'); try{ return !!b && getComputedStyle(b).display!=="none"; }catch(e){ return !!b; } };
     var key = vis(name) ? name : ((ULTRA_SUB.indexOf(name)>=0 && vis("ultra")) ? "ultra" : ((name==="profil" && vis("fil")) ? "fil" : ""));
@@ -5202,6 +5263,179 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     function onDisc(){ setS("Contrôleur déconnecté"); $("btnVescConnect").textContent = "Connecter"; ch = null; chW = null; if (poll) clearInterval(poll); DASH.conn.vesc = false; DASH.vescPow = null; renderDash(); vlog("Contrôleur déconnecté.", "e"); }
 
     $("btnVescConnect").addEventListener("click", () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } connect(); });
+  })();
+
+  // ======================================================================
+  // Montre Lite Foil (carte ESP32-S3) — Bluetooth, service 4fafc203…, mêmes lignes
+  // cle=valeur que la télécommande. État notifié 1 fois par seconde, commandes en
+  // texte, sorties envoyées en binaire (en-tête de 32 octets « LFR1 » puis un point
+  // GPS de 12 octets toutes les 3 s), mise à jour par otaUpdater. La montre
+  // s'annonce sous le nom LITEFOIL-WATCH.
+  // ======================================================================
+  (function watchEsp(){
+    const SVC = "4fafc203-1fb5-459e-8fcc-c5c9c331914b";
+    const CH = n => "beb5483e-36e1-4688-b7f5-ea07361b26c" + n;   // 1 état, 2 commande, 3 sorties, 4 données, 5 mise à jour
+    const NAME = "LITEFOIL-WATCH";
+    // même liste et même ordre que dans la montre
+    const SPORTS = ["eFoil", "Wingfoil", "Pumpfoil", "Surf foil", "Windfoil", "Downwind", "Kitesurf", "Windsurf", "Wakeboard", "Surf", "Paddle", "Voile", "Course", "Vélo", "Marche", "Ski",
+                    "Musculation", "Cross training", "HIIT", "Fitness", "Cardio", "Yoga", "Rameur", "Vélo de salle", "Tapis de course", "Boxe"];
+    const dec = v => new TextDecoder().decode(v);
+    let dev = null, chStatus = null, chControl = null, chRides = null, chData = null, chOta = null;
+    let rideList = [], collect = null, importing = false;
+    const wlog = (m, k) => log("[Montre] " + m, k);
+    const setS = (txt, c) => { $("mwState").textContent = txt; $("mwLamp").className = "lamp" + (c ? " " + c : ""); };
+    const btns = ["btnMwBuzz", "btnMwImport", "btnMwFace0", "btnMwFace1"].map($);
+    const txt = (id, v) => { $(id).textContent = v; };
+    const fmtDur = s => { s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(x).padStart(2, "0"); };
+    const upd = otaUpdater({ meta: "firmware/montre.json", who: "la montre", Who: "La montre", log: wlog,
+      ids: { avail: "mwFwAvail", gauge: "mwUpdGauge", fill: "mwUpdFill", note: "mwUpdNote", btn: "btnMwUpdate", cancel: "btnMwUpdCancel" },
+      afterInstall: "La montre redémarre toute seule (une dizaine de secondes), puis reconnecte-toi pour vérifier la version." });
+    const enable = on => { for (const b of btns) b.disabled = !on; $("btnMwConnect").textContent = on ? "Déconnecter" : "Connecter"; if (!on) upd.setInstalled(null); upd.refresh(); paintRides(); };
+
+    function paint(s){
+      txt("mwFw", s.fw || "—"); txt("mwFw2", s.fw || "—");
+      if (s.fw) upd.setInstalled(s.fw);
+      txt("mwBat", s.bat != null ? s.bat + " %" + (s.vbat ? " · " + s.vbat + " V" : "") : "—");
+      txt("mwGps", s.gps === "1" ? (s.fix === "1" ? "position trouvée · " + s.sats + " satellites" : "recherche des satellites") : "module non détecté");
+      txt("mwRides", s.rides != null ? s.rides : "—");
+      txt("mwFree", s.free != null ? s.free + " ko" : "—");
+      txt("mwClock", s.clock === "1" ? "réglée" + (s.run === "1" ? " · sortie en cours" : "") : "à régler");
+    }
+    // n=2;r1=<id>/<sport>/<salle>/<debut>/<duree>/<pause>/<distance>/<vmax x10>/<series>/<points>/<octets>;r2=…
+    function parseRides(text){
+      const s = parseLine(text), n = num(s.n) || 0, out = [];
+      for (let i = 1; i <= n; i++){
+        const p = (s["r" + i] || "").split("/"); if (p.length < 11) continue;
+        out.push({ id: p[0], sport: +p[1], indoor: p[2] === "1", start: +p[3], dur: +p[4], pause: +p[5], dist: +p[6], max: +p[7] / 10, sets: +p[8], pts: +p[9], bytes: +p[10] });
+      }
+      return out;
+    }
+    // début : la montre donne des secondes depuis 1970 en heure locale (0 si elle ne connaît pas la date)
+    const startMs = r => r.start ? (r.start + new Date(r.start * 1000).getTimezoneOffset() * 60) * 1000 : Date.now() - (r.dur + r.pause) * 1000;
+    function paintRides(){
+      const el = $("mwRideList");
+      if (!chRides){ el.textContent = "Connecte la montre pour voir les sorties qu'elle garde en mémoire."; $("btnMwImport").disabled = true; return; }
+      if (!rideList.length){ el.textContent = "Aucune sortie en attente dans la montre."; $("btnMwImport").disabled = true; return; }
+      el.innerHTML = rideList.map(r => { const d = new Date(startMs(r));
+        return "<div>" + (r.start ? d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }) + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) + " — " : "")
+          + (SPORTS[r.sport] || "Sortie") + " · " + fmtDur(r.dur) + (r.indoor ? "" : " · " + (r.dist / 1000).toFixed(2) + " km · max " + r.max.toFixed(1) + " km/h") + "</div>"; }).join("");
+      $("btnMwImport").disabled = importing;
+    }
+    async function readRides(){
+      if (!chRides) return;
+      try { rideList = parseRides(dec(await chRides.readValue())); } catch (e) { wlog("Liste des sorties : lecture impossible (" + errText(e) + ")", "e"); }
+      paintRides();
+    }
+    async function write(text, what){
+      if (!chControl){ wlog("Pas connectée.", "e"); return false; }
+      try { const d = new TextEncoder().encode(text); if (chControl.writeValueWithResponse) await chControl.writeValueWithResponse(d); else await chControl.writeValue(d); return true; }
+      catch (e) { wlog(what + " : échec (" + errText(e) + ")", "e"); return false; }
+    }
+    function crc32(buf){ let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++){ c ^= buf[i]; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1)); } return (~c) >>> 0; }
+    // données d'une sortie : [2][n° sur 2 octets][morceau] … puis [3][taille][CRC32] ; [4] = introuvable
+    function onData(v){
+      if (!collect) return;
+      const b = new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+      if (b[0] === 2){ collect.parts.push(b.slice(3)); collect.got += b.length - 3; collect.progress(collect.got); }
+      else if (b[0] === 3){ const d = new DataView(v.buffer, v.byteOffset, v.byteLength); const c = collect; collect = null; clearTimeout(c.timer); c.resolve({ size: d.getUint32(1, true), crc: d.getUint32(5, true), parts: c.parts }); }
+      else if (b[0] === 4){ const c = collect; collect = null; clearTimeout(c.timer); c.reject(new Error("sortie introuvable dans la montre")); }
+    }
+    function fetchRide(r, progress){
+      return new Promise(async (resolve, reject) => {
+        collect = { parts: [], got: 0, resolve, reject, progress };
+        collect.timer = setTimeout(() => { collect = null; reject(new Error("la montre ne répond plus")); }, 20000 + r.bytes / 2);
+        if (!(await write("ride_get:" + r.id, "Demande de la sortie"))){ clearTimeout(collect.timer); collect = null; reject(new Error("demande refusée")); }
+      }).then(res => {
+        const file = new Uint8Array(res.size); let o = 0;
+        for (const p of res.parts){ if (o + p.length > file.length) throw new Error("sortie reçue en désordre"); file.set(p, o); o += p.length; }
+        if (o !== res.size) throw new Error("sortie incomplète (" + o + " octets sur " + res.size + ")");
+        if (crc32(file) !== res.crc) throw new Error("sortie abîmée pendant l'envoi");
+        return file;
+      });
+    }
+    // fichier de la montre -> sortie au format des montres déjà gérées par l'appli (rideToSess)
+    function toRide(r, file){
+      if (file.length < 32 || dec(file.subarray(0, 4)) !== "LFR1") throw new Error("fichier de sortie illisible");
+      const d = new DataView(file.buffer, file.byteOffset, file.byteLength), n = Math.min(d.getUint16(26, true), Math.floor((file.length - 32) / 12)), pts = [];
+      for (let i = 0; i < n; i++){ const o = 32 + i * 12; pts.push([d.getInt32(o + 2, true) / 1e6, d.getInt32(o + 6, true) / 1e6, d.getUint16(o + 10, true) / 10, d.getUint16(o, true), 0]); }
+      const sport = SPORTS[file[4]] || "eFoil", serie = sport === "Musculation" || sport === "Fitness";
+      return { id: "lfw-" + r.id, start: startMs(r), sport, indoor: file[5] === 1, dur: d.getUint32(12, true), dist: d.getUint32(20, true), max: d.getUint16(24, true) / 10,
+               sets: d.getUint16(6, true), setw: serie ? "Série" : "Tour", pts };
+    }
+    async function importAll(){
+      if (importing || !chRides) return;
+      importing = true; $("btnMwImport").disabled = true; let ok = 0, skipped = 0;
+      const note = m => { $("mwImportNote").textContent = m; };
+      try {
+        for (let guard = 0; guard < 40; guard++){
+          await readRides(); $("btnMwImport").disabled = true;
+          const r = rideList[0]; if (!r) break;
+          $("mwRideGauge").hidden = false; $("mwRideFill").style.width = "0%";
+          note("Réception de la sortie du " + new Date(startMs(r)).toLocaleDateString("fr-FR") + "…");
+          const file = await fetchRide(r, got => { $("mwRideFill").style.width = Math.min(100, Math.round(100 * got / Math.max(1, r.bytes))) + "%"; });
+          const ride = toRide(r, file);
+          if (ride.dur < 20){ skipped++; wlog("Sortie de " + ride.dur + " s ignorée (moins de 20 secondes)."); }
+          else if (window.__lfWatch && window.__lfWatch.addRaw){ window.__lfWatch.addRaw(JSON.stringify(ride)); ok++; wlog("Sortie reçue : " + ride.sport + ", " + fmtDur(ride.dur) + ", " + ride.pts.length + " points GPS.", "g"); }
+          else throw new Error("l'appli ne peut pas enregistrer la sortie pour l'instant");
+          if (!(await write("ride_del:" + r.id, "Effacement dans la montre"))) break;
+          await sleep(400);
+        }
+        note(ok ? (ok > 1 ? ok + " sorties ajoutées à Activités." : "Sortie ajoutée à Activités.") + (skipped ? " " + skipped + " trop courte(s) ignorée(s)." : "")
+                : (skipped ? "Aucune sortie gardée : " + skipped + " trop courte(s) (moins de 20 secondes)." : "Aucune sortie à récupérer."));
+      } catch (e) {
+        note("Échec : " + errText(e) + ". La sortie reste dans la montre, réessaie."); wlog("Récupération des sorties : " + errText(e), "e");
+      } finally {
+        importing = false; $("mwRideGauge").hidden = true; await readRides();
+      }
+    }
+
+    async function connect(){
+      if (!navigator.bluetooth){ setS("Bluetooth web indisponible", "err"); wlog("Ce navigateur ne gère pas le Bluetooth web. Utilise Chrome sur Android ou l'appli Lite Foil.", "e"); return; }
+      try {
+        setS("Recherche de la montre…", "busy");
+        dev = await navigator.bluetooth.requestDevice({ filters: [{ name: NAME }], optionalServices: [SVC] });
+        dev.addEventListener("gattserverdisconnected", onDisc);
+        setS("Connexion…", "busy");
+        const server = await dev.gatt.connect();
+        const svc = await server.getPrimaryService(SVC);
+        chStatus = await svc.getCharacteristic(CH(1));
+        chControl = await svc.getCharacteristic(CH(2));
+        chRides = await svc.getCharacteristic(CH(3));
+        chData = await svc.getCharacteristic(CH(4));
+        await chData.startNotifications(); chData.addEventListener("characteristicvaluechanged", ev => onData(ev.target.value));
+        try { chOta = await svc.getCharacteristic(CH(5)); await chOta.startNotifications(); chOta.addEventListener("characteristicvaluechanged", ev => upd.message(dec(ev.target.value))); }
+        catch (e) { chOta = null; }
+        upd.setChannel(chOta);
+        await chStatus.startNotifications();
+        chStatus.addEventListener("characteristicvaluechanged", async ev => {
+          const text = dec(ev.target.value);
+          if (text.includes("free=")){ paint(parseLine(text)); return; }   // ligne complète (dernière clé présente)
+          if (upd.running || importing) return;                            // ne pas gêner un envoi en cours
+          try { paint(parseLine(dec(await chStatus.readValue()))); } catch (e) {}
+        });
+        setS("Connectée à la montre", "on"); enable(true); wlog("Montre connectée.", "g");
+        // date et heure du téléphone -> horloge de la montre
+        const n = new Date(), p = x => String(x).padStart(2, "0");
+        await write("clock=" + n.getFullYear() + "-" + p(n.getMonth() + 1) + "-" + p(n.getDate()) + "T" + p(n.getHours()) + ":" + p(n.getMinutes()) + ":" + p(n.getSeconds()), "Heure");
+        try { paint(parseLine(dec(await chStatus.readValue()))); } catch (e) {}
+        await readRides();
+      } catch (e) {
+        if (e && e.name === "NotFoundError"){ setS("Non connectée"); wlog("Aucune montre sélectionnée."); }
+        else { setS("Échec de la connexion", "err"); wlog("Connexion impossible : " + errText(e), "e"); }
+      }
+    }
+    function onDisc(){
+      chStatus = chControl = chRides = chData = chOta = null; rideList = [];
+      if (collect){ const c = collect; collect = null; clearTimeout(c.timer); c.reject(new Error("montre déconnectée")); }
+      setS("Montre déconnectée"); enable(false); upd.setChannel(null); upd.lost("montre déconnectée");
+      wlog("Montre déconnectée.", "e");
+    }
+
+    $("btnMwConnect").addEventListener("click", async () => { if (dev && dev.gatt.connected){ dev.gatt.disconnect(); return; } await connect(); });
+    $("btnMwBuzz").addEventListener("click", async () => { if (await write("buzz", "Sonnerie")) wlog("La montre sonne."); });
+    $("btnMwImport").addEventListener("click", importAll);
+    $("btnMwFace0").addEventListener("click", async () => { if (await write("face=0", "Cadran")) wlog("Cadran à aiguilles choisi."); });
+    $("btnMwFace1").addEventListener("click", async () => { if (await write("face=1", "Cadran")) wlog("Cadran à grands chiffres choisi."); });
   })();
 
   // ======================================================================
@@ -11636,7 +11870,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
         if(x==="up" || x==="down"){ var j=view+(x==="up" ? -1 : 1); if(j>=0 && j<c.length){ var tmp=c[view]; c[view]=c[j]; c[j]=tmp; save(c); view=j; paint(); } return; } });
       paint(); document.body.appendChild(ov); push(); };
     var ob=document.getElementById("wtOpen"); if(ob) ob.addEventListener("click", open);
-    window.__lfWatch={ open:open, get:get, wearSync:wearSync }; setTimeout(wearNow, 12000); })();
+    window.__lfWatch={ open:open, get:get, wearSync:wearSync, addRaw:function(js){ rawSet(rawGet().concat([js])); saveRides(); } }; setTimeout(wearNow, 12000); })();
   // raccourcis de l'accueil : on les déplace, on en retire, on en ajoute ; l'ordre est gardé sur le téléphone
   (function(){ var box=document.querySelector("#tab-dash .quick"), head=document.querySelector("#tab-dash .qk-head"); if(!box || !head) return;
     [].forEach.call(box.children, function(el){ el.dataset.qid = el.dataset.qk || el.dataset.goto || "activites"; });
