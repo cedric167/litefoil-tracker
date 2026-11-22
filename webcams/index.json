@@ -331,7 +331,7 @@
    "sea": "med",
    "place": "Menton",
    "view": "Baie de Garavan / plage, vue depuis l’Hôtel Napoléon",
-   "id": "NP0cmYkm_j8",
+   "id": "COIniw45OUs",
    "embed": true,
    "by": "Hôtel Napoléon Menton (privé, pas un organisme public)",
    "match": [
@@ -5337,7 +5337,7 @@
    "sea": "lac",
    "place": "Lac d'Annecy",
    "view": "Panoramique sur le lac",
-   "id": "u8onItMI4Ik",
+   "id": "y2utchHvFwI",
    "embed": true,
    "by": "Annecy Lake Live (chaîne privée)",
    "match": [
@@ -5824,7 +5824,7 @@
    "view": "from the Bea",
    "country": "Espagne",
    "area": "Lanzarote",
-   "id": "GE1WiiUlVvU",
+   "id": "kQILXX1yNlw",
    "embed": true,
    "by": "Beach Bar Lanzarote",
    "match": [
@@ -6368,7 +6368,7 @@
    "view": "Resort Night Beach",
    "country": "Espagne",
    "area": "Alicante & Costa Blanca",
-   "id": "EIFfnqHCG1A",
+   "id": "VC4HPHNNuO8",
    "embed": false,
    "by": "BeniCam - Benidorm Webcam",
    "match": [
@@ -7524,7 +7524,7 @@
    "view": "Beach - Waikiki",
    "country": "États-Unis",
    "area": "Hawaï · Oahu",
-   "id": "4CK0CsimBHs",
+   "id": "YN_hKunSIg0",
    "embed": true,
    "by": "Ozolio Live",
    "match": [
@@ -7643,7 +7643,7 @@
    "view": "Napili Bay - Beach & Ocean Views",
    "country": "États-Unis",
    "area": "Hawaï · Maui",
-   "id": "66P_rc2Cbt8",
+   "id": "mrUciA_XZxA",
    "embed": true,
    "by": "Ozolio Plus",
    "match": [
@@ -8561,7 +8561,7 @@
    "view": "Caribbean Beach - Aruba",
    "country": "Antilles",
    "area": "Saint-Martin & Saint-Barth",
-   "id": "EfR9f8oRs3A",
+   "id": "kiY2ZFHbF-s",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8578,7 +8578,7 @@
    "view": "Curaçao - Willemstad - Mambo Beach",
    "country": "Antilles néerl.",
    "area": "Aruba, Bonaire & Curaçao",
-   "id": "WuUiYksG__4",
+   "id": "QqCjqSrYaH4",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -9003,7 +9003,7 @@
    "view": "PRAIA DE PONTA NEGRA - N",
    "country": "Brésil",
    "area": "Nordeste",
-   "id": "VdiCLGG0JrE",
+   "id": "NBi5nfrfFlk",
    "embed": true,
    "by": "Live Cam Natal",
    "match": [
@@ -9292,7 +9292,7 @@
    "view": "七里ヶ浜・江ノ島ライブカメラ（ワイド） 湘南 鎌",
    "country": "Japon",
    "area": "Japon",
-   "id": "zvKCgphHwmE",
+   "id": "ct1fPVFCItI",
    "embed": true,
    "by": "湘南ライブカメラ",
    "match": [
@@ -9309,7 +9309,7 @@
    "view": "Minegahara Wave",
    "country": "Japon",
    "area": "Japon",
-   "id": "WNJdZosHjm8",
+   "id": "TSX5aFkuS8U",
    "embed": true,
    "by": "峰ヒルズcam",
    "match": [
@@ -9423,5 +9423,5 @@
    "approx": true
   }
  ],
- "updated": "2026-11-21"
+ "updated": "2026-11-22"
 }
