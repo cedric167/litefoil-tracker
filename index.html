@@ -6249,6 +6249,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       liveCreate(sid,o){ return db.set(db.ref(d,"live/"+sid), Object.assign({uid:uid, t0:Date.now(), status:"active"}, o)); },
       watchFollows(cb){ return db.onValue(db.ref(d,"follows"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       setFollow(to,on){ var r=db.ref(d,"follows/"+uid+"/"+to); return on ? db.set(r, db.serverTimestamp()) : db.remove(r); },
+      profileExists(u){ return db.get(db.ref(d,"profiles/"+u+"/pseudo")).then(function(sn){ return sn.exists(); }); },
       watchFriendReqs(cb){ return db.onValue(db.ref(d,"friendReq/"+uid), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
       // 12/11 : vues du profil (façon TikTok) : /profileViews/{profil vu}/{visiteur} = {t, pseudo}
       recordProfileView(to){ if(!to || to===uid) return Promise.resolve(); return db.set(db.ref(d,"profileViews/"+to+"/"+uid),{t:db.serverTimestamp(),pseudo:me.pseudo||"Membre"}); },
@@ -9470,7 +9471,12 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     onFollowsChanged(); if(after) after();
     backend.setFollow(u,on).catch(function(){ alert("Action impossible pour le moment, réessaie."); }); }
   function bindFollowBtns(root, after){ root.querySelectorAll("[data-fol]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); toggleFollow(b.dataset.fol, after); }); }); }
-  function onFollows(m){ var prev=followAll; followAll=m||{};
+  // abonnements vers des comptes supprimés : vérifiés une fois par jour, retirés s'ils n'existent plus
+  var followPruned=false;
+  function followPrune(){ if(followPruned || !backend || !backend.profileExists || !me.uid) return; var day=new Date().toISOString().slice(0,10); try{ if(localStorage.getItem("lf.follow.prune")===day){ followPruned=true; return; } }catch(e){}
+    var ids=Object.keys(followAll[me.uid]||{}).filter(function(u){ return u!==me.uid && !(profileMap[u] && profileMap[u].pseudo); }).slice(0,60); followPruned=true; try{ localStorage.setItem("lf.follow.prune", day); }catch(e){}
+    ids.forEach(function(u,i){ setTimeout(function(){ backend.profileExists(u).then(function(ok){ if(ok===false) backend.setFollow(u,false).catch(function(){}); }).catch(function(){}); }, 400*i); }); }
+  function onFollows(m){ setTimeout(followPrune, 9000); var prev=followAll; followAll=m||{};
     // nouvel abonné pendant que l'appli est ouverte → petite bulle
     if(followInit && me.uid){ for(var x in followAll){ if(x===me.uid || blocked.has(x)) continue; var t=followAll[x]&&followAll[x][me.uid]; if(t && !(prev[x]&&prev[x][me.uid]) && Date.now()-(+t||0)<120000){ var pr=profileMap[x]||{};
         showMsgToast({ uid:x, name:pr.pseudo||"Un membre", avUrl:pr.av, sub:"Nouvel abonné", text:"a commencé à te suivre", onTap:(function(u){ return function(){ openUserProfile(u); }; })(x) }); } } }
