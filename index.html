@@ -1728,6 +1728,8 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .nm-sheet.min{ padding-bottom:calc(var(--lf-sab) + 6px); } .nm-sheet.min .nm-sh-head{ margin-bottom:6px; }
   .nm-sh-head > b{ cursor:pointer; }
   .nm-fab{ position:absolute; right:14px; top:-62px; width:48px; height:48px; border-radius:50%; border:0; background:#fff; color:#118b92; box-shadow:0 4px 14px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .nm-fab2{ top:-120px; } .nm-fab2[hidden]{ display:none !important; } .nm-fab2 .s2{ display:none; } .nm-fab2.sat .s1{ display:none; } .nm-fab2.sat .s2{ display:block; } .nm-fab2 svg{ stroke-linejoin:round; }
+  .nm.plan .nm-title b, .nm.plan .nm-title small{ color:#0e1b20; text-shadow:0 1px 6px rgba(255,255,255,.95), 0 0 2px #fff; }
   .nm-fab[hidden]{ display:flex !important; } .nm-fab svg{ width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; }
   .nm-sh-head{ display:flex; align-items:center; justify-content:space-between; padding:0 16px 10px; } .nm-sh-head b{ font-size:16.5px; color:#0e1417; }
   .nm-chat{ display:inline-flex; align-items:center; gap:6px; border:0; border-radius:999px; background:linear-gradient(135deg,#1fc3cd,#118b92); color:#fff; font:inherit; font-weight:700; font-size:13.5px; padding:8px 14px; cursor:pointer; box-shadow:0 3px 10px rgba(17,139,146,.3); }
@@ -2858,6 +2860,7 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
         <button class="nm-ib nm-ghost" id="nmGhost" aria-label="Me rendre visible ou invisible"><svg class="nm-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="nm-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
       </div>
       <div class="nm-sheet" id="nmSheet">
+        <button class="nm-fab nm-fab2" id="nmStyleBtn" type="button" aria-label="Changer le fond de carte" hidden><svg class="s1" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><svg class="s2" viewBox="0 0 24 24"><path d="M9 4L3 6.500v13.500l6-2.500 6 2.500 6-2.500V4l-6 2.500z"/><path d="M9 4v13.500M15 6.500V20"/></svg></button>
         <button class="nm-fab" id="commRecenter" aria-label="Me recentrer" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
         <div class="nm-grab"></div>
         <div class="nm-sh-head"><b>Membres autour de toi</b><button class="nm-chat" id="nmChat"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg>Tchat local</button></div>
@@ -6561,14 +6564,29 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var sc=document.createElement("script"); sc.src=GL_CDN+".js"; sc.onload=function(){ fin(!!window.maplibregl); }; sc.onerror=function(){ fin(false); }; document.head.appendChild(sc);
     setTimeout(function(){ fin(false); }, 8000); }
   function commGlInit(){ var el=$("commMap"), G=window.maplibregl;
-    var gl=new G.Map({ container:el, attributionControl:{ compact:true }, center:[3,30], zoom:1.25, minZoom:1.1, maxZoom:18, maxPitch:60, dragRotate:true, fadeDuration:150,
-      style:{ version:8, projection:{ type:"globe" },
+    var NM_SKY={ "atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,4,1,6.5,0] }, NM_PLAN="https://tiles.openfreemap.org/styles/liberty";
+    var nmStyle="plan"; try{ if(localStorage.getItem("lf.nm.style")==="sat") nmStyle="sat"; }catch(e){}
+    var NM_SAT={ version:8, projection:{ type:"globe" },
         sources:{ sat:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:17, attribution:"© Esri, Maxar" }, lab:{ type:"raster", tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"], tileSize:256, maxzoom:15 } },
         layers:[{ id:"bg", type:"background", paint:{ "background-color":"#061a22" } }, { id:"sat", type:"raster", source:"sat" }, { id:"lab", type:"raster", source:"lab" }],
-        sky:{ "atmosphere-blend":["interpolate",["linear"],["zoom"],0,1,4,1,6.5,0] } } });
+        sky:NM_SKY };
+    var gl=new G.Map({ container:el, attributionControl:{ compact:true }, center:[3,30], zoom:1.25, minZoom:1.1, maxZoom:19, maxPitch:65, dragRotate:true, fadeDuration:150, style:(nmStyle==="plan" ? NM_PLAN : NM_SAT) });
     el.classList.add("gl"); commGl=gl;
-    gl.on("load", function(){ try{ gl.addSource("nmc",{ type:"geojson", data:{ type:"FeatureCollection", features:[] } });
-        gl.addLayer({ id:"nmc", type:"fill", source:"nmc", paint:{ "fill-color":["get","c"], "fill-opacity":["get","o"] } }); commCircFlush(); }catch(e){} });
+    var nmSkin=function(){ var nm=$("nearMap"); if(nm) nm.classList.toggle("plan", nmStyle==="plan"); var sb=$("nmStyleBtn"); if(sb){ sb.hidden=false; sb.classList.toggle("sat", nmStyle==="sat"); sb.setAttribute("aria-label", nmStyle==="plan" ? "Passer en vue satellite" : "Passer en vue plan"); } };
+    // à chaque fond chargé (au départ, puis à chaque bascule) : globe, ciel, couleurs Lite Foil et couche des zones des membres
+    gl.on("style.load", function(){ try{ gl.setProjection({ type:"globe" }); }catch(e){}
+      if(nmStyle==="plan"){ try{ gl.setSky(NM_SKY); }catch(e){}
+        [["background","background-color","#f1f6f5"],["water","fill-color","#8fdbe2"],["park","fill-color","#cdeccf"],["landcover_wood","fill-color","#bfe4c2"],["landcover_grass","fill-color","#d5f0d2"],["landcover_sand","fill-color","#f5ecc9"],["building","fill-color","#e3e8ea"],["building-3d","fill-extrusion-color","#dfe6e9"]]
+          .forEach(function(p){ try{ if(gl.getLayer(p[0])) gl.setPaintProperty(p[0], p[1], p[2]); }catch(e){} }); }
+      try{ if(!gl.getSource("nmc")){ gl.addSource("nmc",{ type:"geojson", data:{ type:"FeatureCollection", features:[] } });
+          gl.addLayer({ id:"nmc", type:"fill", source:"nmc", paint:{ "fill-color":["get","c"], "fill-opacity":["get","o"] } }); } commCircFlush(); }catch(e){}
+      nmSkin(); });
+    // le plan ne répond pas (réseau, service en panne) : retour au satellite
+    setTimeout(function(){ try{ if(commGl===gl && nmStyle==="plan" && !gl.getSource("nmc")){ nmStyle="sat"; gl.setStyle(NM_SAT, { diff:false }); } }catch(e){} }, 9000);
+    (function(){ var sb=$("nmStyleBtn"); if(!sb || sb._b) return; sb._b=true; sb.addEventListener("click", function(){ if(!commGl) return; nmStyle = nmStyle==="plan" ? "sat" : "plan"; try{ localStorage.setItem("lf.nm.style", nmStyle); }catch(e){}
+        try{ commGl.setStyle(nmStyle==="plan" ? NM_PLAN : NM_SAT, { diff:false }); }catch(e){} nmSkin(); }); })();
+    nmSkin();
+    gl.on("idle", function(){ try{ if(!gl.getSource("nmc") && gl.isStyleLoaded()){ gl.addSource("nmc",{ type:"geojson", data:{ type:"FeatureCollection", features:[] } }); gl.addLayer({ id:"nmc", type:"fill", source:"nmc", paint:{ "fill-color":["get","c"], "fill-opacity":["get","o"] } }); commCircFlush(); try{ gl.setProjection({ type:"globe" }); }catch(e){} } }catch(e){} });
     gl.on("zoomend", function(){ try{ renderMap(); }catch(e){} });
     var ll=function(p){ var q=L.latLng(p); return [q.lng,q.lat]; }, busy=function(){ return Date.now()<commAnimUntil; };
     var sheetOff=function(){ var sh=$("nmSheet"); return (nmOpen && sh) ? Math.max(0, Math.round((sh.offsetHeight-70)/2)) : 0; };
