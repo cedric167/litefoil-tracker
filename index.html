@@ -1730,8 +1730,19 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .nm-sheet{ position:absolute; left:0; right:0; bottom:0; z-index:1100; background:#fff; border-radius:24px 24px 0 0; padding:8px 0 calc(var(--lf-sab) + 12px); box-shadow:0 -10px 34px rgba(0,0,0,.22); }
   .nm-grab{ width:44px; height:5px; border-radius:3px; background:#c3ccd1; margin:2px auto 10px; position:relative; cursor:pointer; }
   .nm-grab::before{ content:""; position:absolute; inset:-16px -90px -12px; }
-  .nm-sheet.min > *:not(.nm-grab):not(.nm-sh-head):not(.nm-fab){ display:none !important; }
-  .nm-sheet.min{ padding-bottom:calc(var(--lf-sab) + 6px); } .nm-sheet.min .nm-sh-head{ margin-bottom:6px; }
+  .nm-sheet.min > *:not(.riders-strip-wrap):not(.nm-fab){ display:none !important; }
+  .nm-sheet.min{ background:transparent; box-shadow:none; border-radius:0; padding:0 0 calc(var(--lf-sab) + 12px); pointer-events:none; } .nm-sheet.min > *{ pointer-events:auto; }
+  .nm-sheet.min .riders-strip-wrap{ display:block !important; margin:0; padding:0; }
+  .nm .nm-sheet.min .riders-strip{ gap:10px; padding:8px 12px 8px; align-items:center; }
+  .nm .nm-sheet.min .rs-item{ min-width:0; width:auto; background:none; padding:0; border-radius:50%; flex:none; }
+  .nm-sheet.min .rs-nm, .nm-sheet.min .rs-sub, .nm-sheet.min .rs-empty{ display:none; }
+  .nm-sheet.min .rs-av{ width:58px; height:58px; border:3px solid #fff; box-shadow:0 4px 14px rgba(0,0,0,.3); }
+  .rs-dk{ display:none; }
+  .nm-sheet.min .rs-dk{ display:flex; flex:none; align-items:center; justify-content:center; gap:8px; width:58px; height:58px; min-height:0; padding:0; border:0; border-radius:50%; background:#fff; color:#0e1417; font:inherit; font-size:15.5px; font-weight:800; box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; }
+  .nm-sheet.min .rs-dkw{ width:auto; padding:0 20px 0 16px; border-radius:999px; white-space:nowrap; }
+  .rs-dk svg{ width:26px; height:26px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .nm-sheet.min .nm-fab{ top:-66px; } .nm-sheet.min .nm-fab2{ top:-124px; }
+  .nm-top{ padding-top:calc(env(safe-area-inset-top) + 34px) !important; }
   .nm-sh-head > b{ cursor:pointer; }
   .nm-fab{ position:absolute; right:14px; top:-62px; width:48px; height:48px; border-radius:50%; border:0; background:#fff; color:#118b92; box-shadow:0 4px 14px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
   .nm-fab2{ top:-120px; } .nm-fab2[hidden]{ display:none !important; } .nm-fab2 .s2{ display:none; } .nm-fab2.sat .s1{ display:none; } .nm-fab2.sat .s2{ display:block; } .nm-fab2 svg{ stroke-linejoin:round; }
@@ -6827,18 +6838,26 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     recomputeMembers();
     renderList(); renderMap();
   }
+  // rangée flottante du bas de la carte : boutons placés avant et après les photos des membres
+  const NM_DK=['<button type="button" class="rs-dk" data-dk="find" aria-label="Rechercher un membre"><svg viewBox="0 0 24 24"><circle cx="10.500" cy="10.500" r="6.500"/><path d="M20 20l-4.700-4.700"/></svg></button>'
+    +'<button type="button" class="rs-dk rs-dkw" data-dk="add"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.600"/><path d="M3.500 20c.6-3.600 3.100-5.600 6.500-5.600 1.300 0 2.500.3 3.500.9M18 13.500v6M15 16.500h6"/></svg>Ajouter</button>'
+    +'<button type="button" class="rs-dk" data-dk="chat" aria-label="Tchat local"><svg viewBox="0 0 24 24"><path d="M21 11.500a8.400 8.400 0 0 1-12.300 7.400L3 20.500l1.600-5.700A8.400 8.400 0 1 1 21 11.500z"/></svg></button>'
+    +'<button type="button" class="rs-dk" data-dk="more" aria-label="Ma visibilité et mes réglages"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 12h2M10 12h10M4 17h10M18 17h2"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="17" r="2"/></svg></button>', ''];
+  function nmDkBind(el){ el.querySelectorAll(".rs-dk").forEach(function(b){ b.addEventListener("click", function(){ var a=b.dataset.dk;
+      if(a==="find"){ try{ openFriendSearch(); }catch(e){} } else if(a==="add"){ try{ openAddFriends(); }catch(e){} } else if(a==="chat"){ var c=$("nmChat"); if(c) c.click(); }
+      else if(a==="more"){ var sh=$("nmSheet"); if(sh){ sh.classList.remove("min"); try{ localStorage.setItem("lf.nm.min","0"); }catch(e){} } } }); }); }
   function renderList(){
     const el=$("ridersStrip"); if(!el){ renderBlocked(); return; }
     const ks=Object.keys(riders);
-    if(!ks.length){ el.innerHTML='<div class="rs-empty">'+(sharing?'<b>Tu es le premier membre dans ta zone.</b> Invite tes amis : ils apparaîtront ici dès qu\'ils activent leur visibilité.':'Aucun membre visible pour l\'instant. Active ta visibilité pour apparaître sur la carte et voir les membres autour de toi.')+'</div>'; renderBlocked(); return; }
+    if(!ks.length){ el.innerHTML=NM_DK[0]+'<div class="rs-empty">'+(sharing?'<b>Tu es le premier membre dans ta zone.</b> Invite tes amis : ils apparaîtront ici dès qu\'ils activent leur visibilité.':'Aucun membre visible pour l\'instant. Active ta visibilité pour apparaître sur la carte et voir les membres autour de toi.')+'</div>'+NM_DK[1]; nmDkBind(el); renderBlocked(); return; }
     ks.sort((a,b)=>{ const oa=riders[a].on===false?1:0, ob=riders[b].on===false?1:0; if(oa!==ob) return oa-ob; const da=me.pos?hdist(me.pos,riders[a]):0, db2=me.pos?hdist(me.pos,riders[b]):0; return da-db2; });
-    el.innerHTML = ks.map(k=>{ const r=riders[k], pr=profileMap[k]||{}, d=me.pos?hdist(me.pos,r):null;
+    el.innerHTML = NM_DK[0] + ks.map(k=>{ const r=riders[k], pr=profileMap[k]||{}, d=me.pos?hdist(me.pos,r):null;
       const off = r.on===false, ago = off ? seenAgo(r.t) : "";
       const sub = (d==null?"" : (d<1.2?"à côté":Math.round(d)+" km")) + (off ? (d==null?"":" · ")+ago : "");
       const ini=((r.pseudo||"?").trim().charAt(0)||"?").toUpperCase();
       const av = pr.av ? '<span class="rs-av"><img src="'+pr.av+'" alt=""></span>' : '<span class="rs-av" style="background:'+avatarColor(k)+'">'+esc(ini)+'</span>';
       return '<button class="rs-item" data-uid="'+esc(k)+'" data-ps="'+esc(r.pseudo||"Membre")+'"><span class="rs-avwrap">'+av+'<span class="rs-dot'+(off?' off':'')+'"></span></span><span class="rs-nm">'+esc(r.pseudo||"Membre")+'</span>'+(sub?'<span class="rs-sub">'+esc(sub)+'</span>':'')+'</button>';
-    }).join("");
+    }).join("") + NM_DK[1]; nmDkBind(el);
     el.querySelectorAll(".rs-item").forEach(b=> b.addEventListener("click", ()=>{ const r=riders[b.dataset.uid]; if(commMap && r && nmOpen){ commMap.flyTo([r.lat,r.lng],13,{duration:.6}); setTimeout(()=>openUserProfile(b.dataset.uid),650); } else openUserProfile(b.dataset.uid); }));
     renderBlocked();
   }
@@ -10706,7 +10725,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // panneau repliable : toucher ou glisser la poignée (ou le titre), ou toucher la carte, pour voir la carte en grand
   (function(){ var sh=$("nmSheet"); if(!sh) return; var grab=sh.querySelector(".nm-grab"), head=sh.querySelector(".nm-sh-head > b"), y0=null, moved=false;
     function set(min){ sh.classList.toggle("min", !!min); try{ localStorage.setItem("lf.nm.min", min?"1":"0"); }catch(e){} }
-    try{ if(localStorage.getItem("lf.nm.min")==="1") sh.classList.add("min"); }catch(e){}
+    try{ if(localStorage.getItem("lf.nm.min")!=="0") sh.classList.add("min"); }catch(e){ sh.classList.add("min"); }
     [grab, head].forEach(function(el){ if(!el) return;
       el.addEventListener("click", function(){ if(moved){ moved=false; return; } set(!sh.classList.contains("min")); });
       el.addEventListener("touchstart", function(e){ y0=e.touches[0].clientY; moved=false; }, {passive:true});
