@@ -533,8 +533,17 @@ function gpxOf(a){ const P=(a.points||[]).filter(p=>isFinite(p.lat)&&isFinite(p.
   return '<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Lite Foil" xmlns="http://www.topografix.com/GPX/1/1">\n<trk><name>'+x(a.name||"Lite Foil")+'</name><type>'+x(a.categoryName||"")+'</type><trkseg>\n'
     +P.map(p=>'<trkpt lat="'+p.lat.toFixed(6)+'" lon="'+p.lon.toFixed(6)+'">'+(isFinite(p.alt)?'<ele>'+(+p.alt).toFixed(1)+'</ele>':'')+'<time>'+new Date(rel ? t0+p.t*k : p.t*k).toISOString()+'</time></trkpt>').join("\n")+'\n</trkseg></trk>\n</gpx>\n'; }
 function gpxExport(a){ const g=gpxOf(a); if(!g){ lfToast("Pas de tracé GPS à exporter pour cette sortie."); return; } const nm=(String(a.name||"sortie").replace(/[^A-Za-z0-9À-ÿ]+/g,"-").replace(/^-|-$/g,"")||"sortie")+".gpx", f=new File([g], nm, { type:"application/gpx+xml" });
+  const dl=()=>{ const u=URL.createObjectURL(f), l=document.createElement("a"); l.href=u; l.download=nm; document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 4000); lfToast("Fichier GPX téléchargé : "+nm); };
+  // dans l'appli : écriture du fichier puis feuille de partage du téléphone
+  try{ const C=window.Capacitor; if(C && C.isNativePlatform && C.isNativePlatform()){ const pl=n=>(C.Plugins && C.Plugins[n]) || (C.registerPlugin ? C.registerPlugin(n) : null), NF=pl("Filesystem"), NS=pl("Share");
+      if(NF && NS){ lfToast("Préparation du fichier GPX…");
+        NF.writeFile({ path:nm, data:g, directory:"CACHE", encoding:"utf8" }).then(w=>NS.share({ title:a.name||"Lite Foil", files:[w.uri], dialogTitle:"Envoyer le fichier GPX" }))
+          .catch(e=>{ const m=String((e && e.message)||e||""); if(/cancel|annul/i.test(m)) return; lfToast("Export GPX impossible sur ce téléphone. Mets l'application à jour, ou ouvre Lite Foil dans le navigateur pour l'exporter."); });
+        return; } } }catch(e){}
   if(navigator.canShare && navigator.canShare({ files:[f] })){ navigator.share({ files:[f], title:a.name||"Lite Foil" }).catch(()=>{}); return; }
-  const u=URL.createObjectURL(f), l=document.createElement("a"); l.href=u; l.download=nm; document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 4000); }
+  // certains téléphones n'acceptent le partage que pour un fichier texte : même contenu, même nom
+  try{ const f2=new File([g], nm, { type:"text/plain" }); if(navigator.canShare && navigator.canShare({ files:[f2] })){ navigator.share({ files:[f2], title:a.name||"Lite Foil" }).catch(()=>{}); return; } }catch(e){}
+  dl(); }
 
 /* ---------- Adaptateur SportsTrackLive (à brancher) ----------
    Les chemins/filtres seront finalisés au 1er appel réel (token + user_id).
