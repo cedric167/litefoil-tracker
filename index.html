@@ -1776,6 +1776,10 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .nm-pa{ width:44px; height:44px; padding:2px; box-shadow:0 0 0 2.5px var(--c), 0 4px 12px rgba(0,0,0,.4); } .nm-pa img, .nm-pa b{ font-size:17px; }
   .nm-pa::after{ bottom:-8px; margin-left:-5px; border-width:5px; }
   .nm-pin.me .nm-pa{ width:56px; height:56px; padding:3px; }
+  .nm-cone{ position:absolute; left:50%; top:31px; width:170px; height:170px; margin:-85px 0 0 -85px; border-radius:50%; pointer-events:none; z-index:-1; transform:rotate(var(--h,0deg)); transition:transform .18s linear;
+    background:conic-gradient(from -32deg, rgba(25,195,207,.55) 0deg, rgba(25,195,207,.55) 64deg, transparent 64deg); -webkit-mask:radial-gradient(circle, #000 18%, rgba(0,0,0,.55) 40%, transparent 68%); mask:radial-gradient(circle, #000 18%, rgba(0,0,0,.55) 40%, transparent 68%); }
+  .nm-cone[hidden]{ display:none; } .nm-pin.me .nm-pn i{ color:#7df0c2; } .nm-pin.me .nm-pn{ max-width:190px; overflow:visible; }
+  .nm-title b{ display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .nm-pn{ margin-top:9px; padding:2px 8px; font-size:11.5px; max-width:110px; } .nm-pin.me .nm-pn{ font-size:12.5px; padding:3px 9px; }
   .nm-grp{ display:flex; align-items:center; justify-content:center; }
   .nm-gf{ position:relative; display:block; height:46px; } .nm-gf.n2{ width:66px; } .nm-gf.n3{ width:84px; }
@@ -6664,8 +6668,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           if(same || z>=17) nmGroupList(g.ids); else commMap.fitBounds(bounds.pad(0.6), { maxZoom:Math.min(18,z+4), animate:true }); });
     });
     if(sharing && me.pos){
-      if(commMap.getZoom()>=12) nmCircle([me.pos.lat,me.pos.lng], "#19c3cf", .18);
-      nmMarker([me.pos.lat,me.pos.lng], riderIcon(me.uid,{},true), 500, function(){ nearMapClose(); var nb=document.querySelector('#bnav [data-nav="profil"]'); if(nb) nb.click(); else lfGoTab("profil"); });
+      if(commMap.getZoom()>=12) nmCircle([me.pos.lat,me.pos.lng], "#19c3cf", .09);   /* ma zone d'environ 1 km : ce que les autres voient de moi */
+      var mx=(me.exact && isFinite(me.exact.lat)) ? [me.exact.lat, me.exact.lng] : [me.pos.lat, me.pos.lng];
+      nmMarker(mx, riderIcon(me.uid,{},true), 500, function(){ nearMapClose(); var nb=document.querySelector('#bnav [data-nav="profil"]'); if(nb) nb.click(); else lfGoTab("profil"); });
     }
     commCircFlush();
     nmPaint();
@@ -6704,7 +6709,26 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     document.body.appendChild(ov); ov.addEventListener("click", function(e){ var b=e.target.closest("button[data-u]"); if(b){ ov.remove(); openUserProfile(b.dataset.u); return; } if(e.target===ov) ov.remove(); }); }
   function riderIcon(k, r, mine){ var pr=mine?{av:me.av}:(profileMap[k]||{}), col=mine?"#148a90":avatarColor(k), nm=mine?(me.pseudo||"Moi"):(r.pseudo||"Membre");
     var inner=pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>';
-    return L.divIcon({className:"nm-pin"+(mine?" me":"")+(!mine&&r&&r.on===false?" off":""), iconSize:mine?[64,84]:[52,70], iconAnchor:mine?[32,62]:[26,50], html:'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+esc(nm)+(mine?' <i>· toi</i>':'')+'</span>'}); }
+    return L.divIcon({className:"nm-pin"+(mine?" me":"")+(!mine&&r&&r.on===false?" off":""), iconSize:mine?[64,84]:[52,70], iconAnchor:mine?[32,62]:[26,50], html:(mine?'<span class="nm-cone"'+(nmHead==null?' hidden':'')+' style="--h:'+nmConeDeg()+'deg"></span>':'')+'<span class="nm-pa" style="--c:'+col+'">'+inner+'</span><span class="nm-pn">'+(mine?'Moi <i>· maintenant</i>':esc(nm))+'</span>'}); }
+  // où je regarde : boussole du téléphone si elle existe, sinon cap du GPS en déplacement. Le faisceau tourne sans redessiner la carte.
+  var nmHead=null, nmHeadT=0;
+  function nmConeDeg(){ var b=0; try{ if(commGl) b=commGl.getBearing(); }catch(e){} return Math.round((nmHead||0)-b); }
+  function nmHeadSet(h){ if(!isFinite(h)) return; nmHead=(h%360+360)%360; var now=Date.now(); if(now-nmHeadT<120) return; nmHeadT=now;
+    var c=document.querySelector(".nm-pin.me .nm-cone"); if(c){ c.hidden=false; c.style.setProperty("--h", nmConeDeg()+"deg"); } }
+  (function(){ var on=function(e){ if(!nmOpen) return; var h=null; if(typeof e.webkitCompassHeading==="number") h=e.webkitCompassHeading; else if(e.absolute && typeof e.alpha==="number") h=360-e.alpha; if(h!=null) nmHeadSet(h); };
+    try{ window.addEventListener("deviceorientationabsolute", on, true); window.addEventListener("deviceorientation", on, true); }catch(e){} })();
+  // nom du lieu et température dans le titre, à partir de la zone arrondie (pas de la position exacte) ; une demande toutes les 20 minutes au plus
+  var nmPlaceAt=0, nmPlaceKey="";
+  function nmPlace(){ if(!me.pos || !nmOpen) return; var k=me.pos.lat.toFixed(2)+","+me.pos.lng.toFixed(2), now=Date.now(); if(k===nmPlaceKey && now-nmPlaceAt<20*60000) return; nmPlaceKey=k; nmPlaceAt=now;
+    var tb=document.querySelector("#nearMap .nm-title b"); if(!tb) return; var name="", temp=null, paint=function(){ if(!name && temp==null) return; tb.textContent=(name||"Autour de moi")+(temp!=null ? " · "+Math.round(temp)+" °C" : ""); };
+    // le nom du lieu est lu sur la carte elle-même (fond Plan) : la commune la plus proche de ma zone, sans appel à un service extérieur
+    var look=function(tries){ try{ if(commGl && commGl.getSource("openmaptiles")){ var F=commGl.querySourceFeatures("openmaptiles",{ sourceLayer:"place" }), best=null, bd=1e9;
+          F.forEach(function(f){ var p=f.properties||{}, c=f.geometry && f.geometry.coordinates; if(!c || !p.name || !/^(city|town|village|suburb)$/.test(p.class||"")) return;
+            var d=Math.pow((c[0]-me.pos.lng)*Math.cos(me.pos.lat*Math.PI/180),2)+Math.pow(c[1]-me.pos.lat,2); if(p.class==="suburb") d*=4; if(d<bd){ bd=d; best=p; } });
+          if(best && bd<0.02){ name=String(best["name:fr"]||best.name).slice(0,28); paint(); return; } } }catch(e){}
+      if(tries>0) setTimeout(function(){ look(tries-1); }, 2500); };
+    look(4);
+    fetch("https://api.open-meteo.com/v1/forecast?latitude="+me.pos.lat.toFixed(2)+"&longitude="+me.pos.lng.toFixed(2)+"&current=temperature_2m").then(function(r){ return r.json(); }).then(function(j){ var t=j && j.current && j.current.temperature_2m; if(isFinite(t)){ temp=+t; paint(); } }).catch(function(){}); }
   function commRecenter(){ if(!commMap) return; const mine=(sharing&&me.pos)?[me.pos.lat,me.pos.lng]:null; let pts=[];
     for(const k in riders){ if(blocked.has(k)) continue; pts.push([riders[k].lat,riders[k].lng]); }
     // avec ma position : on cadre sur ma zone (riders à moins de 300 km), pas sur toute la planète
@@ -6725,7 +6749,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(navigator.geolocation){
       geoWatch = navigator.geolocation.watchPosition(p=>{
         me.pos={lat:roundZone(p.coords.latitude),lng:roundZone(p.coords.longitude)};
-        $("commStatTxt").textContent="Tu es visible dans ta zone"; publishMe(); renderMap();
+        // position exacte : gardée dans le téléphone pour mon propre repère, jamais publiée
+        me.exact={ lat:p.coords.latitude, lng:p.coords.longitude, acc:+p.coords.accuracy||0 }; if(isFinite(p.coords.heading) && p.coords.heading!==null && (+p.coords.speed||0)>0.8) nmHeadSet(p.coords.heading);
+        $("commStatTxt").textContent="Tu es visible dans ta zone"; publishMe(); renderMap(); try{ nmPlace(); }catch(e){}
         if(!commCentered){ commCentered=true; commRecenter(); } updateChatGate();
       }, err=>{
         if(err && err.code===1){ // PERMISSION_DENIED
