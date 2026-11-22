@@ -49,6 +49,11 @@ if [ -d "$OLD/app/src/main/res/mipmap-hdpi" ]; then
 else
   echo "ATTENTION : icônes de l'ancien projet introuvables, l'appli aura l'icône Capacitor par défaut" >&2
 fi
+# 22/11 : nouvelle icône (ailes blanches sur fond turquoise), prioritaire sur celle de l'ancien projet
+if [ -d android-assets/icone/mipmap-hdpi ]; then
+  cp -r android-assets/icone/mipmap-* android/app/src/main/res/
+  cp android-assets/icone/values/ic_launcher_background.xml android/app/src/main/res/values/
+fi
 
 # Google Play exige la cible API 36 ; minSdk 24 comme les versions précédentes
 sed -i 's/minSdkVersion = 22/minSdkVersion = 24/; s/compileSdkVersion = 34/compileSdkVersion = 36/; s/targetSdkVersion = 34/targetSdkVersion = 36/' android/variables.gradle
