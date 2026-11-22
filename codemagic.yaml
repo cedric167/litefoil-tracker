@@ -136,6 +136,29 @@ workflows:
         submit_to_testflight: true
 
   # ----------------------------------------------------------------------------
+  # SOUMISSION A APPLE d'un build deja sur TestFlight, sans passer par le site d'Apple.
+  # Se lance quand une etiquette Git « submit-<version>-<build> » est poussee (ex. submit-1.7.2-29922009).
+  # Nouveautes : scripts/ios-nouveautes.json. A ne lancer qu'avec l'accord de Cedric.
+  ios-submit:
+    name: Lite Foil - Soumettre a Apple (App Store)
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "submit-*"
+          include: true
+    instance_type: mac_mini_m2
+    max_build_duration: 15
+    integrations:
+      app_store_connect: litefoil_appstore
+    environment:
+      vars:
+        BUNDLE_ID: "fr.litefoil.tracker"
+    scripts:
+      - name: Soumettre la version a Apple
+        script: python3 scripts/ios-submit.py
+
+  # ----------------------------------------------------------------------------
   # MONTRE ANDROID (Wear OS) : appli autonome dans native/wear (SOS + ecrans d'infos). Paquet .aab signe avec la cle Lite Foil.
   # Se lance quand une etiquette Git « wear-… » est poussee. Le paquet est a televerser dans la Play Console (format Wear OS).
   wear-play:
