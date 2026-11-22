@@ -365,7 +365,7 @@
         "likes": {
           "$l": {
             ".write": "auth != null && auth.uid === $l && auth.token.email_verified === true && data.parent().parent().exists()",
-            ".validate": "newData.val() === true"
+            ".validate": "newData.val() === true || (newData.isString() && newData.val().length <= 8)"
           }
         }
       }
@@ -380,7 +380,7 @@
             "likes": {
               "$l": {
                 ".write": "auth != null && auth.uid === $l && auth.token.email_verified === true && data.parent().parent().exists()",
-                ".validate": "newData.val() === true"
+                ".validate": "newData.val() === true || (newData.isString() && newData.val().length <= 8)"
               }
             }
           }

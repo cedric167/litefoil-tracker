@@ -836,6 +836,12 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .fd-img, .fd-tx{ position:relative; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
   .fd-heart{ position:absolute; left:50%; top:50%; z-index:3; font-size:92px; line-height:1; color:#ff3b5c; text-shadow:0 6px 22px rgba(0,0,0,.35); pointer-events:none; animation:fdHeart .85s cubic-bezier(.2,.9,.3,1.3) forwards; }
   @keyframes fdHeart{ 0%{ transform:translate(-50%,-50%) scale(.2); opacity:0; } 25%{ transform:translate(-50%,-50%) scale(1.15); opacity:1; } 60%{ transform:translate(-50%,-50%) scale(1); opacity:1; } 100%{ transform:translate(-50%,-70%) scale(1.05); opacity:0; } }
+  .fd-bar{ position:relative; } .fd-myrx{ font-size:17px; line-height:1; animation:fdPop .32s cubic-bezier(.2,.9,.3,1.6); }
+  .fd-rxs{ display:inline-flex; margin-right:5px; vertical-align:-2px; } .fd-rxs i{ font-style:normal; font-size:14px; line-height:1; margin-left:-3px; filter:drop-shadow(0 0 1px #fff); } .fd-rxs i:first-child{ margin-left:0; } .fd-rxs i.h{ color:#e23b4e; }
+  .fd-rxbar{ position:absolute; left:8px; bottom:calc(100% + 6px); z-index:4; display:flex; gap:2px; padding:6px 8px; background:#fff; border-radius:999px; box-shadow:0 8px 26px rgba(8,40,48,.24), 0 0 0 1px rgba(8,40,48,.06); animation:fdRxIn .2s cubic-bezier(.2,.9,.3,1.4); }
+  .fd-bar .fd-rxbar button{ flex:none; width:42px; height:42px; padding:0; border-radius:50%; font-size:25px; line-height:1; color:inherit; transition:transform .12s; } .fd-bar .fd-rxbar button.h{ color:#e23b4e; } .fd-bar .fd-rxbar button:active{ transform:scale(1.35) translateY(-4px); }
+  @keyframes fdRxIn{ from{ transform:translateY(10px) scale(.7); opacity:0; } }
+  .fd-lk-l button u{ margin-left:auto; text-decoration:none; font-size:19px; } .fd-lk-l button u.h{ color:#e23b4e; }
   .fd-bar button.on svg{ animation:fdPop .32s cubic-bezier(.2,.9,.3,1.6); } @keyframes fdPop{ 0%{ transform:scale(.6); } 60%{ transform:scale(1.35); } 100%{ transform:none; } }
   .fd-next{ display:flex; justify-content:center; gap:7px; padding:18px 0 26px; } .fd-next i{ width:8px; height:8px; border-radius:50%; background:#17c3b2; animation:fdDot 1s ease-in-out infinite; } .fd-next i:nth-child(2){ animation-delay:.15s; } .fd-next i:nth-child(3){ animation-delay:.3s; }
   @keyframes fdDot{ 0%,100%{ opacity:.25; transform:translateY(0); } 50%{ opacity:1; transform:translateY(-5px); } }
@@ -6255,7 +6261,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         return (img?db.set(mr,{img:img}):Promise.resolve()).then(function(){ return db.set(r,p); }).then(function(){ return r.key; }, function(e){ if(img) db.remove(mr).catch(function(){}); throw e; }); },
       deletePost(p){ return db.remove(db.ref(d,this._postPath(p))).then(function(){ var k=p.uid+"/"+p.vis+"/"+p.id; db.remove(db.ref(d,"postMedia/"+k)).catch(function(){}); db.remove(db.ref(d,"postComments/"+k)).catch(function(){}); }); },
       getPostImg(p){ return db.get(db.ref(d,"postMedia/"+p.uid+"/"+p.vis+"/"+p.id+"/img")).then(function(sn){ return sn.val()||""; }); },
-      likePost(p,on){ return db.set(db.ref(d,this._postPath(p)+"/likes/"+uid), on?true:null); },
+      likePost(p,on){ return db.set(db.ref(d,this._postPath(p)+"/likes/"+uid), (typeof on==="string" && on) ? on.slice(0,8) : (on?true:null)); },
       getPostComments(p){ return db.get(db.query(db.ref(d,"postComments/"+p.uid+"/"+p.vis+"/"+p.id), db.limitToLast(200))).then(function(sn){ var o=[]; sn.forEach(function(c){ var v=c.val(); if(v){ v.id=c.key; o.push(v); } }); return o; }); },
       addPostComment(p,text,re){ var o={uid:uid,pseudo:me.pseudo||"Membre",text:String(text).slice(0,300),t:db.serverTimestamp()}; if(re) o.re=String(re);
         return db.push(db.ref(d,"postComments/"+p.uid+"/"+p.vis+"/"+p.id),o); },
@@ -9602,9 +9608,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(p.sess) h+=fdSessHtml(p.sess);
     if(p.ev && p.ev.id){ var ed=new Date(+p.ev.when||Date.now()); h+='<div class="fd-ev" data-fa="ev" role="button"><span class="fd-ev-d"><b>'+ed.getDate()+'</b><small>'+esc(ed.toLocaleDateString("fr-FR",{month:"short"}))+'</small></span>'
       +'<span class="fd-ev-t"><b>'+esc(p.ev.title||"Événement")+'</b><small>'+esc(fmtEvWhen(p.ev.when))+(p.ev.place?" · 📍 "+esc(p.ev.place):"")+'</small></span><span class="fd-ev-go">Voir ›</span></div>'; }
-    var nl=Object.keys(p.likes||{}).length, on=!!(p.likes&&p.likes[me.uid]), nc=fdCms[it.k];
-    h+='<div class="fd-cnt"><span class="fd-nl" data-fa="likes">'+(nl?'♥ '+fdNum(nl,"j\'aime","j\'aime"):'')+'</span><span class="fd-nc" data-fa="cmopen">'+(nc&&nc.length?fdNum(fdCmList(it.k).length,"commentaire","commentaires"):'')+'</span></div>'
-      +'<div class="fd-bar"><button type="button" data-fa="like" class="'+(on?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="cm">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="share">'+FD_IC.sh+'Partager</button></div>'
+    var on=!!(p.likes&&p.likes[me.uid]), nc=fdCms[it.k];
+    h+='<div class="fd-cnt"><span class="fd-nl" data-fa="likes">'+fdRxSum(p.likes)+'</span><span class="fd-nc" data-fa="cmopen">'+(nc&&nc.length?fdNum(fdCmList(it.k).length,"commentaire","commentaires"):'')+'</span></div>'
+      +'<div class="fd-bar"><button type="button" data-fa="like" class="'+(on?"on":"")+'">'+fdLikeIn(p.likes&&p.likes[me.uid])+'</button><button type="button" data-fa="cm">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="share">'+FD_IC.sh+'Partager</button></div>'
       +'<div class="fd-cpv" data-fa="cmopen" role="button"'+(fdCpvHtml(it.k)?'':' hidden')+'>'+fdCpvHtml(it.k)+'</div><div class="fd-cms" hidden></div></div>';
     return h; }
   // aperçu façon Facebook : le dernier commentaire, visible sans rien ouvrir ; un appui dessus ouvre la discussion
@@ -9612,6 +9618,20 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var c=l[l.length-1], tx=String(c.text||""); if(tx.length>140) tx=tx.slice(0,137)+"…";
     return (l.length>1 ? '<div class="fd-cpm">Voir les '+l.length+' commentaires</div>' : '')
       +'<div class="fd-cm"><span class="fd-av s">'+avHtml(c.uid)+'</span><span><span class="b"><b>'+esc((profileMap[c.uid]&&profileMap[c.uid].pseudo)||c.pseudo||"Membre")+'</b>'+esc(tx)+'</span><small>'+pvAgo(+c.t||Date.now())+'<u>Répondre</u></small></span></div>'; }
+  // ----- réactions -----
+  var FD_RX=["♥","👏","🔥","💪","😂","🤙"];
+  function fdRxOf(v){ return (typeof v==="string" && FD_RX.indexOf(v)>0) ? v : "♥"; }
+  function fdRxSum(likes){ var c={}, n=0; for(var u in (likes||{})){ if(!likes[u]) continue; var e=fdRxOf(likes[u]); c[e]=(c[e]||0)+1; n++; }
+    if(!n) return ""; var top=Object.keys(c).sort(function(a,b){ return c[b]-c[a]; }).slice(0,3);
+    return '<span class="fd-rxs">'+top.map(function(e){ return '<i'+(e==="♥"?' class="h"':'')+'>'+e+'</i>'; }).join("")+'</span>'+n; }
+  function fdLikeIn(v){ var e=v ? fdRxOf(v) : ""; return (e && e!=="♥" ? '<span class="fd-myrx">'+e+'</span>' : FD_IC.lk)+'J\'aime'; }
+  function fdRxSet(box, el, it, val){ var p=it.p; p.likes=p.likes||{}; if(val) p.likes[me.uid]=val; else delete p.likes[me.uid];
+    var b=el.querySelector('.fd-bar [data-fa="like"]'); if(b){ b.classList.toggle("on", !!val); b.innerHTML=fdLikeIn(val); }
+    var s=el.querySelector(".fd-nl"); if(s) s.innerHTML=fdRxSum(p.likes);
+    box._fdSig=fdSig(box._fdK==="*"?null:box._fdK, fdItems(box._fdK==="*"?null:box._fdK)); backend.likePost(p, val||false).catch(function(){}); }
+  function fdRxBar(box, el){ var old=box.querySelector(".fd-rxbar"); if(old) old.remove(); var host=el.querySelector(".fd-bar"); if(!host) return;
+    var bar=document.createElement("div"); bar.className="fd-rxbar"; bar.innerHTML=FD_RX.map(function(e){ return '<button type="button" data-fa="rx" data-e="'+e+'"'+(e==="♥"?' class="h"':'')+'>'+e+'</button>'; }).join("");
+    host.appendChild(bar); clearTimeout(box._rxT); box._rxT=setTimeout(function(){ bar.remove(); }, 3800); }
   function fdCompHtml(){ return '<div class="fd-card fd-comp"><div class="r"><span class="fd-av" data-fa="me">'+avHtml(me.uid)+'</span><button type="button" class="fd-in" data-fa="new">Quoi de neuf ?</button>'
       +'<button type="button" class="fd-ib" data-fa="newph" aria-label="Publier une photo">'+FD_IC.ph+'</button><button type="button" class="fd-ib" data-fa="newvid" aria-label="Publier une vidéo">'+FD_IC.vd+'</button><button type="button" class="fd-ib" data-fa="newss" aria-label="Partager une session">'+FD_IC.ss+'</button></div></div>'; }
   function fdDraw(box, uid, force){ var k=uid||"*", c=fdCache[k], un="" /* fil commun à tous les univers */, items=fdItems(uid, un), sig=fdSig(uid, items)+"|"+un;
@@ -9624,6 +9644,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     else h+='<div class="comm-empty">'+(c&&c.posts ? (mine ? "Aucune publication pour l\'instant.<br>Publie la première : une photo, une session ou quelques mots." : "Aucune publication pour l\'instant.") : "Chargement…")+(un && c && c.posts ? "<br>Rien encore dans cet univers : ta publication sera la première." : "")+(!uid && !un && fdMode==="amis" && c && c.posts ? "<br>Ajoute des amis ou abonne-toi à des membres pour remplir cet onglet." : "")+'</div>';
     box.innerHTML=h+'</div>';
     if(!box._fdBound){ box._fdBound=true; box.addEventListener("click", function(ev){ fdClick(box, ev); });
+      box.addEventListener("pointerdown", function(ev){ var b=ev.target.closest ? ev.target.closest('.fd-bar [data-fa="like"]') : null; clearTimeout(box._lpT); if(!b) return;
+        box._lpT=setTimeout(function(){ var el=b.closest(".fd-post"), it=el && box._fdMap[el.dataset.k]; if(it && it.p){ box._lpHit=Date.now(); fdRxBar(box, el); } }, 430); });
+      ["pointerup","pointercancel","pointerleave"].forEach(function(n){ box.addEventListener(n, function(){ clearTimeout(box._lpT); }); });
+      box.addEventListener("contextmenu", function(ev){ if(ev.target.closest && ev.target.closest('.fd-bar [data-fa="like"]')) ev.preventDefault(); });
       box.addEventListener("keydown", function(ev){ if(ev.key==="Enter" && ev.target && ev.target.matches && ev.target.matches(".fd-ci input")){ var b=ev.target.parentNode.querySelector("[data-fa=cmsend]"); if(b) b.click(); } }); }
     fdLazy(box);
     // les discussions ouvertes le restent quand le fil se redessine
@@ -9638,10 +9662,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(!window.IntersectionObserver){ els.slice(0,8).forEach(go); return; }
     var io=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting){ io.unobserve(e.target); go(e.target); } }); }, {rootMargin:"300px"}); els.forEach(function(el){ io.observe(el); }); }
   // qui a aimé : petite feuille qui monte du bas, avec photo et nom ; un appui sur un membre ouvre son profil
-  function fdLikers(ids){ ids=ids.filter(function(u){ return !blocked.has(u); }); if(!ids.length) return;
+  function fdLikers(ids, lm){ ids=ids.filter(function(u){ return !blocked.has(u); }); if(!ids.length) return;
     var o=document.createElement("div"); o.className="fd-lk-ov";
     o.innerHTML='<div class="fd-lk" role="dialog" aria-label="Membres qui ont aimé"><div class="fd-lk-h"><b>♥ '+fdNum(ids.length,"j\'aime","j\'aime")+'</b><button type="button" data-x="1" aria-label="Fermer">✕</button></div><div class="fd-lk-l">'
-      +ids.map(function(u){ return '<button type="button" data-u="'+esc(u)+'"><span class="fd-av s">'+avHtml(u)+'</span><b>'+esc(u===me.uid?(me.pseudo||"Moi"):(pName(u)||"Membre"))+'</b>'+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'<i>›</i></button>'; }).join("")+'</div></div>';
+      +ids.map(function(u){ return '<button type="button" data-u="'+esc(u)+'"><span class="fd-av s">'+avHtml(u)+'</span><b>'+esc(u===me.uid?(me.pseudo||"Moi"):(pName(u)||"Membre"))+'</b>'+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'<u'+(lm && fdRxOf(lm[u])!=="♥" ? '' : ' class="h"')+'>'+(lm ? fdRxOf(lm[u]) : "♥")+'</u></button>'; }).join("")+'</div></div>';
     o.addEventListener("click", function(e){ var b=e.target.closest("[data-u]"); if(b){ o.remove(); openUserProfile(b.dataset.u); return; } if(e.target===o || e.target.closest("[data-x]")) o.remove(); });
     document.body.appendChild(o); }
   function fdCmList(k){ return (fdCms[k]||[]).filter(function(c){ return c && !blocked.has(c.uid); }); }
@@ -9671,7 +9695,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(a==="new"){ fdCompose({}); return; } if(a==="newph"){ fdCompose({pick:"ph"}); return; } if(a==="newss"){ fdCompose({pick:"ss"}); return; }
     if(a==="newvid"){ openVideoUpload(); return; }
     var el=t.closest(".fd-post"), it=el && box._fdMap[el.dataset.k]; if(!it) return;
-    if(a==="likes"){ var lm=it.p ? (it.p.likes||{}) : ((it.v && it.v.likes)||{}); fdLikers(Object.keys(lm).filter(function(u){ return lm[u]; })); return; }
+    if(a==="likes"){ var lm=it.p ? (it.p.likes||{}) : ((it.v && it.v.likes)||{}); fdLikers(Object.keys(lm).filter(function(u){ return lm[u]; }), it.p ? lm : null); return; }
     if(a==="vid"){ var i=vidVisible().indexOf(it.v); if(i>=0){ closeOverlay(); openFeed(i); } return; }
     if(a==="vshare"){ shareVideo(it.v); return; }
     if(a==="vlike"){ if(!fdGate() || !backend.likeVideo) return; var v=it.v, von=!vidLiked(v); v.likes=v.likes||{}; if(von) v.likes[me.uid]=true; else delete v.likes[me.uid];
@@ -9689,9 +9713,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       return; }
     if(a==="cm"){ var cb=el.querySelector(".fd-cms"); if(cb && !cb.hidden){ cb.hidden=true; fdCmCount(el, it.k); return; } fdCmShow(el, it, true); return; }
     if(a==="cmopen"){ var cb2=el.querySelector(".fd-cms"); if(cb2 && cb2.hidden) fdCmShow(el, it, false); return; }
-    if(a==="like"){ if(!fdGate()) return; p.likes=p.likes||{}; var on=!p.likes[me.uid]; if(on) p.likes[me.uid]=true; else delete p.likes[me.uid];
-      t.classList.toggle("on", on); var n=Object.keys(p.likes).length, s=el.querySelector(".fd-nl"); if(s) s.textContent = n ? "♥ "+fdNum(n,"j\'aime","j\'aime") : "";
-      box._fdSig=fdSig(box._fdK==="*"?null:box._fdK, fdItems(box._fdK==="*"?null:box._fdK)); backend.likePost(p,on).catch(function(){}); return; }
+    if(a==="like"){ if(Date.now()-(box._lpHit||0)<800) return; if(!fdGate()) return; var on=!(p.likes && p.likes[me.uid]);
+      fdRxSet(box, el, it, on ? true : null); var ob=box.querySelector(".fd-rxbar"); if(ob) ob.remove(); if(on) fdRxBar(box, el); return; }
+    if(a==="rx"){ if(!fdGate()) return; var e0=t.dataset.e; fdRxSet(box, el, it, (e0==="♥" || FD_RX.indexOf(e0)<0) ? true : e0); var rb=box.querySelector(".fd-rxbar"); if(rb) rb.remove(); return; }
     var cbx=el.querySelector(".fd-cms"); if(!cbx) return;
     if(a==="cmre"){ if(!fdGate()) return; cbx._re=t.dataset.c; var inp=cbx.querySelector("input"); if(inp){ inp.placeholder="Répondre à "+t.dataset.n+"…"; try{ inp.focus(); }catch(e){} } return; }
     if(a==="cmdel"){ if(!confirm("Supprimer ce commentaire ?")) return; backend.deletePostComment(p, t.dataset.c).then(function(){ fdCms[it.k]=(fdCms[it.k]||[]).filter(function(c){ return c.id!==t.dataset.c && c.re!==t.dataset.c; }); fdCmShow(el, it); }).catch(function(){ alert("Suppression impossible pour le moment, réessaie."); }); return; }
