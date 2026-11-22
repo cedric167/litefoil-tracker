@@ -3684,7 +3684,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // 13/11 : icônes illustrées (img/sports/*.webp) ; les sports sans illustration gardent le pictogramme
   var SP_IMG = { efoil:"efoil", wingfoil:"wingfoil", windsurf:"windsurf", kitesurf:"kitesurf", pumpfoil:"pumpfoil", surffoil:"pumpfoil", surf:"surf", bodyboard:"bodyboard",
     sup:"sup", supdownwind:"sup", jetski:"jetski", running:"running", marche:"marche", rando:"rando", trail:"trail", velo:"velo", ski:"ski", snowboard:"snowboard",
-    skate:"skate", longboard:"skate", surfskate:"skate", roller:"roller", perche:"perche", parapente:"parapente", parawing:"parawing", canoe:"canoe", deriveur:"deriveur" };
+    skate:"skate", longboard:"skate", surfskate:"skate", roller:"roller", perche:"perche", parapente:"parapente", parawing:"parawing", canoe:"canoe", deriveur:"deriveur",
+    longueur:"longueur", voiture:"voiture", moto:"moto", muscu:"muscu", crosstraining:"crosstraining", hiit:"hiit", fitness:"fitness", cardio:"cardio", yoga:"yoga", rameur:"rameur", velosalle:"velosalle", tapis:"tapis", boxe:"boxe" };
   function spIco(k, cls){ var s=spKey(k), g=SP_GLYPH[s], f=SP_FAMC[s]||(s==="trophy"?"gold":"other");
     if(SP_IMG[s]) return '<span class="spi spi-img'+(cls?" "+cls:"")+'"><img src="img/sports/'+SP_IMG[s]+'.webp?v=2" alt="" decoding="async"></span>';
     return '<span class="spi spi-'+f+(cls?" "+cls:"")+'">'+spSvg(g[0])+(g[1]?'<i>'+spSvg(g[1])+'</i>':'')+'</span>'; }
@@ -4221,8 +4222,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible" && phNatOn) phNatSync(); });
   var phMilieu = "mer", phType = "efoil", phCat = "Foil électrique";
   // 20/11 : sur la carte en direct, ma position est une pastille illustrée de mon sport (point bleu si le sport n'a pas d'illustration)
-  window.__lfMeMake = function(ll){ var F={ swim:"nage.svg", voiture:"voiture.svg", moto:"moto.svg", ulm:"avion.svg", surffoil:"pumpfoil.webp", supdownwind:"sup.webp", longboard:"skate.webp", surfskate:"skate.webp" },
-      W="efoil wingfoil parawing windsurf pumpfoil kitesurf surf bodyboard sup canoe deriveur jetski running marche rando trail velo ski snowboard skate roller parapente".split(" "), k=String(phType||""), f=F[k]||(W.indexOf(k)>=0 ? k+".webp" : "");
+  window.__lfMeMake = function(ll){ var F={ swim:"nage.svg", ulm:"avion.svg", surffoil:"pumpfoil.webp", supdownwind:"sup.webp", longboard:"skate.webp", surfskate:"skate.webp" },
+      W="efoil wingfoil parawing windsurf pumpfoil kitesurf surf bodyboard sup canoe deriveur jetski running marche rando trail velo ski snowboard skate roller parapente perche longueur voiture moto muscu crosstraining hiit fitness cardio yoga rameur velosalle tapis boxe".split(" "), k=String(phType||""), f=F[k]||(W.indexOf(k)>=0 ? k+".webp" : "");
     if(!f) return L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 });
     return L.marker(ll, { icon:L.divIcon({ className:"", html:'<div class="lf-sp"><img alt="" src="img/sports/'+f+'"></div>', iconSize:[52,52], iconAnchor:[26,26] }), interactive:false, zIndexOffset:600 }); };
   // Activités proposées par milieu : [clé interne, libellé affiché]
