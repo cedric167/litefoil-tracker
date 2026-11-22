@@ -12,3 +12,11 @@ build/
 *.aab.part*
 android_twa_backup_*/
 firebase-debug.log
+
+# Réglages locaux et documents de travail : jamais dans le dépôt public
+functions/.env
+/Comparatif-Lite-Foil.pdf
+/Espace-ULM-ou-le-trouver.pdf
+/Lite-Foil-promo-EN.mp4
+/Lite-Foil-promo.mp4
+/LiteFoil-ULM-Avion.mp4
