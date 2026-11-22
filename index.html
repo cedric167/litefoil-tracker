@@ -1264,6 +1264,9 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .fcard.fc-medal .fc-stats{ top:72%; left:16%; right:16%; } .fcard.fc-medal .fc-foot{ bottom:9%; }
   .fc-th.md1{ background:#1a1a1c; border-color:#f3c64e; } .fc-th.md2{ background:#1a1a1c; border-color:#dfe6ec; } .fc-th.md3{ background:#1a1a1c; border-color:#d98a52; }
   .fc-th.md1 span, .fc-th.md2 span, .fc-th.md3 span{ color:#fff; }
+  .eq-row{ display:flex; flex-direction:column; gap:8px; margin:8px 0 14px; } .eq-row button{ min-height:0; padding:12px 14px; border-radius:14px; border:2px solid var(--line); background:var(--tile); color:var(--text); font:inherit; font-size:14px; font-weight:700; text-align:left; box-shadow:none; }
+  .eq-row button.md1{ border-color:#f3c64e; } .eq-row button.md2{ border-color:#cfd8df; } .eq-row button.md3{ border-color:#d98a52; }
+  .eq-row button.on{ background:#0e1a1f; color:#fff; border-color:#17c3b2; box-shadow:0 0 0 3px rgba(23,195,178,.25); } .eq-row button.on::after{ content:" ✓"; color:#5ee0d2; }
   .defi-sps{ display:flex; gap:6px; overflow-x:auto; margin:12px -16px 0; padding:0 16px 2px; scrollbar-width:none; } .defi-sps::-webkit-scrollbar{ display:none; }
   .defi-sps button, .lb-sps button{ flex:none; min-height:0; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); color:#fff; border-radius:100px; padding:6px 12px; font:inherit; font-size:12.5px; font-weight:700; box-shadow:none; cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; }
   .defi-sps button.on{ background:#fff; color:#0a3346; border-color:#fff; }
@@ -9031,7 +9034,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var ws={}, ps={}, pw=""; try{ ws=weekSportKm(wk); pw=prevWeekKey(); ps=weekSportKm(pw); }catch(e2){}
       if(base.wKm>(ws.efoil||0)) ws.efoil=Math.round(base.wKm*10)/10;
       var nn=function(o){ return Object.keys(o).length?o:null; }, md=medals().slice(0,12).map(function(x){ return {w:x.w,s:x.s,r:x.r,km:+x.km||0}; });
-      return {n:base.n, km:Math.round(base.km*10)/10, month:mk, eKm:Math.round(base.eKm*10)/10, week:wk, wKm:Math.round(base.wKm*10)/10, eo:+c.eo||0, ej:+c.ej||0, sport:chatTopic, wS:nn(ws), pw:pw||null, pS:nn(ps), md:md.length?md:null};
+      return {n:base.n, km:Math.round(base.km*10)/10, month:mk, eKm:Math.round(base.eKm*10)/10, week:wk, wKm:Math.round(base.wKm*10)/10, eo:+c.eo||0, ej:+c.ej||0, sport:chatTopic, wS:nn(ws), pw:pw||null, pS:nn(ps), md:md.length?md:null, eq:nn(cardEq())};
     }catch(e){ return null; } }
   function publishMyStats(){ if(!backend||!backend.saveStats||!me.pseudo) return; var m=myStats(); if(!m || !m.n) return;
     var k="lf.comm.statsSent", prev=""; try{ prev=localStorage.getItem(k)||""; }catch(e){} var cur=[m.n,m.km,m.month,m.eKm,m.week,m.wKm,m.eo,m.ej,m.sport,JSON.stringify([m.wS,m.pw,m.pS,m.md])].join("|"); if(prev===cur) return;
@@ -9924,9 +9927,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(!C){ o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>Carte de membre</b><span></span></div><div class="gc-body"><div id="rcSlot">'+riderCardHtml(uid)+'</div><div class="gc-count">Ce membre n\'a pas encore de Carte Membre par sport.</div></div></div>'; $("rcClose").addEventListener("click", closeOverlay); return; }
     var MD=medalsOf(uid), mdSel=null; if(/^md:/.test(sel||"")){ mdSel=MD[+sel.slice(3)]||null; sel=null; }
     if(sel && !C.d[sel]) sel=null;
-    var cur=sel?C.d[sel]:null, sp=sel?LF_SP[sel]:null;
+    var cur=sel?C.d[sel]:null, sp=sel?LF_SP[sel]:null, em=sel?eqMedal(uid, sel):null;
+    var eqBox="";
+    if(mine && sel){ var SM=MD.filter(function(m){ return m.s===sel; }); if(SM.length) eqBox='<div class="gi-mlabel">Carte affichée pour '+esc(sp.name)+'</div><div class="eq-row"><button type="button" data-eq="" class="'+(em?"":"on")+'">Carte normale · '+cardTier(cur.r)[1].charAt(0)+cardTier(cur.r)[1].slice(1).toLowerCase()+'</button>'
+        +SM.map(function(m){ return '<button type="button" data-eq="'+esc(String(m.w))+'" class="md'+m.r+(em===m?" on":"")+'">'+MD_ICO[m.r-1]+' '+MD_NAME[m.r-1]+' de la semaine · <span data-no-i18n>'+esc(mdWeekLabel(m.w))+'</span></button>'; }).join("")+'</div>'; }
+    else if(mine && mdSel && C.d[mdSel.s]){ var on0=eqMedal(uid, mdSel.s)===mdSel; eqBox='<div class="eq-row"><button type="button" data-eq="'+(on0?"":esc(String(mdSel.w)))+'" data-eqs="'+esc(mdSel.s)+'" class="md'+mdSel.r+(on0?" on":"")+'">'+(on0?"✓ Carte équipée pour "+esc(LF_SP[mdSel.s].name)+" · toucher pour remettre la carte normale":"Équiper cette carte pour "+esc(LF_SP[mdSel.s].name))+'</button></div>'; }
     var thumbs='<button type="button" class="fc-th '+cardTier(C.g)[0]+(!sel&&!mdSel?' on':'')+'" data-cs=""><b>'+C.g+'</b><span>'+spIco("trophy")+' Globale</span></button>'
-      +C.order.map(function(k){ return '<button type="button" class="fc-th '+cardTier(C.d[k].r)[0]+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+C.d[k].r+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("")
+      +C.order.map(function(k){ var e0=eqMedal(uid, k); return '<button type="button" class="fc-th '+(e0?'md'+e0.r:cardTier(C.d[k].r)[0])+(sel===k?' on':'')+'" data-cs="'+k+'"><b>'+(e0?MD_ICO[e0.r-1]:C.d[k].r)+'</b><span>'+LF_SP[k].ic+' '+esc(LF_SP[k].name)+'</span></button>'; }).join("")
       +MD.map(function(m,i){ return '<button type="button" class="fc-th md'+m.r+(mdSel===m?' on':'')+'" data-cs="md:'+i+'"><b>'+MD_ICO[m.r-1]+'</b><span>'+esc(LF_SP[m.s].name)+'</span></button>'; }).join("");
     var legend = mdSel ? '<div class="gc-count"><b>Carte '+MD_NAME[mdSel.r-1]+' de la semaine</b> · <b>'+esc(LF_SP[mdSel.s].name)+'</b> · <span>semaine du</span> <span data-no-i18n>'+esc(mdWeekLabel(mdSel.w))+'</span></div>' : sel ? '<div class="gi-mlabel">'+esc(LF_FAM[sp.fam].name)+'</div><div class="rc-how">'+spStats(sel).map(function(s,i){ var cv=cardVal(cur,s,i,sel), inf=stInfo(sel,s), nt=LF_BAR[sel]&&cur.n?(+cur.s[i]||0):0, ti=barIdx(nt), tb=(mine&&barOf(sel,myBar)||{})[s], nx="";
           if(nt && tb && ti<4) nx='<small class="bar-nx">'+BAR_NAME[ti+1]+" à partir de "+String(tb[ti]).replace(".",",")+(inf[2]?" "+inf[2]:"")+'</small>';
@@ -9936,7 +9943,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       : '<div class="gc-count">La carte principale fait la moyenne de tes sports, en comptant plus ceux que tu pratiques le plus.</div>';
     o.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="rcClose">✕</button><b>'+(mine?"Mes Cartes Membre":"Cartes Membre")+'</b><span></span></div><div class="gc-body">'
       +'<div class="fc-ths">'+thumbs+(mine?'<button type="button" class="fc-th fc-add" id="rcSports"><b>+</b><span>Mes sports</span></button>':'')+'</div>'
-      +'<div id="rcSlot">'+(mdSel?medalCardHtml(uid, mdSel):fcardHtml(uid, sel, C))+'</div>'
+      +'<div id="rcSlot">'+(mdSel?medalCardHtml(uid, mdSel):(em?medalCardHtml(uid, em):fcardHtml(uid, sel, C)))+'</div>'+eqBox
       +'<button class="rc-share-btn" id="rcShare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Partager '+(mine?"ma":"cette")+' carte</button>'
       +(mine?'<div class="rc-photo-acts"><button class="main" id="rcPhotoBtn">📷 '+(me.cardImg?"Changer ma photo":"Mettre ma photo sur la carte")+'</button>'+(me.cardImg?'<button id="rcPhotoRm">Retirer</button>':'')+'</div><input id="rcPhotoFile" type="file" accept="image/*" hidden><div class="gc-count" id="rcPhotoNote">Une photo de toi en pied ou à mi-corps, sur fond simple : le fond est retiré automatiquement.</div>':'')
       +legend
@@ -9945,6 +9952,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +'</div></div>';
     o.querySelectorAll("[data-cs]").forEach(function(b){ b.addEventListener("click", function(){ openRiderCard(uid, b.dataset.cs||null); }); });
     o.querySelectorAll("[data-bar]").forEach(function(b){ b.addEventListener("click", function(){ myBar=b.dataset.bar==="F"?"F":"H"; try{ localStorage.setItem("lf.comm.bar", myBar); }catch(e){} try{ publishRatings(); }catch(e){} openRiderCard(uid, sel); }); });
+    o.querySelectorAll("[data-eq]").forEach(function(b){ b.addEventListener("click", function(){ var e=cardEq(), k=b.dataset.eqs||sel; if(!k) return; if(b.dataset.eq) e[k]=b.dataset.eq; else delete e[k];
+      try{ localStorage.setItem("lf.card.eq", JSON.stringify(e)); localStorage.removeItem("lf.comm.statsSent"); }catch(x){} try{ publishMyStats(); }catch(x){} openRiderCard(uid, k); }); });
     var rs=$("rcSports"); if(rs) rs.addEventListener("click", function(){ openSportsPicker(); });
     $("rcClose").addEventListener("click", closeOverlay);
     var sb=$("rcShare"); if(sb) sb.addEventListener("click", function(){ shareRiderCard(uid, sel); });
@@ -10141,6 +10150,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       var b=$("phStart"); if(b && !b.hidden) b.scrollIntoView({block:"center", behavior:"smooth"}); },250); }
   const MD_NAME=["Or","Argent","Bronze"], MD_ICO=["🥇","🥈","🥉"];
   function mdWeekLabel(w){ try{ var lg="fr"; try{ lg=(localStorage.getItem("lf-lang")||"fr").slice(0,2); }catch(e){} return new Date(w+"T12:00:00").toLocaleDateString(lg==="en"?"en-GB":lg==="es"?"es-ES":"fr-FR",{day:"numeric",month:"short"}); }catch(e){ return w; } }
+  // carte équipée par sport : rien = carte normale, sinon la semaine de la carte gagnée choisie
+  function cardEq(){ try{ var o=JSON.parse(localStorage.getItem("lf.card.eq")||"{}"), r={}; if(o && typeof o==="object") Object.keys(o).slice(0,40).forEach(function(k){ if(/^[a-z]{2,16}$/.test(k) && o[k]) r[k]=String(o[k]).slice(0,12); }); return r; }catch(e){ return {}; } }
+  function eqMedal(uid, k){ var e = uid===me.uid ? cardEq() : (((commStats[uid]||{}).eq)||{}), w=e && e[k]; if(!w) return null; var M=medalsOf(uid); for(var i=0;i<M.length;i++){ if(M[i].s===k && String(M[i].w)===String(w)) return M[i]; } return null; }
   function medalsOf(uid){ var a = uid===me.uid ? medals() : ((commStats[uid]||{}).md||[]); return (Array.isArray(a)?a:[]).filter(function(x){ return x && LF_SP[x.s] && x.r>=1 && x.r<=3; }).slice(0,12); }
   function medalCardHtml(uid, m){ var mine=uid===me.uid, pr=profileMap[uid]||{}, sp=LF_SP[m.s], ps=mine?me.pseudo:(pr.pseudo||pName(uid)), cimg=mine?me.cardImg:cardCache[uid], av=mine?me.av:pr.av;
     var photo=cimg?'<img class="fc-photo" src="'+esc(cimg)+'" alt="">':(av?'<img class="fc-av" src="'+esc(av)+'" alt="">':'<div class="fc-avl">'+esc((ps||"R").charAt(0).toUpperCase())+'</div>');
