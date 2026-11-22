@@ -2886,6 +2886,10 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
             <div class="sw-txt"><b id="commStatTxt">Visibilité désactivée</b><div class="note" id="commMapNote">Seule une zone d'environ 1 km est partagée, jamais ta position exacte. Tu restes visible dans cette zone même appli fermée, tant que la visibilité est cochée.</div></div>
             <label class="switch"><input type="checkbox" id="commShare"><span class="sl"></span></label>
           </div>
+          <div class="comm-share nm-prec"><span class="d" style="visibility:hidden"></span>
+            <div class="sw-txt"><b>Position précise pour mes amis</b><div class="note">Tes amis te voient à ton emplacement exact. Les autres membres ne voient toujours que ta zone d'environ 1 km.</div></div>
+            <label class="switch"><input type="checkbox" id="commPrecise"><span class="sl"></span></label>
+          </div>
           <button class="primary comm-enable" id="commEnable"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Activer ma position</button>
         </div>
       </div>
@@ -6173,6 +6177,9 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       watchEventMsgs(eid,cb){ const q=db.query(db.ref(d,"eventMessages/"+eid), db.limitToLast(50));
         return db.onValue(q, function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v) out.push({id:c.key,uid:v.uid,pseudo:v.pseudo,text:v.text,img:v.img,av:v.av,t:v.t}); }); cb(out); }, function(){ cb([]); }); },
       publishPresence(o){ return o ? db.set(presRef,{pseudo:o.pseudo,lat:o.lat,lng:o.lng,t:db.serverTimestamp()}) : db.remove(presRef); },
+      // position exacte, lisible par mes amis seulement (option « Position précise pour mes amis »)
+      publishPrecise(o){ var r=db.ref(d,"precise/"+uid); return o ? db.set(r,{ lat:o.lat, lng:o.lng, t:db.serverTimestamp() }) : db.remove(r); },
+      watchPrecise(u, cb){ return db.onValue(db.ref(d,"precise/"+u), function(sn){ cb(sn.val()); }, function(){ cb(null); }); },
       // « en ligne » : membres validés qui ont l'appli ouverte (sans position), retiré automatiquement à la déconnexion
       goOnline(){ if(this._onl) return; this._onl=true; var ref=db.ref(d,"online/"+uid);
         db.onValue(db.ref(d,".info/connected"), function(sn){ if(sn.val()!==true) return; db.onDisconnect(ref).remove().then(function(){ return db.set(ref,{t:db.serverTimestamp()}); }).catch(function(){}); }); },
@@ -6307,7 +6314,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // suppression du profil : données de la communauté puis compte Firebase (l'adresse e-mail redevient libre)
       deleteAccount(){ var u=auth.currentUser; if(!u) return Promise.resolve("none");
         return db.get(db.ref(d,"profiles/"+uid+"/nk")).catch(function(){ return null; }).then(function(s){ var nk=s&&s.val(); var up={};
-          if(nk) up["names/"+nk]=null; up["profiles/"+uid]=null; up["presence/"+uid]=null; up["typing/"+uid]=null; up["pushTokens/"+uid]=null; up["cards/"+uid]=null; up["stats/"+uid]=null;
+          if(nk) up["names/"+nk]=null; up["profiles/"+uid]=null; up["presence/"+uid]=null; up["precise/"+uid]=null; up["typing/"+uid]=null; up["pushTokens/"+uid]=null; up["cards/"+uid]=null; up["stats/"+uid]=null;
           return db.update(db.ref(d),up).catch(function(){}); })
         .then(function(){ return authMod.deleteUser(u).then(function(){ return "deleted"; }); })
         .catch(function(err){ var pw=""; try{ pw=localStorage.getItem("lf.comm.k")||""; }catch(e){}
@@ -6655,13 +6662,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     // 13/11 : membres trop proches à l'écran = une seule pastille « groupe » (on zoome en la touchant)
     try{ $("commMap").classList.toggle("nm-far", commMap.getZoom()<9); }catch(e){}
     const z=commMap.getZoom(), ids=Object.keys(riders).filter(k=>!blocked.has(k) && riders[k] && isFinite(riders[k].lat)), groups=[];
-    ids.forEach(k=>{ const r=riders[k], p=commMap.latLngToLayerPoint([r.lat,r.lng]), hid=!!(commMap.hidden && commMap.hidden([r.lat,r.lng])); let g=hid?null:groups.find(x=>!x.hid && Math.abs(x.x-p.x)<50 && Math.abs(x.y-p.y)<50);   /* hid : de l'autre côté du globe */
+    ids.forEach(k=>{ const r=nmPos(k), p=commMap.latLngToLayerPoint([r.lat,r.lng]), hid=!!(commMap.hidden && commMap.hidden([r.lat,r.lng])); let g=hid?null:groups.find(x=>!x.hid && Math.abs(x.x-p.x)<50 && Math.abs(x.y-p.y)<50);   /* hid : de l'autre côté du globe */
       if(g){ g.ids.push(k); g.x=(g.x*(g.ids.length-1)+p.x)/g.ids.length; g.y=(g.y*(g.ids.length-1)+p.y)/g.ids.length; } else groups.push({ x:p.x, y:p.y, ids:[k], hid:hid }); });
     groups.forEach(g=>{
-      if(g.ids.length===1){ const k=g.ids[0], r=riders[k], col=avatarColor(k);
-        if(z>=12) nmCircle([r.lat,r.lng], col, .14);
+      if(g.ids.length===1){ const k=g.ids[0], r=nmPos(k), col=avatarColor(k);
+        if(z>=12 && !r.px) nmCircle([r.lat,r.lng], col, .14);
         nmMarker([r.lat,r.lng], riderIcon(k,r,false), 0, (function(u){ return function(){ openUserProfile(u); }; })(k)); return; }
-      const ll=commMap.layerPointToLatLng([g.x,g.y]), bounds=L.latLngBounds(g.ids.map(k=>[riders[k].lat,riders[k].lng]));
+      const ll=commMap.layerPointToLatLng([g.x,g.y]), bounds=L.latLngBounds(g.ids.map(k=>{ const q=nmPos(k); return [q.lat,q.lng]; }));
       const faces=g.ids.slice(0,3).map(function(k){ var pr=profileMap[k]||{}, col=avatarColor(k), nm=(riders[k].pseudo||"R"); return pr.av?'<img src="'+esc(pr.av)+'" alt="">':'<b style="background:'+col+'">'+esc((nm.trim()[0]||"R").toUpperCase())+'</b>'; }).join("");
       nmMarker(ll, L.divIcon({className:"nm-pin nm-grp", iconSize:[84,60], iconAnchor:[42,30], html:'<span class="nm-gf n'+Math.min(3,g.ids.length)+'">'+faces+'</span><span class="nm-gc">'+g.ids.length+'</span>'}), 200,
         function(){ const same=bounds.getNorthEast().distanceTo(bounds.getSouthWest())<60;
@@ -6677,7 +6684,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   }
   // 12/11 : carte plein écran « Près de moi »
   let nmOpen=false;
-  function nearMapOpen(){ var nm=$("nearMap"); if(!nm) return; if(nm.parentNode!==document.body) document.body.appendChild(nm); nm.hidden=false; nmOpen=true; document.body.classList.add("nm-on");
+  function nearMapOpen(){ setTimeout(function(){ try{ nmPrecSync(); }catch(e){} }, 0); var nm=$("nearMap"); if(!nm) return; if(nm.parentNode!==document.body) document.body.appendChild(nm); nm.hidden=false; nmOpen=true; document.body.classList.add("nm-on");
     try{ nmLiveLoad(); if(nmLiveIv) clearInterval(nmLiveIv); nmLiveIv=setInterval(nmLiveLoad, 45000); }catch(e){}
     commIntro=true; commAnimUntil=0; commMapInit(); if(!commMap) return; setTimeout(function(){ commMap.invalidateSize(); renderMap(); commRecenter(); nmPaint(); },60); setTimeout(function(){ try{ commMap.invalidateSize(); commRecenter(); }catch(e){} },700); }
   // 13/11 : amis en direct (sortie partagée) : rangée dans la carte, un appui ouvre le suivi en direct
@@ -6698,7 +6705,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         b.style.cssText="margin-left:auto;margin-right:150px;flex:none;text-decoration:none;border:2px solid rgba(255,255,255,.85);border-radius:999px;padding:8px 13px;background:linear-gradient(135deg,#ff2d8f,#c2186f);color:#fff;font-weight:800;font-size:13.5px;white-space:nowrap;box-shadow:0 6px 16px rgba(255,45,143,.45)";
         var h=ov.querySelector(".nm-lv-h"); if(h){ h.style.display="flex"; h.style.alignItems="center"; h.appendChild(b); } }).catch(function(){}); }catch(e){} } }
   (function(){ var b=$("nmLive"); if(b) b.addEventListener("click", function(e){ var x=e.target.closest("button[data-sid]"); if(x) lfLiveView(x.dataset.sid, x.dataset.nm); }); })();
-  function nearMapClose(){ if(nmLiveIv){ clearInterval(nmLiveIv); nmLiveIv=null; } var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); if(nmSport) nmSportSet(""); }
+  function nearMapClose(){ setTimeout(function(){ try{ nmPrecSync(); }catch(e){} }, 0); if(nmLiveIv){ clearInterval(nmLiveIv); nmLiveIv=null; } var nm=$("nearMap"); if(!nm||nm.hidden) return; nm.hidden=true; nmOpen=false; document.body.classList.remove("nm-on"); if(nmSport) nmSportSet(""); }
   function nmPaint(){ var n=Object.keys(riders).filter(function(k){ return !blocked.has(k); }).length, c=$("nmCount"); if(c) c.textContent = n ? (n+(nmSport==="ulm"?" pilote":" membre")+(n>1?"s":"")+" autour de toi") : (nmSport==="ulm" ? "Aucun pilote visible pour l'instant" : "Personne autour pour l'instant");
     var g=$("nmGhost"); if(g) g.classList.toggle("off", !sharing); }
   window.__nearOpen=function(sp){ nmSportSet(typeof sp==="string" ? sp : ""); nearMapOpen(); }; window.__nearClose=nearMapClose;
@@ -6751,7 +6758,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         me.pos={lat:roundZone(p.coords.latitude),lng:roundZone(p.coords.longitude)};
         // position exacte : gardée dans le téléphone pour mon propre repère, jamais publiée
         me.exact={ lat:p.coords.latitude, lng:p.coords.longitude, acc:+p.coords.accuracy||0 }; if(isFinite(p.coords.heading) && p.coords.heading!==null && (+p.coords.speed||0)>0.8) nmHeadSet(p.coords.heading);
-        $("commStatTxt").textContent="Tu es visible dans ta zone"; publishMe(); renderMap(); try{ nmPlace(); }catch(e){}
+        $("commStatTxt").textContent="Tu es visible dans ta zone"; publishMe(); nmPrecSend(false); renderMap(); try{ nmPlace(); }catch(e){}
         if(!commCentered){ commCentered=true; commRecenter(); } updateChatGate();
       }, err=>{
         if(err && err.code===1){ // PERMISSION_DENIED
@@ -6768,7 +6775,21 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     } else { $("commStatTxt").textContent="Géolocalisation non supportée sur cet appareil"; }
     clearInterval(presenceTimer); presenceTimer=setInterval(publishMe,30000); publishMe();
   }
-  function stopSharing(){
+  // ----- position précise entre amis -----
+  var precOn=false, precLast=null, precAt=0, precMap={}, precUn={}; try{ precOn=localStorage.getItem("lf.comm.precise")==="1"; }catch(e){}
+  function nmPrecSend(force){ if(!backend || !backend.publishPrecise) return; if(!(sharing && precOn && me.exact && profileReady())){ return; }
+    var now=Date.now(); if(!force && precLast && now-precAt<60000 && hdist({lat:precLast.lat,lng:precLast.lng},{lat:me.exact.lat,lng:me.exact.lng})<0.012) return;   /* 12 m ou 1 minute */
+    precLast={ lat:me.exact.lat, lng:me.exact.lng }; precAt=now; backend.publishPrecise({ lat:Math.round(me.exact.lat*1e5)/1e5, lng:Math.round(me.exact.lng*1e5)/1e5 }).catch(function(){}); }
+  function nmPrecClear(){ precLast=null; if(backend && backend.publishPrecise && me.uid) backend.publishPrecise(null).catch(function(){}); }
+  // position exacte de mes amis qui la partagent : suivie seulement pendant que la carte est ouverte
+  function nmPrecSync(){ if(!backend || !backend.watchPrecise) return; var want={}; if(nmOpen) Object.keys(myFriends||{}).filter(function(u){ return !blocked.has(u); }).slice(0,60).forEach(function(u){ want[u]=1; });
+    Object.keys(precUn).forEach(function(u){ if(!want[u]){ try{ precUn[u](); }catch(e){} delete precUn[u]; delete precMap[u]; } });
+    Object.keys(want).forEach(function(u){ if(precUn[u]) return; precUn[u]=backend.watchPrecise(u, function(v){ if(v && isFinite(v.lat) && isFinite(v.lng)) precMap[u]={ lat:+v.lat, lng:+v.lng, t:+v.t||Date.now() }; else delete precMap[u]; if(nmOpen){ try{ renderMap(); }catch(e){} } }); }); }
+  // où dessiner un membre : sa position exacte s'il est mon ami et la partage (moins de 30 minutes), sinon sa zone
+  function nmPos(k){ var r=riders[k], p=precMap[k]; if(r && p && myFriends[k] && Date.now()-p.t<30*60000) return Object.assign({}, r, { lat:p.lat, lng:p.lng, px:1 }); return r; }
+  (function(){ var c=$("commPrecise"); if(!c) return; c.checked=precOn; c.addEventListener("change", function(){ precOn=c.checked; try{ localStorage.setItem("lf.comm.precise", precOn?"1":"0"); }catch(e){}
+      if(precOn){ if(!sharing){ alert("Active d'abord ta visibilité : tes amis te verront alors à ton emplacement exact."); } nmPrecSend(true); } else nmPrecClear(); }); })();
+  function stopSharing(){ nmPrecClear();
     sharing=false; $("commDot").classList.remove("on"); $("commStatTxt").textContent="Visibilité désactivée"; updateEnableBtn();
     try{ localStorage.setItem("lf.comm.share","0"); }catch(e){}
     if(geoWatch!=null && navigator.geolocation){ navigator.geolocation.clearWatch(geoWatch); } geoWatch=null;
@@ -9491,7 +9512,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function bindFriendBtns(root, after){ root.querySelectorAll("[data-fu]").forEach(function(b){ b.addEventListener("click", function(e){ e.stopPropagation(); friendAction(b.dataset.fu, after); }); }); }
   function lfFriendsCache(){ try{ var l=Object.keys(myFriends||{}).filter(function(u){ return !blocked.has(u); }).slice(0,300).map(function(u){ var f=myFriends[u]||{}, pr=profileMap[u]||{}; return { u:u, p:String(pr.pseudo||f.pseudo||f.p||"").slice(0,24) }; }).filter(function(x){ return x.p; });
       if(l.length || !Object.keys(myFriends||{}).length) localStorage.setItem("lf.comm.friendsList", JSON.stringify(l)); }catch(e){} }
-  function onFriends(m){ myFriends=m||{}; lfFriendsCache(); setTimeout(lfFriendsCache, 5000); var ch=false; for(var u in myFriends){ if(sentReqs[u]){ delete sentReqs[u]; ch=true; } } if(ch) saveSentReqs(); renderProfil(); }
+  function onFriends(m){ myFriends=m||{}; try{ nmPrecSync(); }catch(e){} lfFriendsCache(); setTimeout(lfFriendsCache, 5000); var ch=false; for(var u in myFriends){ if(sentReqs[u]){ delete sentReqs[u]; ch=true; } } if(ch) saveSentReqs(); renderProfil(); }
   function onFriendReqs(m){ friendReqs=m||{}; var n=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }).length;
     ["cmReqBadge","bnProfBadge","flAddBadge"].forEach(function(id){ var b=$(id); if(b){ b.hidden=!n; b.textContent=n||""; } }); renderProfil(); }
   // forme du tracé (sans coordonnées GPS) : points ramenés dans un carré 0-100
