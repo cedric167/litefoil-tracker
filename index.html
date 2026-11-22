@@ -786,6 +786,14 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .fd-modes button{ transition:background .18s, color .18s; font-size:12.5px; gap:5px; } .fd-modes{ box-shadow:inset 0 0 0 1px rgba(8,40,48,.04); }
   @media (max-width:370px){ .fd-modes button{ font-size:11.5px; gap:3px; } .fd-modes svg.i{ width:14px; height:14px; } }
   .fd-cpv{ border-top:1px solid var(--line-soft); padding:0 0 10px; cursor:pointer; } .fd-cpv:active{ background:rgba(8,40,48,.035); }
+  .fd-nl{ cursor:pointer; } .fd-nl:empty{ cursor:default; }
+  .fd-lk-ov{ position:fixed; inset:0; z-index:100000; background:rgba(6,22,27,.45); display:flex; align-items:flex-end; justify-content:center; animation:fdLkF .16s ease-out; }
+  .fd-lk{ width:100%; max-width:520px; max-height:70vh; display:flex; flex-direction:column; background:#fff; border-radius:22px 22px 0 0; padding-bottom:env(safe-area-inset-bottom,0); box-shadow:0 -10px 40px rgba(6,22,27,.25); animation:fdLkU .22s cubic-bezier(.2,.8,.2,1); }
+  .fd-lk-h{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px 12px; border-bottom:1px solid var(--line-soft); } .fd-lk-h b{ font-size:16px; color:#e0364f; }
+  .fd-lk-h button{ border:0; background:var(--tile); border-radius:50%; width:34px; height:34px; min-height:0; padding:0; font-size:14px; box-shadow:none; color:var(--text); }
+  .fd-lk-l{ overflow:auto; padding:6px 8px 14px; } .fd-lk-l button{ display:flex; align-items:center; gap:12px; width:100%; border:0; background:none; box-shadow:none; min-height:0; padding:9px 10px; border-radius:14px; font:inherit; font-size:15px; color:var(--text); text-align:left; }
+  .fd-lk-l button:active{ background:var(--tile); } .fd-lk-l button b{ font-weight:700; } .fd-lk-l button i{ margin-left:auto; font-style:normal; color:var(--muted); font-size:18px; }
+  @keyframes fdLkU{ from{ transform:translateY(40px); opacity:.4; } } @keyframes fdLkF{ from{ opacity:0; } }
   .fd-cpm{ padding:9px 12px 0; font-size:12.5px; font-weight:700; color:var(--muted); } .fd-nc{ cursor:pointer; }
   .fd-modes svg.i{ width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .fl-me{ flex:none; display:flex; align-items:center; gap:8px; padding:5px 14px 5px 5px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:13.5px; font-weight:700; min-height:0; box-shadow:var(--sh-sm); max-width:46%; }
@@ -9451,7 +9459,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       +(p?'<button type="button" class="fd-more" data-fa="more" aria-label="Options">•••</button>':'')+'</div>';
     if(v){ if(v.caption) h+='<div class="fd-tx">'+esc(v.caption)+'</div>';
       h+='<button type="button" class="fd-vid" data-fa="vid" style="background-image:url('+esc(v.thumb||"")+')" aria-label="Lire la vidéo"><i>▶</i></button>'
-        +'<div class="fd-cnt"><span class="fd-nl">♥ '+fdNum(vidLikes(v),"j\'aime","j\'aime")+'</span><span>▶ '+fmtCount(vidViews(v))+'</span></div>'
+        +'<div class="fd-cnt"><span class="fd-nl" data-fa="likes">♥ '+fdNum(vidLikes(v),"j\'aime","j\'aime")+'</span><span>▶ '+fmtCount(vidViews(v))+'</span></div>'
         +'<div class="fd-bar"><button type="button" data-fa="vlike" class="'+(vidLiked(v)?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="vid">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="vshare">'+FD_IC.sh+'Partager</button></div></div>';
       return h; }
     if(p.text && !p.ev) h+='<div class="fd-tx">'+esc(p.text)+'</div>';
@@ -9460,7 +9468,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(p.ev && p.ev.id){ var ed=new Date(+p.ev.when||Date.now()); h+='<div class="fd-ev" data-fa="ev" role="button"><span class="fd-ev-d"><b>'+ed.getDate()+'</b><small>'+esc(ed.toLocaleDateString("fr-FR",{month:"short"}))+'</small></span>'
       +'<span class="fd-ev-t"><b>'+esc(p.ev.title||"Événement")+'</b><small>'+esc(fmtEvWhen(p.ev.when))+(p.ev.place?" · 📍 "+esc(p.ev.place):"")+'</small></span><span class="fd-ev-go">Voir ›</span></div>'; }
     var nl=Object.keys(p.likes||{}).length, on=!!(p.likes&&p.likes[me.uid]), nc=fdCms[it.k];
-    h+='<div class="fd-cnt"><span class="fd-nl">'+(nl?'♥ '+fdNum(nl,"j\'aime","j\'aime"):'')+'</span><span class="fd-nc" data-fa="cmopen">'+(nc&&nc.length?fdNum(fdCmList(it.k).length,"commentaire","commentaires"):'')+'</span></div>'
+    h+='<div class="fd-cnt"><span class="fd-nl" data-fa="likes">'+(nl?'♥ '+fdNum(nl,"j\'aime","j\'aime"):'')+'</span><span class="fd-nc" data-fa="cmopen">'+(nc&&nc.length?fdNum(fdCmList(it.k).length,"commentaire","commentaires"):'')+'</span></div>'
       +'<div class="fd-bar"><button type="button" data-fa="like" class="'+(on?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="cm">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="share">'+FD_IC.sh+'Partager</button></div>'
       +'<div class="fd-cpv" data-fa="cmopen" role="button"'+(fdCpvHtml(it.k)?'':' hidden')+'>'+fdCpvHtml(it.k)+'</div><div class="fd-cms" hidden></div></div>';
     return h; }
@@ -9487,6 +9495,13 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(fdCms[k]===undefined && backend.getPostComments){ fdCms[k]=null; backend.getPostComments(p).then(function(l){ fdCms[k]=l; fdCmCount(el,k); }).catch(function(){ fdCms[k]=undefined; }); } };
     if(!window.IntersectionObserver){ els.slice(0,8).forEach(go); return; }
     var io=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting){ io.unobserve(e.target); go(e.target); } }); }, {rootMargin:"300px"}); els.forEach(function(el){ io.observe(el); }); }
+  // qui a aimé : petite feuille qui monte du bas, avec photo et nom ; un appui sur un membre ouvre son profil
+  function fdLikers(ids){ ids=ids.filter(function(u){ return !blocked.has(u); }); if(!ids.length) return;
+    var o=document.createElement("div"); o.className="fd-lk-ov";
+    o.innerHTML='<div class="fd-lk" role="dialog" aria-label="Membres qui ont aimé"><div class="fd-lk-h"><b>♥ '+fdNum(ids.length,"j\'aime","j\'aime")+'</b><button type="button" data-x="1" aria-label="Fermer">✕</button></div><div class="fd-lk-l">'
+      +ids.map(function(u){ return '<button type="button" data-u="'+esc(u)+'"><span class="fd-av s">'+avHtml(u)+'</span><b>'+esc(u===me.uid?(me.pseudo||"Moi"):(pName(u)||"Membre"))+'</b>'+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'<i>›</i></button>'; }).join("")+'</div></div>';
+    o.addEventListener("click", function(e){ var b=e.target.closest("[data-u]"); if(b){ o.remove(); openUserProfile(b.dataset.u); return; } if(e.target===o || e.target.closest("[data-x]")) o.remove(); });
+    document.body.appendChild(o); }
   function fdCmList(k){ return (fdCms[k]||[]).filter(function(c){ return c && !blocked.has(c.uid); }); }
   function fdCmCount(el,k){ var n=fdCmList(k).length, s=el.querySelector(".fd-nc"); if(s) s.textContent = n ? fdNum(n,"commentaire","commentaires") : "";
     var pv=el.querySelector(".fd-cpv"), cb=el.querySelector(".fd-cms"); if(pv){ var hh=fdCpvHtml(k); pv.innerHTML=hh; pv.hidden=!hh || !!(cb && !cb.hidden); } }
@@ -9508,6 +9523,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(a==="new"){ fdCompose({}); return; } if(a==="newph"){ fdCompose({pick:"ph"}); return; } if(a==="newss"){ fdCompose({pick:"ss"}); return; }
     if(a==="newvid"){ openVideoUpload(); return; }
     var el=t.closest(".fd-post"), it=el && box._fdMap[el.dataset.k]; if(!it) return;
+    if(a==="likes"){ var lm=it.p ? (it.p.likes||{}) : ((it.v && it.v.likes)||{}); fdLikers(Object.keys(lm).filter(function(u){ return lm[u]; })); return; }
     if(a==="vid"){ var i=vidVisible().indexOf(it.v); if(i>=0){ closeOverlay(); openFeed(i); } return; }
     if(a==="vshare"){ shareVideo(it.v); return; }
     if(a==="vlike"){ if(!fdGate() || !backend.likeVideo) return; var v=it.v, von=!vidLiked(v); v.likes=v.likes||{}; if(von) v.likes[me.uid]=true; else delete v.likes[me.uid];
