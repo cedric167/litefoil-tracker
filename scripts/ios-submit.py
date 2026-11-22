@@ -11,10 +11,13 @@ import json, os, re, sys, time, subprocess, textwrap, urllib.request, urllib.err
 
 BUNDLE = os.environ.get("BUNDLE_ID", "fr.litefoil.tracker")
 TAG = os.environ.get("CM_TAG") or (sys.argv[1] if len(sys.argv) > 1 else "")
-m = re.match(r"^submit-(\d+(?:\.\d+){1,2})-(\d+)$", TAG)
+m = re.match(r"^submit-(\d+(?:\.\d+){1,2})-(\d+)(-remplace)?$", TAG)
 if not m:
     print("Étiquette attendue : submit-<version>-<build>. Reçu :", TAG); sys.exit(1)
 VERSION, BUILD = m.group(1), m.group(2)
+# « -remplace » à la fin de l'étiquette : si une autre version attend encore sa vérification chez Apple, elle est retirée de la
+# file et celle-ci prend sa place (elle doit contenir tout ce que l'autre apportait). Sans effet si l'examen a déjà commencé.
+REMPLACE = bool(m.group(3))
 ISS, KID, KEY = (os.environ.get(k) for k in ("APP_STORE_CONNECT_ISSUER_ID", "APP_STORE_CONNECT_KEY_IDENTIFIER", "APP_STORE_CONNECT_PRIVATE_KEY"))
 if not (ISS and KID and KEY):
     print("Clé API App Store Connect absente."); sys.exit(1)
@@ -66,6 +69,18 @@ EDIT = ("PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_RE
 vs = call("GET", "/apps/" + APP + "/appStoreVersions?filter[platform]=IOS&limit=20")["data"]
 for v in vs: print("  version", v["attributes"]["versionString"], v["attributes"]["appStoreState"])
 busy = [v for v in vs if v["attributes"]["appStoreState"] in ("WAITING_FOR_REVIEW", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE", "PROCESSING_FOR_APP_STORE")]
+WAIT = ("WAITING_FOR_REVIEW", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE", "PROCESSING_FOR_APP_STORE")
+if busy and REMPLACE and busy[0]["attributes"]["versionString"] != VERSION and busy[0]["attributes"]["appStoreState"] == "WAITING_FOR_REVIEW":
+    old = busy[0]["attributes"]["versionString"]
+    for rs in call("GET", "/reviewSubmissions?filter[app]=" + APP + "&filter[platform]=IOS&filter[state]=WAITING_FOR_REVIEW&limit=5")["data"]:
+        call("PATCH", "/reviewSubmissions/" + rs["id"], {"data": {"type": "reviewSubmissions", "id": rs["id"], "attributes": {"canceled": True}}})
+        print("Version", old, "retirée de la file d'attente d'Apple.")
+    for _ in range(40):
+        time.sleep(6)
+        vs = call("GET", "/apps/" + APP + "/appStoreVersions?filter[platform]=IOS&limit=20")["data"]
+        if not [v for v in vs if v["attributes"]["appStoreState"] in WAIT]: break
+    for v in vs: print("  version", v["attributes"]["versionString"], v["attributes"]["appStoreState"])
+    busy = [v for v in vs if v["attributes"]["appStoreState"] in WAIT]
 if busy:
     print("Une version est déjà chez Apple (" + busy[0]["attributes"]["versionString"] + ", " + busy[0]["attributes"]["appStoreState"] + ") : rien à soumettre."); sys.exit(0 if busy[0]["attributes"]["versionString"] == VERSION else 1)
 ed = [v for v in vs if v["attributes"]["appStoreState"] in EDIT]
