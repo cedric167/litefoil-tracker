@@ -14,6 +14,10 @@
 <style>
   html, body { margin:0; height:100%; background:#0b0d10; color:#fff; font:15px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; overflow:hidden; }
   #map { position:absolute; inset:0; }
+  #pin { position:absolute; left:0; top:0; z-index:4; display:none; flex-direction:column; align-items:center; pointer-events:none; will-change:transform; }
+  #pin b { margin-bottom:5px; padding:3px 10px; border-radius:12px; background:rgba(10,14,18,.76); color:#fff; font-size:12.5px; font-weight:700; white-space:nowrap; max-width:170px; overflow:hidden; text-overflow:ellipsis; box-shadow:0 4px 10px rgba(0,0,0,.4); } #pin b:empty { display:none; }
+  #pin span { width:54px; height:54px; border-radius:50%; border:3px solid #fff; overflow:hidden; background:#0fb9cf; box-shadow:0 0 0 3px #ff2d8f, 0 0 20px rgba(255,45,143,.6), 0 8px 16px rgba(0,0,0,.45); } #pin span img { width:100%; height:100%; object-fit:cover; display:block; }
+  #pin i { width:3px; height:26px; background:linear-gradient(#fff,#ff2d8f 70%,rgba(255,45,143,.2)); border-radius:2px; }
   .top { position:absolute; left:0; right:0; top:0; padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 26px; text-align:center; pointer-events:none; z-index:5;
          background:linear-gradient(rgba(6,10,14,.72), rgba(6,10,14,0)); }
   .top b { display:block; font-size:12px; letter-spacing:.28em; } .top b i { font-style:normal; color:#19e3ff; }
@@ -55,7 +59,7 @@
         pts.push(q); });
       if(pts.length>1) pts[0].speed=pts[1].speed;
       const airL=/ulm|avion|parapente/i.test(d.cat||"");
-      g={ pts, name:(airL ? "Vol de " : "Sortie de ")+String(d.ps||"Membre"), milieu:airL ? "air" : "terre" }; msg(""); }
+      g={ pts, name:(airL ? "Vol de " : "Sortie de ")+String(d.ps||"Membre"), milieu:airL ? "air" : "terre", who:String(d.ps||"").slice(0,24), av:"https://litefoil-communaute-222fd.web.app/l/"+liveSid+".jpg" }; msg(""); }
     catch(e){ msg("Ce parcours n'est plus disponible."); return; } }
   if(demo && !g){ // vol simulé autour du Canigou, pour essayer le moteur sans vrai vol
     const pts=[], N=420; let d=0, pv=null;
@@ -169,7 +173,16 @@
     else { viewer.camera.lookAt(cur, new C.HeadingPitchRange(0, PT[2]*rad, RG[2])); }
     $("sSpd").textContent=Math.round(a.speed+(b.speed-a.speed)*f); $("sAlt").textContent=est ? "—" : (GROUND ? Math.round(a.a0+(b.a0-a.a0)*f) : Math.round(alt*3.28084)); $("sDst").textContent=((a.dist+(b.dist-a.dist)*f)/1000).toFixed(1).replace(".",",");
     if(!seeking) $("seek").value=Math.round(prog*1000);
+    // bulle photo + nom du membre, posée au-dessus de l'appareil
+    if(pin){ let w=null; try{ const ST=C.SceneTransforms, fn=ST.worldToWindowCoordinates||ST.wgs84ToWindowCoordinates; w=fn.call(ST, viewer.scene, cur); }catch(e){}
+      if(w && isFinite(w.x) && isFinite(w.y)){ pin.style.display="flex"; pin.style.transform="translate("+Math.round(w.x)+"px,"+Math.round(w.y)+"px) translate(-50%,-100%) translateY(-34px)"; } else pin.style.display="none"; }
   }
+  // la bulle n'existe que si l'on connaît le membre (nom ou photo)
+  let pin=null;
+  (function(){ const who=String((g && g.who)||"").slice(0,24), av=String((g && g.av)||""), okAv=/^(data:image[/](jpeg|png|webp);base64,[A-Za-z0-9+/=]+|https:[/][/][^"'<> ]+)$/.test(av); if(!who && !okAv) return;
+    pin=document.createElement("div"); pin.id="pin"; const b=document.createElement("b"); b.textContent=who; const sp=document.createElement("span");
+    if(okAv){ const im=document.createElement("img"); im.alt=""; im.onerror=()=>{ sp.style.display="none"; }; im.src=av; sp.appendChild(im); } else sp.style.display="none";
+    const tl=document.createElement("i"); pin.appendChild(b); pin.appendChild(sp); pin.appendChild(tl); document.body.appendChild(pin); })();
   function frame(now){ const dt=Math.max(0, Math.min(250, now-last)); last=now;
     if(!paused && !seeking){ prog=Math.min(1, prog+dt/BASE*mul); orb=(orb+dt/1000*6)%360; draw(false); if(prog>=1){ paused=true; $("bPlay").textContent="▶"; } }
     requestAnimationFrame(frame); }

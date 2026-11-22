@@ -6734,7 +6734,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function nmHeadSet(h){ if(!isFinite(h)) return; nmHead=(h%360+360)%360; var now=Date.now(); if(now-nmHeadT<120) return; nmHeadT=now;
     var c=document.querySelector(".nm-pin.me .nm-cone"); if(c){ c.hidden=false; c.style.setProperty("--h", nmConeDeg()+"deg"); } }
   (function(){ var on=function(e){ if(!nmOpen) return; var h=null; if(typeof e.webkitCompassHeading==="number") h=e.webkitCompassHeading; else if(e.absolute && typeof e.alpha==="number") h=360-e.alpha; if(h!=null) nmHeadSet(h); };
-    try{ window.addEventListener("deviceorientationabsolute", on, true); window.addEventListener("deviceorientation", on, true); }catch(e){} })();
+    try{ window.addEventListener("deviceorientationabsolute", on, true); window.addEventListener("deviceorientation", on, true); }catch(e){}
+    // iPhone : la boussole demande un accord, à donner sur un geste de l'utilisateur ; demandé une seule fois, au premier appui sur la carte
+    var asked=false; document.addEventListener("click", function(e){ if(asked || !nmOpen) return; var D=window.DeviceOrientationEvent; if(!D || typeof D.requestPermission!=="function") return;
+      if(e.target && e.target.closest && e.target.closest("#nearMap")){ asked=true; try{ D.requestPermission().catch(function(){}); }catch(x){} } }, true); })();
   // nom du lieu et température dans le titre, à partir de la zone arrondie (pas de la position exacte) ; une demande toutes les 20 minutes au plus
   var nmPlaceAt=0, nmPlaceKey="";
   function nmPlace(){ if(!me.pos || !nmOpen) return; var k=me.pos.lat.toFixed(2)+","+me.pos.lng.toFixed(2), now=Date.now(); if(k===nmPlaceKey && now-nmPlaceAt<20*60000) return; nmPlaceKey=k; nmPlaceAt=now;

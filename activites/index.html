@@ -1154,7 +1154,8 @@ function flyPinSet(a, p){ try{ if(!flyMap) return; let src=""; const mine=!flyGu
 // ouvre un vol dans la vue 3D photoréaliste (Google) : le tracé est allégé puis passé à la page vol3d.html
 async function flyG3dOpen(a){ try{ if(!a) return; await ensurePoints(a); const pts=a.points||[]; if(pts.length<2){ lfToast("Ce vol n'a pas de tracé."); return; }
     const st=Math.max(1,Math.ceil(pts.length/1500)), o=[]; for(let k=0;k<pts.length;k+=st){ const q=pts[k]; o.push({ lat:+(+q.lat).toFixed(6), lon:+(+q.lon).toFixed(6), alt:Math.round(+q.alt||0), speed:Math.round(+q.speed||0), dist:Math.round(+q.dist||0), t:Math.round(+q.t||0) }); }
-    sessionStorage.setItem("lf.fly3", JSON.stringify({ pts:o, name:a.name, milieu:a.milieu==="air" ? "air" : "terre" })); location.href="vol3d.html"; }catch(e){ lfToast("Vue 3D indisponible sur cet appareil."); } }
+    let who3="", av3=""; try{ const mine3=!flyGuest || flyBackTo==="ulm"; if(mine3){ who3=localStorage.getItem("lf.comm.pseudo")||""; av3=localStorage.getItem("lf.comm.avatar")||""; } else { const pp3=String(a.name||"").split(" · "); if(pp3.length>1) who3=pp3[0]; av3=flyGuestAv||""; } }catch(e){}
+    sessionStorage.setItem("lf.fly3", JSON.stringify({ pts:o, name:a.name, milieu:a.milieu==="air" ? "air" : "terre", who:String(who3).slice(0,24), av:av3 })); location.href="vol3d.html"; }catch(e){ lfToast("Vue 3D indisponible sur cet appareil."); } }
 async function startFly(a){
   if(!a) return; await ensurePoints(a);
   let pts=a.points; if(!pts||pts.length<2) return;

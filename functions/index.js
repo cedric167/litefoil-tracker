@@ -748,7 +748,7 @@ exports.sharePage = onRequest({ region: "europe-west1", memory: "256MiB", maxIns
   try {
     if (kind === "api" && parts[1] === "live") return liveApi(req, res, String(parts[2] || "").replace(/[^A-Za-z0-9_-]/g, ""));
     if (kind === "api" && parts[1] === "watch") return watchApi(req, res, String(parts[2] || "").replace(/[^A-Za-z0-9]/g, ""));
-    if (kind === "l") { const raw = String(parts[1] || ""); return livePage(req, res, raw.replace(/\.json$/, "").replace(/[^A-Za-z0-9_-]/g, ""), /\.json$/.test(raw), base); }
+    if (kind === "l") { const raw = String(parts[1] || ""); if (/.jpg$/.test(raw)) return liveAvatar(res, raw.replace(/.jpg$/, "").replace(/[^A-Za-z0-9_-]/g, "")); return livePage(req, res, raw.replace(/\.json$/, "").replace(/[^A-Za-z0-9_-]/g, ""), /\.json$/.test(raw), base); }
     // « Rejoindre » : Google Play sur Android, App Store sur iPhone, sinon l'appli web
     if (kind === "get") {
       const ua = String(req.get("user-agent") || "");
@@ -902,6 +902,14 @@ const LIVE_SPORTS = [[/e-?foil|foil [ée]lectrique/i, "efoil.webp"], [/para ?win
   [/skate|longboard/i, "skate.webp"], [/surf/i, "surf.webp"], [/nage|swim/i, "nage.svg"], [/trail/i, "trail.webp"], [/rando/i, "rando.webp"], [/marche/i, "marche.webp"], [/run|course/i, "running.webp"],
   [/v[ée]lo/i, "velo.webp"], [/snow/i, "snowboard.webp"], [/ski/i, "ski.webp"], [/roller/i, "roller.webp"], [/voiture/i, "voiture.svg"], [/moto/i, "moto.svg"], [/ulm|avion/i, "avion.svg"], [/parapente/i, "parapente.webp"]];
 function liveSport(cat) { const c = String(cat || ""); if (/^SOS/i.test(c)) return ""; const r = LIVE_SPORTS.find((x) => x[0].test(c)); return r ? r[1] : ""; }
+// photo de profil du membre suivi, pour la bulle qui suit son tracé (22/11) ; 404 s'il n'a pas de photo
+async function liveAvatar(res, sid) {
+  try {
+    const db = getDatabase(), L = sid ? (await db.ref("live/" + sid).get()).val() : null;
+    if (!L || !L.uid) return res.status(404).send("introuvable");
+    return sendDataUrl(res, (await db.ref("profiles/" + L.uid + "/av").get()).val());
+  } catch (e) { return res.status(404).send("introuvable"); }
+}
 async function livePage(req, res, sid, asJson, base) {
   const db = getDatabase();
   const L = sid ? (await db.ref("live/" + sid).get()).val() : null;
@@ -944,7 +952,9 @@ async function livePage(req, res, sid, asJson, base) {
 .acts{display:flex;gap:8px;margin-top:12px}.acts a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:14px;padding:12px 8px;border-radius:12px;background:#f1f3f4;color:#0e1417}.acts a.red{background:#e8384f;color:#fff}
 .me{width:22px;height:22px;border-radius:50%;background:#19c3cf;border:4px solid #fff;box-shadow:0 0 0 6px rgba(25,195,207,.35),0 2px 8px rgba(0,0,0,.4)}.me.sos{background:#e8384f;box-shadow:0 0 0 8px rgba(232,56,79,.4)}
 .sp{width:58px;height:58px;box-sizing:border-box;border-radius:50%;border:3px solid #fff;overflow:hidden;background:#e9f8fa;box-shadow:0 0 0 5px rgba(25,195,207,.32),0 6px 14px rgba(0,0,0,.45)}
-.sp img{width:100%;height:100%;object-fit:cover;display:block}.sp.flip img{transform:scaleX(-1)}
+.sp img{width:100%;height:100%;object-fit:cover;display:block}
+.pp{width:150px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none}.pp b{max-width:146px;margin-bottom:4px;padding:3px 10px;border-radius:12px;background:rgba(10,14,18,.8);color:#fff;font:700 12.5px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 4px 10px rgba(0,0,0,.4)}.pp b:empty{display:none}
+.pp span{width:56px;height:56px;flex:none;box-sizing:border-box;border-radius:50%;border:3px solid #fff;overflow:hidden;background:#e9f8fa;box-shadow:0 0 0 4px rgba(25,195,207,.4),0 6px 14px rgba(0,0,0,.45)}.pp span img{width:100%;height:100%;object-fit:cover;display:block}.pp i{width:3px;height:12px;flex:none;background:linear-gradient(#fff,#19c3cf);border-radius:2px}.sp.flip img{transform:scaleX(-1)}
 .sp.mv{animation:spBob .5s ease-in-out infinite alternate}@keyframes spBob{from{transform:translateY(1px)}to{transform:translateY(-4px)}}
 .sp.sos{box-shadow:0 0 0 7px rgba(232,56,79,.6),0 6px 14px rgba(0,0,0,.45)}</style></head><body>
 <div id="map"></div>
@@ -982,7 +992,7 @@ function load(tl){fetch("/l/"+SID+".json"+(tl?"?tail=1":""),{cache:"no-store"}).
  ban.innerHTML=st==="sos"?"🆘 SOS déclenché "+ago(d.now-d.alertT)+". Appelle le <a href='tel:${em}'>${emTx} et donne la position ci-dessous.":st==="alert"?"⚠️ ${ps} ne bouge plus et n'a pas répondu à l'alerte. Essaie de l'appeler ; sans réponse, appelle le <a href='tel:${em}'>${em}</a>.":st==="stale"?"Plus de position depuis "+Math.round((d.now-d.upd)/60000)+" min (zone sans réseau ?). Dernière position ci-dessous.":"";
  if((st==="sos"||st==="alert")&&lastStatus!==st)beep();lastStatus=st;
  ENDED=(st==="ended");feed(d);
- if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk)mk=L.marker(ll,{icon:L.divIcon(d.sp?{className:"",html:"<div class='sp'><img alt='' src='"+APP+"img/sports/"+d.sp+"'></div>",iconSize:[58,58],iconAnchor:[29,29]}:{className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else if(!ANIM)mk.setLatLng(ll);
+ if(d.last){var ll=[d.last.lat,d.last.lng];if(!mk&&!/^SOS/.test(d.cat||"")){mk=L.marker(ll,{icon:L.divIcon({className:"",html:"<div class='pp'><b></b><span><img alt='' src='./"+SID+".jpg'></span><i></i></div>",iconSize:[150,100],iconAnchor:[75,100]})}).addTo(map);try{var pe=mk.getElement();pe.querySelector("b").textContent=String(d.ps||"").slice(0,22);var pim=pe.querySelector("img"),pfb=APP+(d.sp?"img/sports/"+d.sp:"icon-192.png");pim.onerror=function(){pim.onerror=null;pim.src=pfb;};}catch(e){}}else if(!mk)mk=L.marker(ll,{icon:L.divIcon(d.sp?{className:"",html:"<div class='sp'><img alt='' src='"+APP+"img/sports/"+d.sp+"'></div>",iconSize:[58,58],iconAnchor:[29,29]}:{className:"",html:"<div class='me'></div>",iconSize:[22,22],iconAnchor:[11,11]})}).addTo(map);else if(!ANIM)mk.setLatLng(ll);
   var _e=mk.getElement()&&mk.getElement().firstChild;if(_e){_e.classList.toggle("sos",st==="sos");_e.classList.toggle("mv",st==="live"&&(+d.last.spd||0)>1.5);}
   if(first){map.setView(ll,16);first=false;if(!RAF){RAF=1;frame();}}
   document.getElementById("coord").textContent=dms(d.last.lat,"N","S")+"  "+dms(d.last.lng,"E","O");
