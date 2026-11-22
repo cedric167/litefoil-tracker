@@ -1057,6 +1057,15 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .lfc-btns button.off{ background:#fff; color:#0b3138; } .lfc-btns button[hidden]{ display:none; }
   body:has(#lfCall) #sosFab{ display:none !important; }
   .lfc-outs{ position:absolute; left:16px; right:16px; bottom:calc(var(--lf-sab, 0px) + 150px); z-index:3; background:#12262b; border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:8px; box-shadow:0 18px 40px rgba(0,0,0,.5); }
+  .lfc-min{ position:absolute; left:14px; top:calc(env(safe-area-inset-top,0px) + 12px); z-index:3; width:44px; height:44px; min-height:0; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.16); color:#fff; box-shadow:none; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+  .lfc-min svg{ width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; } .lfc.lfc-ring .lfc-min{ display:none; }
+  .lfc.mini{ inset:auto; right:12px; top:calc(env(safe-area-inset-top,0px) + 78px); width:118px; padding:12px 8px 11px; border-radius:22px; cursor:pointer; overflow:hidden; justify-content:center; box-shadow:0 12px 30px rgba(0,0,0,.42), 0 0 0 2px rgba(255,255,255,.22); animation:lfcMini .2s ease-out; }
+  .lfc.mini .lfc-btns, .lfc.mini .lfc-min, .lfc.mini video.lfc-loc, .lfc.mini .lfc-outs{ display:none; }
+  .lfc.mini .lfc-who{ gap:4px; margin:0; align-items:center; align-self:center; text-align:center; } .lfc.mini .lfc-av{ width:52px; height:52px; font-size:22px; box-shadow:0 0 0 3px rgba(255,255,255,.18); }
+  .lfc.mini .lfc-name{ font-family:inherit; font-weight:700; font-size:13px; margin:2px 0 0; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .lfc.mini .lfc-st{ font-size:12.5px; color:#7df0c2; }
+  .lfc.mini.vid.live{ height:158px; padding:0; } .lfc.mini.vid.live::after{ background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.7)); }
+  .lfc.mini.vid.live .lfc-who{ position:absolute; left:0; right:0; bottom:7px; margin:0; align-items:center; align-self:auto; text-align:center; } .lfc.mini.vid.live .lfc-name{ display:none; }
+  @keyframes lfcMini{ from{ transform:scale(.6); opacity:.3; } }
   .lfc-outs .lfo-t{ font-size:12.5px; font-weight:600; color:rgba(255,255,255,.6); padding:8px 12px 6px; }
   .lfc-outs button{ width:100%; min-height:0; height:52px; padding:0 12px; border:0; border-radius:13px; background:transparent; color:#fff; display:flex; align-items:center; gap:14px; font-size:16px; font-weight:600; cursor:pointer; box-shadow:none; text-align:left; }
   .lfc-outs button.on{ background:rgba(255,255,255,.10); } .lfc-outs button span{ flex:1; } .lfc-outs button i{ font-style:normal; color:#3fe0a0; font-weight:800; }
@@ -7305,8 +7314,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     var pr=profileMap[c.peer]||{}, av=pr.av?'<img src="'+esc(pr.av)+'" alt="">':esc(((c.name||"R").trim()[0]||"R").toUpperCase());
     el.innerHTML='<video class="lfc-rem" autoplay playsinline></video><video class="lfc-loc" autoplay playsinline muted></video>'
       +'<div class="lfc-who"><div class="lfc-av" style="background:'+avatarColor(c.peer)+'">'+av+'</div><div class="lfc-name">'+esc(c.name||"Membre")+'</div><div class="lfc-st"></div></div>'
-      +'<div class="lfc-btns"></div>';
-    document.body.appendChild(el); try{ var _sf=document.getElementById("sosFab"); if(_sf){ _sf.style.visibility="hidden"; var _mo=new MutationObserver(function(){ if(!document.body.contains(el)){ _sf.style.visibility=""; _mo.disconnect(); } }); _mo.observe(document.body,{childList:true}); } }catch(e){} c.el=el; el.addEventListener("click", function(e){ var b=e.target.closest("button[data-a]"); if(!b) return; var a=b.dataset.a;
+      +'<div class="lfc-btns"></div><button type="button" class="lfc-min" data-a="mini" aria-label="Réduire l\'appel"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>';
+    document.body.appendChild(el); try{ var _sf=document.getElementById("sosFab"); if(_sf){ _sf.style.visibility="hidden"; var _mo=new MutationObserver(function(){ if(!document.body.contains(el)){ _sf.style.visibility=""; _mo.disconnect(); } }); _mo.observe(document.body,{childList:true}); } }catch(e){} c.el=el; el.addEventListener("click", function(e){ if(el.classList.contains("mini")){ lfCallMini(c, false); return; } var b=e.target.closest("button[data-a]"); if(!b) return; var a=b.dataset.a;
+      if(a==="mini"){ lfCallMini(c, true); return; } if(a==="vid"){ lfCallVideoOn(c); return; }
+      if(a==="cam" && c.stream && !c.stream.getVideoTracks().length){ lfCallVideoOn(c); return; }
       if(a==="end") lfCallEnd(c.incoming && !c.accepted ? "no" : "end"); else if(a==="ok") lfCallAccept();
       else if(a==="mic"){ c.muted=!c.muted; if(c.stream) c.stream.getAudioTracks().forEach(function(t){ t.enabled=!c.muted; }); lfCallDraw(); }
       else if(a==="cam"){ c.camOff=!c.camOff; if(c.stream) c.stream.getVideoTracks().forEach(function(t){ t.enabled=!c.camOff; }); lfCallDraw(); }
@@ -7317,10 +7328,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     c.el.classList.toggle("lfc-ring", !!(c.incoming && !c.accepted)); c.el.classList.toggle("live", c.state==="on"); c.el.classList.toggle("back", c.facing==="environment");
     st.textContent = c.state==="on" ? lfCallDur(c) : (c.incoming && !c.accepted ? (c.kind==="v"?"Appel vidéo entrant…":"Appel audio entrant…") : (c.state==="conn" ? "Connexion…" : "Ça sonne…"));
     if(c.incoming && !c.accepted){ bt.innerHTML='<button type="button" class="lfc-end" data-a="end" aria-label="Refuser">'+LFC_SVG.end+'<small>Refuser</small></button><span style="flex:0 0 46px"></span><button type="button" class="lfc-ok" data-a="ok" aria-label="Décrocher">'+LFC_SVG.ok+'<small>Décrocher</small></button>'; return; }
-    bt.classList.toggle("n5", c.kind==="v" && c.spkOk===true);
+    bt.classList.toggle("n5", c.kind==="v" && (c.spkOk===true || (c.spkOk!==false && !!lfCallPlat())));
     bt.innerHTML='<button type="button" data-a="mic" class="'+(c.muted?"off":"")+'" aria-label="Micro">'+LFC_SVG.mic+'<small>'+(c.muted?"Micro coupé":"Micro")+'</small></button>'
-      +(c.spkOk===true?'<button type="button" data-a="spk" class="'+(c.out==="speaker"?"off":"")+'" aria-label="Sortie du son">'+(LFC_OUTSVG[c.out]||LFC_SVG.spk)+'<small>'+(LFC_OUT[c.out]||"Haut-parleur")+'</small></button>':'')
-      +(c.kind==="v"?'<button type="button" data-a="cam" class="'+(c.camOff?"off":"")+'" aria-label="Caméra">'+LFC_SVG.cam+'<small>Caméra</small></button><button type="button" data-a="flip" aria-label="Retourner la caméra">'+LFC_SVG.flip+'<small>Retourner</small></button>':'')
+      +((c.spkOk===true || (c.spkOk!==false && lfCallPlat()))?'<button type="button" data-a="spk" class="'+(c.out==="speaker"?"off":"")+'" aria-label="Sortie du son">'+(LFC_OUTSVG[c.out]||LFC_SVG.spk)+'<small>'+(LFC_OUT[c.out]||"Haut-parleur")+'</small></button>':'')
+      +(c.kind==="v"?'<button type="button" data-a="cam" class="'+(c.camOff?"off":"")+'" aria-label="Caméra">'+LFC_SVG.cam+'<small>Caméra</small></button><button type="button" data-a="flip" aria-label="Retourner la caméra">'+LFC_SVG.flip+'<small>Retourner</small></button>':(c.state==="on"?'<button type="button" data-a="vid" aria-label="Passer en vidéo">'+LFC_SVG.cam+'<small>Vidéo</small></button>':''))
       +'<button type="button" class="lfc-end" data-a="end" aria-label="Raccrocher">'+LFC_SVG.end+'<small>Raccrocher</small></button>'; }
   function lfCallDur(c){ var n=Math.max(0, Math.round((Date.now()-(c.t0||Date.now()))/1000)), m=Math.floor(n/60), ss=n%60; return (m<10?"0":"")+m+":"+(ss<10?"0":"")+ss; }
   function lfCallMedia(c){ return navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true }, video: c.kind==="v" ? { facingMode:c.facing||"user", width:{ideal:960}, height:{ideal:540} } : false })
@@ -7333,7 +7344,23 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       else if(x==="failed"){ lfCallEnd("fail"); } };
     c.unIc=rt.onChildAdded(rt.ref(c.path+"/rtc/ic"), function(sn){ var v=sn.val(); if(!v || v.by===me.uid) return; var cand; try{ cand=new RTCIceCandidate(JSON.parse(v.c)); }catch(e){ return; }
       if(pc.remoteDescription && pc.remoteDescription.type) pc.addIceCandidate(cand).catch(function(){}); else c.pend.push(cand); });
+    // passage en vidéo en cours d'appel : l'un envoie une nouvelle offre, l'autre répond
+    c.unRe=rt.onChildAdded(rt.ref(c.path+"/rtc/re"), function(sn){ var v=sn.val(); if(!v || v.by===me.uid || lfCall!==c || typeof v.sdp!=="string") return;
+      if(v.type==="offer"){ pc.setRemoteDescription(new RTCSessionDescription({ type:"offer", sdp:v.sdp })).then(function(){ return pc.createAnswer(); }).then(function(a){ return pc.setLocalDescription(a); })
+          .then(function(){ return rt.push(rt.ref(c.path+"/rtc/re"), { by:me.uid, type:"answer", sdp:pc.localDescription.sdp }); })
+          .then(function(){ if(lfCall===c && v.v && c.kind!=="v"){ c.kind="v"; c.camOff=true; if(c.el) c.el.classList.add("vid"); lfCallDraw(); lfCallAudio(c); } }).catch(function(){}); }
+      else if(v.type==="answer"){ pc.setRemoteDescription(new RTCSessionDescription({ type:"answer", sdp:v.sdp })).catch(function(){}); } });
     return pc; }
+  // ma caméra s'ajoute à l'appel en cours
+  function lfCallVideoOn(c){ if(!c || lfCall!==c || !c.pc || !c.stream || c.vBusy || c.state!=="on" || c.stream.getVideoTracks().length) return; c.vBusy=true;
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:c.facing||"user", width:{ideal:960}, height:{ideal:540} } }).then(function(ms){ var t=ms.getVideoTracks()[0]; if(!t || lfCall!==c){ ms.getTracks().forEach(function(x){ x.stop(); }); return; }
+        c.stream.addTrack(t); c.pc.addTrack(t, c.stream); c.kind="v"; c.camOff=false; c.el.classList.add("vid"); var v=c.el.querySelector(".lfc-loc"); if(v) v.srcObject=c.stream; lfCallDraw(); lfCallAudio(c);
+        return c.pc.createOffer().then(function(o){ return c.pc.setLocalDescription(o); }).then(function(){ return backend.rt.push(backend.rt.ref(c.path+"/rtc/re"), { by:me.uid, type:"offer", v:1, sdp:c.pc.localDescription.sdp }); }); })
+      .catch(function(e){ if(lfCall===c) alert(e && e.name==="NotAllowedError" ? "Autorise la caméra pour passer en vidéo (réglages de l'application)." : "Passage en vidéo impossible pour le moment."); })
+      .then(function(){ c.vBusy=false; }); }
+  // appel réduit en vignette flottante (il continue), ou rouvert en grand
+  function lfCallMini(c, on){ if(!c || !c.el) return; if(on && c.incoming && !c.accepted) return; var o=c.el.querySelector(".lfc-outs"); if(o) o.remove();
+    c.el.classList.toggle("mini", !!on); try{ var sf=document.getElementById("sosFab"); if(sf) sf.style.visibility = on ? "" : "hidden"; }catch(e){} }
   function lfCallFlush(c){ (c.pend||[]).splice(0).forEach(function(x){ c.pc.addIceCandidate(x).catch(function(){}); }); }
   function lfCallWatch(c){ var rt=backend.rt; c.unSt=rt.onValue(rt.ref(c.path+"/rtc/st"), function(sn){ var v=sn.val(); if(lfCall!==c) return; if(v==="end"||v==="no"||v==="miss"||v==="fail") lfCallEnd(v, true); }); }
   // appelant
@@ -7376,7 +7403,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(snd) snd.replaceTrack(nt); var v=c.el.querySelector(".lfc-loc"); if(v) v.srcObject=c.stream; lfCallDraw(); }).catch(function(){ c.facing = c.facing==="user" ? "environment" : "user"; }); }
   // fin d'appel : why = end (raccroché), no (refusé), miss (sans réponse), fail (connexion), local (jamais parti) ; remote = l'autre a déjà écrit l'état
   function lfCallEnd(why, remote){ var c=lfCall; if(!c) return; lfCall=null; try{ if(why!=="local" && c.peer) callLogAdd({ p:c.peer, n:c.name||"", k:c.kind, i:c.incoming?1:0, t:Date.now(), m:c.mid||"", d:c.t0?Math.round((Date.now()-c.t0)/1000):0, w:c.t0?"on":((c.incoming && !c.accepted && why!=="no")?"miss":why) }); }catch(e){} try{ var PN=nativePlug("LfCall"); if(PN && PN.done) PN.done().catch(function(){}); }catch(e){} var rt=backend&&backend.rt; clearTimeout(c.to); clearInterval(c.tick); if(c.tone) c.tone();
-    [c.unIc,c.unSt,c.unAns].forEach(function(u){ try{ u&&u(); }catch(e){} });
+    [c.unIc,c.unSt,c.unAns,c.unRe].forEach(function(u){ try{ u&&u(); }catch(e){} });
     try{ if(c.pc){ c.pc.onicecandidate=c.pc.ontrack=c.pc.onconnectionstatechange=null; c.pc.close(); } }catch(e){}
     try{ if(c.stream) c.stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
     if(rt && c.path && why!=="local"){ var dur=c.t0?lfCallDur(c):"";
