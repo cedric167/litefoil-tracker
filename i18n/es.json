@@ -2727,5 +2727,7 @@
  "Préparation du fichier GPX…": "Preparando el archivo GPX…",
  "Export GPX impossible sur ce téléphone. Mets l'application à jour, ou ouvre Lite Foil dans le navigateur pour l'exporter.": "No se puede exportar el GPX en este teléfono. Actualiza la aplicación o abre Lite Foil en el navegador para exportarlo.",
  "Envoyer le fichier GPX": "Enviar el archivo GPX",
- "Plan": "Mapa"
+ "Plan": "Mapa",
+ "Enregistrer le fichier .gpx": "Guardar el archivo .gpx",
+ "Envoyer vers une appli (Strava, Garmin…)": "Enviar a una app (Strava, Garmin…)"
 }
