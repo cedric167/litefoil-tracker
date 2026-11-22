@@ -804,6 +804,25 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .fl-search{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:11px 14px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--muted); font-size:14px; font-weight:500; text-align:left; min-height:0; box-shadow:var(--sh-sm); }
   .fl-search{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } #bnav [data-nav="fil"]{ white-space:nowrap; }
   .fl-search svg{ width:17px; height:17px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+  .fl-add{ position:relative; flex:none; width:44px; height:44px; min-height:0; padding:0; border:0; border-radius:50%; background:linear-gradient(135deg,#17c3b2,#0f7f86); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(15,127,134,.35); }
+  .fl-add svg{ width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; stroke-linejoin:round; }
+  .fl-add i{ position:absolute; top:-3px; right:-3px; min-width:19px; height:19px; padding:0 5px; box-sizing:border-box; border-radius:999px; background:#e5263f; color:#fff; font-style:normal; font-size:11.5px; font-weight:800; line-height:19px; text-align:center; box-shadow:0 0 0 2px #fff; } .fl-add i[hidden]{ display:none; }
+  .af-ov{ position:fixed; inset:0; z-index:9200; background:#f3f6f7; display:flex; flex-direction:column; animation:afUp .22s cubic-bezier(.2,.8,.2,1); } @keyframes afUp{ from{ transform:translateY(30px); opacity:.3; } }
+  .af-top{ display:flex; align-items:center; gap:8px; padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 10px; } .af-top b{ flex:1; text-align:center; font-size:19px; font-weight:800; } .af-top span{ width:42px; }
+  .af-back{ width:42px; height:42px; min-height:0; padding:0; border:0; border-radius:50%; background:#fff; box-shadow:var(--sh-sm); display:flex; align-items:center; justify-content:center; color:var(--text); } .af-back svg{ width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+  .af-in{ flex:1; overflow:auto; -webkit-overflow-scrolling:touch; padding:2px 14px calc(env(safe-area-inset-bottom,0px) + 24px); max-width:560px; width:100%; margin:0 auto; box-sizing:border-box; }
+  .af-search, .af-inv{ width:100%; display:flex; align-items:center; gap:10px; min-height:0; border:0; border-radius:999px; padding:13px 16px; font:inherit; font-size:15px; box-shadow:none; }
+  .af-search{ background:#e4eaed; color:var(--muted); font-weight:500; text-align:left; } .af-inv{ margin-top:10px; justify-content:center; background:#fff; color:var(--text); font-weight:700; box-shadow:var(--sh-sm); }
+  .af-search svg, .af-inv svg{ width:19px; height:19px; flex:none; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; stroke-linejoin:round; }
+  .af-body h4{ margin:22px 4px 10px; font-size:16px; font-weight:800; } .af-body h4 em{ font-style:normal; display:inline-block; min-width:22px; padding:1px 7px; margin-left:4px; border-radius:999px; background:#e5263f; color:#fff; font-size:12.5px; text-align:center; }
+  .af-card{ background:#fff; border-radius:20px; box-shadow:var(--sh-sm); overflow:hidden; }
+  .af-row{ display:flex; align-items:center; gap:11px; padding:11px 10px 11px 12px; } .af-row + .af-row{ border-top:1px solid var(--line-soft); }
+  .af-av{ position:relative; flex:none; width:52px; height:52px; cursor:pointer; } .af-av .fd-av{ width:52px; height:52px; font-size:20px; }
+  .af-av img{ width:52px; height:52px; border-radius:50%; object-fit:cover; display:block; } .af-av i{ position:absolute; right:1px; bottom:1px; width:13px; height:13px; border-radius:50%; background:#19b866; box-shadow:0 0 0 2.5px #fff; }
+  .af-nm{ flex:1; min-width:0; cursor:pointer; } .af-nm b{ display:block; font-size:15.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .af-nm small{ display:block; color:var(--muted); font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .af-go{ flex:none; display:flex; align-items:center; gap:6px; min-height:0; border:0; border-radius:999px; padding:10px 15px; background:linear-gradient(135deg,#17c3b2,#0f7f86); color:#fff; font:inherit; font-size:14px; font-weight:800; box-shadow:0 3px 9px rgba(15,127,134,.3); }
+  .af-go svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; } .af-go.sent{ background:#e4eaed; color:var(--muted); box-shadow:none; }
+  .af-x{ flex:none; width:32px; height:32px; min-height:0; padding:0; border:0; background:none; box-shadow:none; color:#a9b4ba; font-size:15px; }
   .fl-back{ display:inline-flex; align-items:center; gap:4px; border:0; background:none; padding:4px 2px 8px; font-size:13.5px; font-weight:700; color:var(--accent-ink); min-height:0; box-shadow:none; }
   .fd-card{ background:#fff; border:1px solid var(--line-soft); border-radius:20px; box-shadow:var(--sh-sm); margin-bottom:10px; overflow:hidden; }
   .fd-comp{ padding:12px; } .fd-comp .r{ display:flex; gap:10px; align-items:center; }
@@ -2924,6 +2943,7 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
     <div class="fl-top">
       <button type="button" class="fl-me" id="flMe" aria-label="Mon profil"><span class="fd-av" id="flAv"></span><b id="flName">Mon profil</b></button>
       <button type="button" class="fl-search" id="flSearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Rechercher un profil</button>
+      <button type="button" class="fl-add" id="flAdd" aria-label="Ajouter des amis"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.600"/><path d="M3.500 20c.6-3.600 3.100-5.600 6.500-5.600 1.300 0 2.500.3 3.500.9M18 13.500v6M15 16.500h6"/></svg><i id="flAddBadge" hidden></i></button>
     </div>
     <div class="st-bar fl-st" aria-label="Stories"></div>
     <div id="filFeed"></div>
@@ -9407,7 +9427,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       if(l.length || !Object.keys(myFriends||{}).length) localStorage.setItem("lf.comm.friendsList", JSON.stringify(l)); }catch(e){} }
   function onFriends(m){ myFriends=m||{}; lfFriendsCache(); setTimeout(lfFriendsCache, 5000); var ch=false; for(var u in myFriends){ if(sentReqs[u]){ delete sentReqs[u]; ch=true; } } if(ch) saveSentReqs(); renderProfil(); }
   function onFriendReqs(m){ friendReqs=m||{}; var n=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); }).length;
-    ["cmReqBadge","bnProfBadge"].forEach(function(id){ var b=$(id); if(b){ b.hidden=!n; b.textContent=n||""; } }); renderProfil(); }
+    ["cmReqBadge","bnProfBadge","flAddBadge"].forEach(function(id){ var b=$(id); if(b){ b.hidden=!n; b.textContent=n||""; } }); renderProfil(); }
   // forme du tracé (sans coordonnées GPS) : points ramenés dans un carré 0-100
   function sessShape(pts){ if(!pts || pts.length<2) return ""; var step=Math.max(1,Math.floor(pts.length/40)), sel=[];
     for(var i=0;i<pts.length;i+=step) sel.push(pts[i]); sel.push(pts[pts.length-1]);
@@ -9689,9 +9709,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       busy=true; set(44, true); tx.textContent="Actualisation…"; fdPullRefresh(function(){ busy=false; set(0, true); }); };
     pane.addEventListener("touchend", end, {passive:true}); pane.addEventListener("touchcancel", function(){ y0=null; if(!busy) set(0, true); }, {passive:true}); })();
   window.__lfFeed={ load:function(){ return Promise.resolve(fdLoad(null)).then(function(){ return (fdCache["*"]||{}).posts||[]; }); }, like:function(p,on){ return backend && backend.likePost ? backend.likePost(p,on) : null; }, me:function(){ return me.uid; } };   // montre Lite Foil
-  window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent=me.pseudo||"Mon profil"; var fb=$("filFeed"); if(fb) fb._fdUni=(window.__uniCur ? window.__uniCur() : "")||""; fdMount(fb, null); };
+  window.filOnShow=function(){ var a=$("flAv"); if(a) a.innerHTML=avHtml(me.uid); var n=$("flName"); if(n) n.textContent="Mon profil"; var fb=$("filFeed"); if(fb) fb._fdUni=(window.__uniCur ? window.__uniCur() : "")||""; fdMount(fb, null); };
   (function(){ var m=$("flMe"); if(m) m.addEventListener("click", function(){ lfGoTab("profil"); window.scrollTo(0,0); });
     var sb=$("flSearch"); if(sb) sb.addEventListener("click", function(){ openFriendSearch(); });
+    var ab=$("flAdd"); if(ab) ab.addEventListener("click", function(){ openAddFriends(); });
     var bk=$("pfBackFil"); if(bk) bk.addEventListener("click", function(){ lfGoTab("fil"); window.scrollTo(0,0); }); })();
   // mon profil
   function renderProfil(){ var pane=$("tab-profil"); if(!pane || pane.hidden) return;
@@ -9759,6 +9780,41 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function followBtnHtml(u){ if(!u || u===me.uid || u===TEAM_UID) return ""; var on=iFollow(u);
     return '<button type="button" class="ts-btn'+(on?" ghost":"")+'" data-tsf="'+esc(u)+'">'+esc(followLabel(u))+'</button>'; }
   window.__fdSess=function(id){ var a=localSess().filter(function(x){ return String(x.id)===String(id); })[0]; if(!a) return; if(!me.uid || !profileReady()){ alert("Connecte-toi à ton compte pour publier ton vol."); return; } fdCompose({ sess:a }); };
+  // ---------- 22/11 : page « Ajouter des amis » ----------
+  function openAddFriends(){ if(!me.uid || !profileReady()){ askProfile("Valide ton profil pour ajouter des amis."); return; }
+    var old=document.getElementById("afOv"); if(old) old.remove();
+    var ov=document.createElement("div"); ov.className="af-ov"; ov.id="afOv";
+    var hid={}; try{ (JSON.parse(localStorage.getItem("lf.af.hide")||"[]")||[]).forEach(function(u){ hid[u]=1; }); }catch(e){}
+    var mySp=String((profileMap[me.uid]||{}).sports||"").split(",").filter(Boolean), rn={}, rnd=function(u){ return rn[u]!=null ? rn[u] : (rn[u]=Math.random()); };
+    var IC='<svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.600"/><path d="M3.500 20c.6-3.600 3.100-5.600 6.500-5.600 1.300 0 2.500.3 3.500.9M18 13.500v6M15 16.500h6"/></svg>';
+    var isOn=function(u){ try{ return onlineIds.indexOf(u)>=0; }catch(e){ return false; } };
+    var row=function(u, kind){ var pr=profileMap[u]||{}, ps=(kind==="rq" && friendReqs[u] && friendReqs[u].pseudo) || pr.pseudo || pName(u) || "Membre";
+      var sp=String(pr.sports||"").split(",").filter(function(k){ return LF_SP[k]; }).slice(0,3).map(function(k){ return LF_SP[k].name; }).join(" · "), st=friendState(u);
+      return '<div class="af-row"><span class="af-av" data-up="'+esc(u)+'"><span class="fd-av">'+avHtml(u)+'</span>'+(isOn(u)?'<i></i>':'')+'</span><span class="af-nm" data-up="'+esc(u)+'"><b>'+esc(ps)+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+'</b><small>'+esc(sp||"Membre Lite Foil")+'</small></span>'
+        +(kind==="rq" ? '<button type="button" class="af-go" data-acc="'+esc(u)+'">'+IC+'Accepter</button>' : '<button type="button" class="af-go'+(st==="sent"?" sent":"")+'" data-add="'+esc(u)+'">'+(st==="sent"?"Envoyée ✓":IC+"Ajouter")+'</button>')
+        +'<button type="button" class="af-x" data-'+(kind==="rq"?"dec":"hide")+'="'+esc(u)+'" aria-label="'+(kind==="rq"?"Refuser":"Masquer")+'">✕</button></div>'; };
+    ov.innerHTML='<div class="af-top"><button type="button" class="af-back" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><b>Ajouter des amis</b><span></span></div>'
+      +'<div class="af-in"><button type="button" class="af-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Rechercher un membre…</button>'
+      +'<button type="button" class="af-inv"><svg viewBox="0 0 24 24"><path d="M12 15V3.500M7.500 8L12 3.500 16.500 8"/><path d="M5 12.500v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Inviter mes amis sur Lite Foil</button><div class="af-body"></div></div>';
+    var body=ov.querySelector(".af-body");
+    var paint=function(){ if(!ov.isConnected) return; var rq=Object.keys(friendReqs).filter(function(u){ return !blocked.has(u); });
+      var sug=Object.keys(profileMap).filter(function(u){ var p=profileMap[u]; return p && p.pseudo && u!==me.uid && u!==TEAM_UID && !myFriends[u] && !friendReqs[u] && !blocked.has(u) && !hid[u]; })
+        .map(function(u){ var p=profileMap[u], sp=String(p.sports||"").split(","), sc=0; mySp.forEach(function(k){ if(sp.indexOf(k)>=0) sc+=3; }); if(isOn(u)) sc+=2; if(p.av) sc+=1.5; return [sc+rnd(u), u]; })
+        .sort(function(a,b){ return b[0]-a[0]; }).slice(0,40).map(function(x){ return x[1]; });
+      body.innerHTML=(rq.length ? '<h4>Ils m\'ont ajouté <em>'+rq.length+'</em></h4><div class="af-card">'+rq.map(function(u){ return row(u,"rq"); }).join("")+'</div>' : '')
+        +'<h4>Trouver des amis</h4>'+(sug.length ? '<div class="af-card">'+sug.map(function(u){ return row(u,"sg"); }).join("")+'</div>' : '<div class="comm-empty">Pas de suggestion pour l\'instant.<br>Utilise la recherche ou invite tes amis.</div>'); };
+    ov.addEventListener("click", function(e){ var t=e.target.closest("button, [data-up]"); if(!t) return; var d=t.dataset||{};
+      if(t.classList.contains("af-back")){ ov.remove(); return; }
+      if(t.classList.contains("af-search")){ ov.remove(); openFriendSearch(); return; }
+      if(t.classList.contains("af-inv")){ var url="https://cedric167.github.io/litefoil-tracker/get/", tx="Rejoins-moi sur Lite Foil, l'appli des sportifs : GPS, défis, cartes de membre et sécurité.";
+        if(navigator.share) navigator.share({ title:"Lite Foil", text:tx, url:url }).catch(function(){}); else { try{ navigator.clipboard.writeText(tx+" "+url); t.lastChild.textContent="Lien copié ✓"; }catch(x){ prompt("Lien à partager :", url); } } return; }
+      if(d.up){ ov.remove(); openUserProfile(d.up); return; }
+      if(d.acc){ t.disabled=true; friendAction(d.acc, function(){ delete friendReqs[d.acc]; paint(); }); return; }
+      if(d.dec){ var u=d.dec; backend.declineFriend(u).catch(function(){}); delete friendReqs[u]; onFriendReqs(friendReqs); paint(); return; }
+      if(d.add){ t.disabled=true; friendAction(d.add, paint); setTimeout(function(){ t.disabled=false; }, 1500); return; }
+      if(d.hide){ hid[d.hide]=1; try{ localStorage.setItem("lf.af.hide", JSON.stringify(Object.keys(hid).slice(-300))); }catch(x){} paint(); return; } });
+    document.body.appendChild(ov); paint(); }
+  window.__addFriends=function(){ openAddFriends(); };
   window.__memberSearch=function(){ if(!me.uid || !profileReady()){ alert("Connecte-toi à ton compte pour rechercher un membre."); return; } openFriendSearch(); };
   function openFriendSearch(){
     var ov=document.createElement("div"); ov.className="ts-ov";
