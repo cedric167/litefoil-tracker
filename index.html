@@ -1072,6 +1072,10 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .lfc-outs button svg{ width:24px; height:24px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .lf-sp{ width:52px; height:52px; box-sizing:border-box; border-radius:50%; border:3px solid #fff; overflow:hidden; background:#e9f8fa; box-shadow:0 0 0 4px rgba(25,195,207,.32), 0 5px 12px rgba(0,0,0,.4); }
   .lf-sp img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .lf-mep{ width:140px; height:96px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; pointer-events:none; }
+  .lf-mep b{ max-width:136px; margin-bottom:4px; padding:3px 10px; border-radius:12px; background:rgba(10,14,18,.78); color:#fff; font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-shadow:0 4px 10px rgba(0,0,0,.35); }
+  .lf-mep span{ width:52px; height:52px; flex:none; box-sizing:border-box; border-radius:50%; border:3px solid #fff; overflow:hidden; background:#e9f8fa; box-shadow:0 0 0 3px #19c3cf, 0 6px 14px rgba(0,0,0,.4); }
+  .lf-mep span img{ width:100%; height:100%; object-fit:cover; display:block; } .lf-mep i{ width:3px; height:12px; flex:none; background:linear-gradient(#fff,#19c3cf); border-radius:2px; }
   .lfc-btns.n5{ gap:10px; } .lfc-btns.n5 button:not(.lfc-end){ width:54px; height:54px; } .lfc-btns.n5 button small{ font-size:10.5px; }
   /* 20/11 : messages vocaux */
   .vmsg{ display:flex; align-items:center; gap:10px; min-width:190px; max-width:250px; padding:2px 0 0; }
@@ -4233,6 +4237,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   // 20/11 : sur la carte en direct, ma position est une pastille illustrée de mon sport (point bleu si le sport n'a pas d'illustration)
   window.__lfMeMake = function(ll){ var F={ swim:"nage.svg", ulm:"avion.svg", surffoil:"pumpfoil.webp", supdownwind:"sup.webp", longboard:"skate.webp", surfskate:"skate.webp" },
       W="efoil wingfoil parawing windsurf pumpfoil kitesurf surf bodyboard sup canoe deriveur jetski running marche rando trail velo ski snowboard skate roller parapente perche longueur voiture moto muscu crosstraining hiit fitness cardio yoga rameur velosalle tapis boxe".split(" "), k=String(phType||""), f=F[k]||(W.indexOf(k)>=0 ? k+".webp" : "");
+    // ma photo de profil et mon pseudo suivent le tracé ; sans photo, le logo du sport
+    var av="", ps=""; try{ av=localStorage.getItem("lf.comm.avatar")||""; ps=localStorage.getItem("lf.comm.pseudo")||""; }catch(e){}
+    if(/^(data:image[/](jpeg|png|webp);base64,[A-Za-z0-9+/=]+|https:[/][/][^"'<> ]+)$/.test(av)){ var pe=String(ps).slice(0,22).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; });
+      return L.marker(ll, { icon:L.divIcon({ className:"", html:'<div class="lf-mep">'+(pe?'<b>'+pe+'</b>':'')+'<span><img alt="" src="'+av+'"></span><i></i></div>', iconSize:[140,96], iconAnchor:[70,96] }), interactive:false, zIndexOffset:600 }); }
     if(!f) return L.circleMarker(ll, { radius: 7, color: "#fff", weight: 3, fillColor: "#19e3ff", fillOpacity: 1 });
     return L.marker(ll, { icon:L.divIcon({ className:"", html:'<div class="lf-sp"><img alt="" src="img/sports/'+f+'"></div>', iconSize:[52,52], iconAnchor:[26,26] }), interactive:false, zIndexOffset:600 }); };
   // Activités proposées par milieu : [clé interne, libellé affiché]
@@ -9452,7 +9460,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       closeOverlay(); publishRatings(); publishMyStats(); renderProfil(); });
     // survol 3D du parcours d'un membre : la page Activités le rejoue à partir du tracé partagé
     var sfl=$("sdFly"); if(sfl) sfl.addEventListener("click", function(){ var k=String(o.sport||"").toLowerCase(), mil=(LF_SP[k]&&LF_SP[k].mil)||"terre";
-      try{ sessionStorage.setItem("lf.fly", JSON.stringify({ trk:o.trk, dur:+o.dur||0, milieu:mil, name:(who?who+" · ":"")+sessName(o) })); }catch(e){ return; }
+      try{ sessionStorage.setItem("lf.fly", JSON.stringify({ trk:o.trk, dur:+o.dur||0, milieu:mil, name:(who?who+" · ":"")+sessName(o), av:(function(){ if(!who || who===(me.pseudo||"")) return me.av||""; for(var u in profileMap){ if(profileMap[u] && profileMap[u].pseudo===who) return profileMap[u].av||""; } return ""; })() })); }catch(e){ return; }
       location.href="activites/index.html?fly=1"; });
     var sf=$("sdFil"); if(sf) sf.addEventListener("click", function(){ closeOverlay(); fdCompose({sess:raw}); });
     var so=$("sdOfficial"); if(so) so.addEventListener("click", function(){ var v=prompt("Ta meilleure mesure officielle sur cette séance, en mètres (ex. 6,42) :", raw.official?String(raw.official).replace(".",","):"");
