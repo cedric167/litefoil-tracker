@@ -94,6 +94,9 @@ if [ -f "$VARS" ] && ! grep -q rgcfaIncludeGoogle "$VARS"; then
   perl -0pi -e 's#ext \{#ext {\n    rgcfaIncludeGoogle = true#' "$VARS"
 fi
 
+# LF_SANS_LIAISON_MONTRE=1 : paquet sans la liaison permanente avec la montre ESP32 (22/11 : Google Play exige une vidéo
+# de démonstration pour ce service de premier plan ; on le remettra quand la vidéo existera).
+if [ "${LF_SANS_LIAISON_MONTRE:-0}" != "1" ]; then
 # 5) Montre Lite Foil (carte ESP32, 21/11) : liaison Bluetooth permanente et SOS lancé depuis la montre, même appli fermée
 cp "$ROOT/native/android/LfWatchLinkService.java" "$ROOT/native/android/LfWatchLinkPlugin.java" "$ROOT/native/android/LfWatchLinkBoot.java" "$PKG_DIR/"
 for P in FOREGROUND_SERVICE_CONNECTED_DEVICE RECEIVE_BOOT_COMPLETED BLUETOOTH_CONNECT; do
@@ -112,5 +115,9 @@ if ! grep -q 'LfWatchLinkService' "$MANIFEST"; then
         </receiver>$1#' "$MANIFEST"
 fi
 grep -q 'LfWatchLinkService' "$MANIFEST" || { echo "Liaison montre non déclarée dans le manifeste" >&2; exit 1; }
+else
+  sed -i '/LfWatchLinkPlugin/d' "$PKG_DIR/MainActivity.java"
+  echo "Liaison permanente avec la montre ESP32 : non incluse dans ce paquet."
+fi
 
 echo "Module LfTrack ajouté au projet Android."
