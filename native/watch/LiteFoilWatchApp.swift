@@ -470,6 +470,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     /// nombre entier sûr : une valeur invalide (infinie, non numérique) donne 0 au lieu de faire tomber l'appli
     private static func si(_ d: Double) -> Int { d.isFinite ? Int(max(-2e9, min(2e9, d))) : 0 }
     private static func sd(_ d: Double) -> Double { d.isFinite ? d : 0 }
+    /// Date en millisecondes depuis 1970 : trop grande pour si() (limité à 2 milliards), d'où un entier 64 bits.
+    private static func ms(_ t: Date) -> Int64 { let v = t.timeIntervalSince1970 * 1000; return v.isFinite ? Int64(max(0, min(9e15, v))) : 0 }
     private func second() {
         let t = Date()
         if running {
@@ -539,8 +541,8 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             [SosModel.sd((p[0] * 100000).rounded() / 100000), SosModel.sd((p[1] * 100000).rounded() / 100000), SosModel.sd((p[2] * 10).rounded() / 10), SosModel.sd(p[3].rounded()), SosModel.sd(p.count > 4 ? p[4].rounded() : 0)]
         }.filter { $0[0] != 0 || $0[1] != 0 }
         let ride: [String: Any] = [
-            "id": "watch-\(SosModel.si(startDate.timeIntervalSince1970 * 1000))", "sport": sport,
-            "start": SosModel.si(startDate.timeIntervalSince1970 * 1000), "dur": SosModel.si(runS), "dist": SosModel.si(distM),
+            "id": "watch-\(SosModel.ms(startDate))", "sport": sport,
+            "start": SosModel.ms(startDate), "dur": SosModel.si(runS), "dist": SosModel.si(distM),
             "max": SosModel.sd((maxKmh * 10).rounded() / 10), "runs": runCount, "foilS": SosModel.si(foilS), "foilM": SosModel.si(foilDistM), "pts": pts,
             "hr": SosModel.si(hrAvg.rounded()), "hrmax": SosModel.si(hrMax.rounded()), "kcal": SosModel.si(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord
         ]
@@ -822,7 +824,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if let s = status { body["status"] = s }
         if let l = last {
             body["pts"] = [["lat": l.coordinate.latitude, "lng": l.coordinate.longitude,
-                            "t": Int(Date().timeIntervalSince1970 * 1000), "spd": max(0, l.speed) * 3.6]]
+                            "t": Int64(Date().timeIntervalSince1970 * 1000), "spd": max(0, l.speed) * 3.6]]
         }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"

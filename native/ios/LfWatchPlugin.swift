@@ -109,7 +109,8 @@ public class LfWatchPlugin: CAPPlugin, CAPBridgedPlugin, WCSessionDelegate {
             var id = ""
             if let dt = r.data(using: .utf8), let o = (try? JSONSerialization.jsonObject(with: dt)) as? [String: Any] { id = (o["id"] as? String) ?? "" }
             if !id.isEmpty { ids.append(id) }
-            if !id.isEmpty && seen.contains(id) { continue }
+            // « watch-2000000000 » : identifiant commun à toutes les sorties d'une ancienne version de la montre (date tronquée), jamais un doublon
+            if !id.isEmpty && id != "watch-2000000000" && seen.contains(id) { continue }
             if !id.isEmpty { seen.append(id) }
             a.append(r)
             added += 1

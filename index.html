@@ -11994,7 +11994,10 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
     // mémoire pleine : on allège le tracé de la plus vieille sortie encore détaillée (un point sur deux)
     var slim=function(arr){ for(var i=arr.length-1;i>=0;i--){ var s=arr[i]; if(s && s.points && s.points.length>400){ var P=s.points; s.points=P.filter(function(p,j){ return j%2===0 || j===P.length-1; }); return true; } } return false; };
     var saveRides=function(){ var raw=rawGet(); if(!raw.length) return; var arr=[]; try{ arr=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[]; }catch(e){}
-      var n=0, bad=0; raw.forEach(function(js){ var se=null; try{ se=rideToSess(JSON.parse(js)); }catch(e){ se=null; } if(!se){ bad++; return; } arr=arr.filter(function(x){ return x && x.id!==se.id; }); arr.unshift(se); n++; });
+      var n=0, bad=0; raw.forEach(function(js){ var se=null; try{ var ro=JSON.parse(js);
+          // ancienne version de l'Apple Watch : date tronquée (janvier 1970) et même identifiant pour toutes les sorties. On date la sortie de sa réception.
+          if(ro && !(+ro.start>1e11)){ ro.start=Date.now()-(+ro.dur||0)*1000; ro.id="watch-r"+(+ro.dur||0)+"-"+(+ro.dist||0)+"-"+((ro.pts||[]).length); }
+          se=rideToSess(ro); }catch(e){ se=null; } if(!se){ bad++; return; } arr=arr.filter(function(x){ return x && x.id!==se.id; }); arr.unshift(se); n++; });
       if(!n){ rawSet([]); if(bad) wDiag({ err:"sortie trop courte ou illisible", errT:Date.now() }); return; }
       arr.sort(function(a,b){ return String(b.startedAt).localeCompare(String(a.startedAt)); }); if(arr.length>100) arr=arr.slice(0,100);
       var ok=false; for(var t=0;t<14 && !ok;t++){ try{ localStorage.setItem("lf_phone_sessions", JSON.stringify(arr)); ok=true; }catch(e){ if(!slim(arr)) break; } }
@@ -12004,6 +12007,8 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
       wSay(n>1 ? n+" sorties de la montre ajoutées à Activités ✔" : "Sortie de la montre ajoutée à Activités ✔"); };
     var takeRides=function(){ saveRides(); var W=plug(); if(!W || !W.takeRides) return; try{ W.takeRides().then(function(res){ var L=(res && res.rides)||[]; if(!L.length) return;
         rawSet(rawGet().concat(L)); var d=wDiag(); wDiag({ recv:(+d.recv||0)+L.length, recvT:Date.now() }); saveRides(); }).catch(function(){}); }catch(e){} };
+    // sortie fantôme datée de janvier 1970 (ancienne version de l'Apple Watch) : retirée une fois pour toutes
+    try{ var a70=JSON.parse(localStorage.getItem("lf_phone_sessions")||"[]")||[], b70=a70.filter(function(x){ return !(x && x.id==="watch-2000000000"); }); if(b70.length!==a70.length) localStorage.setItem("lf_phone_sessions", JSON.stringify(b70)); }catch(e){}
     setTimeout(takeRides, 6000); setInterval(takeRides, 30000); document.addEventListener("visibilitychange", function(){ if(!document.hidden) setTimeout(takeRides, 1200); });
     try{ var W0=plug(); if(W0 && W0.addListener) W0.addListener("ride", function(){ setTimeout(takeRides, 300); }); }catch(e){}
     // page de réglage : grille des écrans, puis réglage d'un écran (disposition, infos du haut, infos principales)
