@@ -6271,6 +6271,10 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // notes des Cartes Membre (calculées sur le téléphone, publiées pour les amis)
       saveRatings(o){ return db.set(db.ref(d,"ratings/"+uid), o); },
       watchRatings(cb){ return db.onValue(db.ref(d,"ratings"), function(s){ cb(s.val()||{}); }, function(){ cb({}); }); },
+      putSessPhoto(pid,img){ return db.set(db.ref(d,"postMedia/"+uid+"/fr/"+pid),{img:img}); },
+      getSessPhoto(u,pid){ return db.get(db.ref(d,"postMedia/"+u+"/fr/"+pid+"/img")).then(function(s){ return s.val(); }); },
+      putSessVideo(name,blob){ const self=this, ty=(blob.type && /^video\//.test(blob.type)) ? blob.type : "video/mp4", ext=/webm/.test(ty) ? "webm" : (/quicktime/.test(ty) ? "mov" : "mp4"), path="videos/"+uid+"/se_"+name+"."+ext;
+        return self.storage().then(function(S){ return S.m.uploadBytes(S.m.ref(S.s,path), blob, {contentType:ty}).then(function(sn){ return S.m.getDownloadURL(sn.ref); }); }).then(function(url){ return { u:url, p:path }; }); },
       getSessions(u){ return db.get(db.query(db.ref(d,"sessions/"+u), db.limitToLast(60))).then(function(s){ var out=[]; s.forEach(function(c){ var v=c.val(); if(v && !v.live){ v.id=c.key; out.push(v); } }); return out.reverse(); }); },
       getLiveOf(u){ return db.get(db.ref(d,"sessions/"+u+"/_live")).then(function(s){ return s.val(); }); },
       shareSession(id,o){ return db.set(db.ref(d,"sessions/"+uid+"/"+id), JSON.parse(JSON.stringify(o))); },
@@ -9581,12 +9585,29 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
       +'<span class="ps-k"><span><b>'+(km>=10?km.toFixed(0):km.toFixed(1).replace(".",","))+' km</b>Distance</span><span><b>'+pfDur(o.dur)+'</b>Durée</span>'+(+o.vmax?'<span><b>'+String(o.vmax).replace(".",",")+' km/h</b>Vitesse max</span>':'')+'</span></span></button>'; }
   function pfDur(sec){ sec=+sec||0; var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60); return h? h+" h "+String(m).padStart(2,"0") : m+" min"; }
   // analyse, météo et matériel joints à une sortie partagée (préparés par la page Activités)
+  // photos et vidéos d'une sortie : envoyées au moment où le membre montre la sortie sur son profil
+  function sessMediaDb(){ return new Promise(function(res,rej){ var r=indexedDB.open("lf_media",1); r.onupgradeneeded=function(){ var s=r.result.createObjectStore("m",{keyPath:"id"}); s.createIndex("sid","sid"); }; r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); }; }); }
+  function sessMediaUp(sid, key){ var out=[], tip=null, say=function(t){ if(!tip){ tip=document.createElement("div"); tip.style.cssText="position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);z-index:9999;background:rgba(10,14,18,.92);color:#fff;border-radius:16px;padding:14px 16px;font-size:14.5px;font-weight:700;text-align:center"; document.body.appendChild(tip); } tip.textContent=t; };
+    if(!window.indexedDB || !backend.putSessPhoto) return Promise.resolve(out);
+    return sessMediaDb().then(function(dbi){ return new Promise(function(res){ var q=dbi.transaction("m").objectStore("m").index("sid").getAll(String(sid)); q.onsuccess=function(){ res([dbi, (q.result||[]).sort(function(x,y){ return x.t-y.t; }).slice(0,8)]); }; q.onerror=function(){ res([dbi,[]]); }; }); })
+      .then(function(r){ var dbi=r[0], L=r[1], i=0; var keep=function(it){ return new Promise(function(res){ try{ var tx=dbi.transaction("m","readwrite"); tx.objectStore("m").put(it); tx.oncomplete=res; tx.onerror=res; }catch(e){ res(); } }); };
+        var next=function(){ if(i>=L.length) return out; var it=L[i++]; say("Envoi des photos et vidéos de ta sortie… "+i+" sur "+L.length);
+          if(it.k==="p"){ if(it.pid){ out.push({ k:"p", id:it.pid }); return next(); } var pid=("se_"+key+"_"+it.id).replace(/[.#$\[\]\/]/g,"_");
+            return backend.putSessPhoto(pid, it.img).then(function(){ it.pid=pid; out.push({ k:"p", id:pid }); return keep(it); }).catch(function(){}).then(next); }
+          if(it.url){ out.push({ k:"v", u:it.url }); return next(); }
+          return backend.putSessVideo((key+"_"+it.id).replace(/[^A-Za-z0-9_-]/g,"_"), it.blob).then(function(v){ it.url=v.u; it.path=v.p; out.push({ k:"v", u:v.u }); return keep(it); }).catch(function(){}).then(next); };
+        return next(); }).catch(function(){ return out; }).then(function(o){ if(tip) tip.remove(); return o||out; }); }
+  function sessMediaHtml(o){ if(!Array.isArray(o.media) || !o.media.length) return ""; var u=String(o.mu||"");
+    var h=o.media.slice(0,8).map(function(m){ if(m && m.k==="v" && /^https:\/\//.test(String(m.u||""))) return '<video controls playsinline preload="metadata" src="'+esc(m.u)+'" style="width:100%;max-height:420px;border-radius:14px;background:#000;margin-top:8px"></video>';
+      if(m && m.k==="p" && u && /^[A-Za-z0-9_-]+$/.test(String(m.id||""))) return '<img alt="" data-sp="'+esc(u)+'|'+esc(m.id)+'" style="width:100%;border-radius:14px;margin-top:8px;display:block;min-height:60px;background:#dfe7ea">'; return ""; }).join("");
+    if(h) setTimeout(function(){ document.querySelectorAll("img[data-sp]").forEach(function(im){ var p=im.getAttribute("data-sp").split("|"); im.removeAttribute("data-sp"); if(backend && backend.getSessPhoto) backend.getSessPhoto(p[0],p[1]).then(function(d){ if(d && /^data:image\/(jpeg|png|webp);base64,/.test(d)) im.src=d; else im.remove(); }).catch(function(){ im.remove(); }); }); }, 60);
+    return h ? '<div style="margin-top:6px">'+h+'</div>' : ""; }
   function sessExtraHtml(o){ var h="", a=o.an, w=o.wx, D=["N","NE","E","SE","S","SO","O","NO"], mm=function(s){ s=Math.round(+s||0); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); };
     if(a && typeof a==="object"){ if(+a.fd>0) h+='<div><span>🪽 Sur le foil</span><b>'+(a.fd/1000).toFixed(2).replace(".",",")+' km'+(o.d>0?' · '+Math.round(a.fd/o.d*100)+' %':'')+'</b></div>'; if(+a.runs>0) h+='<div><span>🚀 Runs</span><b>'+Math.round(a.runs)+(a.ft>0?' · '+mm(a.ft)+' en vol':'')+'</b></div>';
       if(+a.turns>0) h+='<div><span>↩️ Virages</span><b>'+Math.round(a.turns)+(a.n360>0?' · '+Math.round(a.n360)+' tours 360°':'')+'</b></div>'; if(+a.max5>0) h+='<div><span>⚡ Meilleur 5 s</span><b>'+String((+a.max5).toFixed(1)).replace(".",",")+' km/h</b></div>'; }
     if(w && w.ok) h+='<div><span>💨 Vent</span><b>'+Math.round(+w.w||0)+' nds '+D[Math.round((+w.d||0)/45)%8]+' · rafales '+Math.round(+w.g||0)+'</b></div>';
     if(Array.isArray(o.gear) && o.gear.length) h+='<div><span>🧰 Matériel</span><b style="font-weight:700;text-align:right">'+o.gear.slice(0,8).map(function(x){ return esc(String(x).slice(0,70)); }).join("<br>")+'</b></div>';
-    return h ? '<div class="rc-how" style="margin-top:10px">'+h+'</div>' : ""; }
+    return (h ? '<div class="rc-how" style="margin-top:10px">'+h+'</div>' : "")+sessMediaHtml(o); }
   function openSessDetail(o, mine, raw, who){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="sdClose">✕</button><b>'+sessIcon(o.sport||o.cat)+' '+esc(o.cat||"Session")+'</b><span></span></div><div class="gc-body">'
       +(sessMapHtml(o.trk, 600, 380) ? '<div class="ps-det">'+sessMapHtml(o.trk, 600, 380)+'</div>' : '')
@@ -9946,7 +9967,7 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
       if(!profileReady()){ back("profil"); return; }
       var raw=localSess().filter(function(a){ return String(a.id)===sid; })[0], key=sid.replace(/[.#$\[\]\/]/g,"_");
       if(!raw && op){ back("x"); return; }
-      (op ? backend.shareSession(key, sessSummary(raw)) : backend.unshareSession(key))
+      (op ? sessMediaUp(sid, key).then(function(md){ var sm=sessSummary(raw); if(md.length){ sm.media=md; sm.mu=me.uid; } return backend.shareSession(key, sm); }) : backend.unshareSession(key))
         .then(function(){ return sharedSessLoad().catch(function(){ if(op) mySharedSess[key]=true; else delete mySharedSess[key]; sharedSessSave(); }); })
         .then(function(){ back(op?"1":"0"); }, function(){ back("x"); });
     }, 250); })();
