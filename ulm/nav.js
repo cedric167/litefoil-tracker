@@ -10,6 +10,11 @@ var box=null, A=null, map=null, lay=null, P=null, R=null, addOnMap=false, aero=f
 var NM=1852, FT=3.28084;
 
 var TR={
+ "Importer une route (GPX)":["Import a route (GPX)","Importar una ruta (GPX)"],"Fichier GPX illisible : aucun point de route trouvé.":["Unreadable GPX file: no route point found.","Archivo GPX ilegible: no se encontró ningún punto de ruta."],"Route importée :":["Route imported:","Ruta importada:"],"points":["points","puntos"],"Point":["Point","Punto"],
+ "Masse et centrage":["Weight and balance","Peso y centrado"],"Masse":["Weight","Peso"],"Bras de levier (m)":["Arm (m)","Brazo (m)"],"Appareil à vide":["Empty aircraft","Aeronave en vacío"],"Pilote":["Pilot","Piloto"],"Passager":["Passenger","Pasajero"],"Bagages":["Baggage","Equipaje"],"Carburant":["Fuel","Combustible"],"Masse maximale":["Maximum weight","Peso máximo"],"Limites de centrage":["Balance limits","Límites de centrado"],"avant":["forward","delantero"],"arrière":["aft","trasero"],
+ "Prends les masses, les bras de levier et les limites dans le manuel de vol de ton appareil. Essence comptée à 0,72 kg par litre. Sans bras de levier, seule la masse est vérifiée. Calcul indicatif : il ne remplace pas la fiche de pesée ni le manuel de vol.":["Take the weights, arms and limits from your aircraft flight manual. Petrol counted at 0.72 kg per litre. Without arms, only the weight is checked. Indicative calculation: it does not replace the weighing report or the flight manual.","Toma los pesos, los brazos y los límites del manual de vuelo de tu aeronave. Gasolina contada a 0,72 kg por litro. Sin brazos, solo se comprueba el peso. Cálculo orientativo: no sustituye la hoja de pesada ni el manual de vuelo."],
+ "Saisis les masses pour voir le résultat.":["Enter the weights to see the result.","Introduce los pesos para ver el resultado."],"Masse au décollage":["Take-off weight","Peso al despegue"],"marge":["margin","margen"],"dépassement de":["over by","exceso de"],"dans les limites":["within limits","dentro de los límites"],"hors limites":["out of limits","fuera de los límites"],"Centrage au décollage":["Balance at take-off","Centrado al despegue"],"Centrage réservoir vide":["Balance with empty tank","Centrado con depósito vacío"],
+ "Saisis les limites avant et arrière pour vérifier le centrage.":["Enter the forward and aft limits to check the balance.","Introduce los límites delantero y trasero para comprobar el centrado."],"Saisis un bras de levier sur chaque ligne remplie pour calculer le centrage.":["Enter an arm on every filled line to compute the balance.","Introduce un brazo en cada línea rellenada para calcular el centrado."],
  "Aide à la navigation, pas un instrument certifié. Lite Foil ne remplace pas les cartes aéronautiques à jour que le pilote doit avoir à bord.":["Navigation aid, not a certified instrument. Lite Foil does not replace the up-to-date aeronautical charts the pilot must carry on board.","Ayuda a la navegación, no un instrumento certificado. Lite Foil no sustituye las cartas aeronáuticas actualizadas que el piloto debe llevar a bordo."],
  "À lire avant de décoller":["Read before take-off","Leer antes de despegar"],"J'ai compris":["Got it","Entendido"],
  "Altitude · QNH":["Altitude · QNH","Altitud · QNH"],"Hauteur · QFE":["Height · QFE","Altura · QFE"],"Hauteur sol":["Height above ground","Altura sobre el suelo"],"Au-dessus du niveau de la mer":["Above sea level","Sobre el nivel del mar"],"Au-dessus du terrain de départ":["Above the departure field","Sobre el campo de salida"],"Au-dessus du relief survolé":["Above the terrain below","Sobre el relieve sobrevolado"],
@@ -222,7 +227,7 @@ var CSS=""
 +".nv-book-a{display:flex;gap:6px;margin-top:7px}.nv-book-e .nv-book-a button{display:inline-flex;align-items:center;gap:5px;border:1px solid #d7e0e6;background:#f6f9fb;color:#0e1417;border-radius:999px;padding:6px 11px;font:inherit;font-size:12.5px;font-weight:800;opacity:1}.nv-book-a .lf-ic{width:14px;height:14px}"
 +".nv-done{text-align:center;padding-top:22px}.nv-done-k{width:54px;height:54px;border-radius:50%;background:#e3f8ec;color:#0a7a3c;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}.nv-done-k .lf-ic{width:30px;height:30px}.nv-done-t{display:block;font-size:20px}.nv-done-r{font-size:14.5px;color:#55626c;font-weight:700;margin:3px 0 14px}"
 +".nv-done-b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:9px;border:1.5px solid #d7e0e6;background:#fff;color:#0e1417;border-radius:18px;padding:14px;font:inherit;font-size:15.5px;font-weight:800;cursor:pointer}.nv-done-b .lf-ic{width:19px;height:19px}.nv-done-x{display:block;width:100%;margin-top:6px;border:0;background:none;color:#66727d;font:inherit;font-size:14.5px;font-weight:700;padding:10px;cursor:pointer}"
-+".nv-book-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.nv-book-h b{font-size:18px}.nv-book-h button{border:0;width:36px;height:36px;border-radius:50%;background:#eef1f3;font-size:15px;cursor:pointer}"
++".nv-book-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.nv-book-h b{font-size:18px}.nv-wb-g{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:7px;align-items:center}.nv-wb-g input{width:100%;min-width:0;box-sizing:border-box;border:1px solid #d7e0e6;border-radius:10px;padding:9px 8px;font:inherit;font-size:15px;background:#fff;color:#0e1417}.nv-wb-g span{font-size:13.5px;font-weight:700}.nv-wb-g small{font-size:11px;color:#66727d;font-weight:700;text-transform:uppercase}.nv-wb-r{margin-top:12px;border-radius:14px;padding:12px;background:#f3f6f8;font-size:14px;line-height:1.6}.nv-wb-r .ok{color:#0d8a4f;font-weight:800}.nv-wb-r .ko{color:#c62828;font-weight:800}.nv-wb-h{color:#66727d;font-size:12.5px}.nv-book-h button{border:0;width:36px;height:36px;border-radius:50%;background:#eef1f3;font-size:15px;cursor:pointer}"
 +".nv-book-t{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.nv-book-t div{background:#f3f6f8;border-radius:14px;padding:10px;text-align:center}.nv-book-t b{display:block;font-size:20px}.nv-book-t span{font-size:11.5px;font-weight:700;color:#66727d;text-transform:uppercase;letter-spacing:.05em}"
 +".nv-book-e{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #e8edf0}.nv-book-e>div{flex:1;min-width:0}.nv-book-e b{display:block;font-size:14.5px}.nv-book-e small{display:block;font-size:12.5px;color:#66727d;margin-top:2px}.nv-book-e button{border:0;background:none;font-size:17px;cursor:pointer;opacity:.6;flex:none}"
 +".nv-tf{position:relative;width:26px;height:26px}.nv-tf svg{width:26px;height:26px;display:block;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}.nv-tf span{position:absolute;left:28px;top:-2px;white-space:nowrap;font-size:11px;font-weight:800;line-height:1.15;color:#fff;background:rgba(10,18,32,.78);border-radius:6px;padding:2px 5px}"
@@ -314,7 +319,7 @@ function paint(){ if(!box) return; killMap(); var n=P.pts.length, sv=lget("lf.ul
     +'<div class="nv-note">'+esc(T("Catalogue de")+" "+AC.length+" "+T("appareils courants. Valeurs indicatives des constructeurs : vérifie-les dans ton manuel de vol et corrige-les ici."))+'</div>');
   h+=secHtml("opt","sliders",T("Options et outils"),
       '<div class="nv-h" style="margin:0 0 6px">'+esc(T("Contournement automatique"))+'</div><div class="nv-row" style="margin-top:0">'+[["p","Zones interdites"],["r","Zones réglementées"],["c","Clairance (CTR, TMA)"]].map(function(x){ var on=!!(P.avoid && typeof P.avoid==="object" ? P.avoid[x[0]] : x[0]!=="c"); return '<button class="nv-chip'+(on?" on":"")+'" data-avoid="'+x[0]+'" aria-pressed="'+on+'">'+(on?"✓ ":"")+esc(T(x[1]))+'</button>'; }).join("")+'</div><div class="nv-note" style="margin-top:6px">'+esc(T("Touche pour cocher ou décocher : une, deux ou les trois."))+'</div>'
-    +'<div class="nv-h" style="margin:14px 0 6px">'+esc(T("Outils"))+'</div><div class="nv-row" style="margin-top:0"><button class="nv-chip" data-act="who">'+ic("users")+esc(T("Qui suit mon vol en direct"))+'</button><button class="nv-chip" data-act="book">'+ic("book")+esc(T("Carnet de vol"))+'</button>'
+    +'<div class="nv-h" style="margin:14px 0 6px">'+esc(T("Outils"))+'</div><div class="nv-row" style="margin-top:0"><button class="nv-chip" data-act="who">'+ic("users")+esc(T("Qui suit mon vol en direct"))+'</button><button class="nv-chip" data-act="book">'+ic("book")+esc(T("Carnet de vol"))+'</button><button class="nv-chip" data-act="wb">'+ic("sliders")+esc(T("Masse et centrage"))+'</button><button class="nv-chip" data-act="imp">'+ic("file")+esc(T("Importer une route (GPX)"))+'</button>'
     +(n>=2?'<button class="nv-chip" data-act="pack">'+ic("download")+esc(T("Télécharger mon vol (hors ligne)"))+'</button><button class="nv-chip" data-act="save">'+ic("save")+esc(T("Enregistrer la route"))+'</button><button class="nv-chip" data-act="gpx">'+ic("file")+esc(T("Exporter en GPX"))+'</button>':"")+'</div>'
     +'<div class="nv-h" style="margin:14px 0 6px">'+esc(T("Sites officiels"))+'</div><div class="nv-row" style="margin-top:0"><a class="nv-chip" style="text-decoration:none" target="_blank" rel="noopener" href="https://sofia-briefing.aviation-civile.gouv.fr/">'+ic("file")+esc(T("NOTAM officiels (SOFIA)"))+'</a><a class="nv-chip" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.sia.aviation-civile.gouv.fr/schedules">'+ic("ban")+esc(T("Zones militaires actives (RTBA)"))+'</a><a class="nv-chip" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.sia.aviation-civile.gouv.fr/">'+ic("map")+esc(T("Cartes VAC (SIA)"))+'</a></div><div class="nv-note" style="margin-top:6px">'+esc(T("Les NOTAM ne sont pas encore dans l'appli : consulte-les sur le site officiel avant chaque vol."))+'</div>'
     +(sv.length?'<div class="nv-h" style="margin:14px 0 6px">'+esc(T("Mes routes"))+'</div>'+sv.map(function(r,i){ return '<div class="nv-sv"><button data-load="'+i+'">'+esc(r.name)+' <small>· '+r.pts.length+' pts</small></button><button class="nv-chip" data-del="'+i+'" style="padding:6px 10px">✕</button></div>'; }).join(""):""));
@@ -493,6 +498,8 @@ function onClick(e){ var b=e.target.closest("button"); if(!b || !box.contains(b)
     case "gpx": return gpx();
     case "who": if(window.__secPick) window.__secPick("air"); return;
     case "book": return bookOpen();
+    case "wb": return wbOpen();
+    case "imp": return gpxImport();
     case "pack": return packDownload();
     case "alt": if(alt2 && alt2.route){ P.pts=alt2.route.pts.map(function(p){ return { name:p.name, code:p.code||"", lat:p.lat, lon:p.lon, elev:p.elev }; }); savePlan(); toast(T("Route modifiée.")); recalc(); try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(x3){} } return;
     case "delay": if(d.hm){ P.dep=d.hm; savePlan(); recalc(); } return;
@@ -676,6 +683,56 @@ function flyDone(e){ var o=document.getElementById("nvDone"); if(o) o.remove(); 
   el.addEventListener("click", function(ev){ if(ev.target===el){ el.remove(); return; } var b=ev.target.closest("button"); if(!b) return; var k=b.dataset.dn; el.remove(); if(k==="3d") flyReplay(e.sid); else if(k==="pub") flyPublish(e.sid); }); }
 function bookCsv(){ var l=lget("lf.ulm.logbook",[]), q=function(s){ return '"'+String(s==null?"":s).replace(/"/g,'""')+'"'; }, d2=function(t){ var d=new Date(t); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); };
   return "Date;Appareil;Depart;Arrivee;Heure decollage;Heure atterrissage;Duree (min);Distance (NM);Altitude max (ft);Vitesse max (kt)\n"+l.map(function(e){ return [d2(e.t0), q(e.ac), q(e.from), q(e.to), hm(new Date(e.t0)), hm(new Date(e.t1)), Math.round((e.t1-e.t0)/60000), (e.dist/NM).toFixed(1), e.alt==null?"":e.alt, e.gs].join(";"); }).join("\n")+"\n"; }
+// ---------- import d'une route GPX ----------
+function gpxThin(pts, max){ if(pts.length<=max) return pts; var st=Math.ceil(pts.length/1500), src=pts.filter(function(p,i){ return i%st===0 || i===pts.length-1; }), keep=[0, src.length-1];
+  var k=Math.cos(rad(src[0].lat)), off=function(p,a,b){ var x=(p.lon-a.lon)*k, y=p.lat-a.lat, dx=(b.lon-a.lon)*k, dy=b.lat-a.lat, l=dx*dx+dy*dy, t=l?Math.max(0,Math.min(1,(x*dx+y*dy)/l)):0, ex=x-t*dx, ey=y-t*dy; return Math.sqrt(ex*ex+ey*ey)*111320; };
+  while(keep.length<max){ var best=-1, bd=400; for(var s=0;s<keep.length-1;s++){ for(var i=keep[s]+1;i<keep[s+1];i++){ var d=off(src[i], src[keep[s]], src[keep[s+1]]); if(d>bd){ bd=d; best=i; } } } if(best<0) break; keep.push(best); keep.sort(function(a,b){ return a-b; }); }
+  return keep.map(function(i){ return src[i]; }); }
+function gpxPts(txt){ var doc=new DOMParser().parseFromString(txt,"application/xml");
+  var grab=function(tag){ var l=doc.getElementsByTagName(tag), r=[]; for(var i=0;i<l.length;i++){ var la=parseFloat(l[i].getAttribute("lat")), lo=parseFloat(l[i].getAttribute("lon")); if(isFinite(la) && isFinite(lo) && Math.abs(la)<=90 && Math.abs(lo)<=180){ var n=l[i].getElementsByTagName("name")[0]; r.push({ name:n && n.textContent ? n.textContent.trim().slice(0,40) : "", code:"", lat:la, lon:lo }); } } return r; };
+  var out=grab("rtept"); if(out.length<2) out=grab("wpt"); if(out.length<2) out=grab("trkpt"); out=gpxThin(out, 20);
+  out.forEach(function(p,i){ if(!p.name) p.name=T("Point")+" "+(i+1); }); return out; }
+function gpxImport(){ var inp=document.createElement("input"); inp.type="file"; inp.style.display="none"; document.body.appendChild(inp);
+  inp.addEventListener("change", function(){ var f=inp.files && inp.files[0]; inp.remove(); if(!f) return; var rd=new FileReader();
+    rd.onerror=function(){ toast(T("Fichier GPX illisible : aucun point de route trouvé.")); };
+    rd.onload=function(){ var pts=[]; try{ pts=gpxPts(String(rd.result||"")); }catch(e){} if(pts.length<2){ toast(T("Fichier GPX illisible : aucun point de route trouvé.")); return; }
+      // le départ et l'arrivée sont rattachés au terrain connu le plus proche (moins de 1,5 km), pour garder pistes, fréquences et météo
+      var snap=function(i){ var p=pts[i]; return A.loadDB(p.lat,p.lon).catch(function(){}).then(function(){ try{ var nr=A.nearest(p.lat,p.lon,1)[0]; if(nr && nr[0]<1.5) pts[i]=ptOf(nr[1]); }catch(e){} }); };
+      var done=function(){ P.pts=pts; editPt=""; addOnMap=false; savePlan(); recalc(); toast(T("Route importée :")+" "+pts.length+" "+T("points")); try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){} };
+      try{ snap(0).then(function(){ return snap(pts.length-1); }).then(done, done); }catch(e){ done(); } };
+    rd.readAsText(f); });
+  inp.click(); }
+// ---------- masse et centrage ----------
+// Calcul simple : somme des masses et des moments (masse × bras de levier). Les valeurs viennent du manuel de vol de l'appareil, saisies par le pilote.
+function wbOpen(){ var o=document.getElementById("nvWb"); if(o) o.remove();
+  var W=lget("lf.ulm.wb", null); if(!W || !W.r) W={ r:{ e:["",""], p:["",""], x:["",""], b:["",""], f:["",""] }, max:"", fwd:"", aft:"" };
+  if(W.r.f[0]==="" && P.ac && P.ac.fuel) W.r.f[0]=P.ac.fuel;
+  var ROWS=[["e","Appareil à vide","kg"],["p","Pilote","kg"],["x","Passager","kg"],["b","Bagages","kg"],["f","Carburant","L"]], DENS=0.72;
+  var num=function(v){ var x=parseFloat(String(v==null?"":v).replace(",",".")); return isFinite(x)?x:null; };
+  var inp=function(k,v,ph){ return '<input type="number" inputmode="decimal" step="any" data-wb="'+k+'" value="'+esc(v==null?"":v)+'" placeholder="'+esc(ph)+'">'; };
+  var el=document.createElement("div"); el.id="nvWb"; el.className="nv-book"; el.setAttribute("data-no-i18n","");
+  el.innerHTML='<div class="nv-book-c"><div class="nv-book-h"><b>'+esc(T("Masse et centrage"))+'</b><button data-bk="x" aria-label="'+esc(T("Fermer"))+'">✕</button></div>'
+    +'<div class="nv-wb-g"><small></small><small>'+esc(T("Masse"))+'</small><small>'+esc(T("Bras de levier (m)"))+'</small>'
+    +ROWS.map(function(r){ return '<span>'+esc(T(r[1]))+'</span>'+inp(r[0]+"0", W.r[r[0]][0], r[2])+inp(r[0]+"1", W.r[r[0]][1], "m"); }).join("")
+    +'<span>'+esc(T("Masse maximale"))+'</span>'+inp("max", W.max, "kg")+'<i></i>'
+    +'<span>'+esc(T("Limites de centrage"))+'</span>'+inp("fwd", W.fwd, T("avant"))+inp("aft", W.aft, T("arrière"))+'</div>'
+    +'<div class="nv-wb-r" id="nvWbR"></div>'
+    +'<div class="nv-note">'+esc(T("Prends les masses, les bras de levier et les limites dans le manuel de vol de ton appareil. Essence comptée à 0,72 kg par litre. Sans bras de levier, seule la masse est vérifiée. Calcul indicatif : il ne remplace pas la fiche de pesée ni le manuel de vol."))+'</div></div>';
+  document.body.appendChild(el);
+  var draw=function(){ var m=0, mo=0, m0=0, mo0=0, arms=true, any=false, h="";
+    ROWS.forEach(function(r){ var w=num(W.r[r[0]][0]), a=num(W.r[r[0]][1]); if(w==null || w<=0) return; if(r[0]==="f") w=w*DENS; any=true; if(a==null) arms=false; else mo+=w*a; m+=w; if(r[0]!=="f"){ m0+=w; if(a!=null) mo0+=w*a; } });
+    if(!any){ el.querySelector("#nvWbR").innerHTML=esc(T("Saisis les masses pour voir le résultat.")); return; }
+    var mx=num(W.max), fw=num(W.fwd), af=num(W.aft);
+    h+='<div>'+esc(T("Masse au décollage"))+' : <b>'+m.toFixed(1)+' kg</b>'+(mx!=null ? (m<=mx ? ' <span class="ok">✓ '+esc(T("marge"))+' '+(mx-m).toFixed(1)+' kg</span>' : ' <span class="ko">✕ '+esc(T("dépassement de"))+' '+(m-mx).toFixed(1)+' kg</span>') : "")+'</div>';
+    if(arms && m0>0){ var cg=mo/m, cg0=mo0/m0, lim=(fw!=null && af!=null), okc=function(c){ return !lim ? "" : (c>=Math.min(fw,af) && c<=Math.max(fw,af) ? ' <span class="ok">✓ '+esc(T("dans les limites"))+'</span>' : ' <span class="ko">✕ '+esc(T("hors limites"))+'</span>'); };
+      h+='<div>'+esc(T("Centrage au décollage"))+' : <b>'+cg.toFixed(3)+' m</b>'+okc(cg)+'</div><div>'+esc(T("Centrage réservoir vide"))+' : <b>'+cg0.toFixed(3)+' m</b>'+okc(cg0)+'</div>';
+      if(!lim) h+='<div class="nv-wb-h">'+esc(T("Saisis les limites avant et arrière pour vérifier le centrage."))+'</div>'; }
+    else h+='<div class="nv-wb-h">'+esc(T("Saisis un bras de levier sur chaque ligne remplie pour calculer le centrage."))+'</div>';
+    el.querySelector("#nvWbR").innerHTML=h; };
+  draw();
+  el.addEventListener("input", function(ev){ var k=ev.target && ev.target.dataset ? ev.target.dataset.wb : ""; if(!k) return; var v=ev.target.value;
+    if(k==="max" || k==="fwd" || k==="aft") W[k]=v; else if(W.r[k.charAt(0)]) W.r[k.charAt(0)][+k.charAt(1)]=v; lset("lf.ulm.wb", W); draw(); });
+  el.addEventListener("click", function(ev){ if(ev.target===el){ el.remove(); return; } var b=ev.target.closest("button"); if(b && b.dataset.bk==="x") el.remove(); }); }
 function bookOpen(){ var o=document.getElementById("nvBook"); if(o) o.remove(); var l=lget("lf.ulm.logbook",[]), tot=0; l.forEach(function(e){ tot+=(e.t1-e.t0); });
   var el=document.createElement("div"); el.id="nvBook"; el.className="nv-book"; el.setAttribute("data-no-i18n","");
   el.innerHTML='<div class="nv-book-c"><div class="nv-book-h"><b>📒 '+esc(T("Carnet de vol"))+'</b><button data-bk="x" aria-label="'+esc(T("Fermer"))+'">✕</button></div>'
