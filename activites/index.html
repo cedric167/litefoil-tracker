@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
 <script src="../gmaps-key.js"></script>
+<script src="analyse.js?v=1"></script>
 <script src="../i18n/i18n.js"></script>
 <style>
 body.lock .seg{display:none !important}
@@ -933,6 +934,7 @@ async function openDetail(a){
     const nop=ind || !(a.points && a.points.length>1), dm=document.getElementById("detMap"), bf=document.getElementById("btnFly"); if(dm) dm.style.display=nop?"none":""; if(bf) bf.style.display=nop?"none":"";
     if(a.notrack) S.insertAdjacentHTML("afterend", '<p id="detNoTrk" style="margin:10px 2px 0;font-size:13px;color:#6b7c80">La montre n\'a pas reçu de position GPS pendant cette sortie : pas de tracé.</p>'); }
   { const g=document.getElementById("btnGpx"); if(g){ g.hidden=!(a.points&&a.points.length>1); g.onclick=()=>gpxExport(a); } }
+  try{ if(window.LFAna) LFAna.panel(a); }catch(e){}
   document.getElementById("sheet").classList.add("open");
   setTimeout(()=>drawDetailMap(a),120);
 }
@@ -946,6 +948,7 @@ function drawDetailMap(a){
     if(!a.points||!a.points.length) return;
     detMap.addSource("trk",{type:"geojson",data:lineGeo(a.points)});
     detMap.addLayer({id:"trk",type:"line",source:"trk",paint:{"line-color":"#ff5a1f","line-width":4,"line-opacity":.95},layout:{"line-join":"round","line-cap":"round"}});
+    try{ if(window.LFAna) LFAna.map(detMap,a); }catch(e){}
     detMap.fitBounds(bounds(a.points),{padding:40,duration:0,maxZoom:17}); // sortie très courte : pas plus près que le niveau 17, sinon Esri n'a plus d'image (« Map data not yet available »)
   };
   if(detMap.isStyleLoaded()) draw(); else detMap.once("load",draw);
