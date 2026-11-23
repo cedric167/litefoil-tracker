@@ -13,7 +13,7 @@ var root = null, DB = null, dbP = null, F = null, WX = null, view = "metar", rwS
 var TR = {
  "Carte du terrain (ENAIRE)":["Aerodrome chart (ENAIRE)","Carta del aeródromo (ENAIRE)"],"NOTAM Espagne (Icaro, ENAIRE)":["Spain NOTAM (Icaro, ENAIRE)","NOTAM España (Ícaro, ENAIRE)"],"Carte aéronautique Espagne (Insignia)":["Spain aeronautical chart (Insignia)","Carta aeronáutica España (Insignia)"],
  "Espagne : cartes des terrains":["Spain: aerodrome charts","España: cartas de aeródromo"],"ENAIRE (AIP España, Guía VFR). Le téléphone lit la carte sur le site officiel, Lite Foil ne la rediffuse pas.":["ENAIRE (AIP España, Guía VFR). The phone reads the chart on the official site; Lite Foil does not redistribute it.","ENAIRE (AIP España, Guía VFR). El teléfono lee la carta en el sitio oficial; Lite Foil no la redistribuye."],
- "Espagne : espaces aériens":["Spain: airspace","España: espacio aéreo"],"Pas encore dans l'appli : ENAIRE demande une autorisation écrite, notre demande est en préparation. En attendant, utilise Insignia.":["Not in the app yet: ENAIRE requires written permission, our request is being prepared. Meanwhile, use Insignia.","Aún no en la app: ENAIRE exige autorización escrita, nuestra solicitud está en preparación. Mientras tanto, usa Insignia."],
+ "Espagne : espaces aériens":["Spain: airspace","España: espacio aéreo"],"Pas encore dans l'appli : ENAIRE demande une autorisation écrite, notre demande a été envoyée le 23/11/2026. En attendant, utilise Insignia.":["Not in the app yet: ENAIRE requires written permission, our request was sent on 23/11/2026. Meanwhile, use Insignia.","Aún no en la app: ENAIRE exige autorización escrita, nuestra solicitud se envió el 23/11/2026. Mientras tanto, usa Insignia."],
  "Communauté et suivi":["Community and tracking","Comunidad y seguimiento"],"Activé":["On","Activado"],"Désactivé":["Off","Desactivado"],"Voir le détail":["See details","Ver el detalle"],
  "accords reçus":["agreements received","acuerdos recibidos"],"sources officielles":["official sources","fuentes oficiales"],"demande en cours":["request pending","solicitud en curso"],
  "Dernières mises à jour":["Latest updates","Últimas actualizaciones"],
@@ -353,7 +353,7 @@ var TRUST=[
  ["lic","Espaces aériens Allemagne et États-Unis","DFS Deutsche Flugsicherung (licence CC BY 4.0) et FAA."],
  ["open","Terrains, météo et trafic","OurAirports (domaine public), METAR et TAF d'aviationweather.gov, prévisions Open-Meteo, trafic Open Glider Network."],
  ["off","Espagne : cartes des terrains","ENAIRE (AIP España, Guía VFR). Le téléphone lit la carte sur le site officiel, Lite Foil ne la rediffuse pas."],
- ["wait","Espagne : espaces aériens","Pas encore dans l'appli : ENAIRE demande une autorisation écrite, notre demande est en préparation. En attendant, utilise Insignia."],
+ ["wait","Espagne : espaces aériens","Pas encore dans l'appli : ENAIRE demande une autorisation écrite, notre demande a été envoyée le 23/11/2026. En attendant, utilise Insignia."],
  ["wait","NOTAM et zones militaires actives","Demande d'accès déposée auprès du SIA le 23/11/2026. En attendant, l'appli renvoie vers SOFIA et le site du SIA."]],
  TRUST_L={ ok:["✓","Accord reçu","#0d8a4f","#e3f6ec"], lic:["✓","Licence ouverte","#0d8a4f","#e3f6ec"], off:["✓","Source officielle","#0b63b6","#e3effb"], open:["•","Source ouverte","#55626c","#eef1f3"], wait:["…","Demande en cours","#a05a00","#fdf0d8"] },
  trustMaj=null;
