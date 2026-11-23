@@ -6114,6 +6114,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   if(!CHANS[chatTopic]) chatTopic="efoil";
   let salonMsgs = [], salonUnsub = null;
   let typers = {}, typingUnsub = null, membersUnsub = null, profileMap = {};
+  function lfAv(m){ if(!m) return ""; if(m.av) return m.av; var p=profileMap[m.uid]; return (p && p.av) || ""; }
   let seen = {}; try{ seen = JSON.parse(localStorage.getItem("lf.comm.seen")||"{}")||{}; }catch(e){ seen={}; }
   const saveSeen = () => { try{ localStorage.setItem("lf.comm.seen", JSON.stringify(seen)); }catch(e){} };
   let autoTrans = true; try{ if(localStorage.getItem("lf.comm.autotrans")==="0") autoTrans=false; }catch(e){}
@@ -6199,7 +6200,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         for(const k in v){ const r=v[k]; if(!r||r.lat==null) continue; const t=typeof r.t==="number"?r.t:now; if(now-t>30*86400000) continue; out[k]={pseudo:r.pseudo,lat:r.lat,lng:r.lng,t,on:(now-t<=STALE)}; } cb(out); }); },
       sendMessage(ch,text,img,reply,extra){ const path = pathFor(ch);
         const o={uid,pseudo:me.pseudo,text:text||"",t:db.serverTimestamp(),topic:(ch==="salon"?((extra&&extra.topic)||chatTopic):null),lat:me.pos?me.pos.lat:null,lng:me.pos?me.pos.lng:null};
-        if(img) o.img=img; if(me.av) o.av=me.av; if(me.bio) o.bio=me.bio; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
+        if(img) o.img=img; if(reply) o.rt={p:reply.pseudo,t:(reply.text||"").slice(0,120)};
         if(extra){ if(extra.call) o.call=extra.call; if(extra.au){ o.au=extra.au; o.ad=extra.ad||0; } if(extra.ride) o.ride=extra.ride; if(extra.gif){ o.gif=extra.gif; } if(extra.ev) o.ev=extra.ev; if(extra.vid) o.vid=extra.vid; }
         const prev = previewText(o);
         const p = db.push(db.ref(d,path),o);
@@ -6353,7 +6354,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
           const task=S.m.uploadBytesResumable(S.m.ref(S.s,path), file, {contentType:file.type||"video/mp4"});
           task.on("state_changed", function(sn){ if(onProgress) onProgress(sn.bytesTransferred/(sn.totalBytes||1)); }, rej, function(){ S.m.getDownloadURL(task.snapshot.ref).then(res, rej); }); }); })
         .then(function(url){ const v={uid:uid,pseudo:me.pseudo||"Membre",url:url,path:path,thumb:meta.thumb||"",caption:(meta.caption||"").slice(0,150),topic:meta.topic||"efoil",dur:meta.dur||0,t:db.serverTimestamp()};
-          if(me.av) v.av=me.av; return db.set(vref,v).then(function(){ return vref.key; }); }); },
+          return db.set(vref,v).then(function(){ return vref.key; }); }); },
       likeVideo(vid,on){ return db.set(db.ref(d,"videos/"+vid+"/likes/"+uid), on?true:null); },
       viewVideo(vid){ if(!inc) return Promise.reject(new Error("compteur indisponible")); return db.set(db.ref(d,"videos/"+vid+"/vn"), inc(1)); },
       // ---------- 22/11 : vidéo envoyée dans une discussion (fichier dans le stockage, lien dans le message) ----------
@@ -6386,7 +6387,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       deleteVideo(v){ const self=this; return db.remove(db.ref(d,"videos/"+v.id)).then(function(){ db.remove(db.ref(d,"videoComments/"+v.id)).catch(function(){});
         if(v.uid===uid && v.path) return self.storage().then(function(S){ return S.m.deleteObject(S.m.ref(S.s,v.path)); }).catch(function(){}); }); },
       watchVideoComments(vid,cb){ return db.onValue(db.query(db.ref(d,"videoComments/"+vid), db.limitToLast(200)), function(snap){ const out=[]; snap.forEach(function(c){ const v=c.val(); if(v){ v.id=c.key; out.push(v); } }); cb(out); }, function(){ cb([]); }); },
-      addVideoComment(vid,text){ const o={uid:uid,pseudo:me.pseudo||"Membre",text:String(text).slice(0,300),t:db.serverTimestamp()}; if(me.av) o.av=me.av;
+      addVideoComment(vid,text){ const o={uid:uid,pseudo:me.pseudo||"Membre",text:String(text).slice(0,300),t:db.serverTimestamp()};
         return db.push(db.ref(d,"videoComments/"+vid),o); },
       deleteVideoComment(vid,cid){ return db.remove(db.ref(d,"videoComments/"+vid+"/"+cid)); },
       watchOfficial(cb){ return db.onValue(db.ref(d,"official"), function(snap){ cb(snap.val()||{}); }, function(){ cb({}); }); },
@@ -7170,7 +7171,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       const unread = t > (seen[m.topic||"general"]||0);
       if(t>notifMaxT && unread && m.uid!==me.uid && !blocked.has(m.uid)){
         if(false && alertNow) notify(m);   /* 16/11 : plus d'alerte pour le salon public */
-        if(false && commHidden) showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:m.av, sub:(CHANS[m.topic||"general"]||"Salon"), text:m.text||(m.img?"📷 Photo":""), onTap:(function(tp){ return function(){ openSalonFromToast(tp); }; })(m.topic) });
+        if(false && commHidden) showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:lfAv(m), sub:(CHANS[m.topic||"general"]||"Salon"), text:m.text||(m.img?"📷 Photo":""), onTap:(function(tp){ return function(){ openSalonFromToast(tp); }; })(m.topic) });
       }
       if(t>mx) mx=t;
     }
@@ -7301,7 +7302,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       box.innerHTML='<div class="comm-empty">'+(chatMode==="near"?emptyNear:(isConvo?"Démarre la conversation 👋":emptySalon))+'</div>'; return; }
     arr = arr.slice(-120);
     const tl=targetLang();
-    function _avatar(m,i){ if(isOfficial(m.uid) && !m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+TEAM_AV+'" alt=""></div>'; if(m.av) return '<div class="cav tapp" data-i="'+i+'"><img src="'+m.av+'" alt=""></div>'; var ini=(((m.pseudo||"R").trim()[0])||"R").toUpperCase(); return '<div class="cav tapp" data-i="'+i+'" style="background:'+avatarColor(m.uid||"x")+'">'+esc(ini)+'</div>'; }
+    function _avatar(m,i){ var a0=lfAv(m); if(isOfficial(m.uid) && !a0) return '<div class="cav tapp" data-i="'+i+'"><img src="'+TEAM_AV+'" alt=""></div>'; if(a0) return '<div class="cav tapp" data-i="'+i+'"><img src="'+a0+'" alt=""></div>'; var ini=(((m.pseudo||"R").trim()[0])||"R").toUpperCase(); return '<div class="cav tapp" data-i="'+i+'" style="background:'+avatarColor(m.uid||"x")+'">'+esc(ini)+'</div>'; }
     let prevDay="";
     function dayLabel(t){ var d=new Date(t||Date.now()), td=new Date(), yd=new Date(Date.now()-86400000); var k=x=>x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate(); if(k(d)===k(td)) return "Aujourd'hui"; if(k(d)===k(yd)) return "Hier"; return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); }
     // 12/11 : messages groupés façon Messenger (même auteur, < 3 min) : nom sur le 1er, photo sur le dernier
@@ -7812,7 +7813,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function vfIsFav(id){ return !!vfFavs()[id]; }
   function vfCapHtml(t){ return esc(t||"").replace(/(^|\s)(#[\wÀ-ÿ]+)/g,'$1<b class="vf-tag">$2</b>'); }
   function feedItemHtml(v,i){ var off=isOfficial(v.uid), name=(off&&v.uid===TEAM_UID)?TEAM_NAME:(v.pseudo||"Membre");
-    var av=v.av||(off&&v.uid===TEAM_UID?TEAM_AV:""), avh=av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>';
+    var av=lfAv(v)||(off&&v.uid===TEAM_UID?TEAM_AV:""), avh=av?'<img src="'+av+'" alt="">':'<span style="background:'+avatarColor(v.uid)+'">'+esc((name.trim()[0]||"R").toUpperCase())+'</span>';
     var canF=v.uid!==me.uid && v.uid!==TEAM_UID, fs=canF&&iFollow(v.uid)?"friend":"";
     return '<section class="vf-item" data-i="'+i+'" data-vid="'+esc(v.id)+'" data-uid="'+esc(v.uid||"")+'">'
       +'<video playsinline webkit-playsinline loop preload="none" data-src="'+esc(v.url)+'"'+(v.thumb?' poster="'+v.thumb+'"':'')+'></video>'
@@ -8055,7 +8056,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     $("vcClose").addEventListener("click", close);
     vfComUnsub = backend.watchVideoComments(v.id, function(cs){ var box=$("vcList"); if(!box) return; cs=cs.filter(function(c){ return !blocked.has(c.uid); });
       var n=cs.length; $("vcCount").textContent = n ? (fmtCount(n)+" commentaire"+(n>1?"s":"")) : "Commentaires";
-      box.innerHTML = n ? cs.map(function(c){ var av=c.av?'<span class="cav"><img src="'+c.av+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(c.uid)+'">'+esc(((c.pseudo||"R").trim()[0]||"R").toUpperCase())+'</span>';
+      box.innerHTML = n ? cs.map(function(c){ var ca=lfAv(c), av=ca?'<span class="cav"><img src="'+ca+'" alt=""></span>':'<span class="cav" style="background:'+avatarColor(c.uid)+'">'+esc(((c.pseudo||"R").trim()[0]||"R").toUpperCase())+'</span>';
         var au=c.uid===v.uid?' <em class="vc-au">Auteur</em>':'';
         return '<div class="vc-row">'+av+'<div class="vc-txt"><small class="vc-n">'+esc(c.pseudo||"Membre")+offBadge(c.uid)+au+'</small><span>'+esc(c.text||"")+'</span><small class="vc-t">'+esc(timeAgo(c.t))+' · <button class="vc-rep" data-p="'+esc(c.pseudo||"Membre")+'">Répondre</button></small></div>'+(canModerate(c.uid)?'<button class="vc-del" data-cid="'+esc(c.id)+'" aria-label="Supprimer">🗑️</button>':'')+'</div>'; }).join("")
         : '<div class="vc-empty"><b>Sois le premier à commenter</b><small>Dis ce que tu penses de cette session 🤙</small></div>';
@@ -8650,7 +8651,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         var mx=0, first=evMsgMaxT[eid]===undefined, e=want[eid];
         (list||[]).forEach(function(m){ var t=+m.t||0; if(t>mx) mx=t;
           if(!first && t>(evMsgMaxT[eid]||0) && t>(evMsgSeen[eid]||0) && m.uid!==me.uid && !blocked.has(m.uid) && !(chatMode==="evchat"&&curEvent&&curEvent.id===eid&&!document.hidden))
-            showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:m.av, sub:"📅 "+(e&&e.title||"Événement"), text:m.text||(m.img?"📷 Photo":""), onTap:function(){ goToCommunaute(); openEventChat(eid); } }); });
+            showMsgToast({ uid:m.uid, name:m.pseudo, avUrl:lfAv(m), sub:"📅 "+(e&&e.title||"Événement"), text:m.text||(m.img?"📷 Photo":""), onTap:function(){ goToCommunaute(); openEventChat(eid); } }); });
         evMsgMaxT[eid]=Math.max(evMsgMaxT[eid]||0,mx);
         recomputeBadges(); if(chatMode==="events") renderEventsList(); }); });
   }
