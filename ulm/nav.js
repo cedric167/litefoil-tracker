@@ -482,7 +482,7 @@ function flyObs(){ var F=FLY; if(!F || !F.pos || Date.now()-(F.obsT||0)<3000) re
   obsBox(p.lat-dl,p.lat+dl,p.lon-dl/k,p.lon+dl/k).forEach(function(o){ var q={ lat:o[0], lon:o[1] }, d=distM(p,q); if(d>look) return; var df=Math.abs(((brg(p,q)-F.trk+540)%360)-180); if(d>400 && df>20) return; if(alt-o[2]/FT<150 && (!worst || d<worst.d)) worst={ o:o, d:d }; });
   if(!worst){ ban.hidden=true; if(F.said) F.said.obs=0; return; }
   var s=Math.round(worst.d/gs), red=s<=30; ban.className="nv-ban "+(red?"r":"a"); ban.textContent="⚠️ "+T(red?"OBSTACLE DEVANT":"Obstacle devant")+" · "+T(OBS.t[worst.o[4]]||"Obstacle")+" · "+T("dans")+" "+s+" s · "+T("sommet à")+" "+nf(worst.o[2])+" ft"; ban.hidden=false;
-  if(F.said && (!F.said.obs || Date.now()-F.said.obs>(red?12000:40000))){ F.said.obs=Date.now(); say(T("Obstacle droit devant. Monte ou vire."), "", red); } }
+  if(F.said && (!F.said.obs || Date.now()-F.said.obs>(red?12000:40000))){ F.said.obs=Date.now(); say(T("Obstacle droit devant. Monte ou vire."), "obs.wav", red); } }
 function paintMap(){ var el=box&&box.querySelector("#nvMap"); if(!el || !window.L) return; killMap(); map=L.map(el,{ zoomControl:false }); tiles(map); var n=P.pts.length, ll=P.pts.map(function(p){ return [p.lat,p.lon]; });
   if(n>1){ L.polyline(ll,{ color:"#fff", weight:7, opacity:.9, interactive:false }).addTo(map); L.polyline(ll,{ color:"#c2379f", weight:4, interactive:false }).addTo(map); }
   P.pts.forEach(function(p,i){ var m=L.marker([p.lat,p.lon],{ icon:mkIcon(i,n,p.auto), draggable:!p.code && !p.auto }).addTo(map); m.on("dragend", function(){ var q=m.getLatLng(); p.lat=q.lat; p.lon=q.lng; savePlan(); recalc(); }); });
@@ -563,7 +563,7 @@ function sndPlay(src, urgent){ try{ if(!sndEl){ sndEl=new Audio(); sndEl.preload
     sndEl.muted=false; sndEl.src=src; var p=sndEl.play(); if(p && p.catch) p.catch(function(){}); }catch(e){} }
 function say(txt, key, urgent){ if(!FLY || !FLY.voice) return; if(urgent) alarm(3);
   var go=function(){ if(TTS_OK){ try{ var u2=new SpeechSynthesisUtterance(txt), i=A.lang(); u2.lang=i===1?"en-GB":i===2?"es-ES":"fr-FR"; u2.rate=1.02; speechSynthesis.cancel(); speechSynthesis.speak(u2); return; }catch(e){} }
-    if(key){ sndPlay("ulm/snd/"+(A.lang()===0?"fr":"en")+"-"+key+".mp3?v=1", urgent); } else if(!urgent) alarm(1); };
+    if(key){ sndPlay("ulm/snd/"+(A.lang()===0?"fr":"en")+"-"+(key.indexOf(".")>0 ? key : key+".mp3")+"?v=1", urgent); } else if(!urgent) alarm(1); };
   if(urgent) setTimeout(go, 750); else go(); }
 // Android donne une hauteur GPS brute (au-dessus de l'ellipsoïde) : on retire l'ondulation du géoïde (EGM96, grille 1°) pour avoir
 // l'altitude au-dessus de la mer, comme sur iPhone. Écart corrigé : environ 50 m (160 ft) en France.
