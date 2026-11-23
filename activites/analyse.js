@@ -15,6 +15,9 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ ret
 function lget(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } }
 function lset(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 
+// ---------- famille de sport : règle les seuils, les mesures affichées et le matériel proposé ----------
+function fam(a){ var t=((a.categoryName||"")+" "+(a.activityType||"")+" "+(a.name||"")).toLowerCase(); if(a.milieu==="air") return "air"; if(/foil/.test(t)) return "foil"; if(a.milieu==="mer") return "eau";
+  if(/v[ée]lo|bike|cycl|vtt/.test(t)) return "velo"; if(/course|running|jogging|trail|marche|walk|rando|hike|tapis|\brun\b/.test(t)) return "pied"; return "terre"; }
 // ---------- le tracé ramené à un point par seconde ----------
 function series(a){
   var P=(a.points||[]).filter(function(p){ return p && isFinite(+p.lat) && isFinite(+p.lon) && isFinite(+p.t); });
@@ -26,17 +29,17 @@ function series(a){
     if(T.length) d = useD ? (+P[i].dist)-(+P[0].dist) : d+hav(LA[LA.length-1],LO[LO.length-1],+P[i].lat,+P[i].lon);
     T.push(t); D.push(Math.max(d, D.length?D[D.length-1]:0)); LA.push(+P[i].lat); LO.push(+P[i].lon); AL.push(+P[i].alt||0); }
   var n=Math.floor(T[T.length-1]); if(n<20 || n>86400 || T.length<8) return null;
-  var lat=new Float64Array(n+1), lon=new Float64Array(n+1), dist=new Float32Array(n+1), j=0, s;
+  var lat=new Float64Array(n+1), lon=new Float64Array(n+1), dist=new Float32Array(n+1), alt=new Float32Array(n+1), j=0, s;
   for(s=0;s<=n;s++){ while(j<T.length-2 && T[j+1]<s) j++; var f=(s-T[j])/Math.max(1e-6,T[j+1]-T[j]); f=Math.max(0,Math.min(1,f));
-    lat[s]=LA[j]+(LA[j+1]-LA[j])*f; lon[s]=LO[j]+(LO[j+1]-LO[j])*f; dist[s]=D[j]+(D[j+1]-D[j])*f; }
+    lat[s]=LA[j]+(LA[j+1]-LA[j])*f; lon[s]=LO[j]+(LO[j+1]-LO[j])*f; dist[s]=D[j]+(D[j+1]-D[j])*f; alt[s]=AL[j]+(AL[j+1]-AL[j])*f; }
   var v=new Float32Array(n+1), om=new Float32Array(n+1), hd=new Float32Array(n+1), last=NaN;
-  var cap=a.milieu==="air" ? 450 : (a.milieu==="terre" ? 140 : 90), bad=0;
+  var fm=fam(a), cap=fm==="air" ? 450 : fm==="pied" ? 32 : fm==="velo" ? 110 : fm==="terre" ? 140 : 90, bad=0;
   for(s=0;s<=n;s++){ var a0=Math.max(0,s-2), b0=Math.min(n,s+2); v[s]=(dist[b0]-dist[a0])/Math.max(1,b0-a0)*3.6; if(v[s]>cap){ v[s]=s?v[s-1]:0; bad++; }
     if(hav(lat[a0],lon[a0],lat[b0],lon[b0])>4) last=brg(lat[a0],lon[a0],lat[b0],lon[b0]); hd[s]=last; }
   for(s=1;s<n;s++){ om[s]=(isNaN(hd[s-1])||isNaN(hd[s+1])) ? 0 : dAng(hd[s-1],hd[s+1])/2; }
   var o2=new Float32Array(n+1); for(s=1;s<n;s++) o2[s]=(om[s-1]+om[s]+om[s+1])/3;
   var hr=null; if(P.some(function(p){ return +p.hr>0; })){ hr=new Float32Array(n+1); var TH=[], VH=[]; P.forEach(function(p){ if(+p.hr>0){ TH.push(((+p.t)-(+P[0].t))/k); VH.push(+p.hr); } }); var q=0; for(s=0;s<=n;s++){ while(q<TH.length-1 && TH[q+1]<=s) q++; hr[s]=VH[q]; } }
-  return { n:n, lat:lat, lon:lon, dist:dist, v:v, om:o2, hr:hr, total:dist[n], cap:cap, bad:bad };
+  return { n:n, lat:lat, lon:lon, dist:dist, alt:alt, v:v, om:o2, hr:hr, total:dist[n], cap:cap, bad:bad };
 }
 
 // ---------- l'analyse ----------
@@ -59,7 +62,18 @@ function analyse(a){
         if(e-st>=8 && dd>=30 && dd/(e-st)*3.6<=S.cap){ var mx=0; for(i=st;i<=e;i++) if(S.v[i]>mx) mx=S.v[i]; o.runs.push({ a:st, b:e, dist:dd, dur:e-st, avg:dd/(e-st)*3.6, max:mx }); } else for(i=st;i<=e;i++) on[i]=0; st=-1; } }
     o.foilDist=0; o.foilTime=0; o.longest=null; o.fastest=null;
     o.runs.forEach(function(r,k){ r.n=k+1; o.foilDist+=r.dist; o.foilTime+=r.dur; if(!o.longest || r.dist>o.longest.dist) o.longest=r; if(!o.fastest || r.avg>o.fastest.avg) o.fastest=r; }); }
-  o.on=on;
+  o.on=on; o.fam=fam(a);
+  if(o.fam==="pied" || o.fam==="velo" || o.fam==="terre"){ var lim=o.fam==="velo" ? 4 : 1.5, mv2=0, dmv=0, runS=0, walkS=0;
+    for(s=1;s<=n;s++){ if(S.v[s]>=lim){ mv2++; dmv+=S.dist[s]-S.dist[s-1]; if(o.fam==="pied"){ if(S.v[s]>=6.5) runS++; else walkS++; } } }
+    o.mov=mv2; o.pace=dmv>50 ? mv2/(dmv/1000) : 0; o.runS=runS; o.walkS=walkS;
+    o.best60=0; for(s=0;s+60<=n;s++){ var b6=(S.dist[s+60]-S.dist[s])/60*3.6; if(b6>o.best60 && b6<=S.cap) o.best60=b6; }
+    // dénivelé : altitude lissée sur 15 s, on ne compte une montée ou une descente qu'au-delà de 2 m
+    var lo=1e9, hi=-1e9, sm=new Float32Array(n+1), acc=0, w=0; for(s=0;s<=n;s++){ acc+=S.alt[s]; w++; if(w>15){ acc-=S.alt[s-15]; w--; } sm[s]=acc/w; if(sm[s]<lo) lo=sm[s]; if(sm[s]>hi) hi=sm[s]; }
+    if(hi-lo>=3){ var ref=sm[0], up=0, dn=0; for(s=1;s<=n;s++){ var dz=sm[s]-ref; if(dz>=2){ up+=dz; ref=sm[s]; } else if(dz<=-2){ dn-=dz; ref=sm[s]; } } o.up=up; o.dn=dn; o.amin=lo; o.amax=hi; o.hasAlt=true; }
+    var st2=+a.steps||0; if(o.fam==="pied" && st2>50 && mv2>60){ o.cad=st2/(mv2/60); o.stride=S.total/st2; } }
+  // zones de fréquence cardiaque (si le cardio est enregistré point par point)
+  if(S.hr){ var mxh=0; for(s=0;s<=n;s++) if(S.hr[s]>mxh) mxh=S.hr[s]; var fc=+lget("lf_fcmax")||0; if(!(fc>=120 && fc<=230)) fc=Math.max(185, Math.round(mxh)); o.fcmax=fc; o.zones=[0,0,0,0,0];
+    for(s=0;s<=n;s++){ var pr=S.hr[s]/fc; if(pr>=0.5) o.zones[pr>=0.9?4:pr>=0.8?3:pr>=0.7?2:pr>=0.6?1:0]++; } }
   // virages (sports d'eau) : changement de cap soutenu d'au moins 70 degrés
   o.turns=[];
   if(o.milieu==="mer"){ var t0=-1, sum=0, low=0, sg=0;
@@ -107,17 +121,25 @@ function panel(a){ css(); cur=a; A=null; selTurn=0; mode="v"; var old=document.g
     if(A.foil && A.runs.length){ var pct=Math.round(A.foilDist/Math.max(1,S.total)*100);
       t+=tile("blue","Sur le foil",nf(A.foilDist/1000,2),"km")+tile("","En vol",pct,"%")+tile("","Temps en vol",dur(A.foilTime),"")
         +tile("","Runs",A.runs.length,"")+tile("hot","Plus long vol",nf(A.longest.dist/1000,2),"km")+tile("","Durée du plus long",dur(A.longest.dur),""); }
-    if(A.max5>1) t+=tile("hot","Meilleur 5 s",nf(A.max5,1),"km/h");
+    var pied=A.fam==="pied", land=pied || A.fam==="velo" || A.fam==="terre";
+    if(pied){ if(A.pace>0) t+=tile("blue","Allure moyenne",dur(A.pace),"/km"); if(A.best60>2) t+=tile("hot","Meilleure allure",dur(3600/A.best60),"/km sur 1 min"); }
+    else if(A.max5>1) t+=tile("hot","Meilleur 5 s",nf(A.max5,1),"km/h");
     if(A.bestSplit) t+=tile("blue","Meilleur km",dur(A.bestSplit.t),"/km");
+    if(land){ if(A.mov>0) t+=tile("","En mouvement",dur(A.mov),""); if(A.hasAlt){ t+=tile("hot","Dénivelé +",Math.round(A.up),"m")+tile("","Dénivelé −",Math.round(A.dn),"m")+tile("","Altitude",Math.round(A.amin)+" à "+Math.round(A.amax),"m"); }
+      if(A.cad){ t+=tile("blue","Cadence",Math.round(A.cad),"pas/min")+tile("","Foulée",nf(A.stride,2),"m"); }
+      if(pied && A.runS+A.walkS>60) t+=tile("","Course / marche",Math.round(A.runS/(A.runS+A.walkS)*100),"% course"); }
     if(A.turns.length){ t+=tile("","Virages",A.turns.length,A.foil?("dont "+A.made+" réussis"):"")+tile("","Tours complets 360°",A.n360,"")+tile("hot","Force max en virage",nf(A.gmax,2),"g"); }
     if(t) h+='<div class="an-h">'+(A.foil?"Analyse du vol":"Analyse de la sortie")+'</div><div class="statgrid" style="margin-top:10px">'+t+'</div>';
-    h+='<div class="an-h">'+(S.hr?"Vitesse et cardio":"Vitesse")+'</div><div class="an-card">'+(S.hr?'<div class="an-gear" style="margin-bottom:10px"><button type="button" class="an-chip on" data-md="v">Vitesse</button><button type="button" class="an-chip" data-md="h">Cardio</button></div>':'')+'<div class="an-read"><b id="anRd">Glisse le doigt sur la courbe</b><span id="anRd2"></span></div><canvas id="anChart"></canvas>'
+    var tabs=(S.hr || A.hasAlt);
+    h+='<div class="an-h">Courbes</div><div class="an-card">'+(tabs?'<div class="an-gear" style="margin-bottom:10px"><button type="button" class="an-chip on" data-md="v">'+(pied?"Allure":"Vitesse")+'</button>'+(S.hr?'<button type="button" class="an-chip" data-md="h">Cardio</button>':'')+(A.hasAlt?'<button type="button" class="an-chip" data-md="a">Altitude</button>':'')+'</div>':'')+'<div class="an-read"><b id="anRd">Glisse le doigt sur la courbe</b><span id="anRd2"></span></div><canvas id="anChart"></canvas>'
       +(A.foil && A.runs.length ? '<div class="an-leg"><span><i style="background:#f5b800"></i>en vol</span><span><i style="background:#2aa7ff"></i>hors vol</span></div>' : '')+'</div>';
     if(A.foil && A.runs.length){ h+='<div class="an-h">Runs</div><div class="an-runs">'+A.runs.map(function(r){ return '<button type="button" class="an-run" data-run="'+r.n+'"><b>Run '+r.n+(r===A.longest?'<em>Plus long</em>':'')+(r===A.fastest?'<em class="f">Plus rapide</em>':'')+'</b><div><span><strong>'+dur(r.dur)+'</strong>durée</span><span><strong>'+nf(r.dist/1000,2)+'</strong>km</span><span><strong>'+nf(r.avg,1)+'</strong>km/h</span></div></button>'; }).join("")+'</div>'; }
     if(A.turns.length) h+='<div class="an-h">Virages</div><div class="an-card"><div class="an-nav"><button type="button" id="anTp" aria-label="Virage précédent">‹</button><div id="anTx"></div><button type="button" id="anTn" aria-label="Virage suivant">›</button></div></div>';
     if(A.splits.length>1){ var mxT=0; A.splits.forEach(function(p){ if(p.t>mxT) mxT=p.t; });
       h+='<div class="an-h">Kilomètre par kilomètre</div><div class="an-card"><div class="an-km">'+A.splits.slice(0,60).map(function(p){ return '<u>km '+p.km+'</u><i'+(p===A.bestSplit?' class="b"':'')+' style="width:'+Math.max(6,Math.round(p.t/mxT*100))+'%"></i><b>'+dur(p.t)+'</b>'; }).join("")+'</div></div>'; }
   }
+  if(A && A.zones){ var ZN=["Zone 1 · échauffement","Zone 2 · facile","Zone 3 · aérobie","Zone 4 · seuil","Zone 5 · maximum"], ZC=["#9aa7ad","#2aa7ff","#2bb673","#f5a300","#e0344f"], zt=A.zones.reduce(function(x,y){ return x+y; },0)||1;
+    h+='<div class="an-h">Zones de fréquence cardiaque</div><div class="an-card"><div class="an-km" style="grid-template-columns:auto 1fr auto auto">'+[4,3,2,1,0].map(function(z){ return '<u>'+ZN[z]+'</u><i style="background:'+ZC[z]+';width:'+Math.max(2,Math.round(A.zones[z]/zt*100))+'%"></i><b>'+dur(A.zones[z])+'</b><u>'+Math.round(A.zones[z]/zt*100)+' %</u>'; }).join("")+'</div><p class="an-note" style="margin:10px 0 0">Zones calculées sur une fréquence maximale de '+A.fcmax+' bpm. <a href="#" id="anFc" style="color:#148a90;font-weight:700">Changer</a></p></div>'; }
   h+='<div class="an-h">Météo et lieu</div><div class="an-card"><div class="an-wx" id="anWx"><span style="color:var(--muted,#6a7a80);font-size:13px">Recherche de la météo de cette sortie…</span></div></div>';
   h+='<div class="an-h">Mon matériel</div><div class="an-card"><div class="an-gear" id="anGear"></div><div id="anGearForm"></div></div>';
   if(A && (A.foil || A.turns.length)) h+='<p class="an-note">Vol, runs et virages sont estimés à partir du GPS du téléphone ou de la montre : ce sont des repères, pas des mesures de capteur.</p>';
@@ -126,6 +148,7 @@ function panel(a){ css(); cur=a; A=null; selTurn=0; mode="v"; var old=document.g
     box.querySelectorAll("[data-md]").forEach(function(b){ b.onclick=function(){ mode=b.getAttribute("data-md"); box.querySelectorAll("[data-md]").forEach(function(x){ x.classList.toggle("on", x===b); }); chartDraw(); if(cs>=0) setCursor(cs); }; });
     chartInit(); box.querySelectorAll("[data-run]").forEach(function(b){ b.onclick=function(){ var r=A.runs[+b.getAttribute("data-run")-1], onb=b.classList.contains("on"); box.querySelectorAll(".an-run.on").forEach(function(x){ x.classList.remove("on"); }); if(onb){ hl(null); fitAll(); } else { b.classList.add("on"); hl(r); setCursor(r.a); } }; });
     if(A.turns.length){ document.getElementById("anTp").onclick=function(){ turnShow(selTurn-1, true); }; document.getElementById("anTn").onclick=function(){ turnShow(selTurn+1, true); }; turnShow(0, false); } }
+  { var fcb=document.getElementById("anFc"); if(fcb) fcb.onclick=function(e){ e.preventDefault(); var v=prompt("Ta fréquence cardiaque maximale (bpm) :", String(A.fcmax)); if(v==null) return; v=Math.round(+v); if(v>=120 && v<=230){ lset("lf_fcmax", v); panel(a); if(MAP) mapApply(MAP, a); } }; }
   gearPaint(); weather(a);
 }
 function turnShow(k, move){ if(!A || !A.turns.length) return; k=Math.max(0,Math.min(A.turns.length-1,k)); selTurn=k; var t=A.turns[k], full=t.angle>=300;
@@ -137,13 +160,13 @@ var cv=null, cx=null, CW=0, CH=0, cs=-1;
 function chartInit(){ cv=document.getElementById("anChart"); if(!cv) return; var dpr=Math.min(2,window.devicePixelRatio||1); CW=cv.clientWidth||320; CH=120; cv.width=Math.round(CW*dpr); cv.height=Math.round(CH*dpr); cx=cv.getContext("2d"); cx.setTransform(dpr,0,0,dpr,0,0); cs=-1; chartDraw();
   var mv=function(e){ var r=cv.getBoundingClientRect(), x=((e.touches?e.touches[0].clientX:e.clientX)-r.left)/Math.max(1,r.width); setCursor(Math.round(Math.max(0,Math.min(1,x))*A.S.n)); if(e.cancelable) e.preventDefault(); };
   cv.onpointerdown=function(e){ try{ cv.setPointerCapture(e.pointerId); }catch(x){} mv(e); }; cv.onpointermove=function(e){ if(e.buttons || e.pointerType==="touch") mv(e); }; }
-function chartDraw(){ if(!cx || !A) return; var S=A.S, n=S.n, mx=1, mn=0, x, s, Y=(mode==="h" && S.hr) ? S.hr : S.v; for(s=0;s<=n;s++) if(Y[s]>mx) mx=Y[s]; mx*=1.08; if(Y!==S.v){ mn=1e9; for(s=0;s<=n;s++) if(Y[s]>0 && Y[s]<mn) mn=Y[s]; mn=Math.max(0,mn-8); } cx.clearRect(0,0,CW,CH);
+function chartDraw(){ if(!cx || !A) return; var S=A.S, n=S.n, mx=1, mn=0, x, s, Y=(mode==="h" && S.hr) ? S.hr : (mode==="a" ? S.alt : S.v); for(s=0;s<=n;s++) if(Y[s]>mx) mx=Y[s]; mx*=1.08; if(Y!==S.v){ mn=1e9; for(s=0;s<=n;s++) if(Y[s]>0 && Y[s]<mn) mn=Y[s]; mn=Math.max(0,mn-8); } cx.clearRect(0,0,CW,CH);
   var seg=function(col, test){ cx.strokeStyle=col; cx.lineWidth=1.8; cx.lineJoin="round"; cx.beginPath(); var pen=false; for(x=0;x<CW;x++){ var s0=Math.round(x/(CW-1)*n), y=CH-4-((Y[s0]-mn)/Math.max(1,mx-mn))*(CH-10); if(test(s0)){ if(pen) cx.lineTo(x,y); else { cx.moveTo(x,y); pen=true; } } else pen=false; } cx.stroke(); };
   cx.strokeStyle="rgba(0,0,0,.08)"; cx.lineWidth=1; cx.beginPath(); cx.moveTo(0,CH-4); cx.lineTo(CW,CH-4); cx.stroke();
-  if(Y!==S.v) seg("#e0344f", function(){ return true; }); else if(A.foil && A.runs.length){ seg("#2aa7ff", function(i){ return !A.on[i]; }); seg("#f5b800", function(i){ return !!A.on[i]; }); } else seg("#148a90", function(){ return true; });
+  if(Y!==S.v) seg(mode==="a" ? "#7a5cd6" : "#e0344f", function(){ return true; }); else if(A.foil && A.runs.length){ seg("#2aa7ff", function(i){ return !A.on[i]; }); seg("#f5b800", function(i){ return !!A.on[i]; }); } else seg("#148a90", function(){ return true; });
   if(cs>=0){ var px=cs/n*(CW-1); cx.strokeStyle="#ff2d8f"; cx.lineWidth=1.5; cx.beginPath(); cx.moveTo(px,0); cx.lineTo(px,CH); cx.stroke(); } }
 function setCursor(s){ if(!A) return; var S=A.S; cs=Math.max(0,Math.min(S.n,s)); chartDraw();
-  var r1=document.getElementById("anRd"), r2=document.getElementById("anRd2"); if(r1) r1.textContent=nf(S.v[cs],1)+" km/h"+(S.hr && S.hr[cs]>0 ? " · "+Math.round(S.hr[cs])+" bpm" : ""); if(r2) r2.textContent=dur(cs)+" · "+nf(S.dist[cs]/1000,2)+" km"+(A.foil && A.runs.length ? (A.on[cs]?" · en vol":" · hors vol") : "");
+  var r1=document.getElementById("anRd"), r2=document.getElementById("anRd2"); if(r1) r1.textContent=((A.fam==="pied" && S.v[cs]>=2) ? dur(3600/S.v[cs])+" /km" : nf(S.v[cs],1)+" km/h")+(S.hr && S.hr[cs]>0 ? " · "+Math.round(S.hr[cs])+" bpm" : "")+(A.hasAlt ? " · "+Math.round(S.alt[cs])+" m" : ""); if(r2) r2.textContent=dur(cs)+" · "+nf(S.dist[cs]/1000,2)+" km"+(A.foil && A.runs.length ? (A.on[cs]?" · en vol":" · hors vol") : "");
   if(MAP && window.maplibregl){ if(!cursor){ var el=document.createElement("div"); el.className="an-mc"; cursor=new maplibregl.Marker({element:el}); } cursor.setLngLat([S.lon[cs],S.lat[cs]]).addTo(MAP); } }
 
 // ---------- carte ----------
@@ -189,22 +212,28 @@ function weather(a){ var box=document.getElementById("anWx"); if(!box) return; v
 }
 
 // ---------- mon matériel ----------
-var CAT=null, TYPES=["Planche","Aile avant","Mât","Stabilisateur","Aile (wing, kite, voile)","Batterie","Autre"];
-function gearPaint(){ var box=document.getElementById("anGear"); if(!box || !cur) return; var G=lget("lf_garage")||[], M=lget("lf_sess_gear")||{}, mine=M[String(cur.id)]||[];
-  box.innerHTML=G.map(function(g){ return '<button type="button" class="an-chip'+(mine.indexOf(g.id)>=0?" on":"")+'" data-g="'+esc(g.id)+'">'+esc(g.name)+'<span style="font-weight:600;color:var(--muted,#6a7a80)"> · '+esc(g.type)+'</span></button>'; }).join("")+'<button type="button" class="an-chip add" id="anGAdd">+ Ajouter du matériel</button>'
-    +(G.length?'':'<div style="flex-basis:100%;font-size:12.5px;color:var(--muted,#6a7a80)">Enregistre ta planche, ton aile ou ton mât une fois : tu les rattaches ensuite à chaque sortie d\'un seul geste.</div>');
-  box.querySelectorAll("[data-g]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-g"), M2=lget("lf_sess_gear")||{}, k=String(cur.id), l=M2[k]||[], i=l.indexOf(id); if(i>=0) l.splice(i,1); else l.push(id); M2[k]=l; lset("lf_sess_gear",M2); gearPaint(); };
+var CAT=null, GT={ eau:["Planche","Aile avant","Mât","Stabilisateur","Aile (wing, kite, voile)","Batterie","Autre"], pied:["Chaussures","Montre","Ceinture cardio","Sac, gilet","Autre"], velo:["Vélo","Roues","Pneus","Chaussures","Compteur, capteur","Autre"], air:["Aéronef","Casque radio","Autre"], terre:["Chaussures","Matériel","Autre"] };
+function gfam(){ var f=cur ? fam(cur) : "eau"; return (f==="foil" || f==="eau") ? "eau" : f; }
+var GHELP={ eau:"Enregistre ta planche, ton aile ou ton mât une fois : tu les rattaches ensuite à chaque sortie d'un seul geste.", pied:"Enregistre tes chaussures une fois : tu les rattaches à chaque sortie, et l'appli compte leurs kilomètres.", velo:"Enregistre ton vélo une fois : tu le rattaches à chaque sortie, et l'appli compte ses kilomètres.", air:"Enregistre ton appareil une fois : tu le rattaches ensuite à chaque vol.", terre:"Enregistre ton matériel une fois : tu le rattaches ensuite à chaque sortie." };
+function gearPaint(){ var box=document.getElementById("anGear"); if(!box || !cur) return; var gf=gfam(), M=lget("lf_sess_gear")||{}, mine=M[String(cur.id)]||[], KM=lget("lf_sess_km")||{};
+  // on ne montre que le matériel de ce sport (l'ancien matériel, sans famille, est celui du foil), plus celui déjà rattaché à cette sortie
+  var G=(lget("lf_garage")||[]).filter(function(g){ return (g.fam||"eau")===gf || mine.indexOf(g.id)>=0; });
+  var use=function(id){ var km=0, n=0; for(var k in M){ if((M[k]||[]).indexOf(id)>=0){ n++; km+=(+KM[k]||0)/1000; } } return n ? ' · '+(km>=1?Math.round(km)+' km, ':'')+n+(n>1?' sorties':' sortie') : ''; };
+  box.innerHTML=G.map(function(g){ return '<button type="button" class="an-chip'+(mine.indexOf(g.id)>=0?" on":"")+'" data-g="'+esc(g.id)+'">'+esc(g.name)+'<span style="font-weight:600;color:var(--muted,#6a7a80)"> · '+esc(g.type)+use(g.id)+'</span></button>'; }).join("")+'<button type="button" class="an-chip add" id="anGAdd">+ Ajouter du matériel</button>'
+    +(G.length?'':'<div style="flex-basis:100%;font-size:12.5px;color:var(--muted,#6a7a80)">'+esc(GHELP[gf]||GHELP.terre)+'</div>');
+  box.querySelectorAll("[data-g]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-g"), M2=lget("lf_sess_gear")||{}, k=String(cur.id), l=M2[k]||[], i=l.indexOf(id); if(i>=0) l.splice(i,1); else l.push(id); M2[k]=l; lset("lf_sess_gear",M2); kmNote(); gearPaint(); };
     var tm=null; b.oncontextmenu=function(e){ e.preventDefault(); gearDel(b.getAttribute("data-g")); }; b.ontouchstart=function(){ tm=setTimeout(function(){ gearDel(b.getAttribute("data-g")); },700); }; b.ontouchend=b.ontouchmove=function(){ clearTimeout(tm); }; });
   document.getElementById("anGAdd").onclick=gearForm; }
+function kmNote(){ if(!cur) return; var K=lget("lf_sess_km")||{}; K[String(cur.id)]=Math.round(+cur.distanceM||0); lset("lf_sess_km",K); }
 function gearDel(id){ var G=lget("lf_garage")||[], g=G.filter(function(x){ return x.id===id; })[0]; if(!g || !confirm("Retirer « "+g.name+" » de ton matériel ?")) return; lset("lf_garage", G.filter(function(x){ return x.id!==id; })); gearPaint(); }
-function gearForm(){ var f=document.getElementById("anGearForm"); if(!f) return; f.innerHTML='<div class="an-form"><select id="anGT">'+TYPES.map(function(t){ return '<option>'+t+'</option>'; }).join("")+'</select><input id="anGN" maxlength="40" list="anGL" placeholder="Nom ou modèle (ex. aile avant 1500)"><datalist id="anGL"></datalist><input id="anGD" maxlength="60" placeholder="Détail facultatif (surface, taille, année…)"><div><button type="button" class="x" id="anGX">Annuler</button><button type="button" id="anGS">Enregistrer</button></div></div>';
-  var fill=function(){ var dl=document.getElementById("anGL"), tp=document.getElementById("anGT"); if(!dl || !CAT) return; dl.innerHTML=CAT.filter(function(c){ return c[0]===tp.value; }).map(function(c){ return '<option value="'+esc(c[1])+'">'; }).join(""); };
+function gearForm(){ var f=document.getElementById("anGearForm"); if(!f) return; f.innerHTML='<div class="an-form"><select id="anGT">'+(GT[gfam()]||GT.terre).map(function(t){ return '<option>'+t+'</option>'; }).join("")+'</select><input id="anGN" maxlength="40" list="anGL" placeholder="Nom ou modèle"><datalist id="anGL"></datalist><input id="anGD" maxlength="60" placeholder="Détail facultatif (surface, taille, année…)"><div><button type="button" class="x" id="anGX">Annuler</button><button type="button" id="anGS">Enregistrer</button></div></div>';
+  var fill=function(){ var dl=document.getElementById("anGL"), tp=document.getElementById("anGT"); if(!dl || !CAT) return; dl.innerHTML=(gfam()!=="eau" ? [] : CAT).filter(function(c){ return c[0]===tp.value; }).map(function(c){ return '<option value="'+esc(c[1])+'">'; }).join(""); };
   if(CAT) fill(); else fetch("../data/materiel.json?v=1").then(function(r){ return r.json(); }).then(function(j){ CAT=(j && j.l)||[]; fill(); }).catch(function(){ CAT=[]; });
   document.getElementById("anGT").onchange=fill;
   document.getElementById("anGX").onclick=function(){ f.innerHTML=""; };
   document.getElementById("anGS").onclick=function(){ var nm=document.getElementById("anGN").value.trim(); if(!nm){ document.getElementById("anGN").focus(); return; } var G=lget("lf_garage")||[], id="g"+Date.now().toString(36);
-    G.push({ id:id, type:document.getElementById("anGT").value, name:nm.slice(0,40), detail:document.getElementById("anGD").value.trim().slice(0,60) }); lset("lf_garage",G);
-    var M=lget("lf_sess_gear")||{}, k=String(cur.id); (M[k]=M[k]||[]).push(id); lset("lf_sess_gear",M); f.innerHTML=""; gearPaint(); }; }
+    G.push({ id:id, fam:gfam(), type:document.getElementById("anGT").value, name:nm.slice(0,40), detail:document.getElementById("anGD").value.trim().slice(0,60) }); lset("lf_garage",G);
+    var M=lget("lf_sess_gear")||{}, k=String(cur.id); (M[k]=M[k]||[]).push(id); lset("lf_sess_gear",M); kmNote(); f.innerHTML=""; gearPaint(); }; }
 
 window.LFAna={ panel:panel, map:mapApply, analyse:analyse };
 })();
