@@ -46,7 +46,7 @@
 <script>
 (async function(){
   const $=(i)=>document.getElementById(i), msg=(t)=>{ $("msg").textContent=t; $("msg").hidden=!t; };
-  const KEY=String(window.LF_GMAPS_KEY||""), demo=/[?&]demo=1/.test(location.search);
+  let KEY=String(window.LF_GMAPS_KEY||""), flat=false; const demo=/[?&]demo=1/.test(location.search);
   let g=null; try{ g=JSON.parse(sessionStorage.getItem("lf.fly3")||"null"); }catch(e){}
   // parcours d'un suivi en direct (vol d'un autre membre) : lu sur le serveur Lite Foil
   const liveSid=(location.search.match(/[?&]live=([A-Za-z0-9_-]+)/)||[])[1];
@@ -70,7 +70,9 @@
   const back=()=>{ try{ if(history.length>1) history.back(); else location.replace("./"); }catch(e){ location.replace("./"); } };
   $("bx").onclick=back;
   if(!g || !Array.isArray(g.pts) || g.pts.length<2){ msg("Aucun vol à rejouer. Ouvre un vol dans Activités, puis « 3D photoréaliste »."); return; }
-  if(!KEY && !demo){ msg("La vue 3D photoréaliste n'est pas encore activée."); return; }
+  // Google refuse-t-il la clé (comptes européens) ? Dans ce cas : globe satellite sans relief, plutôt qu'un écran noir
+  if(KEY){ msg("Chargement de la vue 3D…"); try{ const r0=await Promise.race([fetch("https://tile.googleapis.com/v1/3dtiles/root.json?key="+encodeURIComponent(KEY)), new Promise((res,rej)=>setTimeout(rej,12000))]); if(!r0.ok){ KEY=""; flat=true; } }catch(e){ KEY=""; flat=true; } }
+  if(!KEY && !demo && !flat){ msg("La vue 3D photoréaliste n'est pas encore activée."); return; }
   const P=g.pts.filter(p=>p && isFinite(+p.lat) && isFinite(+p.lon)).map(p=>({ lat:+p.lat, lon:+p.lon, alt:+p.alt||0, speed:+p.speed||0, dist:+p.dist||0, t:+p.t||0 })), N=P.length;
   // sport à terre : le tracé est posé sur le sol, un point remplace l'avion
   const GROUND=(g.milieu==="terre"); P.forEach(p=>{ p.a0=p.alt; });
@@ -109,6 +111,7 @@
               const w2=Math.max(1,Math.round(N/60)), cp=P.map(p=>p.alt); if(!GROUND) for(let i=0;i<N;i++){ let s2=0,c2=0; for(let j=Math.max(0,i-w2);j<=Math.min(N-1,i+w2);j++){ s2+=cp[j]; c2++; } P[i].alt=Math.max(raw[i]+2,s2/c2); }
               off=0; est=!GROUND; } } }catch(e){} } }
     msg(""); }
+  if(flat){ if(GROUND) P.forEach(p=>{ p.alt=2; }); msg("Vue satellite sans relief : la 3D photoréaliste de Google n'est plus proposée en Europe."); setTimeout(()=>msg(""), 6000); }
   P.forEach(p=>{ p.c=C.Cartesian3.fromDegrees(p.lon,p.lat,p.alt+off); });
 
   // ----- avion : maillage dessiné par le code, emballé en fichier glTF binaire -----
