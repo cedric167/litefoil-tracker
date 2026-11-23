@@ -30,12 +30,13 @@ function series(a){
   for(s=0;s<=n;s++){ while(j<T.length-2 && T[j+1]<s) j++; var f=(s-T[j])/Math.max(1e-6,T[j+1]-T[j]); f=Math.max(0,Math.min(1,f));
     lat[s]=LA[j]+(LA[j+1]-LA[j])*f; lon[s]=LO[j]+(LO[j+1]-LO[j])*f; dist[s]=D[j]+(D[j+1]-D[j])*f; }
   var v=new Float32Array(n+1), om=new Float32Array(n+1), hd=new Float32Array(n+1), last=NaN;
-  for(s=0;s<=n;s++){ var a0=Math.max(0,s-2), b0=Math.min(n,s+2); v[s]=(dist[b0]-dist[a0])/Math.max(1,b0-a0)*3.6;
+  var cap=a.milieu==="air" ? 450 : (a.milieu==="terre" ? 140 : 90), bad=0;
+  for(s=0;s<=n;s++){ var a0=Math.max(0,s-2), b0=Math.min(n,s+2); v[s]=(dist[b0]-dist[a0])/Math.max(1,b0-a0)*3.6; if(v[s]>cap){ v[s]=s?v[s-1]:0; bad++; }
     if(hav(lat[a0],lon[a0],lat[b0],lon[b0])>4) last=brg(lat[a0],lon[a0],lat[b0],lon[b0]); hd[s]=last; }
   for(s=1;s<n;s++){ om[s]=(isNaN(hd[s-1])||isNaN(hd[s+1])) ? 0 : dAng(hd[s-1],hd[s+1])/2; }
   var o2=new Float32Array(n+1); for(s=1;s<n;s++) o2[s]=(om[s-1]+om[s]+om[s+1])/3;
   var hr=null; if(P.some(function(p){ return +p.hr>0; })){ hr=new Float32Array(n+1); var TH=[], VH=[]; P.forEach(function(p){ if(+p.hr>0){ TH.push(((+p.t)-(+P[0].t))/k); VH.push(+p.hr); } }); var q=0; for(s=0;s<=n;s++){ while(q<TH.length-1 && TH[q+1]<=s) q++; hr[s]=VH[q]; } }
-  return { n:n, lat:lat, lon:lon, dist:dist, v:v, om:o2, hr:hr, total:dist[n] };
+  return { n:n, lat:lat, lon:lon, dist:dist, v:v, om:o2, hr:hr, total:dist[n], cap:cap, bad:bad };
 }
 
 // ---------- l'analyse ----------
@@ -44,7 +45,7 @@ function analyse(a){
   var txt=((a.categoryName||"")+" "+(a.activityType||"")+" "+(a.name||"")).toLowerCase(), n=S.n, s, i;
   var o={ S:S, foil:/foil/.test(txt), milieu:a.milieu||"mer" };
   // meilleur 5 secondes
-  o.max5=0; for(s=0;s+5<=n;s++){ var x=(S.dist[s+5]-S.dist[s])/5*3.6; if(x>o.max5) o.max5=x; }
+  o.max5=0; for(s=0;s+5<=n;s++){ var x=(S.v[s]+S.v[s+1]+S.v[s+2]+S.v[s+3]+S.v[s+4])/5; if(x>o.max5) o.max5=x; }
   // temps au kilomètre
   o.splits=[]; { var km=1, prev=0; for(s=1;s<=n;s++){ while(S.dist[s]>=km*1000){ var f=(km*1000-S.dist[s-1])/Math.max(1e-6,S.dist[s]-S.dist[s-1]), tc=s-1+f; o.splits.push({ km:km, t:tc-prev, at:Math.round(tc) }); prev=tc; km++; } } }
   o.bestSplit=null; o.splits.forEach(function(p){ if(!o.bestSplit || p.t<o.bestSplit.t) o.bestSplit=p; });
@@ -55,7 +56,7 @@ function analyse(a){
     for(s=0;s<=n;s++) on[s]=S.v[s]>=o.thr ? 1 : 0;
     var g=0; for(s=1;s<=n;s++){ if(!on[s]) g++; else { if(g>0 && g<=3 && s-g-1>=0 && on[s-g-1]) for(i=s-g;i<s;i++) on[i]=1; g=0; } } // trous de 3 s au plus
     var st=-1; for(s=0;s<=n+1;s++){ var f1=s<=n && on[s]; if(f1 && st<0) st=s; if(!f1 && st>=0){ var e=s-1, dd=S.dist[e]-S.dist[st];
-        if(e-st>=8 && dd>=30){ var mx=0; for(i=st;i<=e;i++) if(S.v[i]>mx) mx=S.v[i]; o.runs.push({ a:st, b:e, dist:dd, dur:e-st, avg:dd/(e-st)*3.6, max:mx }); } else for(i=st;i<=e;i++) on[i]=0; st=-1; } }
+        if(e-st>=8 && dd>=30 && dd/(e-st)*3.6<=S.cap){ var mx=0; for(i=st;i<=e;i++) if(S.v[i]>mx) mx=S.v[i]; o.runs.push({ a:st, b:e, dist:dd, dur:e-st, avg:dd/(e-st)*3.6, max:mx }); } else for(i=st;i<=e;i++) on[i]=0; st=-1; } }
     o.foilDist=0; o.foilTime=0; o.longest=null; o.fastest=null;
     o.runs.forEach(function(r,k){ r.n=k+1; o.foilDist+=r.dist; o.foilTime+=r.dur; if(!o.longest || r.dist>o.longest.dist) o.longest=r; if(!o.fastest || r.avg>o.fastest.avg) o.fastest=r; }); }
   o.on=on;
@@ -64,7 +65,7 @@ function analyse(a){
   if(o.milieu==="mer"){ var t0=-1, sum=0, low=0, sg=0;
     var close=function(e){ if(t0<0) return; var b=e, ang=sum, sp=(S.dist[b]-S.dist[t0])/Math.max(1,b-t0)*3.6, gm=0, q;
       for(q=t0;q<=b;q++){ var gg=S.v[q]/3.6*Math.abs(S.om[q])*rad/9.81; if(gg>gm) gm=gg; }
-      if(Math.abs(ang)>=70 && sp>=6 && (!o.foil || on[t0])) o.turns.push({ a:Math.max(0,t0-1), b:Math.min(n,b+1), angle:Math.abs(ang), dir:ang>0?"D":"G", spd:sp, g:gm, made:!o.foil || !!on[Math.min(n,b+3)] });
+      if(Math.abs(ang)>=70 && sp>=6 && sp<=S.cap && gm<=1.5 && (!o.foil || on[t0])) o.turns.push({ a:Math.max(0,t0-1), b:Math.min(n,b+1), angle:Math.abs(ang), dir:ang>0?"D":"G", spd:sp, g:gm, made:!o.foil || !!on[Math.min(n,b+3)] });
       t0=-1; sum=0; low=0; };
     for(s=1;s<n;s++){ var w=S.om[s], aw=Math.abs(w), sn=w>0?1:-1;
       if(t0<0){ if(aw>=7 && S.v[s]>5){ t0=s; sum=w; sg=sn; low=0; } }

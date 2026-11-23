@@ -9580,6 +9580,13 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
       +'<span class="ps-inf"><span class="ps-t">'+sessIcon(o.sport||o.cat)+'<b>'+esc(sessName(o))+'</b>'+(mine&&!o.shared?'<i>🔒</i>':'')+'<small>'+dt.toLocaleDateString("fr-FR", same?{day:"numeric",month:"short"}:{day:"numeric",month:"short",year:"numeric"})+'</small></span>'
       +'<span class="ps-k"><span><b>'+(km>=10?km.toFixed(0):km.toFixed(1).replace(".",","))+' km</b>Distance</span><span><b>'+pfDur(o.dur)+'</b>Durée</span>'+(+o.vmax?'<span><b>'+String(o.vmax).replace(".",",")+' km/h</b>Vitesse max</span>':'')+'</span></span></button>'; }
   function pfDur(sec){ sec=+sec||0; var h=Math.floor(sec/3600), m=Math.round((sec%3600)/60); return h? h+" h "+String(m).padStart(2,"0") : m+" min"; }
+  // analyse, météo et matériel joints à une sortie partagée (préparés par la page Activités)
+  function sessExtraHtml(o){ var h="", a=o.an, w=o.wx, D=["N","NE","E","SE","S","SO","O","NO"], mm=function(s){ s=Math.round(+s||0); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); };
+    if(a && typeof a==="object"){ if(+a.fd>0) h+='<div><span>🪽 Sur le foil</span><b>'+(a.fd/1000).toFixed(2).replace(".",",")+' km'+(o.d>0?' · '+Math.round(a.fd/o.d*100)+' %':'')+'</b></div>'; if(+a.runs>0) h+='<div><span>🚀 Runs</span><b>'+Math.round(a.runs)+(a.ft>0?' · '+mm(a.ft)+' en vol':'')+'</b></div>';
+      if(+a.turns>0) h+='<div><span>↩️ Virages</span><b>'+Math.round(a.turns)+(a.n360>0?' · '+Math.round(a.n360)+' tours 360°':'')+'</b></div>'; if(+a.max5>0) h+='<div><span>⚡ Meilleur 5 s</span><b>'+String((+a.max5).toFixed(1)).replace(".",",")+' km/h</b></div>'; }
+    if(w && w.ok) h+='<div><span>💨 Vent</span><b>'+Math.round(+w.w||0)+' nds '+D[Math.round((+w.d||0)/45)%8]+' · rafales '+Math.round(+w.g||0)+'</b></div>';
+    if(Array.isArray(o.gear) && o.gear.length) h+='<div><span>🧰 Matériel</span><b style="font-weight:700;text-align:right">'+o.gear.slice(0,8).map(function(x){ return esc(String(x).slice(0,70)); }).join("<br>")+'</b></div>';
+    return h ? '<div class="rc-how" style="margin-top:10px">'+h+'</div>' : ""; }
   function openSessDetail(o, mine, raw, who){ var g=gOverlay(); g.hidden=false; var dt=new Date(o.t);
     g.innerHTML='<div class="gcard"><div class="gc-head"><button class="gc-x" id="sdClose">✕</button><b>'+sessIcon(o.sport||o.cat)+' '+esc(o.cat||"Session")+'</b><span></span></div><div class="gc-body">'
       +(sessMapHtml(o.trk, 600, 380) ? '<div class="ps-det">'+sessMapHtml(o.trk, 600, 380)+'</div>' : '')
@@ -9588,6 +9595,7 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
       +(o.steps?'<div><span>👣 Pas</span><b>'+o.steps.toLocaleString("fr-FR")+(o.dur?' · '+Math.round(o.steps/(o.dur/60))+' /min':'')+'</b></div>':'')
       +(o.nJ?'<div><span>🦘 Sauts</span><b>'+o.nJ+'</b></div><div><span>⬆️ Meilleure hauteur</span><b>'+Math.round((o.jH||0)*100)+' cm</b></div>':'')
       +(o.jD?'<div><span>📏 Meilleure distance'+(raw&&+raw.official>0?' (officielle)':' (estimée)')+'</span><b>'+o.jD.toFixed(2).replace(".",",")+' m</b></div>':'')+'</div>'
+      +sessExtraHtml(o)
       +(o.trk?'<button class="primary" id="sdFly" style="margin-top:12px">🎬 Revoir le parcours en 3D</button>':'')
       +(mine&&raw&&/longueur|perche/.test(String(o.sport))?'<button class="av-btn" id="sdOfficial" style="margin-top:10px">📏 Entrer ma mesure officielle</button>':'')
       +(mine&&raw?'<button class="av-btn" id="sdDel" style="margin-top:10px;color:#c0392b">🗑 Supprimer cette session</button>':'')
