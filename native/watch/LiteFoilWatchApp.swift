@@ -516,7 +516,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         guard acc >= 0, acc <= 30 else { return }
         if curKmh > maxKmh && curKmh < 150 { maxKmh = curKmh }
         if runS - lastTrackS >= 2, track.count < 5000 {
-            track.append([l.coordinate.latitude, l.coordinate.longitude, curKmh, runS, l.verticalAccuracy >= 0 ? l.altitude : 0])
+            track.append([l.coordinate.latitude, l.coordinate.longitude, curKmh, runS, l.verticalAccuracy >= 0 ? l.altitude : 0, hrNow])
             lastTrackS = runS
         }
         if Date().timeIntervalSince(wxAt) > 900 { fetchWeather(l) }
@@ -538,7 +538,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     private func sendRide() {
         guard track.count >= 2 || isIndoor || runS >= 20 else { return }
         let pts: [[Double]] = track.map { p in
-            [SosModel.sd((p[0] * 100000).rounded() / 100000), SosModel.sd((p[1] * 100000).rounded() / 100000), SosModel.sd((p[2] * 10).rounded() / 10), SosModel.sd(p[3].rounded()), SosModel.sd(p.count > 4 ? p[4].rounded() : 0)]
+            [SosModel.sd((p[0] * 100000).rounded() / 100000), SosModel.sd((p[1] * 100000).rounded() / 100000), SosModel.sd((p[2] * 10).rounded() / 10), SosModel.sd(p[3].rounded()), SosModel.sd(p.count > 4 ? p[4].rounded() : 0), SosModel.sd(p.count > 5 ? p[5].rounded() : 0)]
         }.filter { $0[0] != 0 || $0[1] != 0 }
         let ride: [String: Any] = [
             "id": "watch-\(SosModel.ms(startDate))", "sport": sport,

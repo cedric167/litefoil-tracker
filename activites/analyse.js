@@ -34,7 +34,8 @@ function series(a){
     if(hav(lat[a0],lon[a0],lat[b0],lon[b0])>4) last=brg(lat[a0],lon[a0],lat[b0],lon[b0]); hd[s]=last; }
   for(s=1;s<n;s++){ om[s]=(isNaN(hd[s-1])||isNaN(hd[s+1])) ? 0 : dAng(hd[s-1],hd[s+1])/2; }
   var o2=new Float32Array(n+1); for(s=1;s<n;s++) o2[s]=(om[s-1]+om[s]+om[s+1])/3;
-  return { n:n, lat:lat, lon:lon, dist:dist, v:v, om:o2, total:dist[n] };
+  var hr=null; if(P.some(function(p){ return +p.hr>0; })){ hr=new Float32Array(n+1); var TH=[], VH=[]; P.forEach(function(p){ if(+p.hr>0){ TH.push(((+p.t)-(+P[0].t))/k); VH.push(+p.hr); } }); var q=0; for(s=0;s<=n;s++){ while(q<TH.length-1 && TH[q+1]<=s) q++; hr[s]=VH[q]; } }
+  return { n:n, lat:lat, lon:lon, dist:dist, v:v, om:o2, hr:hr, total:dist[n] };
 }
 
 // ---------- l'analyse ----------
@@ -76,7 +77,7 @@ function analyse(a){
 }
 
 // ---------- affichage ----------
-var cur=null, A=null, MAP=null, marks=[], cursor=null, selTurn=0;
+var cur=null, A=null, MAP=null, marks=[], cursor=null, selTurn=0, mode="v";
 function css(){ if(document.getElementById("lfAnaCss")) return; var st=document.createElement("style"); st.id="lfAnaCss";
   st.textContent=".an-h{margin:22px 2px 0;font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted,#6a7a80)}"
   +".an-card{background:var(--card,#fff);border-radius:18px;box-shadow:0 4px 14px rgba(13,40,45,.07);padding:12px;margin-top:10px}"
@@ -98,7 +99,7 @@ function css(){ if(document.getElementById("lfAnaCss")) return; var st=document.
   document.head.appendChild(st); }
 function tile(cls,lab,val,unit){ var ic=(typeof ICO!=="undefined" && ICO) ? (cls==="hot"?ICO.bolt:(cls==="blue"?ICO.speed:ICO.route))||"" : ""; return '<div class="s '+cls+'"><i>'+ic+'</i><div class="u">'+lab+'</div><div class="v tnum">'+val+(unit?'<small> '+unit+'</small>':'')+'</div></div>'; }
 
-function panel(a){ css(); cur=a; A=null; selTurn=0; var old=document.getElementById("lfAna"); if(old) old.remove();
+function panel(a){ css(); cur=a; A=null; selTurn=0; mode="v"; var old=document.getElementById("lfAna"); if(old) old.remove();
   var host=document.getElementById("detStats"); if(!host || a.indoor) return; try{ A=analyse(a); }catch(e){ A=null; }
   var box=document.createElement("div"); box.id="lfAna"; var h="";
   if(A){ var S=A.S, t="";
@@ -109,7 +110,7 @@ function panel(a){ css(); cur=a; A=null; selTurn=0; var old=document.getElementB
     if(A.bestSplit) t+=tile("blue","Meilleur km",dur(A.bestSplit.t),"/km");
     if(A.turns.length){ t+=tile("","Virages",A.turns.length,A.foil?("dont "+A.made+" réussis"):"")+tile("","Tours complets 360°",A.n360,"")+tile("hot","Force max en virage",nf(A.gmax,2),"g"); }
     if(t) h+='<div class="an-h">'+(A.foil?"Analyse du vol":"Analyse de la sortie")+'</div><div class="statgrid" style="margin-top:10px">'+t+'</div>';
-    h+='<div class="an-h">Vitesse</div><div class="an-card"><div class="an-read"><b id="anRd">Glisse le doigt sur la courbe</b><span id="anRd2"></span></div><canvas id="anChart"></canvas>'
+    h+='<div class="an-h">'+(S.hr?"Vitesse et cardio":"Vitesse")+'</div><div class="an-card">'+(S.hr?'<div class="an-gear" style="margin-bottom:10px"><button type="button" class="an-chip on" data-md="v">Vitesse</button><button type="button" class="an-chip" data-md="h">Cardio</button></div>':'')+'<div class="an-read"><b id="anRd">Glisse le doigt sur la courbe</b><span id="anRd2"></span></div><canvas id="anChart"></canvas>'
       +(A.foil && A.runs.length ? '<div class="an-leg"><span><i style="background:#f5b800"></i>en vol</span><span><i style="background:#2aa7ff"></i>hors vol</span></div>' : '')+'</div>';
     if(A.foil && A.runs.length){ h+='<div class="an-h">Runs</div><div class="an-runs">'+A.runs.map(function(r){ return '<button type="button" class="an-run" data-run="'+r.n+'"><b>Run '+r.n+(r===A.longest?'<em>Plus long</em>':'')+(r===A.fastest?'<em class="f">Plus rapide</em>':'')+'</b><div><span><strong>'+dur(r.dur)+'</strong>durée</span><span><strong>'+nf(r.dist/1000,2)+'</strong>km</span><span><strong>'+nf(r.avg,1)+'</strong>km/h</span></div></button>'; }).join("")+'</div>'; }
     if(A.turns.length) h+='<div class="an-h">Virages</div><div class="an-card"><div class="an-nav"><button type="button" id="anTp" aria-label="Virage précédent">‹</button><div id="anTx"></div><button type="button" id="anTn" aria-label="Virage suivant">›</button></div></div>';
@@ -120,7 +121,9 @@ function panel(a){ css(); cur=a; A=null; selTurn=0; var old=document.getElementB
   h+='<div class="an-h">Mon matériel</div><div class="an-card"><div class="an-gear" id="anGear"></div><div id="anGearForm"></div></div>';
   if(A && (A.foil || A.turns.length)) h+='<p class="an-note">Vol, runs et virages sont estimés à partir du GPS du téléphone ou de la montre : ce sont des repères, pas des mesures de capteur.</p>';
   box.innerHTML=h; host.insertAdjacentElement("afterend", box);
-  if(A){ chartInit(); box.querySelectorAll("[data-run]").forEach(function(b){ b.onclick=function(){ var r=A.runs[+b.getAttribute("data-run")-1], onb=b.classList.contains("on"); box.querySelectorAll(".an-run.on").forEach(function(x){ x.classList.remove("on"); }); if(onb){ hl(null); fitAll(); } else { b.classList.add("on"); hl(r); setCursor(r.a); } }; });
+  if(A){ try{ var AN=lget("lf_sess_an")||{}; AN[String(a.id)]={ fd:Math.round(A.foilDist||0), ft:Math.round(A.foilTime||0), runs:A.runs.length, turns:A.turns.length, n360:A.n360||0, max5:+A.max5.toFixed(1) }; var ak=Object.keys(AN); if(ak.length>300) delete AN[ak[0]]; lset("lf_sess_an",AN); }catch(e){}
+    box.querySelectorAll("[data-md]").forEach(function(b){ b.onclick=function(){ mode=b.getAttribute("data-md"); box.querySelectorAll("[data-md]").forEach(function(x){ x.classList.toggle("on", x===b); }); chartDraw(); if(cs>=0) setCursor(cs); }; });
+    chartInit(); box.querySelectorAll("[data-run]").forEach(function(b){ b.onclick=function(){ var r=A.runs[+b.getAttribute("data-run")-1], onb=b.classList.contains("on"); box.querySelectorAll(".an-run.on").forEach(function(x){ x.classList.remove("on"); }); if(onb){ hl(null); fitAll(); } else { b.classList.add("on"); hl(r); setCursor(r.a); } }; });
     if(A.turns.length){ document.getElementById("anTp").onclick=function(){ turnShow(selTurn-1, true); }; document.getElementById("anTn").onclick=function(){ turnShow(selTurn+1, true); }; turnShow(0, false); } }
   gearPaint(); weather(a);
 }
@@ -133,13 +136,13 @@ var cv=null, cx=null, CW=0, CH=0, cs=-1;
 function chartInit(){ cv=document.getElementById("anChart"); if(!cv) return; var dpr=Math.min(2,window.devicePixelRatio||1); CW=cv.clientWidth||320; CH=120; cv.width=Math.round(CW*dpr); cv.height=Math.round(CH*dpr); cx=cv.getContext("2d"); cx.setTransform(dpr,0,0,dpr,0,0); cs=-1; chartDraw();
   var mv=function(e){ var r=cv.getBoundingClientRect(), x=((e.touches?e.touches[0].clientX:e.clientX)-r.left)/Math.max(1,r.width); setCursor(Math.round(Math.max(0,Math.min(1,x))*A.S.n)); if(e.cancelable) e.preventDefault(); };
   cv.onpointerdown=function(e){ try{ cv.setPointerCapture(e.pointerId); }catch(x){} mv(e); }; cv.onpointermove=function(e){ if(e.buttons || e.pointerType==="touch") mv(e); }; }
-function chartDraw(){ if(!cx || !A) return; var S=A.S, n=S.n, mx=1, x, s; for(s=0;s<=n;s++) if(S.v[s]>mx) mx=S.v[s]; mx*=1.08; cx.clearRect(0,0,CW,CH);
-  var seg=function(col, test){ cx.strokeStyle=col; cx.lineWidth=1.8; cx.lineJoin="round"; cx.beginPath(); var pen=false; for(x=0;x<CW;x++){ var s0=Math.round(x/(CW-1)*n), y=CH-4-(S.v[s0]/mx)*(CH-10); if(test(s0)){ if(pen) cx.lineTo(x,y); else { cx.moveTo(x,y); pen=true; } } else pen=false; } cx.stroke(); };
+function chartDraw(){ if(!cx || !A) return; var S=A.S, n=S.n, mx=1, mn=0, x, s, Y=(mode==="h" && S.hr) ? S.hr : S.v; for(s=0;s<=n;s++) if(Y[s]>mx) mx=Y[s]; mx*=1.08; if(Y!==S.v){ mn=1e9; for(s=0;s<=n;s++) if(Y[s]>0 && Y[s]<mn) mn=Y[s]; mn=Math.max(0,mn-8); } cx.clearRect(0,0,CW,CH);
+  var seg=function(col, test){ cx.strokeStyle=col; cx.lineWidth=1.8; cx.lineJoin="round"; cx.beginPath(); var pen=false; for(x=0;x<CW;x++){ var s0=Math.round(x/(CW-1)*n), y=CH-4-((Y[s0]-mn)/Math.max(1,mx-mn))*(CH-10); if(test(s0)){ if(pen) cx.lineTo(x,y); else { cx.moveTo(x,y); pen=true; } } else pen=false; } cx.stroke(); };
   cx.strokeStyle="rgba(0,0,0,.08)"; cx.lineWidth=1; cx.beginPath(); cx.moveTo(0,CH-4); cx.lineTo(CW,CH-4); cx.stroke();
-  if(A.foil && A.runs.length){ seg("#2aa7ff", function(i){ return !A.on[i]; }); seg("#f5b800", function(i){ return !!A.on[i]; }); } else seg("#148a90", function(){ return true; });
+  if(Y!==S.v) seg("#e0344f", function(){ return true; }); else if(A.foil && A.runs.length){ seg("#2aa7ff", function(i){ return !A.on[i]; }); seg("#f5b800", function(i){ return !!A.on[i]; }); } else seg("#148a90", function(){ return true; });
   if(cs>=0){ var px=cs/n*(CW-1); cx.strokeStyle="#ff2d8f"; cx.lineWidth=1.5; cx.beginPath(); cx.moveTo(px,0); cx.lineTo(px,CH); cx.stroke(); } }
 function setCursor(s){ if(!A) return; var S=A.S; cs=Math.max(0,Math.min(S.n,s)); chartDraw();
-  var r1=document.getElementById("anRd"), r2=document.getElementById("anRd2"); if(r1) r1.textContent=nf(S.v[cs],1)+" km/h"; if(r2) r2.textContent=dur(cs)+" · "+nf(S.dist[cs]/1000,2)+" km"+(A.foil && A.runs.length ? (A.on[cs]?" · en vol":" · hors vol") : "");
+  var r1=document.getElementById("anRd"), r2=document.getElementById("anRd2"); if(r1) r1.textContent=nf(S.v[cs],1)+" km/h"+(S.hr && S.hr[cs]>0 ? " · "+Math.round(S.hr[cs])+" bpm" : ""); if(r2) r2.textContent=dur(cs)+" · "+nf(S.dist[cs]/1000,2)+" km"+(A.foil && A.runs.length ? (A.on[cs]?" · en vol":" · hors vol") : "");
   if(MAP && window.maplibregl){ if(!cursor){ var el=document.createElement("div"); el.className="an-mc"; cursor=new maplibregl.Marker({element:el}); } cursor.setLngLat([S.lon[cs],S.lat[cs]]).addTo(MAP); } }
 
 // ---------- carte ----------
@@ -185,7 +188,7 @@ function weather(a){ var box=document.getElementById("anWx"); if(!box) return; v
 }
 
 // ---------- mon matériel ----------
-var TYPES=["Planche","Aile avant","Mât","Stabilisateur","Aile (wing, kite, voile)","Batterie","Autre"];
+var CAT=null, TYPES=["Planche","Aile avant","Mât","Stabilisateur","Aile (wing, kite, voile)","Batterie","Autre"];
 function gearPaint(){ var box=document.getElementById("anGear"); if(!box || !cur) return; var G=lget("lf_garage")||[], M=lget("lf_sess_gear")||{}, mine=M[String(cur.id)]||[];
   box.innerHTML=G.map(function(g){ return '<button type="button" class="an-chip'+(mine.indexOf(g.id)>=0?" on":"")+'" data-g="'+esc(g.id)+'">'+esc(g.name)+'<span style="font-weight:600;color:var(--muted,#6a7a80)"> · '+esc(g.type)+'</span></button>'; }).join("")+'<button type="button" class="an-chip add" id="anGAdd">+ Ajouter du matériel</button>'
     +(G.length?'':'<div style="flex-basis:100%;font-size:12.5px;color:var(--muted,#6a7a80)">Enregistre ta planche, ton aile ou ton mât une fois : tu les rattaches ensuite à chaque sortie d\'un seul geste.</div>');
@@ -193,7 +196,10 @@ function gearPaint(){ var box=document.getElementById("anGear"); if(!box || !cur
     var tm=null; b.oncontextmenu=function(e){ e.preventDefault(); gearDel(b.getAttribute("data-g")); }; b.ontouchstart=function(){ tm=setTimeout(function(){ gearDel(b.getAttribute("data-g")); },700); }; b.ontouchend=b.ontouchmove=function(){ clearTimeout(tm); }; });
   document.getElementById("anGAdd").onclick=gearForm; }
 function gearDel(id){ var G=lget("lf_garage")||[], g=G.filter(function(x){ return x.id===id; })[0]; if(!g || !confirm("Retirer « "+g.name+" » de ton matériel ?")) return; lset("lf_garage", G.filter(function(x){ return x.id!==id; })); gearPaint(); }
-function gearForm(){ var f=document.getElementById("anGearForm"); if(!f) return; f.innerHTML='<div class="an-form"><select id="anGT">'+TYPES.map(function(t){ return '<option>'+t+'</option>'; }).join("")+'</select><input id="anGN" maxlength="40" placeholder="Nom ou modèle (ex. aile avant 1500)"><input id="anGD" maxlength="60" placeholder="Détail facultatif (surface, taille, année…)"><div><button type="button" class="x" id="anGX">Annuler</button><button type="button" id="anGS">Enregistrer</button></div></div>';
+function gearForm(){ var f=document.getElementById("anGearForm"); if(!f) return; f.innerHTML='<div class="an-form"><select id="anGT">'+TYPES.map(function(t){ return '<option>'+t+'</option>'; }).join("")+'</select><input id="anGN" maxlength="40" list="anGL" placeholder="Nom ou modèle (ex. aile avant 1500)"><datalist id="anGL"></datalist><input id="anGD" maxlength="60" placeholder="Détail facultatif (surface, taille, année…)"><div><button type="button" class="x" id="anGX">Annuler</button><button type="button" id="anGS">Enregistrer</button></div></div>';
+  var fill=function(){ var dl=document.getElementById("anGL"), tp=document.getElementById("anGT"); if(!dl || !CAT) return; dl.innerHTML=CAT.filter(function(c){ return c[0]===tp.value; }).map(function(c){ return '<option value="'+esc(c[1])+'">'; }).join(""); };
+  if(CAT) fill(); else fetch("../data/materiel.json?v=1").then(function(r){ return r.json(); }).then(function(j){ CAT=(j && j.l)||[]; fill(); }).catch(function(){ CAT=[]; });
+  document.getElementById("anGT").onchange=fill;
   document.getElementById("anGX").onclick=function(){ f.innerHTML=""; };
   document.getElementById("anGS").onclick=function(){ var nm=document.getElementById("anGN").value.trim(); if(!nm){ document.getElementById("anGN").focus(); return; } var G=lget("lf_garage")||[], id="g"+Date.now().toString(36);
     G.push({ id:id, type:document.getElementById("anGT").value, name:nm.slice(0,40), detail:document.getElementById("anGD").value.trim().slice(0,60) }); lset("lf_garage",G);
