@@ -11,6 +11,35 @@ var root = null, DB = null, dbP = null, F = null, WX = null, view = "metar", rwS
 
 // ---------- langue (fr / en / es) ----------
 var TR = {
+ "Sources et autorisations":["Sources and permissions","Fuentes y autorizaciones"],
+ "D'où viennent nos données, et à quel titre nous les utilisons.":["Where our data comes from, and on what basis we use it.","De dónde vienen nuestros datos y a qué título los usamos."],
+ "Accord reçu":["Agreement received","Acuerdo recibido"],
+ "Licence ouverte":["Open licence","Licencia abierta"],
+ "Source officielle":["Official source","Fuente oficial"],
+ "Demande en cours":["Request pending","Solicitud en curso"],
+ "Source ouverte":["Open source data","Fuente abierta"],
+ "Espaces aériens France":["French airspace","Espacios aéreos de Francia"],
+ "Fichier de la Fédération Française de Vol en Planeur, établi d'après l'AIP du SIA. Accord de la FFVP du 23/11/2026.":["File from the French Gliding Federation (FFVP), based on the SIA AIP. FFVP agreement of 23/11/2026.","Archivo de la Federación Francesa de Vuelo a Vela (FFVP), según el AIP del SIA. Acuerdo de la FFVP del 23/11/2026."],
+ "Carte aéronautique":["Aeronautical chart","Carta aeronáutica"],
+ "open flightmaps. Usage autorisé par leur réponse du 18/11/2026.":["open flightmaps. Use authorised by their reply of 18/11/2026.","open flightmaps. Uso autorizado por su respuesta del 18/11/2026."],
+ "Obstacles France":["Obstacles in France","Obstáculos de Francia"],
+ "SIA, eAIP France (ENR 5.4), sous Licence Ouverte. Cycle du":["SIA, eAIP France (ENR 5.4), under the French Open Licence. Cycle of","SIA, eAIP Francia (ENR 5.4), bajo Licencia Abierta. Ciclo del"],
+ "Cartes VAC des terrains":["Airfield VAC charts","Cartas VAC de aeródromos"],
+ "SIA, atlas VAC. Lues directement sur le site officiel par ton téléphone.":["SIA, VAC atlas. Read directly from the official site by your phone.","SIA, atlas VAC. Leídas directamente del sitio oficial por tu teléfono."],
+ "Fiches des bases ULM":["ULM airfield sheets","Fichas de bases ULM"],
+ "BASULM de la FFPLUM. Lues directement sur le site officiel par ton téléphone.":["BASULM by FFPLUM. Read directly from the official site by your phone.","BASULM de la FFPLUM. Leídas directamente del sitio oficial por tu teléfono."],
+ "Espaces aériens Allemagne et États-Unis":["German and US airspace","Espacios aéreos de Alemania y Estados Unidos"],
+ "DFS Deutsche Flugsicherung (licence CC BY 4.0) et FAA.":["DFS Deutsche Flugsicherung (CC BY 4.0 licence) and FAA.","DFS Deutsche Flugsicherung (licencia CC BY 4.0) y FAA."],
+ "Terrains, météo et trafic":["Airfields, weather and traffic","Aeródromos, meteorología y tráfico"],
+ "OurAirports (domaine public), METAR et TAF d'aviationweather.gov, prévisions Open-Meteo, trafic Open Glider Network.":["OurAirports (public domain), METAR and TAF from aviationweather.gov, Open-Meteo forecasts, Open Glider Network traffic.","OurAirports (dominio público), METAR y TAF de aviationweather.gov, previsiones Open-Meteo, tráfico Open Glider Network."],
+ "NOTAM et zones militaires actives":["NOTAMs and active military areas","NOTAM y zonas militares activas"],
+ "Demande d'accès déposée auprès du SIA le 23/11/2026. En attendant, l'appli renvoie vers SOFIA et le site du SIA.":["Access request filed with the SIA on 23/11/2026. Meanwhile the app links to SOFIA and the SIA site.","Solicitud de acceso presentada al SIA el 23/11/2026. Mientras tanto, la app remite a SOFIA y al sitio del SIA."],
+ "Limites connues":["Known limits","Límites conocidos"],
+ "Les espaces aériens français ne sont pas exhaustifs là où les planeurs volent peu (région parisienne, côtes).":["French airspace is not exhaustive where gliders rarely fly (Paris area, coasts).","Los espacios aéreos franceses no son exhaustivos donde los planeadores vuelan poco (región de París, costas)."],
+ "L'activation réelle des zones (NOTAM, SUP AIP, RTBA) n'est pas connue de l'appli.":["The app does not know whether areas are actually active (NOTAM, AIP SUP, RTBA).","La app no conoce la activación real de las zonas (NOTAM, SUP AIP, RTBA)."],
+ "Les lignes électriques et les câbles ne figurent pas dans les obstacles.":["Power lines and cables are not included in the obstacles.","Las líneas eléctricas y los cables no figuran en los obstáculos."],
+ "Lite Foil est une aide à la navigation, pas un instrument certifié : elle complète les cartes aéronautiques à jour, elle ne les remplace pas.":["Lite Foil is a navigation aid, not a certified instrument: it complements up-to-date aeronautical charts, it does not replace them.","Lite Foil es una ayuda a la navegación, no un instrumento certificado: complementa las cartas aeronáuticas actualizadas, no las sustituye."],
+ "Une erreur dans nos données ? Signale-la.":["Found an error in our data? Report it.","¿Un error en nuestros datos? Avísanos."],
  "Rechercher un terrain":["Find an airfield","Buscar un campo"],
  "Nom, ville ou code (LFMP, LF6651…)":["Name, town or code (LFMP, LF6651…)","Nombre, ciudad o código (LFMP, LF6651…)"],
  "📍 Terrains autour de moi":["📍 Airfields near me","📍 Campos cerca de mí"],
@@ -245,7 +274,7 @@ var CSS=""
 +".ul-msg{text-align:center;font-size:14px;color:var(--muted,#66727d);padding:18px 6px;line-height:1.5}.ul-msg button{display:block;margin:12px auto 0;border:0;background:#12408a;color:#fff;border-radius:100px;padding:10px 20px;font-weight:700;font-family:inherit;font-size:14px;cursor:pointer}"
 +".ul-sky .ul-msg{color:rgba(255,255,255,.85)}.ul-sky .ul-msg button{background:#fff;color:#12408a}"
 +".ul-ch{margin-bottom:14px}.ul-ch svg{width:100%;height:auto;display:block}.ul-ch b{display:block;font-size:13px;margin-bottom:4px}"
-+".ul-disc{font-size:11.5px;line-height:1.45;color:var(--muted,#66727d);margin:14px 4px 0;text-align:center}"
++".ul-disc{font-size:11.5px;line-height:1.45;color:var(--muted,#66727d);margin:14px 4px 0;text-align:center}.ul-tr{background:#fff;color:#0e1417}.ul-tr-t{font-size:17px;font-weight:800}.ul-tr-s{font-size:12.5px;color:#66727d;margin:2px 0 8px}.ul-tr-r{display:flex;gap:10px;padding:10px 0;border-top:1px solid #e8edf0}.ul-tr-r i{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:14px}.ul-tr-r b{font-size:14.5px;margin-right:6px}.ul-tr-r em{display:inline-block;font-style:normal;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:999px;vertical-align:1px}.ul-tr-r span{display:block;font-size:12.5px;line-height:1.45;color:#55626c;margin-top:3px}.ul-tr-r u{text-decoration:none}.ul-tr-h{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#66727d;margin:12px 0 4px;padding-top:10px;border-top:1px solid #e8edf0}.ul-tr-l{margin:0;padding:0 0 0 18px;font-size:12.5px;line-height:1.5;color:#55626c}.ul-tr-f{margin-top:10px;font-size:12.5px;line-height:1.45;font-weight:700;color:#0e1417}.ul-tr-m{display:block;margin-top:10px;font-size:13px;font-weight:800;color:#0f8a8a;text-decoration:none}"
 +".ul-wx{margin-top:8px;font-size:14px;line-height:1.45}.ul-wx b{font-weight:800}";
 
 // ---------- dessins ----------
@@ -306,6 +335,27 @@ function rwComp(o, f){ var w=o.wind, ends=rwEnds(f); if(!ends.length) return { e
 
 // ---------- rendu ----------
 function h1(s){ return '<div class="ul-h">'+esc(T(s))+'</div>'; }
+// ---------- sources et autorisations (accueil) : d'où viennent les données, à quel titre, demandes en cours, limites connues ----------
+// st : ok = accord reçu, lic = licence ouverte, off = source officielle lue en direct, open = source ouverte, wait = demande en cours
+var TRUST=[
+ ["ok","Espaces aériens France","Fichier de la Fédération Française de Vol en Planeur, établi d'après l'AIP du SIA. Accord de la FFVP du 23/11/2026."],
+ ["ok","Carte aéronautique","open flightmaps. Usage autorisé par leur réponse du 18/11/2026."],
+ ["lic","Obstacles France","SIA, eAIP France (ENR 5.4), sous Licence Ouverte. Cycle du","obs"],
+ ["off","Cartes VAC des terrains","SIA, atlas VAC. Lues directement sur le site officiel par ton téléphone."],
+ ["off","Fiches des bases ULM","BASULM de la FFPLUM. Lues directement sur le site officiel par ton téléphone."],
+ ["lic","Espaces aériens Allemagne et États-Unis","DFS Deutsche Flugsicherung (licence CC BY 4.0) et FAA."],
+ ["open","Terrains, météo et trafic","OurAirports (domaine public), METAR et TAF d'aviationweather.gov, prévisions Open-Meteo, trafic Open Glider Network."],
+ ["wait","NOTAM et zones militaires actives","Demande d'accès déposée auprès du SIA le 23/11/2026. En attendant, l'appli renvoie vers SOFIA et le site du SIA."]],
+ TRUST_L={ ok:["✓","Accord reçu","#0d8a4f","#e3f6ec"], lic:["✓","Licence ouverte","#0d8a4f","#e3f6ec"], off:["✓","Source officielle","#0b63b6","#e3effb"], open:["•","Source ouverte","#55626c","#eef1f3"], wait:["…","Demande en cours","#a05a00","#fdf0d8"] },
+ trustMaj=null;
+function trustCard(){ if(!trustMaj){ trustMaj={}; jget("data/maj.json?t="+Math.floor(Date.now()/3600000), 8000).then(function(j){ if(j && j.obs){ trustMaj=j; var e=root && root.querySelector("#ulObsD"); if(e){ var a=String(j.obs).split("-"); e.textContent=" "+a[2]+"/"+a[1]+"/"+a[0]+"."; } } }).catch(function(){}); }
+  var od=""; if(trustMaj && trustMaj.obs){ var a0=String(trustMaj.obs).split("-"); od=" "+a0[2]+"/"+a0[1]+"/"+a0[0]+"."; }
+  var h='<div class="ul-card ul-tr"><div class="ul-tr-t">'+esc(T("Sources et autorisations"))+'</div><div class="ul-tr-s">'+esc(T("D'où viennent nos données, et à quel titre nous les utilisons."))+'</div>';
+  TRUST.forEach(function(r){ var L=TRUST_L[r[0]]; h+='<div class="ul-tr-r"><i style="color:'+L[2]+';background:'+L[3]+'">'+L[0]+'</i><div><b>'+esc(T(r[1]))+'</b><em style="color:'+L[2]+';background:'+L[3]+'">'+esc(T(L[1]))+'</em><span>'+esc(T(r[2]))+(r[3]==="obs" ? '<u id="ulObsD">'+esc(od||" …")+'</u>' : '')+'</span></div></div>'; });
+  h+='<div class="ul-tr-h">'+esc(T("Limites connues"))+'</div><ul class="ul-tr-l"><li>'+esc(T("Les espaces aériens français ne sont pas exhaustifs là où les planeurs volent peu (région parisienne, côtes)."))+'</li><li>'+esc(T("L'activation réelle des zones (NOTAM, SUP AIP, RTBA) n'est pas connue de l'appli."))+'</li><li>'+esc(T("Les lignes électriques et les câbles ne figurent pas dans les obstacles."))+'</li></ul>';
+  h+='<div class="ul-tr-f">'+esc(T("Lite Foil est une aide à la navigation, pas un instrument certifié : elle complète les cartes aéronautiques à jour, elle ne les remplace pas."))+'</div>';
+  h+='<a class="ul-tr-m" href="mailto:cedric@litefoil.fr?subject='+encodeURIComponent("Lite Foil ULM / Avion : erreur dans les données")+'">'+esc(T("Une erreur dans nos données ? Signale-la."))+'</a></div>';
+  return h; }
 function searchCard(){ var fv=favs().map(byCode).filter(Boolean);
   return '<div class="ul-card ul-sky" id="ulSearch"><div class="ul-h">✈️ '+esc(T("Rechercher un terrain"))+'</div>'
     +'<input class="ul-in" id="ulQ" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+esc(T("Nom, ville ou code (LFMP, LF6651…)"))+'">'
@@ -462,7 +512,7 @@ function showNav(){ var el=root.querySelector("#ulNav"); if(!el) return; var api
 function render(state){ if(!root) return; var h="";
   if(mode==="nav"){ if(root.querySelector("#ulNav")) return; root.innerHTML=modeBar()+'<div id="ulNav"></div>'; showNav(); return; }
   h=modeBar();
-  if(!F){ h+=searchCard(); }
+  if(!F){ h+=searchCard()+trustCard(); }
   else { h+=headCard();
     if(state==="load") h+='<div class="ul-card"><div class="ul-msg">'+esc(T("Chargement…"))+'</div></div>';
     else if(state==="err") h+='<div class="ul-card"><div class="ul-msg">'+esc(T("Connexion impossible. Vérifie le réseau puis réessaie."))+'<button data-act="reload">'+esc(T("Réessayer"))+'</button></div></div>';
