@@ -833,7 +833,7 @@ body.uni-terre .bnav .bn-comm,body.uni-terre .bnav button.on{color:#c2611a}body.
   .fd-sortline{ display:flex; justify-content:flex-end; margin:-2px 2px 8px; }
   .fd-sortline button{ display:flex; align-items:center; gap:6px; min-height:0; border:0; background:none; box-shadow:none; padding:5px 6px; font:inherit; font-size:13px; font-weight:700; color:var(--muted); }
   .fd-sortline svg.i{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; } .fd-sortline svg.c{ width:13px; height:13px; }
-  .fd-img, .fd-tx{ position:relative; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
+  .fd-img, .fd-tr{display:inline-block;margin:2px 14px 8px;padding:0;border:0;background:none;min-height:0;box-shadow:none;font:inherit;font-size:13px;font-weight:700;color:#0f7f86;cursor:pointer}.fd-tr:disabled{opacity:.6}.fd-tx{ position:relative; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
   .fd-heart{ position:absolute; left:50%; top:50%; z-index:3; font-size:92px; line-height:1; color:#ff3b5c; text-shadow:0 6px 22px rgba(0,0,0,.35); pointer-events:none; animation:fdHeart .85s cubic-bezier(.2,.9,.3,1.3) forwards; }
   @keyframes fdHeart{ 0%{ transform:translate(-50%,-50%) scale(.2); opacity:0; } 25%{ transform:translate(-50%,-50%) scale(1.15); opacity:1; } 60%{ transform:translate(-50%,-50%) scale(1); opacity:1; } 100%{ transform:translate(-50%,-70%) scale(1.05); opacity:0; } }
   .fd-bar{ position:relative; } .fd-myrx{ font-size:17px; line-height:1; animation:fdPop .32s cubic-bezier(.2,.9,.3,1.6); }
@@ -9680,6 +9680,22 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
   function fdNum(n,one,many){ return n+" "+(n>1?many:one); }
   function fdSessHtml(o){ var mp=sessMapHtml(o.trk, 600, 320); return '<div class="fd-sess" data-fa="sess" role="button" aria-label="Voir la session">'+(mp ? mp : o.shape?'<div class="fd-map"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polyline points="'+esc(String(o.shape).replace(/[^0-9., -]/g,""))+'"/></svg></div>':'')
       +'<div class="fd-st"><div><b>'+((+o.d||0)/1000).toFixed(1).replace(".",",")+' km</b><span>Distance</span></div><div><b>'+pfDur(o.dur)+'</b><span>Durée</span></div><div><b>'+String(+o.vmax||0).replace(".",",")+' km/h</b><span>Vitesse max</span></div></div></div>'; }
+  // ---------- traduction d'une publication du fil ----------
+  var FD_TRW={ fr:["Traduire","Voir l'original","Traduction…","Déjà dans ta langue","Traduction indisponible pour l'instant"], en:["Translate","See original","Translating…","Already in your language","Translation unavailable right now"], es:["Traducir","Ver original","Traduciendo…","Ya está en tu idioma","Traducción no disponible por ahora"] };
+  function fdTrLang(){ var l=(window.LF_I18N && LF_I18N.lang) || "fr"; return FD_TRW[l] ? l : "fr"; }
+  function fdTrBtn(t){ return (/[a-zà-ÿ]{3}/i.test(t||"") && String(t).trim().length>=8) ? '<button type="button" class="fd-tr" data-no-i18n>'+FD_TRW[fdTrLang()][0]+'</button>' : ''; }
+  var fdTrCache={};
+  function fdTrPiece(s, tl){ var k=tl+"|"+s; if(fdTrCache[k]!==undefined) return Promise.resolve(fdTrCache[k]);
+    return fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(s)+"&langpair="+encodeURIComponent("autodetect|"+tl)).then(function(r){ return r.json(); }).then(function(j){ var d=j && j.responseData || {}, det=String(d.detectedLanguage||"").slice(0,2).toLowerCase(), tr=String(d.translatedText||"");
+      if(+j.responseStatus!==200 || !tr || /MYMEMORY WARNING|QUERY LENGTH LIMIT/i.test(tr)) throw new Error("service"); return (fdTrCache[k]={ same:det===tl, tr:tr }); }); }
+  function fdTranslate(text, tl){ var parts=[]; String(text).split("\n").forEach(function(line){ if(line.length<=450){ parts.push(line); return; } var cur=""; (line.match(/[^.!?;:]+[.!?;:]*\s*/g)||[line]).forEach(function(s){ s=s.trim(); if((cur+" "+s).length>450 && cur){ parts.push(cur); cur=s; } else cur=cur ? cur+" "+s : s; }); if(cur) parts.push(cur.slice(0,480)); });
+    var out=[], same=0, n=0, i=0; var step=function(){ if(i>=parts.length) return Promise.resolve({ text:out.join("\n"), same:n>0 && same===n }); var s=parts[i++]; if(!/[a-zà-ÿ]{2}/i.test(s)){ out.push(s); return step(); }
+      return fdTrPiece(s, tl).then(function(r){ n++; if(r.same) same++; out.push(r.same ? s : r.tr); return step(); }); }; return step(); }
+  document.addEventListener("click", function(ev){ var b=ev.target && ev.target.closest ? ev.target.closest(".fd-tr") : null; if(!b) return; ev.preventDefault(); ev.stopPropagation(); var tx=b.previousElementSibling; if(!tx || !tx.classList.contains("fd-tx") || b.disabled) return; var W=FD_TRW[fdTrLang()];
+    if(tx._orig!=null){ tx.textContent=tx._orig; tx._orig=null; b.textContent=W[0]; return; }
+    var orig=tx.textContent; b.disabled=true; b.textContent=W[2];
+    fdTranslate(orig, fdTrLang()).then(function(r){ b.disabled=false; if(r.same){ b.textContent=W[3]; setTimeout(function(){ b.textContent=W[0]; }, 2500); return; } tx._orig=orig; tx.textContent=r.text; b.textContent=W[1]; })
+      .catch(function(){ b.disabled=false; b.textContent=W[4]; setTimeout(function(){ b.textContent=W[0]; }, 3000); }); }, true);
   function fdPostHtml(it){ var p=it.p, v=it.v, u=p?p.uid:v.uid, h='<div class="fd-card fd-post" data-k="'+esc(it.k)+'">';
     var what = v ? " a publié une vidéo" : (p.ev ? " a partagé un événement" : (p.sess ? " a partagé une session" : ""));
     var tags = p && p.tag ? Object.keys(p.tag).slice(0,5).filter(function(x){ return !blocked.has(x); }) : [];
@@ -9687,12 +9703,12 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
     h+='<div class="fd-h"><span class="fd-av" data-fa="up" data-u="'+esc(u)+'">'+avHtml(u)+'</span><span class="fd-who"><b data-fa="up" data-u="'+esc(u)+'">'+esc(u===me.uid?(me.pseudo||"Moi"):((profileMap[u]&&profileMap[u].pseudo)||(p?p.pseudo:v.pseudo)||"Membre"))+'</b>'+(isOfficial(u)?' <span class="pf-off">✓</span>':'')+what
       +(tags.length?' — avec '+tags.map(function(x){ return '<b data-fa="up" data-u="'+esc(x)+'">'+esc(pName(x))+'</b>'; }).join(", "):'')+'<small>'+sub+'</small></span>'
       +(p?'<button type="button" class="fd-more" data-fa="more" aria-label="Options">•••</button>':'')+'</div>';
-    if(v){ if(v.caption) h+='<div class="fd-tx">'+esc(v.caption)+'</div>';
+    if(v){ if(v.caption) h+='<div class="fd-tx">'+esc(v.caption)+'</div>'+fdTrBtn(v.caption);
       h+='<button type="button" class="fd-vid" data-fa="vid" style="background-image:url('+esc(v.thumb||"")+')" aria-label="Lire la vidéo"><i>▶</i></button>'
         +'<div class="fd-cnt"><span class="fd-nl" data-fa="likes">♥ '+fdNum(vidLikes(v),"j\'aime","j\'aime")+'</span><span>▶ '+fmtCount(vidViews(v))+'</span></div>'
         +'<div class="fd-bar"><button type="button" data-fa="vlike" class="'+(vidLiked(v)?"on":"")+'">'+FD_IC.lk+'J\'aime</button><button type="button" data-fa="vid">'+FD_IC.cm+'Commenter</button><button type="button" data-fa="vshare">'+FD_IC.sh+'Partager</button></div></div>';
       return h; }
-    if(p.text && !p.ev) h+='<div class="fd-tx">'+esc(p.text)+'</div>';
+    if(p.text && !p.ev) h+='<div class="fd-tx">'+esc(p.text)+'</div>'+fdTrBtn(p.text);
     if(p.im) h+='<div class="fd-img" data-im="1">'+(fdImgs[it.k]?'<img alt="" src="'+esc(fdImgs[it.k])+'">':'')+'</div>';
     if(p.sess) h+=fdSessHtml(p.sess);
     if(p.ev && p.ev.id){ var ed=new Date(+p.ev.when||Date.now()); h+='<div class="fd-ev" data-fa="ev" role="button"><span class="fd-ev-d"><b>'+ed.getDate()+'</b><small>'+esc(ed.toLocaleDateString("fr-FR",{month:"short"}))+'</small></span>'
