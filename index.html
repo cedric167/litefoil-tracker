@@ -12368,7 +12368,7 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
       "Musculation":["muscu","Musculation","terre"], "Cross training":["crosstraining","Cross training","terre"], "Fitness":["fitness","Fitness","terre"], "Cardio":["cardio","Cardio","terre"], "HIIT":["hiit","HIIT","terre"], "Yoga":["yoga","Yoga","terre"], "Rameur":["rameur","Rameur","terre"],
       "Vélo de salle":["velosalle","Vélo de salle","terre"], "Tapis de course":["tapis","Tapis de course","terre"], "Boxe":["boxe","Boxe","terre"] };
     var hav=function(a1,o1,a2,o2){ var R=6371000, r=Math.PI/180, x=(a2-a1)*r, y=(o2-o1)*r, q=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a1*r)*Math.cos(a2*r)*Math.sin(y/2)*Math.sin(y/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(q))); };
-    var rideToSess=function(r){ var P=r.pts||[]; var hr=((+r.hr||0)>0 || (+r.kcal||0)>0) ? { avg:+r.hr||0, max:+r.hrmax||0, kcal:+r.kcal||0 } : null;
+    var rideToSess=function(r){ try{ if(+r.kg>=30 && +r.kg<=200) localStorage.setItem("lf_poids", String(+r.kg)); }catch(e){} var P=r.pts||[]; var hr=((+r.hr||0)>0 || (+r.kcal||0)>0) ? { avg:+r.hr||0, max:+r.hrmax||0, kcal:+r.kcal||0 } : null;
       // séance de salle : pas de tracé, seulement la durée, le cardio et les calories
       if(r.indoor || P.length<2){ var si=WSP[r.sport]||[r.indoor?"fitness":"other",String(r.sport||"Séance"),r.indoor?"terre":"mer"], du=+r.dur||0; if(du<20) return null;
         if(!r.indoor) return { id:String(r.id||("watch-"+r.start)), name:si[1]+" · montre", categoryName:si[1], activityType:si[0], milieu:si[2], startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:du, distanceM:+r.dist||0,
@@ -12381,7 +12381,8 @@ body:has(.wt-ov) #sosFab,body:has(.sosx) #sosFab,body:has(.nv-fly) #sosFab,body:
       var dur=+r.dur||out[out.length-1].t, dist=+r.dist||Math.round(cum);
       return { id:String(r.id||("watch-"+r.start)), name:sp[1]+" · montre", categoryName:sp[1], activityType:sp[0], milieu:sp[2], startedAt:new Date(+r.start||Date.now()).toISOString(), durationSec:dur, distanceM:dist,
         avgSpeedKmh: dur>0 ? +(dist/dur*3.6).toFixed(1) : 0, maxSpeedKmh:+(+r.max||0).toFixed(1), maxAltM:Math.round(Math.max.apply(null, out.map(function(p){ return p.alt; }))), firstLat:out[0].lat, firstLon:out[0].lon, thumbnailUrl:null,
-        source:"phone", device:"watch", points:out, hr:hr, foil:{ runs:+r.runs||0, sec:+r.foilS||0, m:+r.foilM||0 } }; };
+        source:"phone", device:"watch", points:out, hr:hr, foil:{ runs:+r.runs||0, sec:+r.foilS||0, m:+r.foilM||0 },
+        steps:(+r.steps>50 ? Math.round(+r.steps) : undefined), run:((+r.pw>0 || +r.vo>0 || +r.gct>0 || +r.stride>0) ? { pw:+r.pw||0, vo:+r.vo||0, gct:+r.gct||0, stride:+r.stride||0 } : undefined), eau:((r.wt!=null && +r.wt>-50) ? +r.wt : undefined) }; };
     // sorties reçues de la montre, gardées telles quelles tant qu'elles ne sont pas enregistrées dans Activités
     var rawGet=function(){ try{ return JSON.parse(localStorage.getItem("lf.watch.raw")||"[]")||[]; }catch(e){ return []; } };
     var rawSet=function(a){ try{ if(a.length) localStorage.setItem("lf.watch.raw", JSON.stringify(a.slice(-30))); else localStorage.removeItem("lf.watch.raw"); }catch(e){} };
