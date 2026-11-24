@@ -55,7 +55,13 @@ app = [a for a in call("GET", "/apps?filter[bundleId]=" + BUNDLE)["data"] if a["
 APP = app["id"]
 print("Appli :", app["attributes"]["name"], APP)
 
-# 1) le build
+# 1) le build (numéro 0 dans l'étiquette = le dernier build envoyé pour cette version)
+if BUILD == "0":
+    last = call("GET", "/builds?filter[app]=" + APP + "&filter[preReleaseVersion.version]=" + VERSION + "&sort=-uploadedDate&limit=1")["data"]
+    if not last:
+        print("Aucun build", VERSION, "chez Apple."); sys.exit(1)
+    BUILD = last[0]["attributes"]["version"]
+    print("Dernier build de la", VERSION, ":", BUILD, "| envoyé le", last[0]["attributes"].get("uploadedDate"))
 bl = call("GET", "/builds?filter[app]=" + APP + "&filter[version]=" + BUILD + "&filter[preReleaseVersion.version]=" + VERSION + "&limit=5")["data"]
 if not bl:
     print("Build", VERSION, "(" + BUILD + ") introuvable chez Apple."); sys.exit(1)
