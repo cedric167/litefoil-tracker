@@ -33,9 +33,9 @@
 		<string>workout-processing</string>
 	</array>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Lite Foil enregistre votre séance (sport, durée) dans l'app Santé et garde vos informations à l'écran pendant la sortie.</string>
+	<string>Lite Foil enregistre votre séance (sport, durée) et son tracé dans l'app Santé, et garde vos informations à l'écran pendant la sortie.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Lite Foil lit votre fréquence cardiaque et vos calories pendant la séance pour les afficher sur la montre et dans le résumé, et votre date de naissance pour calculer vos zones cardio.</string>
+	<string>Lite Foil lit votre fréquence cardiaque, vos calories, vos pas, votre distance, la dynamique de course et la température de l'eau pendant la séance pour les afficher sur la montre et dans le résumé, votre poids pour estimer les calories, et votre date de naissance pour calculer vos zones cardio.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Pendant un SOS, la position de votre montre est envoyée à vos proches pour qu'ils puissent vous retrouver.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

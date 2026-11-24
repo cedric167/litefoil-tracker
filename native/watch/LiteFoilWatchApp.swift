@@ -246,7 +246,18 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             if let t = HKQuantityType.quantityType(forIdentifier: .heartRate) { rd.insert(t) }
             if let t = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) { rd.insert(t) }
             if let t = HKObjectType.characteristicType(forIdentifier: .dateOfBirth) { rd.insert(t) }
-            s.hk.requestAuthorization(toShare: [HKObjectType.workoutType()], read: rd) { _, _ in }
+            // poids (calories), pas et distance (cadence), dynamique de course et température de l'eau quand la montre les mesure
+            for id in [HKQuantityTypeIdentifier.bodyMass, HKQuantityTypeIdentifier.stepCount, HKQuantityTypeIdentifier.distanceWalkingRunning] {
+                if let t = HKQuantityType.quantityType(forIdentifier: id) { rd.insert(t) }
+            }
+            if #available(watchOS 9.0, *) {
+                for id in [HKQuantityTypeIdentifier.runningPower, HKQuantityTypeIdentifier.runningStrideLength, HKQuantityTypeIdentifier.runningVerticalOscillation, HKQuantityTypeIdentifier.runningGroundContactTime, HKQuantityTypeIdentifier.waterTemperature] {
+                    if let t = HKQuantityType.quantityType(forIdentifier: id) { rd.insert(t) }
+                }
+            }
+            // le tracé de la sortie est enregistré avec la séance
+            let sh: Set<HKSampleType> = [HKObjectType.workoutType(), HKSeriesType.workoutRoute()]
+            s.hk.requestAuthorization(toShare: sh, read: rd) { _, _ in }
         }
     }
 
@@ -372,6 +383,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             b.dataSource = HKLiveWorkoutDataSource(healthStore: hk, workoutConfiguration: c)
             b.delegate = self
             workout = w; builder = b
+            routeBuilder = isIndoor ? nil : HKWorkoutRouteBuilder(healthStore: hk, device: nil)
+            stepsN = 0; runPw = 0; runStride = 0; runVO = 0; runGCT = 0; waterT = -99
+            loadWeight()
             let d = Date()
             w.startActivity(with: d)
             collecting = false
@@ -380,18 +394,36 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
     }
     /// vrai quand l'enregistrement Santé a réellement démarré (accord donné)
     private var collecting = false
+    /// tracé de la sortie, rangé dans Santé avec la séance
+    private var routeBuilder: HKWorkoutRouteBuilder?
+    /// mesures de la séance lues dans Santé : pas, puissance de course (W), foulée (m), oscillation verticale (cm), contact au sol (ms), eau (°C), poids (kg)
+    private var stepsN = 0.0, runPw = 0.0, runStride = 0.0, runVO = 0.0, runGCT = 0.0, waterT = -99.0, bodyKg = 0.0
+    private func loadWeight() {
+        guard let t = HKQuantityType.quantityType(forIdentifier: .bodyMass) else { return }
+        let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let q = HKSampleQuery(sampleType: t, predicate: nil, limit: 1, sortDescriptors: [sort]) { [weak self] _, res, _ in
+            guard let smp = res?.first as? HKQuantitySample else { return }
+            let kg = smp.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
+            DispatchQueue.main.async { self?.bodyKg = kg }
+        }
+        hk.execute(q)
+    }
     /// fin de la séance : enregistrée dans Santé si la sortie est gardée, sinon jetée
     private func endWorkout(save: Bool) {
         guard let w = workout else { return }
-        let b = builder, was = collecting
-        workout = nil; builder = nil; collecting = false
+        let b = builder, was = collecting, rb = routeBuilder
+        workout = nil; builder = nil; collecting = false; routeBuilder = nil
         b?.delegate = nil
         w.end()
         // sans accord Santé, l'enregistrement n'a jamais démarré : il n'y a rien à clôturer
-        guard was, let bb = b else { return }
+        guard was, let bb = b else { rb?.discard(); return }
         bb.endCollection(withEnd: Date()) { ok, _ in
-            guard ok else { return }
-            if save { bb.finishWorkout { _, _ in } } else { bb.discardWorkout() }
+            guard ok else { rb?.discard(); return }
+            if save {
+                bb.finishWorkout { wk, _ in
+                    if let wk = wk, let rb = rb { rb.finishRoute(with: wk, metadata: nil) { _, _ in } } else { rb?.discard() }
+                }
+            } else { bb.discardWorkout(); rb?.discard() }
         }
     }
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
@@ -406,8 +438,35 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         if let t = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned), let st = workoutBuilder.statistics(for: t) {
             k = st.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? -1
         }
+        var stp = -1.0, pw = -1.0, sl = -1.0, vo = -1.0, gc = -1.0, wt = -99.0
+        if let t = HKQuantityType.quantityType(forIdentifier: .stepCount), let st = workoutBuilder.statistics(for: t) {
+            stp = st.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? -1
+        }
+        if #available(watchOS 9.0, *) {
+            if let t = HKQuantityType.quantityType(forIdentifier: .runningPower), let st = workoutBuilder.statistics(for: t) {
+                pw = st.averageQuantity()?.doubleValue(for: HKUnit.watt()) ?? -1
+            }
+            if let t = HKQuantityType.quantityType(forIdentifier: .runningStrideLength), let st = workoutBuilder.statistics(for: t) {
+                sl = st.averageQuantity()?.doubleValue(for: HKUnit.meter()) ?? -1
+            }
+            if let t = HKQuantityType.quantityType(forIdentifier: .runningVerticalOscillation), let st = workoutBuilder.statistics(for: t) {
+                vo = st.averageQuantity()?.doubleValue(for: HKUnit.meterUnit(with: .centi)) ?? -1
+            }
+            if let t = HKQuantityType.quantityType(forIdentifier: .runningGroundContactTime), let st = workoutBuilder.statistics(for: t) {
+                gc = st.averageQuantity()?.doubleValue(for: HKUnit.secondUnit(with: .milli)) ?? -1
+            }
+            if let t = HKQuantityType.quantityType(forIdentifier: .waterTemperature), let st = workoutBuilder.statistics(for: t) {
+                wt = st.mostRecentQuantity()?.doubleValue(for: HKUnit.degreeCelsius()) ?? -99
+            }
+        }
         DispatchQueue.main.async { [weak self] in
             guard let s = self else { return }
+            if stp >= 0 { s.stepsN = stp }
+            if pw >= 0 { s.runPw = pw }
+            if sl >= 0 { s.runStride = sl }
+            if vo >= 0 { s.runVO = vo }
+            if gc >= 0 { s.runGCT = gc }
+            if wt > -90 { s.waterT = wt }
             if h >= 0 { s.hrNow = h }
             if a >= 0 { s.hrAvg = a }
             if mx >= 0 { s.hrMax = mx }
@@ -514,6 +573,7 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
         prevFix = l
         let acc = l.horizontalAccuracy
         guard acc >= 0, acc <= 30 else { return }
+        if collecting, let rb = routeBuilder { rb.insertRouteData([l]) { _, _ in } }
         if curKmh > maxKmh && curKmh < 150 { maxKmh = curKmh }
         if runS - lastTrackS >= 2, track.count < 5000 {
             track.append([l.coordinate.latitude, l.coordinate.longitude, curKmh, runS, l.verticalAccuracy >= 0 ? l.altitude : 0, hrNow])
@@ -544,7 +604,9 @@ final class SosModel: NSObject, ObservableObject, WCSessionDelegate, CLLocationM
             "id": "watch-\(SosModel.ms(startDate))", "sport": sport,
             "start": SosModel.ms(startDate), "dur": SosModel.si(runS), "dist": SosModel.si(distM),
             "max": SosModel.sd((maxKmh * 10).rounded() / 10), "runs": runCount, "foilS": SosModel.si(foilS), "foilM": SosModel.si(foilDistM), "pts": pts,
-            "hr": SosModel.si(hrAvg.rounded()), "hrmax": SosModel.si(hrMax.rounded()), "kcal": SosModel.si(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord
+            "hr": SosModel.si(hrAvg.rounded()), "hrmax": SosModel.si(hrMax.rounded()), "kcal": SosModel.si(kcal.rounded()), "indoor": isIndoor, "sets": isIndoor ? setCount : 0, "setw": setWord,
+            "steps": SosModel.si(stepsN), "pw": SosModel.si(runPw.rounded()), "stride": SosModel.sd((runStride * 100).rounded() / 100), "vo": SosModel.sd((runVO * 10).rounded() / 10),
+            "gct": SosModel.si(runGCT.rounded()), "wt": SosModel.sd((waterT * 10).rounded() / 10), "kg": SosModel.sd((bodyKg * 10).rounded() / 10)
         ]
         guard JSONSerialization.isValidJSONObject(ride), let d = try? JSONSerialization.data(withJSONObject: ride), let s = String(data: d, encoding: .utf8) else { return }
         // file d'attente gardée sur la montre : la sortie n'est retirée qu'une fois confiée à la liaison avec l'iPhone
