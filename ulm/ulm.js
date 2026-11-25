@@ -42,6 +42,7 @@ var TR = {
  "DFS Deutsche Flugsicherung (licence CC BY 4.0) et FAA.":["DFS Deutsche Flugsicherung (CC BY 4.0 licence) and FAA.","DFS Deutsche Flugsicherung (licencia CC BY 4.0) y FAA."],
  "Terrains, météo et trafic":["Airfields, weather and traffic","Aeródromos, meteorología y tráfico"],
  "OurAirports (domaine public), METAR et TAF d'aviationweather.gov, prévisions Open-Meteo, trafic Open Glider Network.":["OurAirports (public domain), METAR and TAF from aviationweather.gov, Open-Meteo forecasts, Open Glider Network traffic.","OurAirports (dominio público), METAR y TAF de aviationweather.gov, previsiones Open-Meteo, tráfico Open Glider Network."],
+ "France : le SIA nous a répondu le 25/11/2026 qu'il n'existe pas d'accès automatisé aux NOTAM ni aux zones AZBA. L'appli ouvre donc SOFIA et la page AZBA du SIA : consulte-les avant chaque vol.":["France: the SIA told us on 25/11/2026 that there is no automated access to NOTAM or AZBA areas. The app therefore opens SOFIA and the SIA AZBA page: check them before every flight.","Francia: el SIA nos respondió el 25/11/2026 que no existe acceso automatizado a los NOTAM ni a las zonas AZBA. Por eso la app abre SOFIA y la página AZBA del SIA: consúltalas antes de cada vuelo."],
  "NOTAM et zones militaires actives":["NOTAMs and active military areas","NOTAM y zonas militares activas"],
  "Demande d'accès déposée auprès du SIA le 23/11/2026. En attendant, l'appli renvoie vers SOFIA et le site du SIA.":["Access request filed with the SIA on 23/11/2026. Meanwhile the app links to SOFIA and the SIA site.","Solicitud de acceso presentada al SIA el 23/11/2026. Mientras tanto, la app remite a SOFIA y al sitio del SIA."],
  "Limites connues":["Known limits","Límites conocidos"],
@@ -358,7 +359,7 @@ var TRUST=[
  ["off","Espagne : cartes des terrains","ENAIRE (AIP España, Guía VFR). Le téléphone lit la carte sur le site officiel, Lite Foil ne la rediffuse pas."],
  ["ok","Espagne : espaces aériens et obstacles","ENAIRE (AIP España, service Insignia), cycle du 29/10/2026. Accès libre et gratuit confirmé par leur réponse du 25/11/2026. ENAIRE est titulaire des droits de propriété intellectuelle et industrielle de ces données."],
  ["off","NOTAM Espagne","Service NOTAM d'ENAIRE, en accès libre (réponse du 25/11/2026). Le téléphone le lit à ta demande, le long de ta route. ENAIRE est titulaire des droits sur ces données. Ne remplace pas le briefing Ícaro."],
- ["wait","NOTAM et zones militaires actives","Demande d'accès déposée auprès du SIA le 23/11/2026. En attendant, l'appli renvoie vers SOFIA et le site du SIA."]],
+ ["off","NOTAM et zones militaires actives","France : le SIA nous a répondu le 25/11/2026 qu'il n'existe pas d'accès automatisé aux NOTAM ni aux zones AZBA. L'appli ouvre donc SOFIA et la page AZBA du SIA : consulte-les avant chaque vol."]],
  TRUST_L={ ok:["✓","Accord reçu","#0d8a4f","#e3f6ec"], lic:["✓","Licence ouverte","#0d8a4f","#e3f6ec"], off:["✓","Source officielle","#0b63b6","#e3effb"], open:["•","Source ouverte","#55626c","#eef1f3"], wait:["…","Demande en cours","#a05a00","#fdf0d8"] },
  trustMaj=null;
 function trustLog(){ var l=(trustMaj && trustMaj.log) || []; return l.slice(0,3).map(function(e){ var a=String(e.d).split("-"); return '<li><b>'+esc(a[2]+"/"+a[1]+"/"+a[0])+'</b> '+esc(e.t)+'</li>'; }).join(""); }
