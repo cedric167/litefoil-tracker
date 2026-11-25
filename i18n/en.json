@@ -2883,5 +2883,11 @@
  "En couleur : le kilomètre le plus rapide.": "Highlighted: the fastest kilometre.",
  "Sortie trop courte pour un découpage par kilomètre.": "Too short to split by kilometre.",
  "Indiquer mon poids": "Enter my weight",
- "pour estimer les calories de mes sorties.": "to estimate the calories of my activities."
+ "pour estimer les calories de mes sorties.": "to estimate the calories of my activities.",
+ "Estimation pour un poids de 72 kg.": "Estimate for a weight of 72 kg.",
+ "Moyenne 142 bpm · maximum 171 bpm": "Average 142 bpm · max 171 bpm",
+ "De 12 à 85 m · dénivelé + 64 m": "From 12 to 85 m · elevation gain +64 m",
+ "De -3 à 85 m · dénivelé + 64 m": "From -3 to 85 m · elevation gain +64 m",
+ "Allure moyenne 5:32 /km · meilleure 4:50 /km": "Average pace 5:32 /km · best 4:50 /km",
+ "Vitesse moyenne 18,4 km/h · meilleur 5 s 32,1 km/h": "Average speed 18,4 km/h · best 5 s 32,1 km/h"
 }

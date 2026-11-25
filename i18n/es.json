@@ -2936,5 +2936,11 @@
  "En couleur : le kilomètre le plus rapide.": "En color: el kilómetro más rápido.",
  "Sortie trop courte pour un découpage par kilomètre.": "Salida demasiado corta para dividirla por kilómetros.",
  "Indiquer mon poids": "Indicar mi peso",
- "pour estimer les calories de mes sorties.": "para estimar las calorías de mis salidas."
+ "pour estimer les calories de mes sorties.": "para estimar las calorías de mis salidas.",
+ "Estimation pour un poids de 72 kg.": "Estimación para un peso de 72 kg.",
+ "Moyenne 142 bpm · maximum 171 bpm": "Media 142 lpm · máximo 171 lpm",
+ "De 12 à 85 m · dénivelé + 64 m": "De 12 a 85 m · desnivel +64 m",
+ "De -3 à 85 m · dénivelé + 64 m": "De -3 a 85 m · desnivel +64 m",
+ "Allure moyenne 5:32 /km · meilleure 4:50 /km": "Ritmo medio 5:32 /km · mejor 4:50 /km",
+ "Vitesse moyenne 18,4 km/h · meilleur 5 s 32,1 km/h": "Velocidad media 18,4 km/h · mejor 5 s 32,1 km/h"
 }
