@@ -302,7 +302,7 @@
    "sea": "med",
    "place": "Saint-Laurent-du-Var",
    "view": "Port de plaisance",
-   "id": "47yAkf4-NGU",
+   "id": "FRuiFjDeZek",
    "embed": true,
    "by": "Port de Saint-Laurent-du-Var (officiel)",
    "match": [
@@ -6368,7 +6368,7 @@
    "view": "Resort Night Beach",
    "country": "Espagne",
    "area": "Alicante & Costa Blanca",
-   "id": "_k1hRgcJ1Sk",
+   "id": "gS45LhFKaUg",
    "embed": false,
    "by": "BeniCam - Benidorm Webcam",
    "match": [
@@ -8561,7 +8561,7 @@
    "view": "Caribbean Beach - Aruba",
    "country": "Antilles",
    "area": "Saint-Martin & Saint-Barth",
-   "id": "gHPeIwFyX6g",
+   "id": "4_fKsyNuvQc",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8578,7 +8578,7 @@
    "view": "Curaçao - Willemstad - Mambo Beach",
    "country": "Antilles néerl.",
    "area": "Aruba, Bonaire & Curaçao",
-   "id": "x7GtcLDaZAw",
+   "id": "mcvEPtfWpGE",
    "embed": true,
    "by": "SHOWME Caribbean",
    "match": [
@@ -8901,7 +8901,7 @@
    "view": "Copacabana Posto 3",
    "country": "Brésil",
    "area": "Rio de Janeiro",
-   "id": "WEl_I5vmuSs",
+   "id": "mWJXvFSirAc",
    "embed": true,
    "by": "Homes in Rio",
    "match": [
@@ -9003,7 +9003,7 @@
    "view": "PRAIA DE PONTA NEGRA - N",
    "country": "Brésil",
    "area": "Nordeste",
-   "id": "NBi5nfrfFlk",
+   "id": "9tTthlytbBY",
    "embed": true,
    "by": "Live Cam Natal",
    "match": [
@@ -9292,7 +9292,7 @@
    "view": "七里ヶ浜・江ノ島ライブカメラ（ワイド） 湘南 鎌",
    "country": "Japon",
    "area": "Japon",
-   "id": "oW2oQuAMiSc",
+   "id": "EfVncgjUtcY",
    "embed": true,
    "by": "湘南ライブカメラ",
    "match": [
@@ -9309,7 +9309,7 @@
    "view": "Minegahara Wave",
    "country": "Japon",
    "area": "Japon",
-   "id": "EW3SGYBVVAc",
+   "id": "GdsN5dg4iJM",
    "embed": true,
    "by": "峰ヒルズcam",
    "match": [
@@ -9423,5 +9423,5 @@
    "approx": true
   }
  ],
- "updated": "2026-11-24"
+ "updated": "2026-11-25"
 }
