@@ -71,7 +71,14 @@
   if(!g || !Array.isArray(g.pts) || g.pts.length<2){ msg("Aucun vol à rejouer. Ouvre un vol dans Activités, puis « 3D photoréaliste »."); return; }
   if(!KEY){ fall(); return; }
   const P=g.pts.filter(p=>p && isFinite(+p.lat) && isFinite(+p.lon)).map(p=>({ lat:+p.lat, lon:+p.lon, alt:+p.alt||0, speed:+p.speed||0, dist:+p.dist||0, t:+p.t||0 })), N=P.length;
-  const GROUND=(g.milieu==="terre"); P.forEach(p=>{ p.a0=p.alt; });
+  const GROUND=(g.milieu==="terre");
+  // 27/11 : l'altitude du GPS du téléphone saute (pics isolés, marches de plusieurs dizaines de mètres). Pour un vol : on retire les pics
+  // (médiane sur 5 points), on borne la vitesse verticale à 8 m/s, puis on lisse sur une vingtaine de secondes. Le tracé au sol n'est pas touché.
+  const lisseAlt=(Q)=>{ const n=Q.length; if(n<5) return; const a=Q.map(p=>p.alt), m=a.map((_,i)=>{ const w=[]; for(let j=Math.max(0,i-2);j<=Math.min(n-1,i+2);j++) w.push(a[j]); w.sort((x,y)=>x-y); return w[w.length>>1]; });
+    for(let i=1;i<n;i++){ const dt=Math.max(1,(Q[i].t-Q[i-1].t)||3), lim=8*dt; if(m[i]-m[i-1]>lim) m[i]=m[i-1]+lim; else if(m[i-1]-m[i]>lim) m[i]=m[i-1]-lim; }
+    for(let i=0;i<n;i++){ let s=0, w=0; for(let j=Math.max(0,i-8);j<=Math.min(n-1,i+8);j++){ const d=(Q[j].t-Q[i].t)||((j-i)*3); if(Math.abs(d)>24) continue; const k=Math.exp(-(d*d)/128); s+=m[j]*k; w+=k; } Q[i].alt=w>0 ? s/w : m[i]; } };
+  if(!GROUND) lisseAlt(P);
+  P.forEach(p=>{ p.a0=p.alt; });
   if(!(P[N-1].dist>0)){ let d=0; for(let i=1;i<N;i++){ const R=6371000, dy=(P[i].lat-P[i-1].lat)*Math.PI/180*R, dx=(P[i].lon-P[i-1].lon)*Math.PI/180*R*Math.cos(P[i].lat*Math.PI/180); d+=Math.hypot(dx,dy); P[i].dist=d; } }
   $("nm").textContent=String(g.name||"Vol").slice(0,60);
   msg("Chargement de la vue 3D…");
