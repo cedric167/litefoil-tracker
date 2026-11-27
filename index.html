@@ -2920,7 +2920,7 @@ body.uni-pilote .tk-pick{background:linear-gradient(135deg,#3d8bff,#10276b);box-
           <div id="commVerifForm">
             <label for="commEmail">Adresse e-mail (pour valider ton profil, jamais affichée)</label>
             <input id="commEmail" type="email" inputmode="email" autocomplete="email" placeholder="ton@email.fr">
-            <button type="button" class="av-btn" id="commVerifSend">Recevoir le mail de validation</button>
+            <button type="button" class="av-btn" id="commVerifSend">Enregistrer mon adresse</button>
             <button type="button" class="av-btn" id="commVerifCheck" hidden>J'ai cliqué sur le lien</button>
           </div>
           <div class="verif-note" id="commVerifNote"></div>
@@ -6236,7 +6236,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       clearTyping(){ return db.remove(db.ref(d,"typing/"+uid)); },
       // profil : réservé aux comptes dont l'e-mail est validé ; le pseudo est réservé dans /names/{clé} (un seul propriétaire)
       // en une seule écriture (profil + réservation + libération de l'ancien pseudo), vérifiée par les règles Firebase
-      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var nk=pseudoKey(p.pseudo); if(!nk || !auth.currentUser || !auth.currentUser.emailVerified) return Promise.resolve();
+      saveProfile(p){ if(!p||!p.pseudo) return Promise.resolve(); var nk=pseudoKey(p.pseudo); if(!nk || !auth.currentUser || !auth.currentUser.email) return Promise.resolve();
         var o={pseudo:p.pseudo,nk:nk,t:db.serverTimestamp()}; if(p.av) o.av=p.av; if(p.bio) o.bio=p.bio; if(p.dm) o.dm=p.dm; if(me.brand && me.brand!=="none") o.brand=String(me.brand).slice(0,32); if(mySports.length) o.sports=mySports.join(",").slice(0,300);
         var write=function(){ return db.get(db.ref(d,"profiles/"+uid+"/nk")).then(function(s){ var old=s.val(); var up={}; up["names/"+nk]=uid; if(old && old!==nk) up["names/"+old]=null; up["profiles/"+uid]=o; return db.update(db.ref(d),up); }); };
         // le serveur exige « e-mail validé » dans le jeton : un jeton émis avant la validation est refusé, on le renouvelle
@@ -6297,18 +6297,18 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       addPostComment(p,text,re){ var o={uid:uid,pseudo:me.pseudo||"Membre",text:String(text).slice(0,300),t:db.serverTimestamp()}; if(re) o.re=String(re);
         return db.push(db.ref(d,"postComments/"+p.uid+"/"+p.vis+"/"+p.id),o); },
       deletePostComment(p,cid){ return db.remove(db.ref(d,"postComments/"+p.uid+"/"+p.vis+"/"+p.id+"/"+cid)); },
-      // validation par e-mail : le compte (anonyme) est rattaché à l'adresse, puis Firebase envoie le lien de validation
-      emailState(){ var u=auth.currentUser; return { email:(u&&u.email)||"", verified:!!(u&&u.emailVerified) }; },
+      // 27/11 : plus d'activation par e-mail. Le compte (anonyme) est rattaché à l'adresse ; un compte qui a une adresse est « validé », aucun mail n'est envoyé.
+      emailState(){ var u=auth.currentUser; return { email:(u&&u.email)||"", verified:!!(u&&u.email) }; },
       sendVerification(email){ var u=auth.currentUser; if(!u) return Promise.reject(new Error("no-user"));
-        if(u.email){ if(u.email.toLowerCase()!==email.toLowerCase()) return Promise.reject({code:"lf/other-email", email:u.email}); return authMod.sendEmailVerification(u); }
+        if(u.email){ if(u.email.toLowerCase()!==email.toLowerCase()) return Promise.reject({code:"lf/other-email", email:u.email}); return Promise.resolve(); }
         var pw=""; var a=new Uint8Array(18); crypto.getRandomValues(a); for(var i=0;i<a.length;i++) pw+=("0"+a[i].toString(16)).slice(-2);
         // mot de passe tiré au hasard, gardé seulement sur ce téléphone : il sert à confirmer la suppression du compte
-        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ try{ localStorage.setItem("lf.comm.k", pw); }catch(e){} return authMod.sendEmailVerification(auth.currentUser); }); },
+        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ try{ localStorage.setItem("lf.comm.k", pw); }catch(e){} return auth.currentUser.getIdToken(true); }); },
       // 11/11 : création du compte au démarrage : le compte anonyme du téléphone est rattaché à l'e-mail et au mot de passe choisis
       createAccount(email,pw){ var u=auth.currentUser; if(!u) return Promise.reject({code:"auth/network-request-failed"});
-        if(u.email){ if(u.email.toLowerCase()===email.toLowerCase() && !u.emailVerified) return authMod.updatePassword(u,pw).catch(function(){}).then(function(){ return authMod.sendEmailVerification(u); });
+        if(u.email){ if(u.email.toLowerCase()===email.toLowerCase()) return authMod.updatePassword(u,pw).catch(function(){}).then(function(){ return auth.currentUser.getIdToken(true); });
           return Promise.reject({code:"auth/email-already-in-use"}); }
-        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ return authMod.sendEmailVerification(auth.currentUser); }); },
+        return authMod.linkWithCredential(u, authMod.EmailAuthProvider.credential(email, pw)).then(function(){ return auth.currentUser.getIdToken(true); }); },
       // 11/11 : « Continuer avec Apple / Google ». Appli native : module @capacitor-firebase/authentication (skipNativeAuth),
       // le jeton est ensuite donné au SDK web. Navigateur : fenêtre Google. Le compte anonyme du téléphone est rattaché
       // (« linked », même uid) ; si ce compte Apple/Google existe déjà, on s'y connecte (« signedin », la page se recharge).
@@ -6344,7 +6344,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       // lien par mail pour choisir (ou changer) son mot de passe
       sendPasswordLink(email){ return authMod.sendPasswordResetEmail(auth, email); },
       refreshVerification(){ var u=auth.currentUser; if(!u) return Promise.resolve(this.emailState()); var self=this;
-        return authMod.reload(u).then(function(){ return auth.currentUser.emailVerified ? auth.currentUser.getIdToken(true) : null; }).then(function(){ return self.emailState(); }); },
+        return authMod.reload(u).then(function(){ return auth.currentUser.email ? auth.currentUser.getIdToken(true) : null; }).then(function(){ return self.emailState(); }); },
       watchProfiles(cb){ return db.onValue(db.ref(d,"profiles"), function(snap){ cb(snap.val()||{}); }); },
       saveCard(img){ return img ? db.set(db.ref(d,"cards/"+uid),{img:img,t:db.serverTimestamp()}) : db.remove(db.ref(d,"cards/"+uid)); },
       getCard(u){ return db.get(db.ref(d,"cards/"+u+"/img")).then(function(s){ return s.val()||null; }).catch(function(){ return null; }); },
@@ -9039,8 +9039,8 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
     if(me.verified) ok.textContent="✅ Profil validé"+(me.email?" · "+me.email:"");
     var em=$("commEmail"); if(em && !em.value){ var saved=""; try{ saved=localStorage.getItem("lf.comm.email")||""; }catch(e){} em.value=me.email||saved; }
     var pend=false; try{ pend=localStorage.getItem("lf.comm.verifsent")==="1"; }catch(e){}
-    var ck=$("commVerifCheck"); if(ck) ck.hidden=!pend;
-    var sd=$("commVerifSend"); if(sd) sd.textContent=pend?"Renvoyer le mail de validation":"Recevoir le mail de validation";
+    var ck=$("commVerifCheck"); if(ck) ck.hidden=true;
+    var sd=$("commVerifSend"); if(sd) sd.textContent="Enregistrer mon adresse";
     var pi=$("commPwInfo"), ps=$("commPwSet"), lt=$("commLoginToggle"); if(pi) pi.hidden=!me.verified; if(ps) ps.hidden=!me.verified;
     if(lt) lt.textContent = me.verified ? "Me reconnecter avec mon mot de passe" : "J'ai déjà un profil (nouveau téléphone)";
   }
@@ -9060,7 +9060,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
       .catch(function(err){ setLoginNote(loginErr(err&&err.code)); }); }
   function openProfileSheet(){ var sp=$("commSportsPick"); if(sp){ sp.innerHTML=sportsPickerHtml(mySports); bindSportsPicker(sp); } var s=$("profEditSheet"); if(!s) return; var dp=$("commDmPref"); if(dp) dp.value=dmPref; fillBrand(); $("commPseudo").value=me.pseudo; checkPseudo(); renderVerif(); s.hidden=false; }
   function askProfile(msg){ openProfileSheet();
-    setVerifNote(msg || (!me.verified ? "Pour participer, valide ton profil : entre ton e-mail, puis clique sur le lien reçu par mail."
+    setVerifNote(msg || (!me.verified ? "Pour participer, entre ton adresse e-mail dans Mon profil."
       : (!me.pseudo || !me.claimed ? "Choisis un pseudo libre, puis appuie sur Enregistrer." : ""))); }
   // vérifie le pseudo pendant la saisie : format, nom réservé, déjà pris
   let pseudoCheckT=null;
@@ -9092,17 +9092,17 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
         return false; }); });
   }
   function onVerified(){ try{ localStorage.removeItem("lf.comm.verifsent"); }catch(e){} renderVerif();
-    var v=$("commPseudo").value.trim()||me.pseudo; if(v) claimProfile(v,false).then(function(ok){ setVerifNote(ok?"✅ C'est tout bon : ton profil est validé, tu peux participer !":"✅ E-mail validé. Choisis maintenant un pseudo libre puis Enregistrer."); });
-    else setVerifNote("✅ E-mail validé. Choisis maintenant ton pseudo puis Enregistrer."); updateChatGate(); }
+    var v=$("commPseudo").value.trim()||me.pseudo; if(v) claimProfile(v,false).then(function(ok){ setVerifNote(ok?"✅ C'est tout bon : ton profil est validé, tu peux participer !":"✅ Adresse enregistrée. Choisis maintenant un pseudo libre puis Enregistrer."); });
+    else setVerifNote("✅ Adresse enregistrée. Choisis maintenant ton pseudo puis Enregistrer."); updateChatGate(); }
   function refreshVerif(){ if(!backend || !backend.refreshVerification) return Promise.resolve();
     return backend.refreshVerification().then(function(st){ var was=me.verified; me.verified=st.verified; me.email=st.email||""; renderVerif(); if(st.verified && !was) onVerified(); return st; }).catch(function(){}); }
   function sendVerif(){ var em=$("commEmail"), e=(em&&em.value||"").trim();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)){ setVerifNote("Adresse e-mail invalide."); return; }
     if(!backend || !backend.sendVerification) return; var b=$("commVerifSend"); if(b) b.disabled=true; setVerifNote("Envoi en cours…");
-    backend.sendVerification(e).then(function(){ try{ localStorage.setItem("lf.comm.email",e); localStorage.setItem("lf.comm.verifsent","1"); }catch(x){}
-      renderVerif(); setVerifNote("📩 Mail envoyé à "+e+". Ouvre-le, clique sur le lien, puis reviens ici et appuie sur « J'ai cliqué sur le lien ». Pense à regarder dans les spams.");
+    backend.sendVerification(e).then(function(){ try{ localStorage.setItem("lf.comm.email",e); localStorage.removeItem("lf.comm.verifsent"); }catch(x){}
+      setVerifNote("✅ Adresse enregistrée."); refreshVerif();
     }).catch(function(err){ var c=err&&err.code||"";
-      if(c==="lf/other-email"){ if(em) em.value=err.email; setVerifNote("Ton profil est déjà rattaché à "+err.email+". Appuie à nouveau pour recevoir le mail à cette adresse."); }
+      if(c==="lf/other-email"){ if(em) em.value=err.email; setVerifNote("Ton profil est déjà rattaché à "+err.email+". Appuie à nouveau pour continuer avec cette adresse."); }
       else if(c==="auth/email-already-in-use"||c==="auth/credential-already-in-use") setVerifNote("Cette adresse e-mail est déjà utilisée par un autre profil.");
       else if(c==="auth/invalid-email") setVerifNote("Adresse e-mail invalide.");
       else if(c==="auth/too-many-requests") setVerifNote("Trop d'essais : réessaie dans quelques minutes.");
@@ -9112,7 +9112,7 @@ button.gw-d.on{border-color:#14b8ab;background:linear-gradient(160deg,#e3faf7,#f
   function updateChatGate(){
     const ok = profileReady() && charterOk; $("chatSend").disabled=!ok; $("chatInput").disabled=!ok; var _cp=$("chatAttach"); if(_cp) _cp.disabled=!ok;
     let n = !charterOk ? "Accepte la charte de la communauté pour participer."
-          : (!me.verified ? "Valide ton profil par e-mail (Mon profil) pour discuter."
+          : (!me.verified ? "Entre ton adresse e-mail dans Mon profil pour discuter."
           : (!profileReady() ? "Choisis un pseudo libre dans Mon profil pour discuter." 
           : (chatMode==="near"&&chatRadius<1000&&!me.pos ? "Active ta visibilité pour filtrer les messages par distance." : "")));
     $("chatNote").textContent=n; $("chatNote").hidden = (n==="");
@@ -9915,7 +9915,7 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
     var av=$("pfAv"); if(av) av.innerHTML = me.av?'<img src="'+esc(me.av)+'" alt="">':(me.pseudo?esc(me.pseudo.charAt(0).toUpperCase()):"+");
     var ready=profileReady();
     $("pfName").innerHTML = me.pseudo ? esc(me.pseudo)+(isOfficial(me.uid)?' <span class="pf-off">✓ Équipe Lite Foil</span>':'') : "Crée ton profil";
-    $("pfId").textContent = ready ? "@"+pseudoKey(me.pseudo) : (me.verified ? "Choisis un pseudo pour être trouvé par tes amis" : "Valide ton e-mail pour activer ton profil");
+    $("pfId").textContent = ready ? "@"+pseudoKey(me.pseudo) : (me.verified ? "Choisis un pseudo pour être trouvé par tes amis" : "Entre ton e-mail pour activer ton profil");
     $("pfBio").textContent = me.bio||"";
     $("pfEditTx").textContent = ready ? "Modifier le profil" : "Créer mon profil";
     var pc=$("pfCard"); if(pc){ var mc=myCards(); pc.innerHTML='<span class="pfa-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2.6"/><path d="M12 8.2l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z"/></svg><em class="pf-ovr '+cardTier(mc.g)[0]+'">'+mc.g+'</em></span><b>Ma carte</b>'; }
@@ -10552,7 +10552,7 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
   var _pe=$("profEditBtn"); if(_pe) _pe.addEventListener("click", function(){ setVerifNote(""); openProfileSheet(); });
   var _psv=$("profEditSave"); if(_psv) _psv.addEventListener("click", function(){ var s=$("profEditSheet"); readBrand(); renderDefi(); var dp=$("commDmPref"); if(dp && (dp.value==="all"||dp.value==="none")){ dmPref=dp.value; saveDmPref(); }
     var v=$("commPseudo").value.trim().slice(0,24);
-    if(!me.verified){ if(v && v!==me.pseudo){ me.pseudo=v; me.claimed=false; savePseudo(); } updateChatGate(); setVerifNote("Il reste à valider ton e-mail : entre ton adresse ci-dessus et clique sur le lien reçu."); renderVerif(); return; }
+    if(!me.verified){ if(v && v!==me.pseudo){ me.pseudo=v; me.claimed=false; savePseudo(); } updateChatGate(); setVerifNote("Il reste à entrer ton adresse e-mail ci-dessus, puis à appuyer sur « Enregistrer mon adresse »."); renderVerif(); return; }
     if(!v){ setVerifNote("Choisis un pseudo."); return; }
     claimProfile(v,false).then(function(ok){ if(ok && s) s.hidden=true; }); });
   var _smu=$("sheetMute"); if(_smu) _smu.addEventListener("click", function(){ if(sheetTarget&&sheetTarget.uid){ toggleMute(sheetTarget.uid); _smu.textContent = isMuted(sheetTarget.uid)?"🔔 Réactiver les notifications":"🔕 Couper les notifications"; } });
@@ -10662,7 +10662,7 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
     var btn=$("commAvBtn"); if(btn){ btn.disabled=true; btn.textContent="Photo en cours…"; }
     openCropper(f,{aspect:1, round:true, outW:320, title:"Cadrer ma photo de profil"}).then(function(cv){ if(!cv) return null; return cv.toDataURL("image/jpeg",0.82); }).then(function(d){ if(!d) return; setAvatar(d);
       if(profileReady() && backend && backend.saveProfile) return backend.saveProfile({pseudo:me.pseudo,av:me.av,bio:me.bio,dm:dmPref}).then(function(){ setVerifNote("✅ Photo enregistrée."); renderProfil(); });
-      setVerifNote(me.verified ? "Photo prête : appuie sur Enregistrer pour la garder." : "Photo prête : elle sera enregistrée quand ton profil sera validé par e-mail."); })
+      setVerifNote(me.verified ? "Photo prête : appuie sur Enregistrer pour la garder." : "Photo prête : elle sera enregistrée quand ton adresse e-mail sera renseignée."); })
     .catch(function(){ alert("Cette photo ne peut pas être lue (format HEIC ou fichier abîmé). Essaie une autre photo, ou fais une capture d'écran de ta photo et choisis la capture."); })
     .then(function(){ if(btn){ btn.disabled=false; btn.textContent="Changer la photo"; } }); });
   // toucher le rond de la photo ouvre directement la galerie
@@ -11107,8 +11107,8 @@ function sessSummary(a){ return { t:new Date(a.startedAt||0).getTime()||Date.now
     if(!$("lfoSuCgu").checked){ lfoErr("lfoSuErr","Coche la case pour accepter la politique de confidentialité et la charte."); return; }
     if(!backend || !backend.createAccount){ lfoErr("lfoSuErr","Connexion au serveur en cours, réessaie dans un instant."); return; }
     var b=$("lfoSuGo"); b.disabled=true; lfoErr("lfoSuErr","Création du compte…",true);
-    backend.createAccount(e,pw).then(function(){ me.email=e; try{ localStorage.setItem("lf.comm.email",e); localStorage.setItem("lf.comm.verifsent","1"); localStorage.removeItem("lf.comm.k"); }catch(x){}
-      try{ acceptCharter(); }catch(x){} lfoErr("lfoSuErr",""); lfoShow("verify"); })
+    backend.createAccount(e,pw).then(function(){ me.email=e; me.verified=true; try{ localStorage.setItem("lf.comm.email",e); localStorage.removeItem("lf.comm.verifsent"); localStorage.removeItem("lf.comm.k"); }catch(x){}
+      try{ acceptCharter(); }catch(x){} try{ renderVerif(); updateChatGate(); }catch(x){} lfoErr("lfoSuErr",""); lfoShow("profile"); })
       .catch(function(err){ lfoErr("lfoSuErr", lfoAuthMsg(err&&err.code)); }).then(function(){ b.disabled=false; }); }
   function lfoLogin(){ var e=($("lfoLiEmail").value||"").trim(), pw=$("lfoLiPw").value||"";
     if(!LFO_MAIL.test(e) || !pw){ lfoErr("lfoLiErr","Entre ton e-mail et ton mot de passe."); return; }

@@ -2997,5 +2997,14 @@
  "Aucun message dans Saut à la perche pour l'instant.": "No messages in Pole vault yet.",
  "Aucun message Saut à la perche dans un rayon de 50 km. Élargis le rayon avec le curseur.": "No Pole vault messages within 50 km. Widen the radius with the slider.",
  "Aucun message dans Parapente pour l'instant.": "No messages in Paragliding yet.",
- "Aucun message Parapente dans un rayon de 50 km. Élargis le rayon avec le curseur.": "No Paragliding messages within 50 km. Widen the radius with the slider."
+ "Aucun message Parapente dans un rayon de 50 km. Élargis le rayon avec le curseur.": "No Paragliding messages within 50 km. Widen the radius with the slider.",
+ "Enregistrer mon adresse": "Save my address",
+ "✅ Adresse enregistrée.": "✅ Address saved.",
+ "Pour participer, entre ton adresse e-mail dans Mon profil.": "To take part, enter your email address in My profile.",
+ "✅ Adresse enregistrée. Choisis maintenant un pseudo libre puis Enregistrer.": "✅ Address saved. Now choose an available username, then Save.",
+ "✅ Adresse enregistrée. Choisis maintenant ton pseudo puis Enregistrer.": "✅ Address saved. Now choose your username, then Save.",
+ "Entre ton adresse e-mail dans Mon profil pour discuter.": "Enter your email address in My profile to chat.",
+ "Entre ton e-mail pour activer ton profil": "Enter your email to activate your profile",
+ "Il reste à entrer ton adresse e-mail ci-dessus, puis à appuyer sur « Enregistrer mon adresse ».": "You still need to enter your email address above, then tap “Save my address”.",
+ "Photo prête : elle sera enregistrée quand ton adresse e-mail sera renseignée.": "Photo ready: it will be saved once your email address is entered."
 }
