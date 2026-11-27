@@ -1,9 +1,9 @@
 {
   "product": "telecommande",
-  "version": "1.15.5",
-  "file": "telecommande-1.15.5.bin",
-  "size": 1668368,
-  "md5": "07be9f97144a963fa70020ae8f949a18",
-  "date": "2026-10-28",
-  "notes": "Calibration gachette corrigee : plus de faux-gaz au repos ni de desarmement bloque (apprentissage du repos revu + marge de 4%). Version de test."
+  "version": "1.15.6",
+  "file": "telecommande-1.15.6.bin",
+  "size": 1668496,
+  "md5": "5fd02d3063fc47bae6700e5edde831ad",
+  "date": "2026-11-27",
+  "notes": "Veille corrigee : tactile et capteur de mouvement endormis a l'extinction (la telecommande ne se vide plus eteinte)."
 }
